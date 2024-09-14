@@ -10,6 +10,7 @@ namespace API.Interfaces
         void DeleteCategory(Category category);
         Task<Category?> GetCategoryById(int id);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
+        Task<bool> CategoryExistsAsync(string name);
         //Task<PageList<Category>> GetAllCategoriesAsync(CategoryParams categoryParams);
     }
 }

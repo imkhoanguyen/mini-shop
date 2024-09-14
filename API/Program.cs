@@ -3,6 +3,7 @@ using api.Interfaces;
 using API.Data;
 using API.Entities;
 using API.Interfaces;
+using API.Mapper;
 using API.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,7 @@ builder.Services.SeedDataServices();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 builder.Services.AddIdentityCore<AppUser>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;

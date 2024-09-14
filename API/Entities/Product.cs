@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using API.Data.Enum;
 using Microsoft.VisualBasic;
 
 namespace API.Entities
@@ -8,8 +9,8 @@ namespace API.Entities
         [Required]
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public int Status { get; set; }
-        public DateTime Created { get; set; }
+        public ProductStatus Status { get; set; }
+        public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; }
         public bool IsDelete { get; set; } = false;
 

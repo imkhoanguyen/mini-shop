@@ -12,9 +12,10 @@ namespace API.Mapper
     {
        public MappingProfile()
        {
-           CreateMap<AppUser, UserDto>();
-           CreateMap<RegisterDto, AppUser>();
-           CreateMap<CategoryDto, Category>();
+        //    CreateMap<AppUser, UserDto>();
+        //    CreateMap<RegisterDto, AppUser>();
+           CreateMap<CategoryDto, Category>()
+    .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
        }
     }
 }
