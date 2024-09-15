@@ -30,7 +30,7 @@ namespace api.Controllers
 
         // POST api/category/Add
         [HttpPost("Add")]
-        public async Task<ActionResult<CategoryDto>> AddCategory(CategoryDto categoryDto)
+        public async Task<ActionResult> AddCategory(CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

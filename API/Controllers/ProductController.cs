@@ -1,20 +1,23 @@
 using api.Interfaces;
 using API.Controllers;
+using API.DTOs;
 using API.Entities;
 using API.Helpers;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-    [Authorize]
     public class ProductController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         // GET api/Product/GetAll
@@ -27,41 +30,66 @@ namespace api.Controllers
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromBody] Product Product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            _unitOfWork.ProductRepository.AddProduct(Product);
 
-            return BadRequest("An error occurred while adding the Product.");
-        }
+            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productDto.Name!))
+            {
+                return BadRequest("Sản phẩm với tên này đã tồn tại.");
+            }
 
-        // PUT api/Product/Update
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateProduct([FromBody] Product Product)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            _unitOfWork.ProductRepository.UpdateProduct(Product);
+            var product = _mapper.Map<Product>(productDto);
+
+            // Đảm bảo rằng Id của product đã được gán
+            if (product.Id != 0)
+            {
+                return BadRequest("Product Id đã được gán trước khi thêm vào cơ sở dữ liệu.");
+            }
+
+            await _unitOfWork.ProductRepository.AddProduct(product);
 
             if (await _unitOfWork.Complete())
                 return NoContent();
 
-            return BadRequest("An error occurred while updating the Product.");
+            return Ok("Thêm sản phẩm thành công.");
+        }
+
+
+        // PUT api/Product/Update
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productDto.Name!))
+            {
+                return BadRequest("Sản phẩm với tên này đã tồn tại.");
+            }
+            var product = _mapper.Map<Product>(productDto);
+
+            await _unitOfWork.ProductRepository.UpdateProduct(product);
+            if (await _unitOfWork.Complete())
+                return NoContent();
+
+            return Ok("Update Product successfully.");
+
         }
 
         // DELETE api/Product/Delete
         [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteProduct([FromBody] Product Product)
+        public async Task<IActionResult> DeleteProduct(ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            _unitOfWork.ProductRepository.DeleteProduct(Product);
+            var product = _mapper.Map<Product>(productDto);
+            _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())
                 return NoContent();
 
-            return BadRequest("An error occurred while deleting the Product.");
+            return Ok("Delete Product successfully.");
         }
     }
 }

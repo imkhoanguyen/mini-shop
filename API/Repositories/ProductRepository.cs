@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.Data;
 using API.Entities;
 using API.Interfaces;
@@ -16,20 +12,78 @@ namespace API.Repositories
         {
             _context = context;
         }
-        public void AddProduct(Product product)
+        public async Task AddProduct(Product product)
         {
+            // Bước 1: Thêm sản phẩm và lưu nó vào cơ sở dữ liệu trước
             _context.Products.Add(product);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
+            // Kiểm tra xem product.Id đã được gán chưa
+            if (product.Id == 0)
+            {
+                throw new InvalidOperationException("ProductId was not generated after saving the product.");
+            }
+
+            // Bước 2: Thêm các ProductCategory (nếu có)
+            if (product.ProductCategories != null && product.ProductCategories.Count > 0)
+            {
+                foreach (var productCategory in product.ProductCategories)
+                {
+                    // Kiểm tra xem productCategory đã được theo dõi hay chưa
+                    var existingProductCategory = await _context.ProductCategories
+                        .FirstOrDefaultAsync(pc => pc.ProductId == product.Id && pc.CategoryId == productCategory.CategoryId);
+
+                    // Nếu chưa có trong DbContext, thì thêm vào
+                    if (existingProductCategory == null)
+                    {
+                        _context.ProductCategories.Add(new ProductCategory
+                        {
+                            ProductId = product.Id,  // Đảm bảo ProductId đã có sau khi lưu
+                            CategoryId = productCategory.CategoryId
+                        });
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }
         }
-        public void UpdateProduct(Product product)
+
+
+        public async Task UpdateProduct(Product product)
         {
-            _context.Products.Update(product);
-            _context.SaveChanges();
+            var productDb = await _context.Products
+                .Include(p => p.ProductCategories)
+                .FirstOrDefaultAsync(p => p.Id == product.Id);
+            if (productDb is not null)
+            {
+                // Cập nhật thông tin của sản phẩm
+                productDb.Name = product.Name;
+                productDb.Description = product.Description;
+                productDb.Status = product.Status;
+                productDb.Updated = DateTime.UtcNow;
+
+                // Xóa các productcategory cũ
+                _context.ProductCategories.RemoveRange(productDb.ProductCategories);
+
+                // Thêm các productcategory mới (nếu có)
+                foreach (var productCategory in product.ProductCategories)
+                {
+                    var newProductCategory = new ProductCategory
+                    {
+                        ProductId = productDb.Id,
+                        CategoryId = productCategory.CategoryId
+                    };
+                    productDb.ProductCategories.Add(newProductCategory);
+                }
+                _context.Products.Update(productDb);
+                await _context.SaveChangesAsync();
+            }
+
         }
         public void DeleteProduct(Product product)
         {
             var productDb = _context.Products.FirstOrDefault(p => p.Id == product.Id);
-            if(productDb is not null){
+            if (productDb is not null)
+            {
                 productDb.IsDelete = true;
                 _context.SaveChanges();
             }
@@ -43,6 +97,10 @@ namespace API.Repositories
         public async Task<Product?> GetProductByName(string name)
         {
             return await _context.Products.Where(p => !p.IsDelete && p.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+        }
+        public async Task<bool> ProductExistsAsync(string name)
+        {
+            return await _context.Products.AnyAsync(c => c.Name == name);
         }
 
 
