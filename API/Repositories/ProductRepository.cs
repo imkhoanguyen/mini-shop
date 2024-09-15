@@ -18,27 +18,17 @@ namespace API.Repositories
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            // Kiểm tra xem product.Id đã được gán chưa
-            if (product.Id == 0)
-            {
-                throw new InvalidOperationException("ProductId was not generated after saving the product.");
-            }
-
-            // Bước 2: Thêm các ProductCategory (nếu có)
             if (product.ProductCategories != null && product.ProductCategories.Count > 0)
             {
                 foreach (var productCategory in product.ProductCategories)
                 {
-                    // Kiểm tra xem productCategory đã được theo dõi hay chưa
                     var existingProductCategory = await _context.ProductCategories
                         .FirstOrDefaultAsync(pc => pc.ProductId == product.Id && pc.CategoryId == productCategory.CategoryId);
-
-                    // Nếu chưa có trong DbContext, thì thêm vào
                     if (existingProductCategory == null)
                     {
                         _context.ProductCategories.Add(new ProductCategory
                         {
-                            ProductId = product.Id,  // Đảm bảo ProductId đã có sau khi lưu
+                            ProductId = product.Id, 
                             CategoryId = productCategory.CategoryId
                         });
                     }
