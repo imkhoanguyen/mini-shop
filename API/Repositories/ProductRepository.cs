@@ -1,5 +1,7 @@
 using API.Data;
 using API.Entities;
+using API.Helper;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +16,6 @@ namespace API.Repositories
         }
         public async Task AddProduct(Product product)
         {
-            // Bước 1: Thêm sản phẩm và lưu nó vào cơ sở dữ liệu trước
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -36,8 +37,6 @@ namespace API.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
-
         public async Task UpdateProduct(Product product)
         {
             var productDb = await _context.Products
@@ -45,16 +44,13 @@ namespace API.Repositories
                 .FirstOrDefaultAsync(p => p.Id == product.Id);
             if (productDb is not null)
             {
-                // Cập nhật thông tin của sản phẩm
                 productDb.Name = product.Name;
                 productDb.Description = product.Description;
                 productDb.Status = product.Status;
                 productDb.Updated = DateTime.UtcNow;
 
-                // Xóa các productcategory cũ
                 _context.ProductCategories.RemoveRange(productDb.ProductCategories);
 
-                // Thêm các productcategory mới (nếu có)
                 foreach (var productCategory in product.ProductCategories)
                 {
                     var newProductCategory = new ProductCategory
@@ -93,6 +89,27 @@ namespace API.Repositories
             return await _context.Products.AnyAsync(c => c.Name == name);
         }
 
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        {
+            return await _context.Products.Where(p => !p.IsDelete).ToListAsync();
+        }
 
+        public async Task<PageList<Product>> GetAllProductsAsync(ProductParams productParams)
+        {
+            var query = _context.Products.Where(c => !c.IsDelete).OrderBy(c => c.Id).AsQueryable();
+            if (!string.IsNullOrEmpty(productParams.SearchString))
+            {
+                query = query.Where(c => c.Name.ToLower().Contains(productParams.SearchString.ToLower())
+                    || c.Id.ToString() == productParams.SearchString);
+            }
+
+            var count = await query.CountAsync();
+
+            var items = await query.Skip((productParams.PageNumber - 1) * productParams.PageSize)
+                                   .Take(productParams.PageSize)
+                                   .ToListAsync();
+            return new PageList<Product>(items, count, productParams.PageNumber, productParams.PageSize);
+            
+        }
     }
 }

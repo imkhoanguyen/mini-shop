@@ -2,6 +2,7 @@ using api.Interfaces;
 using API.Controllers;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,20 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllCategoriesAsync()
         {
             var categories = await _unitOfWork.CategoryRepository.GetAllCategoriesAsync();
+            return Ok(categories);
+        }
+        // GET api/category/GetById
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetCategoriesById(int id)
+        {
+            var categories = await _unitOfWork.CategoryRepository.GetCategoriesById(id);
+            return Ok(categories);
+        }
+
+        [HttpGet("GetAllPaging")]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategoriesAsync([FromQuery] CategoryParams categoryParams)
+        {
+            var categories = await _unitOfWork.CategoryRepository.GetAllCategoriesAsync(categoryParams);
             return Ok(categories);
         }
 

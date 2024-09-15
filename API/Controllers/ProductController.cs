@@ -20,12 +20,24 @@ namespace api.Controllers
             _mapper = mapper;
         }
 
-        // GET api/Product/GetAll
-        [HttpGet("GetAll")]
+        [HttpGet("GetProductById{id}")]
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
-            var categories = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-            return Ok(categories);
+            var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
+            return Ok(product);
+        }
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllProductsAsync()
+        {
+            var product = await _unitOfWork.ProductRepository.GetAllProductsAsync();
+            return Ok(product);
+        }
+
+        [HttpGet("GetAllPaging")]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
+        {
+            var product = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
+            return Ok(product);
         }
 
         // POST api/Product/Add
@@ -42,7 +54,6 @@ namespace api.Controllers
 
             var product = _mapper.Map<Product>(productDto);
 
-            // Đảm bảo rằng Id của product đã được gán
             if (product.Id != 0)
             {
                 return BadRequest("Product Id đã được gán trước khi thêm vào cơ sở dữ liệu.");
