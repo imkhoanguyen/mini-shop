@@ -1,9 +1,8 @@
-using api.Interfaces;
 using API.Controllers;
 using API.DTOs;
 using API.Entities;
 using API.Helpers;
-using AutoMapper;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,35 +21,47 @@ namespace api.Controllers
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
             var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-            return Ok(product);
+            if(product ==null) return NotFound("Không tìm thấy sản phẩm nào.");
+            var productDto = Product.toProductDto(product);
+            return Ok(productDto);
         }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllProductsAsync()
         {
             var product = await _unitOfWork.ProductRepository.GetAllProductsAsync();
-            return Ok(product);
+            if(product == null)
+            {
+                return NotFound("Không tìm thấy sản phẩm nào.");
+            }
+            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            return Ok(productDto);
         }
 
         [HttpGet("GetAllPaging")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
         {
             var product = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
-            return Ok(product);
+            if(product == null)
+            {
+                return NotFound("Không tìm thấy sản phẩm nào.");
+            }
+            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            return Ok(productDto);
         }
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
+        public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productDto.Name!))
+            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productAddDto.Name!))
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
 
-            var product = _mapper.Map<Product>(productDto);
+            var product = ProductAddDto.toProduct(productAddDto);
 
             if (product.Id != 0)
             {
@@ -76,7 +87,7 @@ namespace api.Controllers
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
-            var product = _mapper.Map<Product>(productDto);
+            var product = ProductDto.toProduct(productDto);
 
             await _unitOfWork.ProductRepository.UpdateProduct(product);
             if (await _unitOfWork.Complete())
@@ -92,7 +103,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var product = _mapper.Map<Product>(productDto);
+            var product = ProductDto.toProduct(productDto);
             _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())

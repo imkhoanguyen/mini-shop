@@ -8,23 +8,23 @@ namespace API.Data
 {
     public class StoreContext : IdentityDbContext<AppUser>
     {
-        public StoreContext(DbContextOptions options) : base(options){}
+        public StoreContext(DbContextOptions options) : base(options) { }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
         .HasKey(pc => new { pc.ProductId, pc.CategoryId });
 
-    builder.Entity<ProductCategory>()
-        .HasOne(pc => pc.Product)
-        .WithMany(p => p.ProductCategories)
-        .HasForeignKey(pc => pc.ProductId);
+            builder.Entity<ProductCategory>()
+                .HasOne(pc => pc.Product)
+                .WithMany(p => p.ProductCategories)
+                .HasForeignKey(pc => pc.ProductId);
 
-    builder.Entity<ProductCategory>()
-        .HasOne(pc => pc.Category)
-        .WithMany(c => c.ProductCategories)
-        .HasForeignKey(pc => pc.CategoryId);
+            builder.Entity<ProductCategory>()
+                .HasOne(pc => pc.Category)
+                .WithMany(c => c.ProductCategories)
+                .HasForeignKey(pc => pc.CategoryId);
 
-    base.OnModelCreating(builder);
+            base.OnModelCreating(builder);
         }
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }

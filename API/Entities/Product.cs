@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using API.Data.Enum;
+using API.DTOs;
 using Microsoft.VisualBasic;
 
 namespace API.Entities
@@ -19,5 +20,16 @@ namespace API.Entities
         public List<Review> Reviews { get; set; } = new List<Review>();
         public List<Variant> Variants { get; set; } = new List<Variant>();
 
+        public static ProductDto toProductDto(Product product)
+        {
+            return new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
+                Variants = product.Variants.Select(v => Variant.toVariantDto(v)).ToList()
+            };
+        }
     }
 }

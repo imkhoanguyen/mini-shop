@@ -48,7 +48,6 @@ namespace API.Repositories
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
             return await _context.Categories.Where(c => !c.IsDelete).ToListAsync();
-
         }
 
         public async Task<bool> CategoryExistsAsync(string name)

@@ -45,22 +45,27 @@ namespace api.Controllers
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategoriesAsync([FromQuery] CategoryParams categoryParams)
         {
             var categories = await _unitOfWork.CategoryRepository.GetAllCategoriesAsync(categoryParams);
-            return Ok(categories);
+            if(categories == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+            var categoriesDto = categories.Select(c => Category.toCategoryDto(c)).ToList();
+            return Ok(categoriesDto);
         }
 
         // POST api/category/Add
         [HttpPost("Add")]
-        public async Task<ActionResult> AddCategory(CategoryDto categoryDto)
+        public async Task<ActionResult> AddCategory(CategoryAddDto categoryAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (await _unitOfWork.CategoryRepository.CategoryExistsAsync(categoryDto.Name!))
+            if (await _unitOfWork.CategoryRepository.CategoryExistsAsync(categoryAddDto.Name!))
             {
                 return BadRequest("Danh mục với tên này đã tồn tại.");
             }
-            var category = CategoryDto.toCategory(categoryDto);
+            var category = CategoryAddDto.toCategory(categoryAddDto);
             _unitOfWork.CategoryRepository.AddCategory(category);
-
+ 
             if (await _unitOfWork.Complete())
                 return NoContent();
             return Ok("Add Category successfully.");

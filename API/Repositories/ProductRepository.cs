@@ -50,7 +50,9 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.ProductCategories)
+                .Include(p => p.Variants)
                 .FirstOrDefaultAsync(p => p.Id == product.Id);
+
             if (productDb is not null)
             {
                 productDb.Name = product.Name;
@@ -60,38 +62,70 @@ namespace API.Repositories
 
                 _context.ProductCategories.RemoveRange(productDb.ProductCategories);
 
-                foreach (var productCategory in product.ProductCategories)
+                if (product.ProductCategories != null && product.ProductCategories.Count > 0)
                 {
-                    var newProductCategory = new ProductCategory
+                    foreach (var productCategory in product.ProductCategories)
                     {
-                        ProductId = productDb.Id,
-                        CategoryId = productCategory.CategoryId
-                    };
-                    productDb.ProductCategories.Add(newProductCategory);
+                        var newProductCategory = new ProductCategory
+                        {
+                            ProductId = productDb.Id,
+                            CategoryId = productCategory.CategoryId
+                        };
+                        productDb.ProductCategories.Add(newProductCategory);
+                    }
                 }
-                _context.Products.Update(productDb);
+                _context.Variants.RemoveRange(productDb.Variants);
+
+                if (product.Variants != null && product.Variants.Count > 0)
+                {
+                    foreach (var variant in product.Variants)
+                    {
+                        variant.ProductId = productDb.Id;
+                        _context.Variants.Add(variant);
+                    }
+                }
                 await _context.SaveChangesAsync();
             }
 
         }
         public void DeleteProduct(Product product)
         {
-            var productDb = _context.Products.FirstOrDefault(p => p.Id == product.Id);
+            var productDb = _context.Products
+            .Include(p => p.Variants)
+            .FirstOrDefault(p => p.Id == product.Id);
             if (productDb is not null)
             {
                 productDb.IsDelete = true;
+                if (product.Variants != null && product.Variants.Count > 0)
+                {
+                    foreach (var variant in product.Variants)
+                    {
+                        variant.ProductId = product.Id;
+                        _variantRepository.DeleteVariant(variant);
+                    }
+                }
                 _context.SaveChanges();
             }
         }
 
         public async Task<Product?> GetProductByIdAsync(int id)
         {
-            return await _context.Products.FindAsync(id);
+            var productDb = await _context.Products
+                .Include(p => p.Variants)
+                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
+            var variantDb = await _variantRepository.GetVariantByProductIdAsync(id);
+            productDb!.Variants = new List<Variant>();
+            return productDb;
         }
 
         public async Task<Product?> GetProductByName(string name)
         {
-            return await _context.Products.Where(p => !p.IsDelete && p.Name.ToLower() == name.ToLower()).FirstOrDefaultAsync();
+            var productDb = await _context.Products
+                .Include(p => p.Variants)
+                .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower() && !p.IsDelete);
+            var variantDb = await _variantRepository.GetVariantByProductIdAsync(productDb!.Id);
+            productDb!.Variants = new List<Variant>();
+            return productDb;
         }
         public async Task<bool> ProductExistsAsync(string name)
         {
@@ -100,24 +134,52 @@ namespace API.Repositories
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            return await _context.Products.Where(p => !p.IsDelete).ToListAsync();
+            var productDb = await _context.Products
+                .Include(p => p.Variants)
+                .Where(p => !p.IsDelete).ToListAsync();
+            var productIds = productDb.Select(p => p.Id);
+            var variants = await _variantRepository.GetAllByProductIdsAsync(productIds);
+
+            foreach (var product in productDb)
+            {
+                product.Variants = variants.Where(v => v.ProductId == product.Id).ToList();
+            }
+
+            return productDb;
         }
 
         public async Task<PageList<Product>> GetAllProductsAsync(ProductParams productParams)
         {
-            var query = _context.Products.Where(c => !c.IsDelete).OrderBy(c => c.Id).AsQueryable();
+            var query = _context.Products
+                .Where(p => !p.IsDelete)
+                .OrderBy(p => p.Id)
+                .AsQueryable();
+
             if (!string.IsNullOrEmpty(productParams.SearchString))
             {
-                query = query.Where(c => c.Name.ToLower().Contains(productParams.SearchString.ToLower())
-                    || c.Id.ToString() == productParams.SearchString);
+                query = query.Where(p => p.Name.ToLower().Contains(productParams.SearchString.ToLower())
+                    || p.Id.ToString() == productParams.SearchString);
             }
-
             var count = await query.CountAsync();
 
-            var items = await query.Skip((productParams.PageNumber - 1) * productParams.PageSize)
-                                   .Take(productParams.PageSize)
-                                   .ToListAsync();
-            return new PageList<Product>(items, count, productParams.PageNumber, productParams.PageSize);
+            var productIds = await query.Skip((productParams.PageNumber - 1) * productParams.PageSize)
+                                        .Take(productParams.PageSize)
+                                        .Select(p => p.Id)
+                                        .ToListAsync();
+
+            var products = await _context.Products
+                .Where(p => productIds.Contains(p.Id))
+                .Include(p => p.Variants) 
+                .ToListAsync();
+
+            var variants = await _variantRepository.GetAllByProductIdsAsync(productIds);
+
+            foreach (var product in products)
+            {
+                product.Variants = variants.Where(v => v.ProductId == product.Id).ToList();
+            }
+
+            return new PageList<Product>(products, count, productParams.PageNumber, productParams.PageSize);
 
         }
     }
