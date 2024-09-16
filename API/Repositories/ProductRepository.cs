@@ -1,6 +1,5 @@
 using API.Data;
 using API.Entities;
-using API.Helper;
 using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +9,11 @@ namespace API.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly StoreContext _context;
-        public ProductRepository(StoreContext context)
+        private readonly IVariantRepository _variantRepository;
+        public ProductRepository(StoreContext context, IVariantRepository variantRepository)
         {
             _context = context;
+            _variantRepository = variantRepository;
         }
         public async Task AddProduct(Product product)
         {
@@ -29,13 +30,21 @@ namespace API.Repositories
                     {
                         _context.ProductCategories.Add(new ProductCategory
                         {
-                            ProductId = product.Id, 
+                            ProductId = product.Id,
                             CategoryId = productCategory.CategoryId
                         });
                     }
                 }
-                await _context.SaveChangesAsync();
             }
+            if (product.Variants != null && product.Variants.Count > 0)
+            {
+                foreach (var variant in product.Variants)
+                {
+                    variant.ProductId = product.Id;
+                    _variantRepository.AddVariant(variant);
+                }
+            }
+            await _context.SaveChangesAsync();
         }
         public async Task UpdateProduct(Product product)
         {
@@ -109,7 +118,7 @@ namespace API.Repositories
                                    .Take(productParams.PageSize)
                                    .ToListAsync();
             return new PageList<Product>(items, count, productParams.PageNumber, productParams.PageSize);
-            
+
         }
     }
 }

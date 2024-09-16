@@ -1,7 +1,4 @@
-﻿
-
-using api.Interfaces;
-using API.Data;
+﻿using API.Data;
 using API.Interfaces;
 
 namespace API.Repositories

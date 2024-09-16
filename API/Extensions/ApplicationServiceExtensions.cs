@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using api.Interfaces;
 using API.Data;
 using API.Errors;
+using API.Helpers;
 using API.Interfaces;
-using API.Mapper;
 using API.Repositories;
 using API.Services;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,12 +19,17 @@ namespace API.Extensions
             {
                 opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
+            var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+            var cloudinaryAccount = new Account(
+                cloudinarySettings!.CloudName,
+                cloudinarySettings.ApiKey,
+                cloudinarySettings.ApiSecret
+            );
             
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddAutoMapper(typeof(MappingProfile).Assembly);
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>

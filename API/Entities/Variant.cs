@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using API.Data.Enum;
 
 namespace API.Entities
 {
@@ -7,7 +8,8 @@ namespace API.Entities
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-
+        public VariantStatus Status { get; set; } = VariantStatus.Draft;
+        public bool IsDelete { get; set; } = false;
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
@@ -22,7 +24,6 @@ namespace API.Entities
         
         [ForeignKey("ColorId")]
         public Color? Color { get; set; }
-        public int Status { get; set; }
-        public bool IsDelete { get; set; } = false;
+       
     }
 }

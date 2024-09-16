@@ -1,24 +1,19 @@
-using api.Interfaces;
 using API.Controllers;
 using API.DTOs;
 using API.Entities;
 using API.Helpers;
-using AutoMapper;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-
-
     public class CategoryController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         // GET api/category/GetAll
@@ -26,14 +21,24 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllCategoriesAsync()
         {
             var categories = await _unitOfWork.CategoryRepository.GetAllCategoriesAsync();
-            return Ok(categories);
+            if(categories == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+            var categoryDto = categories.Select(c => Category.toCategoryDto(c)).ToList();
+            return Ok(categoryDto);
         }
         // GET api/category/GetById
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetCategoriesById(int id)
         {
             var categories = await _unitOfWork.CategoryRepository.GetCategoriesById(id);
-            return Ok(categories);
+            if(categories == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+            var categoryDto = Category.toCategoryDto(categories);
+            return Ok(categoryDto);
         }
 
         [HttpGet("GetAllPaging")]
@@ -53,7 +58,7 @@ namespace api.Controllers
             {
                 return BadRequest("Danh mục với tên này đã tồn tại.");
             }
-            var category = _mapper.Map<Category>(categoryDto);  // Map Dto to Entity
+            var category = CategoryDto.toCategory(categoryDto);
             _unitOfWork.CategoryRepository.AddCategory(category);
 
             if (await _unitOfWork.Complete())
@@ -71,11 +76,13 @@ namespace api.Controllers
             {
                 return BadRequest("Danh mục với tên này đã tồn tại.");
             }
-            var category = _mapper.Map<Category>(categoryDto);
+            var category = CategoryDto.toCategory(categoryDto);
             _unitOfWork.CategoryRepository.UpdateCategory(category);
 
-            if (await _unitOfWork.Complete())
-                return NoContent();
+            if (await _unitOfWork.Complete()){
+                var updatedCategoryDto = Category.toCategoryDto(category);
+                return Ok(updatedCategoryDto);
+            }
 
             return Ok("Update Category successfully.");
         }
@@ -86,7 +93,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var category = _mapper.Map<Category>(categoryDto);
+            var category = CategoryDto.toCategory(categoryDto);
             _unitOfWork.CategoryRepository.DeleteCategory(category);
 
             if (await _unitOfWork.Complete())

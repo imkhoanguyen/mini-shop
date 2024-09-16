@@ -1,6 +1,4 @@
-using API.Interfaces;
-
-namespace api.Interfaces
+namespace API.Interfaces
 {
     public interface IUnitOfWork
     {
