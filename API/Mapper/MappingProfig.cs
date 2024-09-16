@@ -22,6 +22,8 @@ namespace API.Mapper
             CreateMap<ProductDto, Product>()
                 .ForMember(dest => dest.ProductCategories, 
                     opt => opt.MapFrom(src => src.CategoryIds.Select(catId => new ProductCategory { CategoryId = catId }).ToList()));
+            CreateMap<SizeDto, Size>()
+                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
         }
     }
 }

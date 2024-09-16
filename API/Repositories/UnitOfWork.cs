@@ -13,18 +13,25 @@ namespace API.Repositories
       
         private readonly IProductRepository _productRepository;
         
+        private readonly ISizeRepository _sizeRepository;
+        private readonly IColorRepository _colorRepository;
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
-             IProductRepository productRepository)
+             IProductRepository productRepository, ISizeRepository sizeRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
             _productRepository = productRepository;
+            _sizeRepository = sizeRepository;
         }
         public ICategoryRepository CategoryRepository => _categoryRepository;
       
         public IProductRepository ProductRepository => _productRepository;
 
-		public async Task<bool> Complete()
+        public ISizeRepository SizeRepository => _sizeRepository;
+
+        public IColorRepository colorRepository => _colorRepository;
+
+        public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;
         }

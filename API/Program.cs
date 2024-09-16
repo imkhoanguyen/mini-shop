@@ -1,4 +1,6 @@
+using API.Data;
 using API.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,10 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.SeedDataServices();
+builder.Services.AddDbContext<StoreContext>(opt =>
+{
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 var app = builder.Build();
 
@@ -24,5 +30,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthentication();
 app.MapControllers();
-
+app.Map("/", () => Results.Redirect("/swagger"));
 app.Run();
