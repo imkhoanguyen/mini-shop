@@ -17,7 +17,7 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
             var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
             var cloudinaryAccount = new Account(
