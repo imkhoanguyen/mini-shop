@@ -14,12 +14,12 @@ namespace API.Entities
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         public Product? Product { get; set; }
-        // public int SizeId { get; set; }
-        // [ForeignKey("SizeId")]
-        // public Size? Size { get; set; }
-        // public int ColorId { get; set; }
-        // [ForeignKey("ColorId")]
-        // public Color? Color { get; set; }
+        public int SizeId { get; set; }
+        [ForeignKey("SizeId")]
+        public Size? Size { get; set; }
+        public int ColorId { get; set; }
+        [ForeignKey("ColorId")]
+        public Color? Color { get; set; }
         public static VariantDto toVariantDto(Variant variant)
         {
             return new VariantDto
@@ -28,9 +28,8 @@ namespace API.Entities
                 Price = variant.Price,
                 PriceSell = variant.PriceSell,
                 Quantity = variant.Quantity,
-                // Status = variant.Status,
-                // Size = variant.Size?.Name,
-                // Color = variant.Color?.Name
+                SizeId = variant.SizeId,
+                ColorId = variant.ColorId
             };
         }
     }

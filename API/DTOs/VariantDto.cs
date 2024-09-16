@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using API.Entities;
 
 namespace API.DTOs
@@ -8,8 +9,11 @@ namespace API.DTOs
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        // public List<SizeDto> Sizes { get; set; } = new List<SizeDto>();
-        // public List<ColorDto> Colors { get; set; } = new List<ColorDto>();
+        [Required]
+        public int SizeId { get; set; }
+
+        [Required]
+        public int ColorId { get; set; }
         public static Variant toVariant(VariantDto variantDto)
         {
             return new Variant
@@ -18,8 +22,8 @@ namespace API.DTOs
                 Price = variantDto.Price,
                 PriceSell = variantDto.PriceSell,
                 Quantity = variantDto.Quantity,
-                // Sizes = variantDto.Sizes.Select(s => Size.toSizeDto(s)).ToList(),
-                // Colors = variantDto.Colors.Select(c => Color.toColorDto(c)).ToList()
+                SizeId = variantDto.SizeId,
+                ColorId = variantDto.ColorId
             };
         }
     }
@@ -28,8 +32,11 @@ namespace API.DTOs
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        // public List<SizeDto> Sizes { get; set; } = new List<SizeDto>();
-        // public List<ColorDto> Colors { get; set; } = new List<ColorDto>();
+        [Required]
+        public int SizeId { get; set; }
+
+        [Required]
+        public int ColorId { get; set; }
         public static Variant toVariant(VariantAddDto variantAddDto)
         {
             return new Variant
@@ -37,8 +44,8 @@ namespace API.DTOs
                 Price = variantAddDto.Price,
                 PriceSell = variantAddDto.PriceSell,
                 Quantity = variantAddDto.Quantity,
-                // Sizes = variantDto.Sizes.Select(s => Size.toSizeDto(s)).ToList(),
-                // Colors = variantDto.Colors.Select(c => Color.toColorDto(c)).ToList()
+                SizeId = variantAddDto.SizeId,
+                ColorId = variantAddDto.ColorId
             };
         }
     }

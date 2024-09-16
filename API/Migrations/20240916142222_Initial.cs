@@ -307,11 +307,11 @@ namespace API.Migrations
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     PriceSell = table.Column<decimal>(type: "numeric", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    IsDelete = table.Column<bool>(type: "boolean", nullable: false),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
                     SizeId = table.Column<int>(type: "integer", nullable: false),
-                    ColorId = table.Column<int>(type: "integer", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    IsDelete = table.Column<bool>(type: "boolean", nullable: false)
+                    ColorId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

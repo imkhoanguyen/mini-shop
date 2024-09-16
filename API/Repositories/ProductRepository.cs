@@ -36,14 +36,14 @@ namespace API.Repositories
                     }
                 }
             }
-            if (product.Variants != null && product.Variants.Count > 0)
-            {
-                foreach (var variant in product.Variants)
-                {
-                    variant.ProductId = product.Id;
-                    _variantRepository.AddVariant(variant);
-                }
-            }
+            // if (product.Variants != null && product.Variants.Count > 0)
+            // {
+            //     foreach (var variant in product.Variants)
+            //     {
+            //         variant.ProductId = product.Id;
+            //         _variantRepository.AddVariant(variant);
+            //     }
+            // }
             await _context.SaveChangesAsync();
         }
         public async Task UpdateProduct(Product product)
@@ -74,7 +74,7 @@ namespace API.Repositories
                         productDb.ProductCategories.Add(newProductCategory);
                     }
                 }
-                _context.Variants.RemoveRange(productDb.Variants);
+                _context.Variants.RemoveRange(productDb.Variants!);
 
                 if (product.Variants != null && product.Variants.Count > 0)
                 {

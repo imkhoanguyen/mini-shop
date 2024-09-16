@@ -14,11 +14,12 @@ namespace API.Entities
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; }
         public bool IsDelete { get; set; } = false;
+        public ICollection<Variant>? Variants { get; set; }
 
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Image> Images { get; set; } = new List<Image>();
         public List<Review> Reviews { get; set; } = new List<Review>();
-        public List<Variant> Variants { get; set; } = new List<Variant>();
+        
 
         public static ProductDto toProductDto(Product product)
         {

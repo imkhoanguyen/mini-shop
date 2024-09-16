@@ -28,6 +28,8 @@ namespace API.Extensions
             
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ISizeRepository, SizeRepository>();
+            services.AddScoped<IColorRepository, ColorRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IVariantRepository, VariantRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
