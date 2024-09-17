@@ -32,6 +32,7 @@ namespace API.Extensions
             services.AddScoped<IColorRepository, ColorRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IVariantRepository, VariantRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
