@@ -8,7 +8,7 @@ namespace API.Controllers
 {
     public class ColorController : BaseApiController
     {
-         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ColorController(IUnitOfWork unitOfWork)
         {
@@ -20,7 +20,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetAllcolorsAsync()
         {
             var colors = await _unitOfWork.colorRepository.GetAllColorsAsync();
-            if(colors == null)
+            if (colors == null)
             {
                 return NotFound("Không tìm thấy color nào.");
             }
@@ -32,7 +32,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetcolorsById(int id)
         {
             var colors = await _unitOfWork.colorRepository.GetColorsById(id);
-            if(colors == null)
+            if (colors == null)
             {
                 return NotFound("Không tìm thấy color nào.");
             }
@@ -44,7 +44,7 @@ namespace API.Controllers
         public async Task<ActionResult<IEnumerable<ColorDto>>> GetAllcolorsAsync([FromQuery] ColorParams colorParams)
         {
             var colors = await _unitOfWork.colorRepository.GetAllColorsAsync(colorParams);
-            if(colors == null)
+            if (colors == null)
             {
                 return NotFound("Không tìm thấy color nào.");
             }
@@ -66,8 +66,8 @@ namespace API.Controllers
             _unitOfWork.colorRepository.AddColor(color);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
-            return Ok("Add color successfully.");
+                return Ok("Add color successfully.");
+            return BadRequest("Add color failed.");
         }
 
         // PUT api/color/Update
@@ -84,9 +84,8 @@ namespace API.Controllers
             _unitOfWork.colorRepository.UpdateColor(color);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
-
-            return Ok("Update color successfully.");
+                return Ok("Update color successfully.");
+            return BadRequest("Update color failed.");
         }
 
         // DELETE api/color/Delete
@@ -99,9 +98,9 @@ namespace API.Controllers
             _unitOfWork.colorRepository.DeleteColor(color);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
+                return Ok("Delete color successfully.");
+            return BadRequest("Delete color failed.");
 
-            return Ok("Delete color successfully.");
         }
     }
 }
