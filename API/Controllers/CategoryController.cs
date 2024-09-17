@@ -55,7 +55,7 @@ namespace api.Controllers
 
         // POST api/category/Add
         [HttpPost("Add")]
-        public async Task<ActionResult> AddCategory(CategoryAddDto categoryAddDto)
+        public async Task<ActionResult> AddCategory([FromForm] CategoryAddDto categoryAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -67,13 +67,13 @@ namespace api.Controllers
             _unitOfWork.CategoryRepository.AddCategory(category);
  
             if (await _unitOfWork.Complete())
-                return NoContent();
-            return Ok("Add Category successfully.");
+                return Ok("Add Category successfully.");
+            return BadRequest("Add category failed.");
         }
 
         // PUT api/category/Update
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateCategory(CategoryDto categoryDto)
+        public async Task<IActionResult> UpdateCategory([FromForm]CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -85,11 +85,10 @@ namespace api.Controllers
             _unitOfWork.CategoryRepository.UpdateCategory(category);
 
             if (await _unitOfWork.Complete()){
-                var updatedCategoryDto = Category.toCategoryDto(category);
-                return Ok(updatedCategoryDto);
+                return Ok("Update Category successfully.");
             }
 
-            return Ok("Update Category successfully.");
+            return BadRequest("Update Category failed.");
         }
 
         // DELETE api/category/Delete
@@ -102,9 +101,9 @@ namespace api.Controllers
             _unitOfWork.CategoryRepository.DeleteCategory(category);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
+                return Ok("Delete Category successfully.");
 
-            return Ok("Delete Category successfully.");
+            return BadRequest("Delete Category failed.");
         }
     }
 }

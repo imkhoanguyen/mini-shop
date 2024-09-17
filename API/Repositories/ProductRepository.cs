@@ -36,15 +36,6 @@ namespace API.Repositories
                     }
                 }
             }
-            // if (product.Variants != null && product.Variants.Count > 0)
-            // {
-            //     foreach (var variant in product.Variants)
-            //     {
-            //         variant.ProductId = product.Id;
-            //         _variantRepository.AddVariant(variant);
-            //     }
-            // }
-            await _context.SaveChangesAsync();
         }
         public async Task UpdateProduct(Product product)
         {
@@ -84,7 +75,6 @@ namespace API.Repositories
                         _context.Variants.Add(variant);
                     }
                 }
-                await _context.SaveChangesAsync();
             }
 
         }
@@ -104,7 +94,6 @@ namespace API.Repositories
                         _variantRepository.DeleteVariant(variant);
                     }
                 }
-                _context.SaveChanges();
             }
         }
 
