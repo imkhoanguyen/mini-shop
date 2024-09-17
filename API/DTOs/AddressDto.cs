@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Entities;
 
 namespace API.DTOs
 {
@@ -14,5 +15,12 @@ namespace API.DTOs
         [Required]
         public string? AddressLine { get; set; }
 
+        public static Address toAddress(AddressDto addressDto)
+        {
+            return new Address
+            {
+                FullName = addressDto.FullName,
+            };
+        }
     }
 }

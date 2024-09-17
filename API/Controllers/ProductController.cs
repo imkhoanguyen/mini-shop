@@ -1,13 +1,13 @@
-using api.Interfaces;
 using API.Controllers;
+using API.DTOs;
 using API.Entities;
 using API.Helpers;
+using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-    [Authorize]
     public class ProductController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -17,51 +17,99 @@ namespace api.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET api/Product/GetAll
-        [HttpGet("GetAll")]
+        [HttpGet("GetProductById{id}")]
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
-            var categories = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-            return Ok(categories);
+            var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
+            if(product ==null) return NotFound("Không tìm thấy sản phẩm nào.");
+            var productDto = Product.toProductDto(product);
+            return Ok(productDto);
+        }
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllProductsAsync()
+        {
+            var product = await _unitOfWork.ProductRepository.GetAllProductsAsync();
+            if(product == null)
+            {
+                return NotFound("Không tìm thấy sản phẩm nào.");
+            }
+            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            return Ok(productDto);
+        }
+
+        [HttpGet("GetAllPaging")]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
+        {
+            var product = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
+            if(product == null)
+            {
+                return NotFound("Không tìm thấy sản phẩm nào.");
+            }
+            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            return Ok(productDto);
         }
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromBody] Product Product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            _unitOfWork.ProductRepository.AddProduct(Product);
 
-            return BadRequest("An error occurred while adding the Product.");
-        }
+            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productAddDto.Name!))
+            {
+                return BadRequest("Sản phẩm với tên này đã tồn tại.");
+            }
 
-        // PUT api/Product/Update
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateProduct([FromBody] Product Product)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            _unitOfWork.ProductRepository.UpdateProduct(Product);
+            var product = ProductAddDto.toProduct(productAddDto);
+
+            if (product.Id != 0)
+            {
+                return BadRequest("Product Id đã được gán trước khi thêm vào cơ sở dữ liệu.");
+            }
+
+            await _unitOfWork.ProductRepository.AddProduct(product);
 
             if (await _unitOfWork.Complete())
                 return NoContent();
 
-            return BadRequest("An error occurred while updating the Product.");
+            return Ok("Thêm sản phẩm thành công.");
+        }
+
+
+        // PUT api/Product/Update
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productDto.Name!))
+            {
+                return BadRequest("Sản phẩm với tên này đã tồn tại.");
+            }
+            var product = ProductDto.toProduct(productDto);
+
+            await _unitOfWork.ProductRepository.UpdateProduct(product);
+            if (await _unitOfWork.Complete())
+                return NoContent();
+
+            return Ok("Update Product successfully.");
+
         }
 
         // DELETE api/Product/Delete
         [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteProduct([FromBody] Product Product)
+        public async Task<IActionResult> DeleteProduct(ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            _unitOfWork.ProductRepository.DeleteProduct(Product);
+            var product = ProductDto.toProduct(productDto);
+            _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())
                 return NoContent();
 
-            return BadRequest("An error occurred while deleting the Product.");
+            return Ok("Delete Product successfully.");
         }
         
     }

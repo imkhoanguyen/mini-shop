@@ -1,23 +1,19 @@
-using api.Interfaces;
 using API.Controllers;
 using API.DTOs;
 using API.Entities;
-using AutoMapper;
+using API.Helpers;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
 {
-
-
     public class CategoryController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
 
-        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper)
+        public CategoryController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
         }
 
         // GET api/category/GetAll
@@ -25,22 +21,51 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllCategoriesAsync()
         {
             var categories = await _unitOfWork.CategoryRepository.GetAllCategoriesAsync();
-            return Ok(categories);
+            if(categories == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+            var categoryDto = categories.Select(c => Category.toCategoryDto(c)).ToList();
+            return Ok(categoryDto);
+        }
+        // GET api/category/GetById
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetCategoriesById(int id)
+        {
+            var categories = await _unitOfWork.CategoryRepository.GetCategoriesById(id);
+            if(categories == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+            var categoryDto = Category.toCategoryDto(categories);
+            return Ok(categoryDto);
+        }
+
+        [HttpGet("GetAllPaging")]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllCategoriesAsync([FromQuery] CategoryParams categoryParams)
+        {
+            var categories = await _unitOfWork.CategoryRepository.GetAllCategoriesAsync(categoryParams);
+            if(categories == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+            var categoriesDto = categories.Select(c => Category.toCategoryDto(c)).ToList();
+            return Ok(categoriesDto);
         }
 
         // POST api/category/Add
         [HttpPost("Add")]
-        public async Task<ActionResult<CategoryDto>> AddCategory(CategoryDto categoryDto)
+        public async Task<ActionResult> AddCategory(CategoryAddDto categoryAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (await _unitOfWork.CategoryRepository.CategoryExistsAsync(categoryDto.Name!))
+            if (await _unitOfWork.CategoryRepository.CategoryExistsAsync(categoryAddDto.Name!))
             {
                 return BadRequest("Danh mục với tên này đã tồn tại.");
             }
-            var category = _mapper.Map<Category>(categoryDto);  // Map Dto to Entity
+            var category = CategoryAddDto.toCategory(categoryAddDto);
             _unitOfWork.CategoryRepository.AddCategory(category);
-
+ 
             if (await _unitOfWork.Complete())
                 return NoContent();
             return Ok("Add Category successfully.");
@@ -56,11 +81,13 @@ namespace api.Controllers
             {
                 return BadRequest("Danh mục với tên này đã tồn tại.");
             }
-            var category = _mapper.Map<Category>(categoryDto);
+            var category = CategoryDto.toCategory(categoryDto);
             _unitOfWork.CategoryRepository.UpdateCategory(category);
 
-            if (await _unitOfWork.Complete())
-                return NoContent();
+            if (await _unitOfWork.Complete()){
+                var updatedCategoryDto = Category.toCategoryDto(category);
+                return Ok(updatedCategoryDto);
+            }
 
             return Ok("Update Category successfully.");
         }
@@ -71,7 +98,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var category = _mapper.Map<Category>(categoryDto);
+            var category = CategoryDto.toCategory(categoryDto);
             _unitOfWork.CategoryRepository.DeleteCategory(category);
 
             if (await _unitOfWork.Complete())

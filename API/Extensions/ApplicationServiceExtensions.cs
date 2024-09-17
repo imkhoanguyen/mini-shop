@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using api.Interfaces;
 using API.Data;
 using API.Errors;
+using API.Helpers;
 using API.Interfaces;
-using API.Mapper;
 using API.Repositories;
 using API.Services;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +17,22 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
+            var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+            var cloudinaryAccount = new Account(
+                cloudinarySettings!.CloudName,
+                cloudinarySettings.ApiKey,
+                cloudinarySettings.ApiSecret
+            );
             
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ISizeRepository, SizeRepository>();
+            services.AddScoped<IColorRepository, ColorRepository>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IVariantRepository, VariantRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddAutoMapper(typeof(MappingProfile).Assembly);
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
