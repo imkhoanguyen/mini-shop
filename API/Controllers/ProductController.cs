@@ -21,7 +21,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetProductByIdAsync(int id)
         {
             var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-            if(product ==null) return NotFound("Không tìm thấy sản phẩm nào.");
+            if (product == null) return NotFound("Không tìm thấy sản phẩm nào.");
             var productDto = Product.toProductDto(product);
             return Ok(productDto);
         }
@@ -29,7 +29,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllProductsAsync()
         {
             var product = await _unitOfWork.ProductRepository.GetAllProductsAsync();
-            if(product == null)
+            if (product == null)
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
@@ -41,7 +41,7 @@ namespace api.Controllers
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
         {
             var product = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
-            if(product == null)
+            if (product == null)
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
@@ -51,7 +51,7 @@ namespace api.Controllers
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
+        public async Task<IActionResult> AddProduct([FromForm] ProductAddDto productAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -71,11 +71,9 @@ namespace api.Controllers
             await _unitOfWork.ProductRepository.AddProduct(product);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
-
-            return Ok("Thêm sản phẩm thành công.");
+                return Ok("Add Product successfully.");
+            return BadRequest("Add Product failed.");
         }
-
 
         // PUT api/Product/Update
         [HttpPut("Update")]
@@ -91,10 +89,8 @@ namespace api.Controllers
 
             await _unitOfWork.ProductRepository.UpdateProduct(product);
             if (await _unitOfWork.Complete())
-                return NoContent();
-
-            return Ok("Update Product successfully.");
-
+                return Ok("Update Product successfully.");
+            return BadRequest("Update Product failed.");
         }
 
         // DELETE api/Product/Delete
@@ -107,9 +103,9 @@ namespace api.Controllers
             _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
+                return Ok("Delete Product successfully.");
+            return BadRequest("Delete Product failed.");
 
-            return Ok("Delete Product successfully.");
         }
         
     }

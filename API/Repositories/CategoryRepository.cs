@@ -16,7 +16,6 @@ namespace API.Repositories
         public void AddCategory(Category category)
         {
             _context.Categories.Add(category);
-            _context.SaveChanges();
 
         }
         public void UpdateCategory(Category category)
@@ -26,8 +25,6 @@ namespace API.Repositories
             {
                 categoryDb.Name = category.Name;
                 categoryDb.Updated = DateTime.UtcNow;
-
-                _context.SaveChanges();
             }
         }
         public void DeleteCategory(Category category)
@@ -36,7 +33,6 @@ namespace API.Repositories
             if (categoryDb is not null)
             {
                 categoryDb.IsDelete = true;
-                _context.SaveChanges();
             }
         }
 

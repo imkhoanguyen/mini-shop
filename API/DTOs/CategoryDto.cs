@@ -11,6 +11,7 @@ namespace API.DTOs
 
         public static Category toCategory(CategoryDto categoryDto){
             return new Category{
+                Id = categoryDto.Id,
                 Name = categoryDto.Name,
                 ParentId = categoryDto.ParentId
             };    

@@ -68,8 +68,9 @@ namespace API.Controllers
             _unitOfWork.SizeRepository.AddSize(size);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
-            return Ok("Add size successfully.");
+                return Ok("Add size successfully.");
+            return BadRequest("Add size failed.");
+
         }
 
         // PUT api/size/Update
@@ -86,9 +87,9 @@ namespace API.Controllers
             _unitOfWork.SizeRepository.UpdateSize(size);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
+                return Ok("Update size successfully.");
+            return BadRequest("Update size failed.");
 
-            return Ok("Update size successfully.");
         }
 
         // DELETE api/size/Delete
@@ -101,9 +102,9 @@ namespace API.Controllers
             _unitOfWork.SizeRepository.DeleteSize(size);
 
             if (await _unitOfWork.Complete())
-                return NoContent();
+                return Ok("Delete size successfully.");
+            return BadRequest("Delete size failed.");
 
-            return Ok("Delete size successfully.");
         }
     }
 }
