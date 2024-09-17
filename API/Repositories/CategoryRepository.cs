@@ -24,13 +24,20 @@ namespace API.Repositories
         }
         public void UpdateCategory(Category category)
         {
-            _context.Categories.Update(category);
-            _context.SaveChanges();
+            var categoryDb = _context.Categories.FirstOrDefault(c => c.Id == category.Id);
+            if (categoryDb is not null)
+            {
+                categoryDb.Name = category.Name;
+                categoryDb.Updated = DateTime.UtcNow;
+            
+                _context.SaveChanges();
+            }
         }
         public void DeleteCategory(Category category)
         {
             var categoryDb = _context.Categories.FirstOrDefault(c => c.Id == category.Id);
-            if(categoryDb is not null){
+            if (categoryDb is not null)
+            {
                 categoryDb.IsDelete = true;
                 _context.SaveChanges();
             }
@@ -41,11 +48,15 @@ namespace API.Repositories
             return await _context.Categories.FindAsync(id);
         }
 
-         public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
         {
             return await _context.Categories.Where(c => !c.IsDelete).ToListAsync();
 
         }
-      
+
+        public async Task<bool> CategoryExistsAsync(string name)
+        {
+            return await _context.Categories.AnyAsync(c => c.Name == name);
+        }
     }
 }

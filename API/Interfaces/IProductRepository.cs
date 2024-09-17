@@ -9,6 +9,8 @@ namespace API.Interfaces
         void DeleteProduct(Product product);
         Task<Product?> GetProductByIdAsync(int id);
         Task<Product?> GetProductByName(string name);
+        
+
 
     }
 }

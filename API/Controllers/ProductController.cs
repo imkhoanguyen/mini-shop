@@ -63,5 +63,6 @@ namespace api.Controllers
 
             return BadRequest("An error occurred while deleting the Product.");
         }
+        
     }
 }

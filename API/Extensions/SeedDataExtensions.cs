@@ -2,7 +2,7 @@ using api.Data;
 using api.Data.Seed;
 using API.Data;
 
-namespace api.Extensions
+namespace API.Extensions
 {
     public static class SeedDataExtensions
     {
