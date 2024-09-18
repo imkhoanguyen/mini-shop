@@ -16,7 +16,6 @@ namespace API.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-#pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
@@ -43,28 +42,6 @@ namespace API.Migrations
                         .IsUnique();
 
                     b.ToTable("Address");
-                });
-
-            modelBuilder.Entity("API.Entities.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppUserId")
-                        .IsUnique();
-
-                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("API.Entities.AppUser", b =>
@@ -160,7 +137,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("API.Entities.Color", b =>
@@ -184,7 +161,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colors", (string)null);
+                    b.ToTable("Colors");
                 });
 
             modelBuilder.Entity("API.Entities.Image", b =>
@@ -217,7 +194,7 @@ namespace API.Migrations
 
                     b.HasIndex("ReviewId");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("API.Entities.Product", b =>
@@ -241,6 +218,12 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("ShippingMethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ShoppingCartId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -249,7 +232,11 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.HasIndex("ShippingMethodId");
+
+                    b.HasIndex("ShoppingCartId");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("API.Entities.ProductCategory", b =>
@@ -265,7 +252,6 @@ namespace API.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("ProductCategories");
-                    b.ToTable("ProductCategory", (string)null);
                 });
 
             modelBuilder.Entity("API.Entities.Review", b =>
@@ -305,7 +291,58 @@ namespace API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Review", (string)null);
+                    b.ToTable("Review");
+                });
+
+            modelBuilder.Entity("API.Entities.ShippingMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("Cost")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EstimatedDeliveryTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShippingMethod");
+                });
+
+            modelBuilder.Entity("API.Entities.ShoppingCart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("shoppingCarts");
                 });
 
             modelBuilder.Entity("API.Entities.Size", b =>
@@ -325,7 +362,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Sizes", (string)null);
+                    b.ToTable("Sizes");
                 });
 
             modelBuilder.Entity("API.Entities.Variant", b =>
@@ -385,11 +422,6 @@ namespace API.Migrations
                         .HasMaxLength(13)
                         .HasColumnType("character varying(13)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("character varying(13)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -405,10 +437,6 @@ namespace API.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityRole");
-
-                    b.UseTphMappingStrategy();
 
                     b.HasDiscriminator().HasValue("IdentityRole");
 
@@ -540,25 +568,6 @@ namespace API.Migrations
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("API.Entities.AppRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.HasDiscriminator().HasValue("AppRole");
-                });
-
-            modelBuilder.Entity("API.Entities.Address", b =>
-                {
-                    b.HasOne("API.Entities.AppUser", "AppUser")
-                        .WithOne("Address")
-                        .HasForeignKey("API.Entities.Address", "AppUserId");
-
-                    b.Navigation("AppUser");
-                });
-
             modelBuilder.Entity("API.Entities.Image", b =>
                 {
                     b.HasOne("API.Entities.Product", "Product")
@@ -576,6 +585,21 @@ namespace API.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Review");
+                });
+
+            modelBuilder.Entity("API.Entities.Product", b =>
+                {
+                    b.HasOne("API.Entities.ShippingMethod", "ShippingMethod")
+                        .WithMany()
+                        .HasForeignKey("ShippingMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.ShoppingCart", null)
+                        .WithMany("Product")
+                        .HasForeignKey("ShoppingCartId");
+
+                    b.Navigation("ShippingMethod");
                 });
 
             modelBuilder.Entity("API.Entities.ProductCategory", b =>
@@ -699,11 +723,6 @@ namespace API.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("API.Entities.AppUser", b =>
-                {
-                    b.Navigation("Address");
-                });
-
             modelBuilder.Entity("API.Entities.Category", b =>
                 {
                     b.Navigation("ProductCategories");
@@ -718,6 +737,11 @@ namespace API.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("API.Entities.ShoppingCart", b =>
+                {
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

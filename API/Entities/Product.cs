@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using API.Data.Enum;
 using API.DTOs;
 using Microsoft.VisualBasic;
@@ -8,14 +9,18 @@ namespace API.Entities
     public class Product : BaseEntity
     {
         [Required]
+        
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
+         [Required]
+         public int ShippingMethodId{get;set;}
         public ProductStatus Status { get; set; } = ProductStatus.Draft;
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; }
         public bool IsDelete { get; set; } = false;
         public ICollection<Variant>? Variants { get; set; }
-
+        [ForeignKey("ShippingMethodId")]
+        public ShippingMethod? ShippingMethod{get;set;}
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Image> Images { get; set; } = new List<Image>();
         public List<Review> Reviews { get; set; } = new List<Review>();

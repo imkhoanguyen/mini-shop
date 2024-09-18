@@ -11,6 +11,7 @@ namespace API.Entities
         public DateTime EstimatedDeliveryTime{get;set;}
         public DateTime Created{get;set;}=DateTime.UtcNow;
         public DateTime Updated{get;set;}
+
     }
 
 
