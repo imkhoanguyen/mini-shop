@@ -567,8 +567,7 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Entities.AppUser", "AppUser")
                         .WithMany("Images")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("AppUserId");
 
                     b.HasOne("API.Entities.Product", "Product")
                         .WithMany("Images")

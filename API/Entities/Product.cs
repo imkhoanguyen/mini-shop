@@ -14,7 +14,7 @@ namespace API.Entities
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; }
         public bool IsDelete { get; set; } = false;
-        public ICollection<Variant>? Variants { get; set; }
+        public ICollection<Variant> Variants { get; set; } = new List<Variant>();
 
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Image> Images { get; set; } = new List<Image>();

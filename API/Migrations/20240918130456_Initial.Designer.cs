@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20240918033749_Initial")]
+    [Migration("20240918130456_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -570,8 +570,7 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Entities.AppUser", "AppUser")
                         .WithMany("Images")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("AppUserId");
 
                     b.HasOne("API.Entities.Product", "Product")
                         .WithMany("Images")

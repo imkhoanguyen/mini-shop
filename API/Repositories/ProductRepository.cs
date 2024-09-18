@@ -16,7 +16,7 @@ namespace API.Repositories
             _variantRepository = variantRepository;
         }
         public async Task AddProduct(Product product)
-        { 
+        {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -34,6 +34,15 @@ namespace API.Repositories
                             CategoryId = productCategory.CategoryId
                         });
                     }
+                }
+            }
+            if (product.Variants != null && product.Variants.Count > 0)
+            {
+                foreach (var variant in product.Variants)
+                {
+                    // Thiết lập ProductId cho mỗi Variant
+                    variant.ProductId = product.Id;
+                    _context.Entry(variant).State = EntityState.Added;
                 }
             }
         }
@@ -158,7 +167,7 @@ namespace API.Repositories
 
             var products = await _context.Products
                 .Where(p => productIds.Contains(p.Id))
-                .Include(p => p.Variants) 
+                .Include(p => p.Variants)
                 .ToListAsync();
 
             var variants = await _variantRepository.GetAllByProductIdsAsync(productIds);

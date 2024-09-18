@@ -15,7 +15,6 @@ namespace API.Entities
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        [ValidateNever]
         public Product? Product { get; set; }
 
         public string? AppUserId { get; set; }

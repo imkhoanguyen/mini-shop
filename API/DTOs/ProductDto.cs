@@ -14,9 +14,11 @@ namespace API.DTOs
         public List<VariantDto> Variants { get; set; } = new List<VariantDto>();
         public IFormFileCollection Images { get; set; }
 
-        public static  async Task<Product> toProduct(ProductDto productDto, IImageService imageService){
-             var imageUrls = new List<Image>();
-            foreach(var file in productDto.Images){
+        public static async Task<Product> toProduct(ProductDto productDto, IImageService imageService)
+        {
+            var imageUrls = new List<Image>();
+            foreach (var file in productDto.Images)
+            {
                 var uploadResult = await imageService.UploadImageAsync(file);
                 imageUrls.Add(new Image
                 {
@@ -24,14 +26,15 @@ namespace API.DTOs
                     PublicId = uploadResult.PublicId
                 });
             }
-            return new Product{
+            return new Product
+            {
                 Id = productDto.Id,
                 Name = productDto.Name,
                 Description = productDto.Description,
-                ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory{CategoryId = c}).ToList(),
+                ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
                 Variants = productDto.Variants.Select(v => VariantDto.toVariant(v)).ToList(),
                 Images = imageUrls
-            };    
+            };
         }
     }
     public class ProductAddDto
@@ -45,25 +48,34 @@ namespace API.DTOs
         public IFormFileCollection? Images { get; set; }
 
 
-        public static async Task<Product> toProduct(ProductAddDto productAddDto, IImageService imageService){
+        public static async Task<Product> toProduct(ProductAddDto productAddDto, IImageService imageService)
+        {
             var imageUrls = new List<Image>();
-            foreach(var file in productAddDto.Images){
-                var uploadResult = await imageService.UploadImageAsync(file);
-                imageUrls.Add(new Image
+            if (productAddDto.Images != null)
+            {
+                foreach (var file in productAddDto.Images)
                 {
-                    Url = uploadResult.Url.ToString(),
-                    PublicId = uploadResult.PublicId
-                });
+                    var uploadResult = await imageService.UploadImageAsync(file);
+                    imageUrls.Add(new Image
+                    {
+                        Url = uploadResult.Url.ToString(),
+                        PublicId = uploadResult.PublicId
+                    });
+                }
             }
-            
-            return new Product{
+
+            var product = new Product
+            {
                 Name = productAddDto.Name,
                 Description = productAddDto.Description,
-                ProductCategories = productAddDto.CategoryIds.Select(c => new ProductCategory{CategoryId = c}).ToList(),
+                ProductCategories = productAddDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
                 Variants = productAddDto.Variants.Select(v => VariantAddDto.toVariant(v)).ToList(),
                 Images = imageUrls
-            };    
+            };
+
+            return product;
         }
+
     }
-    
+
 }
