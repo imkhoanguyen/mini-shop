@@ -36,15 +36,6 @@ namespace API.Repositories
                     }
                 }
             }
-            if (product.Variants != null && product.Variants.Count > 0)
-            {
-                foreach (var variant in product.Variants)
-                {
-                    // Thiết lập ProductId cho mỗi Variant
-                    variant.ProductId = product.Id;
-                    _context.Entry(variant).State = EntityState.Added;
-                }
-            }
         }
         public async Task UpdateProduct(Product product)
         {

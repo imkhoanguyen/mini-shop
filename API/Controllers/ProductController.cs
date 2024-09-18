@@ -53,7 +53,7 @@ namespace api.Controllers
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromForm] ProductAddDto productAddDto)
+        public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

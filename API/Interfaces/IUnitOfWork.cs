@@ -5,7 +5,9 @@ namespace API.Interfaces
         ICategoryRepository CategoryRepository { get; }
         IProductRepository ProductRepository { get; }
         ISizeRepository SizeRepository { get; }
-        IColorRepository colorRepository{ get; }
+        IColorRepository ColorRepository{ get; }
+        IVariantRepository VariantRepository { get; }
+        IMessageRepository MessageRepository { get; }
 
         Task<bool> Complete();
     }
