@@ -19,13 +19,18 @@ namespace API.Extensions
             {
                 opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
-            var cloudinaryAccount = new Account(
-                cloudinarySettings!.CloudName,
-                cloudinarySettings.ApiKey,
-                cloudinarySettings.ApiSecret
+            services.AddSingleton(c =>
+                {
+                    var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+                    return new Cloudinary(new Account(
+                        cloudinarySettings!.CloudName,
+                        cloudinarySettings.ApiKey,
+                        cloudinarySettings.ApiSecret
+                    ));
+                }
             );
-            
+
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISizeRepository, SizeRepository>();
@@ -33,6 +38,8 @@ namespace API.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IVariantRepository, VariantRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -54,7 +61,7 @@ namespace API.Extensions
 
             services.AddCors(opt =>
             {
-                opt.AddPolicy("CorsPolicy", policy => 
+                opt.AddPolicy("CorsPolicy", policy =>
                 {
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
                 });

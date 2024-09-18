@@ -29,7 +29,9 @@ namespace API.Entities
                 Name = product.Name,
                 Description = product.Description,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
-                Variants = product.Variants.Select(v => Variant.toVariantDto(v)).ToList()
+                Variants = product.Variants?.Select(v => Variant.toVariantDto(v)).ToList() ?? new List<VariantDto>(),
+                //Images = product.Images.Select(i => Image.toImageDto(i)).ToList()
+               
             };
         }
     }

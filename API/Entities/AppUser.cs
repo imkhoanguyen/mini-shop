@@ -10,7 +10,7 @@ namespace API.Entities
         public DateTime Updated { get; set; }
         public Address? Address { get; set; }
         public List<Image> Images { get; set; } = new();
-        public List<Message> MessageSent { get; set; }
-        public List<Message> MessageReceived { get; set; }
+        public List<Message> MessageSent { get; set; } = new();
+        public List<Message> MessageReceived { get; set; } = new();
     }
 }

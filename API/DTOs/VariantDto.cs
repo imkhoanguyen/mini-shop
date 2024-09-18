@@ -15,7 +15,7 @@ namespace API.DTOs
 
         [Required]
         public int ColorId { get; set; }
-        public static Variant toVariant([FromForm]VariantDto variantDto)
+        public static Variant toVariant(VariantDto variantDto)
         {
             return new Variant
             {
@@ -38,7 +38,7 @@ namespace API.DTOs
 
         [Required]
         public int ColorId { get; set; }
-        public static Variant toVariant([FromForm]VariantAddDto variantAddDto)
+        public static Variant toVariant(VariantAddDto variantAddDto)
         {
             return new Variant
             {

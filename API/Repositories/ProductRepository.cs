@@ -16,7 +16,7 @@ namespace API.Repositories
             _variantRepository = variantRepository;
         }
         public async Task AddProduct(Product product)
-        {
+        { 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 

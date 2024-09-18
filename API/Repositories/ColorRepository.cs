@@ -17,7 +17,6 @@ namespace API.Repositories
         public void AddColor(Color color)
         {
             _context.Colors.Add(color);
-            _context.SaveChanges();
         }
 
         public void DeleteColor(Color color)
@@ -26,8 +25,6 @@ namespace API.Repositories
             if (colorDb is not null)
             {
                 colorDb.IsDelete = true;
-
-                _context.SaveChanges();
             }
         }
 
@@ -64,8 +61,6 @@ namespace API.Repositories
             if (colorDb is not null)
             {
                 colorDb.Name = color.Name;
-
-                _context.SaveChanges();
             }
         }
 

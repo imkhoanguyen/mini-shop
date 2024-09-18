@@ -17,7 +17,6 @@ namespace API.Repositories
         public void AddSize(Size size)
         {
             _context.Sizes.Add(size);
-            _context.SaveChanges();
         }
 
         public void DeleteSize(Size size)
@@ -26,8 +25,6 @@ namespace API.Repositories
             if (sizeDb is not null)
             {
                 sizeDb.IsDelete = true;
-
-                _context.SaveChanges();
             }
         }
 
@@ -69,8 +66,6 @@ namespace API.Repositories
             if (sizeDb is not null)
             {
                 sizeDb.Name = size.Name;
-
-                _context.SaveChanges();
             }
         }
 
