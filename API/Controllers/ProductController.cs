@@ -11,10 +11,12 @@ namespace api.Controllers
     public class ProductController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IImageService _imageService;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IImageService imageService)
         {
             _unitOfWork = unitOfWork;
+            _imageService = imageService;
         }
 
         [HttpGet("GetProductById{id}")]
@@ -61,13 +63,12 @@ namespace api.Controllers
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
 
-            var product = ProductAddDto.toProduct(productAddDto);
+            var product = await ProductAddDto.toProduct(productAddDto, _imageService);
 
             if (product.Id != 0)
             {
                 return BadRequest("Product Id đã được gán trước khi thêm vào cơ sở dữ liệu.");
             }
-
             await _unitOfWork.ProductRepository.AddProduct(product);
 
             if (await _unitOfWork.Complete())
@@ -85,7 +86,7 @@ namespace api.Controllers
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
-            var product = ProductDto.toProduct(productDto);
+            var product = await ProductDto.toProduct(productDto, _imageService);
 
             await _unitOfWork.ProductRepository.UpdateProduct(product);
             if (await _unitOfWork.Complete())
@@ -99,7 +100,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var product = ProductDto.toProduct(productDto);
+            var product = await ProductDto.toProduct(productDto, _imageService);
             _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())

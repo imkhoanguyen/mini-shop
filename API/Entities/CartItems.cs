@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Entities
 {
-    public class CartItems
+    public class CartItems : BaseEntity
     {
         [Required]
         public int ProductId {get;set;}

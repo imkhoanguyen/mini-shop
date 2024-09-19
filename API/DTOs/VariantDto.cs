@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using API.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API.DTOs
 {

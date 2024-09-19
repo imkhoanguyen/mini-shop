@@ -14,97 +14,105 @@ namespace API.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IUnitOfWork _unitOfWork;
         public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
-            ITokenService tokenService)
+            ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _tokenService = tokenService;
             _signInManager = signInManager;
             _userManager = userManager;
+            _unitOfWork = unitOfWork;
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<UserDto>> GetCurentUser()
+        public async Task<ActionResult<UserDto>> GetCurrentUser()
         {
             var user = await _userManager.FindByEmailFromClaimsPrincipal(User);
 
+            if (user == null)
+            {
+                return NotFound(new ApiResponse(404));
+            }
+
             return new UserDto
             {
+                UserName = user.UserName,
                 Email = user.Email,
                 Token = _tokenService.CreateToken(user)
             };
         }
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login([FromForm]LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            AppUser? user;
+            if (loginDto.UserNameOrEmail.Contains('@'))
+            {
+                user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
+            }
+            else
+            {
+                user = await _userManager.FindByNameAsync(loginDto.UserNameOrEmail);
+            }
 
             if (user == null) return Unauthorized(new ApiResponse(401));
 
-            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            var result = await _signInManager.PasswordSignInAsync(
+                user.UserName, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
 
-            if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
-
-            return new UserDto
+            if (result.IsLockedOut)
             {
-                Email = user.Email,
-                Token = _tokenService.CreateToken(user),
-            };
+                return Unauthorized("User account is locked out.");
+            }
+
+            if (result.Succeeded)
+            {
+                return new UserDto
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Token = _tokenService.CreateToken(user),
+                };
+            }
+
+            return Unauthorized(new ApiResponse(401));
         }
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (CheckEmailExistsAsync(registerDto.Email).Result.Value)
             {
-                return new BadRequestObjectResult(new ApiValidationErrorResponse 
-                    { Errors = new[] { "Email address is in use" } });
+                return new BadRequestObjectResult(new ApiValidationErrorResponse
+                { Errors = new[] { "Email address is in use" } });
             }
 
             var user = new AppUser
             {
                 Email = registerDto.Email,
-                UserName = registerDto.Email
+                UserName = registerDto.UserName
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
-
-            if (!result.Succeeded) return BadRequest(new ApiResponse(400));
+           if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
 
             return new UserDto
             {
+                UserName = user.UserName,
                 Email = user.Email,
                 Token = _tokenService.CreateToken(user),
-                
             };
         }
+
         [HttpGet("emailexists")]
         public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
         {
             return await _userManager.FindByEmailAsync(email) != null;
         }
-         [Authorize]
-        [HttpGet("address")]
-        public async Task<ActionResult<AddressDto>> GetUserAddress()
-        {
-            var user = await _userManager.FindUserByClaimsPrincipleWithAddress(User);
-            var addressDto = Address.toAddressDto(user.Address!);
-            return addressDto;
-        }
 
-        [Authorize]
-        [HttpPut("address")]
-        public async Task<ActionResult<AddressDto>> UpdateUserAddress(AddressDto addressDto)
-        {
-            var user = await _userManager.FindUserByClaimsPrincipleWithAddress(User);
-
-            user.Address = AddressDto.toAddress(addressDto);
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (result.Succeeded) return Ok(user.Address);
-
-            return BadRequest("Problem updating the user");
-        }
-        
     }
 }

@@ -33,7 +33,13 @@ namespace API.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
+                    b.Property<string>("District")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Street")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -55,6 +61,12 @@ namespace API.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -95,6 +107,9 @@ namespace API.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime>("Updated")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -109,6 +124,35 @@ namespace API.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("API.Entities.CartItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShoppingCartId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ShoppingCartId");
+
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("API.Entities.Category", b =>
@@ -172,6 +216,12 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsMain")
                         .HasColumnType("boolean");
 
@@ -181,20 +231,153 @@ namespace API.Migrations
                     b.Property<string>("PublicId")
                         .HasColumnType("text");
 
-                    b.Property<int>("ReviewId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AppUserId");
+
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("ReviewId");
-
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("API.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateRead")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("MessageSend")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RecipientId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RecipientUserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SenderId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SenderUserName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("API.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ShippingMethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("order_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("reciever_name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("shipping_fee")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("total_price")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime>("updated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShippingMethodId");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("API.Entities.OrderItems", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("colorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("orderId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("productId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("productName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("sizeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("subtotal")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("API.Entities.Product", b =>
@@ -218,12 +401,6 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ShippingMethodId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ShoppingCartId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -231,10 +408,6 @@ namespace API.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ShippingMethodId");
-
-                    b.HasIndex("ShoppingCartId");
 
                     b.ToTable("Products");
                 });
@@ -320,7 +493,7 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ShippingMethod");
+                    b.ToTable("ShippingMethods");
                 });
 
             modelBuilder.Entity("API.Entities.ShoppingCart", b =>
@@ -337,12 +510,9 @@ namespace API.Migrations
                     b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.ToTable("shoppingCarts");
+                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("API.Entities.Size", b =>
@@ -568,38 +738,84 @@ namespace API.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("API.Entities.CartItems", b =>
+                {
+                    b.HasOne("API.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.ShoppingCart", "ShoppingCart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ShoppingCartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ShoppingCart");
+                });
+
             modelBuilder.Entity("API.Entities.Image", b =>
                 {
+                    b.HasOne("API.Entities.AppUser", "AppUser")
+                        .WithMany("Images")
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("API.Entities.Product", "Product")
                         .WithMany("Images")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.Review", "Review")
-                        .WithMany()
-                        .HasForeignKey("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("AppUser");
 
                     b.Navigation("Product");
-
-                    b.Navigation("Review");
                 });
 
-            modelBuilder.Entity("API.Entities.Product", b =>
+            modelBuilder.Entity("API.Entities.Message", b =>
+                {
+                    b.HasOne("API.Entities.AppUser", "Recipient")
+                        .WithMany("MessageReceived")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("API.Entities.AppUser", "Sender")
+                        .WithMany("MessageSent")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("API.Entities.Order", b =>
                 {
                     b.HasOne("API.Entities.ShippingMethod", "ShippingMethod")
-                        .WithMany()
+                        .WithMany("Orders")
                         .HasForeignKey("ShippingMethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("API.Entities.ShoppingCart", null)
-                        .WithMany("Product")
-                        .HasForeignKey("ShoppingCartId");
-
                     b.Navigation("ShippingMethod");
+                });
+
+            modelBuilder.Entity("API.Entities.OrderItems", b =>
+                {
+                    b.HasOne("API.Entities.Order", "order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("API.Entities.Product", "product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("order");
+
+                    b.Navigation("product");
                 });
 
             modelBuilder.Entity("API.Entities.ProductCategory", b =>
@@ -721,11 +937,22 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.AppUser", b =>
                 {
                     b.Navigation("Address");
+
+                    b.Navigation("Images");
+
+                    b.Navigation("MessageReceived");
+
+                    b.Navigation("MessageSent");
                 });
 
             modelBuilder.Entity("API.Entities.Category", b =>
                 {
                     b.Navigation("ProductCategories");
+                });
+
+            modelBuilder.Entity("API.Entities.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("API.Entities.Product", b =>
@@ -739,9 +966,14 @@ namespace API.Migrations
                     b.Navigation("Variants");
                 });
 
+            modelBuilder.Entity("API.Entities.ShippingMethod", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("API.Entities.ShoppingCart", b =>
                 {
-                    b.Navigation("Product");
+                    b.Navigation("CartItems");
                 });
 #pragma warning restore 612, 618
         }
