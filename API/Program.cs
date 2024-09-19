@@ -1,6 +1,4 @@
 using api.Data.Seed;
-using api.Extensions;
-using api.Interfaces;
 using API.Data;
 using API.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -13,26 +11,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
-builder.Services.AddAuthentication();
-builder.Services.AddDbContext<StoreContext>(opt =>
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-});
-builder.Services.AddAuthentication();
-builder.Services.AddIdentityApiEndpoints<AppUser>()
-    .AddEntityFrameworkStores<StoreContext>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddIdentityCore<AppUser>(options =>
-{
-    options.Password.RequireNonAlphanumeric = false;
-})
-    .AddRoles<AppRole>()
-    .AddRoleManager<RoleManager<AppRole>>()
-    .AddEntityFrameworkStores<StoreContext>();
 
 var app = builder.Build();
 
