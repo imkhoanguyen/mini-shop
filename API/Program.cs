@@ -2,21 +2,18 @@ using api.Data.Seed;
 using api.Extensions;
 using api.Interfaces;
 using API.Data;
-using API.Entities;
-using API.Interfaces;
-using API.Repositories;
-using Microsoft.AspNetCore.Identity;
+using API.Extensions;
 using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddAuthentication();
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -64,4 +61,5 @@ catch (Exception ex)
     Console.WriteLine(ex.ToString());
     throw;
 }
+app.Map("/", () => Results.Redirect("/swagger"));
 app.Run();
