@@ -19,7 +19,7 @@ namespace API.Entities
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Image> Images { get; set; } = new List<Image>();
         public List<Review> Reviews { get; set; } = new List<Review>();
-        
+
 
         public static ProductDto toProductDto(Product product)
         {
@@ -29,9 +29,14 @@ namespace API.Entities
                 Name = product.Name,
                 Description = product.Description,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
-                Variants = product.Variants?.Select(v => Variant.toVariantDto(v)).ToList() ?? new List<VariantDto>(),
-                //Images = product.Images.Select(i => Image.toImageDto(i)).ToList()
-               
+                VariantId = product.Variants.FirstOrDefault()?.Id ?? 0,
+                Price = product.Variants.FirstOrDefault()?.Price ?? 0, // Lấy giá từ biến thể đầu tiên
+                PriceSell = product.Variants.FirstOrDefault()?.PriceSell ?? 0,
+                Quantity = product.Variants.FirstOrDefault()?.Quantity ?? 0,
+                SizeId = product.Variants.FirstOrDefault()?.SizeId ?? 0,
+                ColorId = product.Variants.FirstOrDefault()?.ColorId ?? 0,
+                // Trả về danh sách URL của hình ảnh
+                ImageUrls = product.Images.Select(i => new ImageDto {Id = i.Id, Url = i.Url }).ToList()
             };
         }
     }

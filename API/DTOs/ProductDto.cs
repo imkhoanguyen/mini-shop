@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using API.Entities;
 using API.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+using API.Entities;
 
 namespace API.DTOs
 {
@@ -11,29 +10,50 @@ namespace API.DTOs
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public List<int> CategoryIds { get; set; } = new List<int>();
-        public List<VariantDto> Variants { get; set; } = new List<VariantDto>();
-        public IFormFileCollection Images { get; set; }
+        public int VariantId { get; set; }
+        public decimal Price { get; set; }
+        public decimal PriceSell { get; set; }
+        public int Quantity { get; set; }
+        public int SizeId { get; set; }
+        public int ColorId { get; set; }
+        public List<ImageDto>? ImageUrls { get; set; } = new List<ImageDto>();
+        public List<int> ImageId { get; set; } = new List<int>();
+        public IFormFileCollection? Images { get; set; }
+
 
         public static async Task<Product> toProduct(ProductDto productDto, IImageService imageService)
         {
-            var imageUrls = new List<Image>();
-            foreach (var file in productDto.Images)
+            var images = new List<Image>();
+            if (productDto.Images != null)
             {
-                var uploadResult = await imageService.UploadImageAsync(file);
-                imageUrls.Add(new Image
+                foreach (var file in productDto.Images)
                 {
-                    Url = uploadResult.Url.ToString(),
-                    PublicId = uploadResult.PublicId
-                });
+                    var uploadResult = await imageService.UploadImageAsync(file);
+                    images.Add(new Image
+                    {
+                        Id = productDto.ImageId.FirstOrDefault(),
+                        Url = uploadResult.Url.ToString(),
+                        PublicId = uploadResult.PublicId
+                    });
+                }
             }
+            var variants = new Variant
+            {
+                Id = productDto.VariantId,
+                Price = productDto.Price,
+                PriceSell = productDto.PriceSell,
+                Quantity = productDto.Quantity,
+                SizeId = productDto.SizeId,
+                ColorId = productDto.ColorId
+            };
             return new Product
             {
                 Id = productDto.Id,
                 Name = productDto.Name,
                 Description = productDto.Description,
                 ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
-                Variants = productDto.Variants.Select(v => VariantDto.toVariant(v)).ToList(),
-                Images = imageUrls
+                Variants = new List<Variant> { variants },
+                Images = images
             };
         }
     }
@@ -43,8 +63,13 @@ namespace API.DTOs
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public List<int> CategoryIds { get; set; } = new List<int>();
-        [FromForm]
-        public List<VariantAddDto> Variants { get; set; } = new List<VariantAddDto>();
+        //Variant
+        public decimal Price { get; set; }
+        public decimal PriceSell { get; set; }
+        public int Quantity { get; set; }
+        public int SizeId { get; set; }
+        public int ColorId { get; set; }
+        //Image
         public IFormFileCollection? Images { get; set; }
 
 
@@ -63,17 +88,24 @@ namespace API.DTOs
                     });
                 }
             }
+            var variants = new Variant
+            {
+                Price = productAddDto.Price,
+                PriceSell = productAddDto.PriceSell,
+                Quantity = productAddDto.Quantity,
+                SizeId = productAddDto.SizeId,
+                ColorId = productAddDto.ColorId
+            };
 
-            var product = new Product
+            return new Product
             {
                 Name = productAddDto.Name,
                 Description = productAddDto.Description,
                 ProductCategories = productAddDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
-                Variants = productAddDto.Variants.Select(v => VariantAddDto.toVariant(v)).ToList(),
+                Variants = new List<Variant> { variants },
                 Images = imageUrls
             };
 
-            return product;
         }
 
     }

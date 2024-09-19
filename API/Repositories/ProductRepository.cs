@@ -42,6 +42,7 @@ namespace API.Repositories
             var productDb = await _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Variants)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == product.Id);
 
             if (productDb is not null)
@@ -75,6 +76,24 @@ namespace API.Repositories
                         _context.Variants.Add(variant);
                     }
                 }
+                var imageId = productDb.Images.FirstOrDefault()?.Id;
+                foreach (var image in product.Images)
+                {
+                    if (image.Id == 0)
+                    {
+                        image.ProductId = productDb.Id;
+                        _context.Images.Add(image);
+                    }
+                    else
+                    {
+                        var imageDb = await _context.Images.FindAsync(image.Id);
+                        if (imageDb is not null)
+                        {
+                            imageDb.Url = image.Url;
+                            imageDb.PublicId = image.PublicId;
+                        }
+                    }
+                }
             }
 
         }
@@ -101,9 +120,13 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.Variants)
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
-            var variantDb = await _variantRepository.GetVariantByProductIdAsync(id);
-            productDb!.Variants = new List<Variant>();
+            
+            if(productDb is not null){
+                var images = productDb.Images.Select(i => i.Url).ToList();
+            }
             return productDb;
         }
 

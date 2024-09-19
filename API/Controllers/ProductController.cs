@@ -5,6 +5,7 @@ using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace api.Controllers
 {
@@ -53,7 +54,7 @@ namespace api.Controllers
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
+        public async Task<IActionResult> AddProduct([FromForm] ProductAddDto productAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -62,7 +63,6 @@ namespace api.Controllers
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
-
             var product = await ProductAddDto.toProduct(productAddDto, _imageService);
 
             if (product.Id != 0)
@@ -78,7 +78,7 @@ namespace api.Controllers
 
         // PUT api/Product/Update
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto)
+        public async Task<IActionResult> UpdateProduct([FromForm] ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
