@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /API/Migrations/StoreContextModelSnapshot.cs
 /API/store.db
+/API/store.db-shm
+/API/store.db-wal
