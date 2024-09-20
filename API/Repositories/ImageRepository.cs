@@ -26,7 +26,7 @@ namespace API.Repositories
                 {
                     Id = x.Id,
                     Url = x.Url,
-                    UserName = x.AppUser.UserName,
+                    UserName = x.AppUser!.UserName,
                     ProductId = x.ProductId,
                     IsApproved = x.IsApproved
                 }).ToListAsync();

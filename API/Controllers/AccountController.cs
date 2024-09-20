@@ -48,7 +48,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             AppUser? user;
-            if (loginDto.UserNameOrEmail.Contains('@'))
+            if (loginDto.UserNameOrEmail!.Contains('@'))
             {
                 user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
             }
@@ -60,7 +60,7 @@ namespace API.Controllers
             if (user == null) return Unauthorized(new ApiResponse(401));
 
             var result = await _signInManager.PasswordSignInAsync(
-                user.UserName, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
+                user.UserName!, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
 
             if (result.IsLockedOut)
             {

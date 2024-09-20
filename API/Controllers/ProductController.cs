@@ -39,7 +39,14 @@ namespace api.Controllers
             var productDto = product.Select(p => Product.toProductDto(p)).ToList();
             return Ok(productDto);
         }
-
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetProductByName(string name)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductByName(name);
+            if (product == null) return NotFound("không tìm thấy sản phẩm với tên = " + name);
+            var productDto = Product.toProductDto(product);
+            return Ok(productDto);
+        }
         [HttpGet("GetAllPaging")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
         {
@@ -106,7 +113,7 @@ namespace api.Controllers
             if (await _unitOfWork.Complete())
                 return Ok("Delete Product successfully.");
             return BadRequest("Delete Product failed.");
-
+            
         }
     }
 }
