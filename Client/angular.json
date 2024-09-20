@@ -28,10 +28,11 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": [
-            "src/script.js"
+              "node_modules/bootstrap/dist/js/bootstrap.js"
             ]
           },
           "configurations": {
