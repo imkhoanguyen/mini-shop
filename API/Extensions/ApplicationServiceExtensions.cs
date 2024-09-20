@@ -36,13 +36,6 @@ namespace API.Extensions
                         config.GetSection("Authentication:Google");
                     option.ClientId = googleAuthNSection["ClientId"]!;
                     option.ClientSecret = googleAuthNSection["ClientSecret"]!;
-                })
-                .AddFacebook(option =>
-                {
-                    IConfigurationSection FBAuthNSection =
-                        config.GetSection("Authentication:FB");
-                    option.ClientId = FBAuthNSection["ClientId"]!;
-                    option.ClientSecret = FBAuthNSection["ClientSecret"]!;
                 });
 
 

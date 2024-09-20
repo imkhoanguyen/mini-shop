@@ -21,22 +21,29 @@ namespace API.Entities
         public List<Review> Reviews { get; set; } = new List<Review>();
 
 
-        public static ProductDto toProductDto(Product product)
+        public static ProductGetDto toProductGetDto(Product product)
         {
-            return new ProductDto
+            return new ProductGetDto
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
-                VariantId = product.Variants.FirstOrDefault()?.Id ?? 0,
-                Price = product.Variants.FirstOrDefault()?.Price ?? 0, // Lấy giá từ biến thể đầu tiên
-                PriceSell = product.Variants.FirstOrDefault()?.PriceSell ?? 0,
-                Quantity = product.Variants.FirstOrDefault()?.Quantity ?? 0,
-                SizeId = product.Variants.FirstOrDefault()?.SizeId ?? 0,
-                ColorId = product.Variants.FirstOrDefault()?.ColorId ?? 0,
-                // Trả về danh sách URL của hình ảnh
-                ImageUrls = product.Images.Select(i => new ImageDto {Id = i.Id, Url = i.Url }).ToList()
+                Variants = product.Variants.Select(v => new VariantDto
+                {
+                    Id = v.Id,
+                    Price = v.Price,
+                    PriceSell = v.PriceSell,
+                    Quantity = v.Quantity,
+                    SizeId = v.SizeId,
+                    ColorId = v.ColorId
+                }).ToList(),
+                ImageUrls = product.Images.Select(i => new ImageGetDto 
+                {
+                    Id = i.Id, 
+                    Url = i.Url, 
+                    IsMain = i.IsMain 
+                }).ToList()
             };
         }
     }

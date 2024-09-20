@@ -7,6 +7,7 @@ namespace API.Interfaces
         ISizeRepository SizeRepository { get; }
         IColorRepository ColorRepository{ get; }
         IVariantRepository VariantRepository { get; }
+        IImageRepository ImageRepository { get; }
         IMessageRepository MessageRepository { get; }
 
         Task<bool> Complete();

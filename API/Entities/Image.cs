@@ -22,8 +22,8 @@ namespace API.Entities
         [ForeignKey("AppUserId")]
         public AppUser? AppUser { get; set; }
 
-        public static ImageDto toImageDto(Image image){
-            return new ImageDto
+        public static ImageGetDto toImageDto(Image image){
+            return new ImageGetDto
             {
                 Id = image.Id,
                 Url = image.Url,

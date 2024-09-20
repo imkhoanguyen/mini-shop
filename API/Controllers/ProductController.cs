@@ -3,9 +3,7 @@ using API.DTOs;
 using API.Entities;
 using API.Helpers;
 using API.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace api.Controllers
 {
@@ -25,7 +23,7 @@ namespace api.Controllers
         {
             var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
             if (product == null) return NotFound("Không tìm thấy sản phẩm nào.");
-            var productDto = Product.toProductDto(product);
+            var productDto = Product.toProductGetDto(product);
             return Ok(productDto);
         }
         [HttpGet("GetAll")]
@@ -36,7 +34,7 @@ namespace api.Controllers
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
-            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
             return Ok(productDto);
         }
         [HttpGet("GetByName")]
@@ -44,7 +42,7 @@ namespace api.Controllers
         {
             var product = await _unitOfWork.ProductRepository.GetProductByName(name);
             if (product == null) return NotFound("không tìm thấy sản phẩm với tên = " + name);
-            var productDto = Product.toProductDto(product);
+            var productDto = Product.toProductGetDto(product);
             return Ok(productDto);
         }
         [HttpGet("GetAllPaging")]
@@ -55,7 +53,7 @@ namespace api.Controllers
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
-            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
             return Ok(productDto);
         }
 
@@ -70,7 +68,7 @@ namespace api.Controllers
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
-            var product = await ProductAddDto.toProduct(productAddDto, _imageService);
+            var product = ProductAddDto.toProduct(productAddDto);
 
             if (product.Id != 0)
             {
@@ -93,7 +91,7 @@ namespace api.Controllers
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
-            var product = await ProductDto.toProduct(productDto, _imageService);
+            var product = ProductDto.toProduct(productDto);
 
             await _unitOfWork.ProductRepository.UpdateProduct(product);
             if (await _unitOfWork.Complete())
@@ -107,7 +105,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var product = await ProductDto.toProduct(productDto, _imageService);
+            var product = ProductDto.toProduct(productDto);
             _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())

@@ -14,6 +14,7 @@ namespace API.Repositories
         }
         public void AddVariant(Variant variant)
         {
+            var variantDb = _context.Variants.FirstOrDefault(v => v.ProductId == variant.ProductId);
             _context.Variants.Add(variant);
         }
 

@@ -1,27 +1,55 @@
-﻿using API.DTOs;
+﻿using API.Data;
+using API.DTOs;
 using API.Entities;
+using API.Helper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
     public class RoleController : BaseApiController
     {
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly StoreContext _context;
 
-        public RoleController(RoleManager<AppRole> roleManager)
+        public RoleController(RoleManager<AppRole> roleManager, StoreContext context)
         {
             _roleManager = roleManager;
+            _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<AppRole>>> GetRoles()
+        public async Task<ActionResult<IReadOnlyList<RoleDto>>> GetRoles([FromQuery] RoleParams roleParams)
         {
-            var roles = await _roleManager.Roles.ToListAsync();
-            var roleDtos = roles.Select(RoleDto.FromEntity);
+            var query = _roleManager.Roles.AsQueryable();
+
+            if (!string.IsNullOrEmpty(roleParams.Query))
+            {
+                query = query.Where(r => r.Name!.ToLower().Contains(roleParams.Query.ToLower()));
+            }
+
+            query = roleParams.OrderBy switch
+            {
+                "id" => query.OrderBy(r => r.Id),
+                "id_desc" => query.OrderByDescending(r => r.Id),
+                "name" => query.OrderBy(r => r.Name!.ToLower()),
+                "name_desc" => query.OrderByDescending(r => r.Name!.ToLower()),
+                _ => query.OrderBy(r => r.Name!.ToLower()),
+            };
+
+            // Không dùng RoleDto.FromEntity ở đây vì phương thức này ko thể dịch sang sql
+            var roleDtosQuery = query.Select(r => new RoleDto // mapping
+            {
+                Id = r.Id,
+                Name = r.Name!,
+                Description = r.Description!
+            });
+
+            var roleDtos = await PagedList<RoleDto>.CreateAsync(roleDtosQuery, roleParams.PageNumber, roleParams.PageSize);
+
             return Ok(roleDtos);
         }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AppRole>> GetRole(string id)
@@ -29,7 +57,7 @@ namespace API.Controllers
             var role = await _roleManager.FindByIdAsync(id);
             if (role == null) return NotFound();
 
-            var roleDto = RoleDto.FromEntity(role);
+            var roleDto = RoleDto.FromEntity(role); // map
 
             return Ok(roleDto);
         }
