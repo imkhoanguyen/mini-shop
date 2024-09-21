@@ -29,7 +29,7 @@
               <td>{{ product.category }}</td>
               <td><p-rating [ngModel]="product.rating" [readonly]="true" [cancel]="false" /></td>
               <td>
-                  <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+                  <!-- <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" /> -->
               </td>
           </tr>
       </ng-template>
@@ -55,7 +55,7 @@
                                   <td>{{ order.date }}</td>
                                   <td>{{ order.amount | currency : 'USD' }}</td>
                                   <td>
-                                      <p-tag [value]="order.status" [severity]="getStatusSeverity(order.status)" />
+                                      <!-- <p-tag [value]="order.status" [severity]="getStatusSeverity(order.status)" /> -->
                                   </td>
                                   <td><p-button type="button" icon="pi pi-search" /></td>
                               </tr>

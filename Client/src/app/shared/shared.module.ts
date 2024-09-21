@@ -317,4 +317,4 @@ import { TabMenuModule } from 'primeng/tabmenu';
   ],
   providers: [],
 })
-export class ShareModule {}
+export class SharedModule {}
