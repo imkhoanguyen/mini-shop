@@ -7,7 +7,9 @@ export interface Product
   id: number;
   name: string;
   description: string;
+  created: Date;
   variants: Variant[];
-  categoryId: Category[];
-  images: Image[];
+  categoryId: number[];
+  imageUrls: Image[];
+  status: number;
 }

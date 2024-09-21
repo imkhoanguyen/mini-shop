@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { CategoryComponent } from './admin/category/category.component';
-import { ProductComponent } from './admin/product/product.component';
-import { ChatComponent } from './admin/chat/chat.component';
 import { HeaderComponent } from './layout/header/header.component';
+import { CategoryComponent } from './component/admin/category/category.component';
+import { ProductComponent } from './component/admin/product/product.component';
+import { ChatComponent } from './component/admin/chat/chat.component';
+import { RoleComponent } from './component/admin/role/role.component';
 
 export const routes: Routes = [
   {
@@ -16,5 +17,6 @@ export const routes: Routes = [
   },
   {
     path: 'chat', component: ChatComponent,
-  }
+  },
+  { path: 'admin/quyen', component: RoleComponent },
 ];

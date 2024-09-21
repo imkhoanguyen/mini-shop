@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { environment } from "../../../environments/environment";
+import { environment } from "../../environments/environment";
 import { HttpClient } from "@angular/common/http";
-import { Category } from "../models/category.module";
-import { Product } from "../models/product.module";
+import { Product } from "../_models/product.module";
 
 @Injectable(
 {
@@ -26,7 +25,7 @@ export class ProductService {
   getProductById(id: number){
     return this.http.get<Product>(this.apiUrl + "/Product/GetById/" + id);
   }
-  getAllCategories(){
+  getAllProduct(){
     return this.http.get<Product[]>(this.apiUrl + "/Product/GetAll");
   }
   getProductAllPaging(){

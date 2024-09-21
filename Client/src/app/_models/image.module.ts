@@ -3,6 +3,4 @@ export interface Image{
   url: string;
   isMain: boolean;
   publicId: string;
-  productId: number;
-
 }

@@ -5,8 +5,8 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { Category } from '../models/category.module';
-import { CategoryService } from '../services/category.service';
+import { Category } from '../../../_models/category.module';
+import { CategoryService } from '../../../_services/category.service';
 
 @Component({
   selector: 'app-category',
@@ -25,7 +25,7 @@ import { CategoryService } from '../services/category.service';
 export class CategoryComponent {
   pageSize: { name: string }[] | undefined;
   category!: Category[];
-  selectedCategory!: Category;
+  selectedCategories!: Category[];
 
   constructor(private categoryService: CategoryService) {}
 

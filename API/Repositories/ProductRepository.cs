@@ -40,9 +40,6 @@ namespace API.Repositories
         public async Task UpdateProduct(Product product)
         {
             var productDb = await _context.Products
-                .Include(p => p.ProductCategories)
-                .Include(p => p.Variants)
-                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == product.Id);
 
             if (productDb is not null)
@@ -66,44 +63,18 @@ namespace API.Repositories
                         productDb.ProductCategories.Add(newProductCategory);
                     }
                 }
-                _context.Variants.RemoveRange(productDb.Variants!);
-                var imageId = productDb.Images.FirstOrDefault()?.Id;
-                foreach (var image in product.Images)
-                {
-                    if (image.Id == 0)
-                    {
-                        image.ProductId = productDb.Id;
-                        _context.Images.Add(image);
-                    }
-                    else
-                    {
-                        var imageDb = await _context.Images.FindAsync(image.Id);
-                        if (imageDb is not null)
-                        {
-                            imageDb.Url = image.Url;
-                            imageDb.PublicId = image.PublicId;
-                        }
-                    }
-                }
+                
             }
 
         }
         public void DeleteProduct(Product product)
         {
             var productDb = _context.Products
-            .Include(p => p.Variants)
             .FirstOrDefault(p => p.Id == product.Id);
             if (productDb is not null)
             {
                 productDb.IsDelete = true;
-                if (product.Variants != null && product.Variants.Count > 0)
-                {
-                    foreach (var variant in product.Variants)
-                    {
-                        variant.ProductId = product.Id;
-                        _variantRepository.DeleteVariant(variant);
-                    }
-                }
+                
             }
         }
 
