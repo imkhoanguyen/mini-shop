@@ -29,6 +29,15 @@ namespace API.Extensions
                     ));
                 }
             );
+            services.AddAuthentication()
+                .AddGoogle(option =>
+                {
+                    IConfigurationSection googleAuthNSection =
+                        config.GetSection("Authentication:Google");
+                    option.ClientId = googleAuthNSection["ClientId"]!;
+                    option.ClientSecret = googleAuthNSection["ClientSecret"]!;
+                });
+
 
 
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -46,8 +55,8 @@ namespace API.Extensions
                 options.InvalidModelStateResponseFactory = actionContext =>
                 {
                     var errors = actionContext.ModelState
-                        .Where(e => e.Value.Errors.Count > 0)
-                        .SelectMany(x => x.Value.Errors)
+                        .Where(e => e.Value!.Errors.Count > 0)
+                        .SelectMany(x => x.Value!.Errors)
                         .Select(x => x.ErrorMessage).ToArray();
 
                     var errorResponse = new ApiValidationErrorResponse

@@ -15,7 +15,6 @@ namespace API.Entities
         public int ProductId { get; set; }
 
         [ForeignKey("ProductId")]
-        [ValidateNever]
         public Product? Product { get; set; }
 
         public string? AppUserId { get; set; }
@@ -23,8 +22,8 @@ namespace API.Entities
         [ForeignKey("AppUserId")]
         public AppUser? AppUser { get; set; }
 
-        public static ImageDto toImageDto(Image image){
-            return new ImageDto
+        public static ImageGetDto toImageDto(Image image){
+            return new ImageGetDto
             {
                 Id = image.Id,
                 Url = image.Url,

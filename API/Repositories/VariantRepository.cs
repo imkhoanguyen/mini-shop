@@ -14,8 +14,8 @@ namespace API.Repositories
         }
         public void AddVariant(Variant variant)
         {
+            var variantDb = _context.Variants.FirstOrDefault(v => v.ProductId == variant.ProductId);
             _context.Variants.Add(variant);
-            //_context.SaveChanges();
         }
 
         public void DeleteVariant(Variant variant)
@@ -24,7 +24,6 @@ namespace API.Repositories
             if (variantDb is not null)
             {
                 variantDb.IsDelete = true;
-                _context.SaveChanges();
             }
         }
         public void UpdateVariant(Variant variant)
@@ -36,7 +35,6 @@ namespace API.Repositories
                 variantDb.Quantity = variant.Quantity;
                 variantDb.PriceSell = variant.PriceSell;
                 variantDb.Status = variant.Status;
-                _context.SaveChanges();
             }
         }
 

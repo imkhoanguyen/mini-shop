@@ -1,3 +1,5 @@
+using API.DTOs;
+
 namespace API.Entities
 {
     public class Message : BaseEntity
@@ -12,7 +14,21 @@ namespace API.Entities
         public DateTime DateRead { get; set; }
         public DateTime MessageSend { get; set; } = DateTime.UtcNow;
 
-
+        public static MessageDto toMessageDto(Message message)
+        {
+            return new MessageDto
+            {
+                Id = message.Id,
+                SenderId = message.SenderId,
+                SenderUserName = message.SenderUserName,
+                RecipientId = message.RecipientId,
+                RecipientUserName = message.RecipientUserName,
+                Content = message.Content,
+                DateRead = message.DateRead,
+                MessageSend = message.MessageSend
+                
+            };
+        }
 
     }
 }

@@ -44,7 +44,7 @@ namespace API.Repositories
                                    .Include(m => m.Sender)
                                    .Include(m => m.Recipient)
                                    .ToListAsync();
-            return new PageList<Message?>(messages, count, messageParams.PageNumber, messageParams.PageSize);
+            return new PageList<Message?>(messages!, count, messageParams.PageNumber, messageParams.PageSize);
         }
 
         public async Task<IEnumerable<Message?>> GetMessageThread(string currentUserName, string recipientUserName)

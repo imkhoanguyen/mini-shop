@@ -7,19 +7,35 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Repositories
 {
     public class ShoppingCartRepository : IShoppingCartRepository
+    
     {
         private readonly StoreContext _context;
-        public async Task AddShoppingCart(ShoppingCart shoppingCart)
+        public void AddShoppingCart(ShoppingCart shoppingCart)
         {
             _context.ShoppingCarts.Add(shoppingCart);
-            await _context.SaveChangesAsync();
 
         }
+        public void DeleteShoppingCart(ShoppingCart shoppingCart)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateShopingCart(ShoppingCart shoppingCart)
+        {
+            
+        }
+
+        
         public async Task UpdateShoppingCart (ShoppingCart shoppingCart)
         {
-            var shoppingCart=await _context.ShoppingCarts
-                .include(sc=> sc.ShoppingCartRepository)
-                .inclide(sc=> sc.CartItems)
+            
+
+
+        }
+
+        void IShoppingCartRepository.AddShoppingCart(ShoppingCart shoppingCart)
+        {
+            throw new NotImplementedException();
         }
     }
     

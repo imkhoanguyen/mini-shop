@@ -16,7 +16,7 @@ namespace API.Repositories
             _variantRepository = variantRepository;
         }
         public async Task AddProduct(Product product)
-        { 
+        {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
@@ -42,6 +42,7 @@ namespace API.Repositories
             var productDb = await _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Variants)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == product.Id);
 
             if (productDb is not null)
@@ -66,13 +67,22 @@ namespace API.Repositories
                     }
                 }
                 _context.Variants.RemoveRange(productDb.Variants!);
-
-                if (product.Variants != null && product.Variants.Count > 0)
+                var imageId = productDb.Images.FirstOrDefault()?.Id;
+                foreach (var image in product.Images)
                 {
-                    foreach (var variant in product.Variants)
+                    if (image.Id == 0)
                     {
-                        variant.ProductId = productDb.Id;
-                        _context.Variants.Add(variant);
+                        image.ProductId = productDb.Id;
+                        _context.Images.Add(image);
+                    }
+                    else
+                    {
+                        var imageDb = await _context.Images.FindAsync(image.Id);
+                        if (imageDb is not null)
+                        {
+                            imageDb.Url = image.Url;
+                            imageDb.PublicId = image.PublicId;
+                        }
                     }
                 }
             }
@@ -101,9 +111,11 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.Variants)
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
-            var variantDb = await _variantRepository.GetVariantByProductIdAsync(id);
-            productDb!.Variants = new List<Variant>();
+            
+    
             return productDb;
         }
 
@@ -111,9 +123,9 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.Variants)
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower() && !p.IsDelete);
-            var variantDb = await _variantRepository.GetVariantByProductIdAsync(productDb!.Id);
-            productDb!.Variants = new List<Variant>();
             return productDb;
         }
         public async Task<bool> ProductExistsAsync(string name)
@@ -158,7 +170,7 @@ namespace API.Repositories
 
             var products = await _context.Products
                 .Where(p => productIds.Contains(p.Id))
-                .Include(p => p.Variants) 
+                .Include(p => p.Variants)
                 .ToListAsync();
 
             var variants = await _variantRepository.GetAllByProductIdsAsync(productIds);

@@ -35,6 +35,7 @@ namespace API.Data
                 .HasOne(pc => pc.Category)
                 .WithMany(c => c.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryId);
+
             builder.Entity<Message>()
                 .HasOne(m => m.Sender)
                 .WithMany(u => u.MessageSent)
@@ -46,12 +47,24 @@ namespace API.Data
                 .WithMany(u => u.MessageReceived)
                 .HasForeignKey(m => m.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
-            builder.Entity<Image>()
-                .HasOne(i => i.AppUser)
-                .WithMany(u => u.Images)
-                .HasForeignKey(i => i.AppUserId)
-                .OnDelete(DeleteBehavior.Restrict);
+
+            // builder.Entity<Image>()
+            //     .HasOne(i => i.Product)
+            //     .WithMany(p => p.Images)
+            //     .HasForeignKey(i => i.ProductId)
+            //     .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Product>()
+                .HasMany(p => p.Images)
+                .WithOne(i => i.Product)
+                .HasForeignKey(i => i.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Product>()
+                .HasMany(p => p.Variants)
+                .WithOne(v => v.Product)
+                .HasForeignKey(v => v.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
             base.OnModelCreating(builder);
+
 
         }
 

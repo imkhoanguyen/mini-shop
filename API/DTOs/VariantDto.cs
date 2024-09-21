@@ -30,9 +30,12 @@ namespace API.DTOs
     }
     public class VariantAddDto
     {
+        [Required]
+        public int ProductId { get; set; }
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
+        
         [Required]
         public int SizeId { get; set; }
 
@@ -42,6 +45,7 @@ namespace API.DTOs
         {
             return new Variant
             {
+                ProductId = variantAddDto.ProductId,
                 Price = variantAddDto.Price,
                 PriceSell = variantAddDto.PriceSell,
                 Quantity = variantAddDto.Quantity,

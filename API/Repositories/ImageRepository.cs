@@ -14,6 +14,23 @@ namespace API.Repositories
             _context = context;
         }
 
+        public void AddImage(Image image)
+        {
+            var existingImage = _context.Images.FirstOrDefault(i => i.ProductId == image.ProductId);
+            _context.Images.Add(image);
+        }
+        public void UpdateImage(Image image)
+        {
+            var existingImage = _context.Images
+            .FirstOrDefault(i => i.Id == image.Id && i.ProductId == image.ProductId);
+            if (existingImage is not null)
+            {
+                existingImage.Url = image.Url;
+                existingImage.PublicId = image.PublicId;
+                existingImage.IsMain = image.IsMain;
+            }
+        }
+
         public async Task<Image?> GetImageById(int id)
         {
             return await _context.Images.IgnoreQueryFilters().SingleOrDefaultAsync(x => x.Id == id);
@@ -26,7 +43,7 @@ namespace API.Repositories
                 {
                     Id = x.Id,
                     Url = x.Url,
-                    UserName = x.AppUser.UserName,
+                    UserName = x.AppUser!.UserName,
                     ProductId = x.ProductId,
                     IsApproved = x.IsApproved
                 }).ToListAsync();
@@ -36,5 +53,7 @@ namespace API.Repositories
         {
             _context.Images.Remove(image);
         }
+
+        
     }
 }
