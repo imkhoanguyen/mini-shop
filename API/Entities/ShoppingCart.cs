@@ -7,8 +7,8 @@ namespace API.Entities
     {
         [Required]
         public DateTime Created{get;set;}=DateTime.UtcNow;
-        public DateTime Updated{get;set;}
-        public ICollection<CartItems>?CartItems{get;set;}
+        public DateTime? Updated{get;set;}
+        public List<CartItems>?CartItems{get;set;}
     }
 
 }

@@ -23,4 +23,5 @@ namespace api.Data.Seed
             context.SaveChanges();
         }
     }
+
 }
