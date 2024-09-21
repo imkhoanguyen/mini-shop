@@ -26,7 +26,7 @@ namespace API.Controllers
             }
             return BadRequest("Add image failed.");
         }
-        [HttpPost("UpdateImages")]
+        [HttpPut("UpdateImages")]
         public async Task<IActionResult> UpdateImages([FromForm] ImageUpdateDto imageUpdateDto, IImageService imageService)
         {   
             if (!ModelState.IsValid)
