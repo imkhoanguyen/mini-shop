@@ -1,7 +1,7 @@
 import { Component, HostListener, signal } from '@angular/core';
-import { SidebarComponent } from "./sidebar/sidebar.component";
 import { MainComponent } from "./main/main.component";
 import { RouterOutlet } from '@angular/router';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin',
