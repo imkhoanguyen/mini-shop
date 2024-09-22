@@ -25,14 +25,19 @@
               </td>
               <td>{{ product.name }}</td>
               <td>
-                <ng-container *ngFor="let image of product.imageUrls">
-                  {{image.isMain}}
+                <ng-container *ngFor="let imageUrl of product.imageUrls">
+                  <img [src]="imageUrl.url" alt="Hình ảnh sản phẩm" style="width: 50px; height: 50px" />
                 </ng-container>
               </td>
 
               <td>{{ product.description }}</td>
               <td>{{ product.created | date : 'dd/MM/yyyy' }}</td>
-              <td>{{ product.status }}</td>
+              <td>
+                <ng-container *ngFor="let categoryId of product.categoryIds">
+                  {{ categoryId }}
+                </ng-container>
+
+              </td>
               <td>
                   <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
               </td>

@@ -1,10 +1,6 @@
-<app-sidebar
-  [isSidebarCollapsed]="isSidebarCollapsed()"
-  (changeIsSidebarCollapsed)="changeIsSidebarCollapsed($event)"
-/>
-
-<app-main
-  [isSidebarCollapsed]="isSidebarCollapsed()"
-  [screenWidth]="screenWidth()"
-/>
-<router-outlet></router-outlet>
+<div class="d-flex">
+  <div class="container m-5" *ngIf="!isAdminPage()">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+<router-outlet *ngIf="isAdminPage()"></router-outlet>

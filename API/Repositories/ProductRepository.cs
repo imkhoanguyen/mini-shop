@@ -108,15 +108,9 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.Variants)
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Images)
                 .Where(p => !p.IsDelete).ToListAsync();
-            var productIds = productDb.Select(p => p.Id);
-            var variants = await _variantRepository.GetAllByProductIdsAsync(productIds);
-
-            foreach (var product in productDb)
-            {
-                product.Variants = variants.Where(v => v.ProductId == product.Id).ToList();
-            }
-
             return productDb;
         }
 

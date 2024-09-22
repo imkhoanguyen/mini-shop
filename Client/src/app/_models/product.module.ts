@@ -9,7 +9,7 @@ export interface Product
   description: string;
   created: Date;
   variants: Variant[];
-  categoryId: number[];
+  categoryIds: Category[];
   imageUrls: Image[];
   status: number;
 }

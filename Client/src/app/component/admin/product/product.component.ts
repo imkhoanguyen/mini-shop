@@ -10,7 +10,8 @@ import { CommonModule } from '@angular/common';
 import { Product } from '../../../_models/product.module';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../_services/product.service';
-import { MessageService } from 'primeng/api';  // Add this import
+import { MessageService } from 'primeng/api';
+import { Image } from '../../../_models/image.module';
 
 @Component({
   selector: 'app-product',
@@ -23,6 +24,7 @@ import { MessageService } from 'primeng/api';  // Add this import
 export class ProductComponent {
   products!: Product[];
 
+
     expandedRows: { [key: number]: boolean } = {};
 
     constructor(private productService: ProductService, private messageService: MessageService) {}
@@ -31,7 +33,10 @@ export class ProductComponent {
         this.productService.getAllProduct().subscribe(
             (products: Product[]) => {
                 this.products = products;
-                console.log(this.products);
+
+                this.products.forEach((product) => {
+                  console.log(product);
+                });
             },
             (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load products', life: 3000 });
