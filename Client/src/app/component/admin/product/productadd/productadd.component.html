@@ -1,0 +1,160 @@
+<div class="row align-items-center mb-3">
+  <div class="col">
+    <input type="text" pInputText placeholder="Tìm kiếm..." class="w-100" />
+  </div>
+  <div class="col-auto">
+    <p-dropdown optionLabel="name" placeholder="Số lượng trang"></p-dropdown>
+  </div>
+  <div class="col-auto">
+    <p-button label="Thêm Sản Phẩm" icon="pi pi-plus" size="large" severity="success" class="ml-2"
+      (onClick)="showDialog()"></p-button>
+  </div>
+</div>
+
+<!-- Dialog Add Product--> 
+<p-dialog header="Thêm Sản Phẩm" [modal]="true" [(visible)]="visible" [style]="{ width: '80rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [maximizable]="true">
+  <form [formGroup]="productForm" (ngSubmit)="addProduct()">
+    <p-stepper>
+      <p-stepperPanel header="Bước I">
+        <ng-template pTemplate="content" let-nextCallback="nextCallback" let-index="index">
+          <div class="flex flex-column h-12rem">
+            <div
+              class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
+              <div class="flex align-items-center gap-3 mb-3">
+                <label for="name" class="font-semibold w-6rem">Tên: </label><br />
+                <input pInputText id="name" class="flex-auto" autocomplete="on" formControlName="name" />
+              </div>
+              <div [formGroup]="productForm">
+                <p-editor></p-editor>
+              </div>
+
+            </div>
+          </div>
+          <div class="flex pt-4 justify-content-end">
+            <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
+          </div>
+        </ng-template>
+      </p-stepperPanel>
+      <p-stepperPanel header="Bước II">
+        <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback"
+          let-index="index">
+          <div class="flex flex-column h-12rem">
+            <div
+              class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
+              <p-toast />
+              <p-fileUpload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true"
+                accept="image/*" maxFileSize="1000000" (onUpload)="onTemplatedUpload()"
+                (onSelect)="onSelectedFiles($event)">
+                <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
+                  let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+                  <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">
+                    <div class="flex gap-2">
+                      <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true"
+                        [outlined]="true" />
+                      <p-button (onClick)="uploadEvent(uploadCallback)" icon="pi pi-cloud-upload" [rounded]="true"
+                        [outlined]="true" severity="success" [disabled]="!files || files.length === 0" />
+                      <p-button (onClick)="clearCallback()" icon="pi pi-times" [rounded]="true" [outlined]="true"
+                        severity="danger" [disabled]="!files || files.length === 0" />
+                    </div>
+                    <p-progressBar [value]="totalSizePercent" [showValue]="false"
+                      styleClass="md:w-20rem h-1rem w-full md:ml-auto"
+                      [ngClass]="{ 'exceeded-progress-bar': totalSizePercent > 100 }">
+                      <span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span>
+                    </p-progressBar>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="content" let-files let-uploadedFiles="uploadedFiles"
+                  let-removeFileCallback="removeFileCallback"
+                  let-removeUploadedFileCallback="removeUploadedFileCallback">
+                  <div *ngIf="files?.length > 0">
+                    <h5>Pending</h5>
+                    <div class="flex flex-wrap p-0 sm:p-5 gap-5">
+                      <div *ngFor="let file of files; let i = index"
+                        class="card m-0 px-6 flex flex-column border-1 surface-border align-items-center gap-3">
+                        <div>
+                          <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                        </div>
+                        <span class="font-semibold">{{ file.name }}</span>
+                        <div>{{ formatSize(file.size) }}</div>
+                        <p-badge value="Pending" severity="warning" />
+                        <p-button icon="pi pi-times"
+                          (onClick)="onRemoveTemplatingFile($event, file, removeFileCallback, index)" [outlined]="true"
+                          [rounded]="true" severity="danger" />
+                      </div>
+                    </div>
+                  </div>
+                  <div *ngIf="uploadedFiles?.length > 0">
+                    <h5>Completed</h5>
+                    <div class="flex flex-wrap p-0 sm:p-5 gap-5">
+                      <div *ngFor="let file of uploadedFiles; let i = index"
+                        class="card m-0 px-6 flex flex-column border-1 surface-border align-items-center gap-3">
+                        <div>
+                          <img role="presentation" [alt]="file.name" [src]="file.objectURL" width="100" height="50" />
+                        </div>
+                        <span class="font-semibold">{{ file.name }}</span>
+                        <div>{{ formatSize(file.size) }}</div>
+                        <p-badge value="Completed" class="mt-3" severity="success" />
+                        <p-button icon="pi pi-times" (onClick)="removeUploadedFileCallback(index)" [outlined]="true"
+                          [rounded]="true" severity="danger" />
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+                <ng-template pTemplate="file"> </ng-template>
+                <ng-template pTemplate="empty">
+                  <div class="flex align-items-center justify-content-center flex-column">
+                    <i class="pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400"></i>
+                    <p class="mt-4 mb-0">Drag and drop files here to upload.</p>
+                  </div>
+                </ng-template>
+              </p-fileUpload>
+            </div>
+          </div>
+          <div class="flex pt-4 justify-content-between">
+            <p-button label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+            <p-button label="Next" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
+          </div>
+        </ng-template>
+      </p-stepperPanel>
+      <p-stepperPanel header="Bước III">
+        <ng-template pTemplate="content" let-prevCallback="prevCallback" let-index="index">
+          <div class="flex flex-column h-12rem">
+
+            <p-stepper orientation="vertical">
+              <ng-container *ngFor="let variant of variants; let i = index">
+                <p-stepperPanel [header]="'Variant ' + (i + 1)">
+                  <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+                    <div class="flex flex-column h-12rem">
+                      <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
+                        {{ 'Content ' + (i + 1) }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-stepperPanel>
+                <p-stepperPanel [header]="'Variant ' + (i + 1)">
+                  <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
+                    <div class="flex flex-column h-12rem">
+                      <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium">
+                        {{ 'Content ' + (i + 1) }}
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-stepperPanel>
+              </ng-container>
+            </p-stepper>
+
+            <!-- Button to add a new variant -->
+            <p-button icon="pi pi-plus" label="Add Variant" (click)="addVariant()"></p-button>
+
+
+          </div>
+          <div class="flex pt-4 justify-content-start">
+            <p-button label="Back" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+          </div>
+        </ng-template>
+      </p-stepperPanel>
+    </p-stepper>
+
+  </form>
+</p-dialog>
