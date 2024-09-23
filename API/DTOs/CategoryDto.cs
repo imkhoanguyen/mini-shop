@@ -7,13 +7,11 @@ namespace API.DTOs
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public int? ParentId { get; set; }
 
         public static Category toCategory(CategoryDto categoryDto){
             return new Category{
                 Id = categoryDto.Id,
                 Name = categoryDto.Name,
-                ParentId = categoryDto.ParentId
             };    
         }
     }
@@ -21,11 +19,9 @@ namespace API.DTOs
     {
         [Required]
         public string Name { get; set; } = null!;
-        public int? ParentId { get; set; }
         public static Category toCategory(CategoryAddDto categoryAddDto){
             return new Category{
                 Name = categoryAddDto.Name,
-                ParentId = categoryAddDto.ParentId
             };    
         }
     }
