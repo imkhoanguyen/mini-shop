@@ -10,6 +10,10 @@ namespace API.Repositories
     
     {
         private readonly StoreContext _context;
+        public ShoppingCartRepository(StoreContext context)
+        {
+            _context=context;
+        }
         public void AddShoppingCart(ShoppingCart shoppingCart)
         {
             _context.ShoppingCarts.Add(shoppingCart);

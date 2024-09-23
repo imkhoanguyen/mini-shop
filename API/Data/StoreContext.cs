@@ -13,6 +13,7 @@ namespace API.Data
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CartItems>CartItems{get;set;}
         public DbSet<Image> Images { get; set; }
         public DbSet<AppRole> AppRoles { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
