@@ -16,6 +16,8 @@ namespace API.Entities
             return new CategoryDto{
                 Id = category.Id,
                 Name = category.Name,
+                Created = category.Created,
+                Updated = category.Updated,
             };    
         }
     }

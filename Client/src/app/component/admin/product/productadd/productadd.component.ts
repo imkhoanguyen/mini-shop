@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,7 +13,7 @@ import { StepperModule } from 'primeng/stepper';
 import { EditorModule } from 'primeng/editor';
 import { FileUploadModule } from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
-
+import { InputNumberModule } from 'primeng/inputnumber';
 @Component({
   selector: 'app-productadd',
   standalone: true,
@@ -31,6 +31,7 @@ import { BadgeModule } from 'primeng/badge';
     FormsModule,
     FileUploadModule,
     BadgeModule,
+    InputNumberModule
   ],
   providers: [MessageService],
   templateUrl: './productadd.component.html',
@@ -42,9 +43,15 @@ export class ProductaddComponent {
   productForm: any;
   text: string | undefined;
   files = [];
-  options: any[] = [{ type: '', value: '' }];
-  variants: any[] = [{ name: 'Variant 1' }];
+   variants: any[] = [{ type: 'Size', value: '' }];
 
+  // Options for the dropdown (Size, Color, etc.)
+  variantOptions = [
+    { label: 'Size', value: 'Size' },
+    { label: 'Color', value: 'Color' },
+    { label: 'Material', value: 'Material' }
+  ];
+  nextCallback = new EventEmitter<void>();
   totalSize: number = 0;
   totalSizePercent: number = 0;
 
@@ -60,6 +67,7 @@ export class ProductaddComponent {
       id: this.builder.control(0),
       name: this.builder.control(''),
     });
+    this.variants.push(1);
 
     const productItems = this.productService.productItems();
     this.productForm.setValue({
@@ -69,7 +77,7 @@ export class ProductaddComponent {
     this.btnText = productItems.id > 0 ? 'Cập Nhật' : 'Thêm';
   }
 
-  showDialog() {
+  showForm() {
     this.visible = true;
   }
 
@@ -125,11 +133,15 @@ export class ProductaddComponent {
 
     return `${formattedSize} ${sizes[i]}`;
   }
-  addOption() {
-    this.options.push({ type: '', value: '' });
+
+   addVariant() {
+    this.variants.push({ type: 'Size', value: '' });
+    console.log(this.variants);
   }
-  addVariant() {
-    const newVariantIndex = this.variants.length + 1;
-    this.variants.push({ name: `Variant ${newVariantIndex}` });
+
+  // Method to remove a variant
+  removeVariant(index: number) {
+    this.variants.splice(index, 1);
   }
+
 }

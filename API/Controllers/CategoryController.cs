@@ -55,28 +55,36 @@ namespace api.Controllers
 
         // POST api/category/Add
         [HttpPost("Add")]
-        public async Task<ActionResult> AddCategory([FromForm] CategoryAddDto categoryAddDto)
+        public async Task<ActionResult> AddCategory([FromBody] CategoryAddDto categoryAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if(categoryAddDto.Name == null)
+            {
+                return BadRequest(new {message ="Tên danh mục không được để trống."});
+            }
             if (await _unitOfWork.CategoryRepository.CategoryExistsAsync(categoryAddDto.Name!))
             {
-                return BadRequest("Danh mục với tên này đã tồn tại.");
+                return BadRequest(new {message ="Danh mục với tên này đã tồn tại."});
             }
             var category = CategoryAddDto.toCategory(categoryAddDto);
             _unitOfWork.CategoryRepository.AddCategory(category);
  
             if (await _unitOfWork.Complete())
-                return Ok("Add Category successfully.");
-            return BadRequest("Add category failed.");
+                return Ok(new { message = "Thêm danh mục thành công." });
+            return BadRequest(new {message ="Thêm danh mục thất bại."});
         }
 
         // PUT api/category/Update
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateCategory([FromForm]CategoryDto categoryDto)
+        public async Task<IActionResult> UpdateCategory([FromBody]CategoryDto categoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if(categoryDto.Name == null)
+            {
+                return BadRequest(new {message ="Tên danh mục không được để trống."});
+            }
             if (await _unitOfWork.CategoryRepository.CategoryExistsAsync(categoryDto.Name!))
             {
                 return BadRequest("Danh mục với tên này đã tồn tại.");
@@ -85,10 +93,10 @@ namespace api.Controllers
             _unitOfWork.CategoryRepository.UpdateCategory(category);
 
             if (await _unitOfWork.Complete()){
-                return Ok("Update Category successfully.");
+                return Ok(new { message = "Cập nhật danh mục thành công."});
             }
 
-            return BadRequest("Update Category failed.");
+            return BadRequest("Cập nhật danh mục thất bại.");
         }
 
         // DELETE api/category/Delete
@@ -101,9 +109,9 @@ namespace api.Controllers
             _unitOfWork.CategoryRepository.DeleteCategory(category);
 
             if (await _unitOfWork.Complete())
-                return Ok("Delete Category successfully.");
+                return Ok(new { message = "Cập nhật danh mục thành công."});
 
-            return BadRequest("Delete Category failed.");
+            return BadRequest("Cập nhật danh mục thất bại");
         }
     }
 }
