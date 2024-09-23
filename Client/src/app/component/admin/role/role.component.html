@@ -1,35 +1,91 @@
+<p-toast />
 <h1 class="mb-3">Quản lý quyền</h1>
 <div class="text-end">
-  <button class="btn btn-primary">
+  <button class="btn btn-primary" (click)="showDialog()">
     <i class="pi pi-plus"></i>
     <span class="d-inline-block ms-1">Thêm quyền</span>
   </button>
 </div>
 
+<!-- list role-->
+<p-confirmPopup />
 <table class="table table-striped">
   <thead class="fw-bold">
     <tr>
       <td>Id</td>
       <td>Quyền</td>
+      <td>Ngày tạo</td>
       <td>Mô tả</td>
       <td></td>
     </tr>
   </thead>
   <tbody class="align-middle">
-    @for (role of roles; track role.id) {
+    @if(roles.length > 0) { @for (role of roles; track role.id) {
     <tr>
       <td>{{ role.id }}</td>
       <td>{{ role.name }}</td>
+      <td>{{ role.created | date : "medium" }}</td>
       <td>{{ role.description }}</td>
       <td class="d-flex gap-1 align-items-center justify-content-center">
-        <button class="btn btn-sm">
+        <button class="btn btn-sm" (click)="showDialog(role.id)">
           <i class="pi pi-pen-to-square"></i>
         </button>
-        <button class="btn btn-sm">
+        <button
+          class="btn btn-sm"
+          (click)="deleteConfirmPopup($event, role.id)"
+        >
           <i class="pi pi-trash"></i>
         </button>
       </td>
     </tr>
+    } } @else {
+    <tr>
+      <td colspan="4" class="text-center">Không có dữ liệu</td>
+    </tr>
     }
   </tbody>
 </table>
+
+<!-- modal add, edit-->
+<p-dialog
+  header="{{ edit ? 'Cập nhật quyền' : 'Thêm quyền' }}"
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  (onHide)="closeDialog()"
+>
+  <form [formGroup]="frm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Quyền</label>
+      <input id="username" class="form-control" formControlName="name" />
+      @if(frm.get('name')?.invalid && frm.get('name')?.touched ) {
+      <span class="text-danger">Vui lòng nhập quyền</span>
+      }
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Mô tả</label>
+      <textarea
+        id="description"
+        class="form-control"
+        formControlName="description"
+      ></textarea>
+      @if(frm.get('description')?.invalid && frm.get('description')?.touched) {
+      <span class="text-danger">Vui lòng nhập mô tả</span>
+      }
+    </div>
+    <div class="d-flex justify-content-end gap-2">
+      <button type="button" class="btn btn-secondary" (click)="closeDialog()">
+        <i class="pi pi-times me-1"></i>
+        <span>Đóng</span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="frm.invalid || !frm.dirty"
+      >
+        <i class="pi pi-check me-1"></i>
+        <span>Lưu</span>
+      </button>
+    </div>
+  </form>
+</p-dialog>
