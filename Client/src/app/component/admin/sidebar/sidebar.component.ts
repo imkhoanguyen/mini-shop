@@ -1,40 +1,48 @@
 import { Component, EventEmitter, Input, input, Output, output } from '@angular/core';
-
+import { TreeModule } from 'primeng/tree'
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SidebarModule as PrimeNgSidebarModule } from 'primeng/sidebar';
+import { TreeNode } from 'primeng/api';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, PrimeNgSidebarModule],
+  imports: [CommonModule, RouterModule, PrimeNgSidebarModule, TreeModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent {
+export class SidebarComponent{
   @Input() isSidebarCollapsed: boolean = false;
   @Output() changeIsSidebarCollapsed = new EventEmitter<boolean>();
   items = [
     {
-      routeLink: 'dashboard',
+      routerLink: 'dashboard',
       icon: 'pi pi-home',
       label: 'Dashboard',
     },
     {
-      routeLink: 'category',
+      routerLink: 'category',
       icon: 'pi pi-book',
       label: 'Danh mục',
     },
     {
-      routeLink: 'product',
+      routerLink: 'product',
       icon: 'pi pi-gift',
       label: 'Sản phẩm',
+
     },
     {
-      routeLink: 'chat',
+      routerLink: 'chat',
       icon: 'pi pi-comments',
       label: 'Chat',
+    },
+    {
+      routerLink: 'role',
+      icon: 'pi pi-key',
+      label: 'Quyền',
     }
   ];
+
 
   toggleCollapse(): void {
     this.changeIsSidebarCollapsed.emit(!this.isSidebarCollapsed);

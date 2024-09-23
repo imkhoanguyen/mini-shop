@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { SidebarComponent } from './admin/sidebar/sidebar.component';
+import { SidebarComponent } from './component/admin/sidebar/sidebar.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {

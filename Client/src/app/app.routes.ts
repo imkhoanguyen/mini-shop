@@ -1,20 +1,23 @@
 import { Routes } from '@angular/router';
-import { CategoryComponent } from './admin/category/category.component';
-import { ProductComponent } from './admin/product/product.component';
-import { ChatComponent } from './admin/chat/chat.component';
 import { HeaderComponent } from './layout/header/header.component';
+import { CategoryComponent } from './component/admin/category/category.component';
+import { ChatComponent } from './component/admin/chat/chat.component';
+import { RoleComponent } from './component/admin/role/role.component';
+import { AdminComponent } from './component/admin/admin.component';
+import { DashboardComponent } from './component/admin/dashboard/dashboard.component';
+import { ProductComponent } from './component/admin/product/product.component';
 
 export const routes: Routes = [
+  { path: '', component: HeaderComponent,},
   {
-    path: '', component: HeaderComponent,
+    path: 'admin',component: AdminComponent,
+    children: [
+      { path: '', component: DashboardComponent },
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'category', component: CategoryComponent },
+      { path: 'product', component: ProductComponent },
+      { path: 'chat', component: ChatComponent },
+      { path: 'role', component: RoleComponent }
+    ]
   },
-  {
-    path: 'category', component: CategoryComponent,
-  },
-  {
-    path: 'product', component: ProductComponent,
-  },
-  {
-    path: 'chat', component: ChatComponent,
-  }
 ];

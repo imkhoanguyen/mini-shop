@@ -1,33 +1,25 @@
 import { Component, HostListener, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthComponent } from './component/auth/auth.component';
 import { HeaderComponent } from "./layout/header/header.component";
-import { SidebarComponent } from "./admin/sidebar/sidebar.component";
-import { MainComponent } from './admin/main/main.component';
+import { MainComponent } from './component/admin/main/main.component';
+import { CommonModule } from '@angular/common';
+import { SidebarComponent } from './component/admin/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthComponent, SidebarComponent, MainComponent, HeaderComponent,],
+  imports: [RouterOutlet, AuthComponent, HeaderComponent, CommonModule, SidebarComponent, MainComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'Client';
-  isSidebarCollapsed = signal<boolean>(false);
-  screenWidth = signal<number>(window.innerWidth);
-  @HostListener('window:resize')
-  onResize() {
-    this.screenWidth.set(window.innerWidth);
-    if (this.screenWidth() < 768) {
-      this.isSidebarCollapsed.set(true);
-    }
-  }
-  ngOnInit(): void {
-    this.isSidebarCollapsed.set(this.screenWidth() < 768);
+
+  constructor(private router: Router) {}
+
+  isAdminPage(): boolean {
+    return this.router.url.startsWith('/admin');
   }
 
-  changeIsSidebarCollapsed(isSidebarCollapsed: boolean): void {
-    this.isSidebarCollapsed.set(isSidebarCollapsed);
-  }
 }

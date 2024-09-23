@@ -1,12 +1,12 @@
 import { AfterViewInit, Component } from "@angular/core";
 import { SharedModule } from "../../shared/shared.module";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
-
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [SharedModule],
+  imports: [SharedModule, FormsModule, ButtonModule, ReactiveFormsModule ],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css'
 })
