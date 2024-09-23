@@ -8,16 +8,17 @@ import { DashboardComponent } from './component/admin/dashboard/dashboard.compon
 import { ProductComponent } from './component/admin/product/product.component';
 
 export const routes: Routes = [
-  { path: '', component: HeaderComponent,},
+  { path: '', component: HeaderComponent },
   {
-    path: 'admin',component: AdminComponent,
+    path: 'admin',
+    component: AdminComponent,
     children: [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'category', component: CategoryComponent },
       { path: 'product', component: ProductComponent },
       { path: 'chat', component: ChatComponent },
-      { path: 'role', component: RoleComponent }
-    ]
+      { path: 'quyen', component: RoleComponent },
+    ],
   },
 ];
