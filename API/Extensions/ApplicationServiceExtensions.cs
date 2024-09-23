@@ -17,29 +17,43 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
-            var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
-            var cloudinaryAccount = new Account(
-                cloudinarySettings!.CloudName,
-                cloudinarySettings.ApiKey,
-                cloudinarySettings.ApiSecret
+            services.AddSingleton(c =>
+                {
+                    var cloudinarySettings = config.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+                    return new Cloudinary(new Account(
+                        cloudinarySettings!.CloudName,
+                        cloudinarySettings.ApiKey,
+                        cloudinarySettings.ApiSecret
+                    ));
+                }
             );
-            
+            services.AddAuthentication()
+                .AddGoogle(option =>
+                {
+                    IConfigurationSection googleAuthNSection =
+                        config.GetSection("Authentication:Google");
+                    option.ClientId = googleAuthNSection["ClientId"]!;
+                    option.ClientSecret = googleAuthNSection["ClientSecret"]!;
+                });
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISizeRepository, SizeRepository>();
             services.AddScoped<IColorRepository, ColorRepository>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IVariantRepository, VariantRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
                 {
                     var errors = actionContext.ModelState
-                        .Where(e => e.Value.Errors.Count > 0)
-                        .SelectMany(x => x.Value.Errors)
+                        .Where(e => e.Value!.Errors.Count > 0)
+                        .SelectMany(x => x.Value!.Errors)
                         .Select(x => x.ErrorMessage).ToArray();
 
                     var errorResponse = new ApiValidationErrorResponse

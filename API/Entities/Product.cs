@@ -14,22 +14,37 @@ namespace API.Entities
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; }
         public bool IsDelete { get; set; } = false;
-        public ICollection<Variant>? Variants { get; set; }
+        public ICollection<Variant> Variants { get; set; } = new List<Variant>();
 
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Image> Images { get; set; } = new List<Image>();
         public List<Review> Reviews { get; set; } = new List<Review>();
-        
 
-        public static ProductDto toProductDto(Product product)
+
+        public static ProductGetDto toProductGetDto(Product product)
         {
-            return new ProductDto
+            return new ProductGetDto
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
+                Created = product.Created,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
-                Variants = product.Variants.Select(v => Variant.toVariantDto(v)).ToList()
+                Variants = product.Variants.Select(v => new VariantDto
+                {
+                    Id = v.Id,
+                    Price = v.Price,
+                    PriceSell = v.PriceSell,
+                    Quantity = v.Quantity,
+                    SizeId = v.SizeId,
+                    ColorId = v.ColorId
+                }).ToList(),
+                ImageUrls = product.Images.Select(i => new ImageGetDto 
+                {
+                    Id = i.Id, 
+                    Url = i.Url, 
+                    IsMain = i.IsMain 
+                }).ToList()
             };
         }
     }

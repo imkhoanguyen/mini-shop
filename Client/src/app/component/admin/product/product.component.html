@@ -1,0 +1,102 @@
+<p-toast />
+    <p-table [value]="products" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }" [expandedRowKeys]="expandedRows" (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
+        <ng-template pTemplate="caption">
+            <div class="flex flex-wrap justify-content-end gap-2">
+                <p-button label="Expand All" icon="pi pi-plus" text (onClick)="expandAll()" />
+                <p-button label="Collapse All" icon="pi pi-minus" text (onClick)="collapseAll()" />
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 5rem"></th>
+                <th pSortableColumn="name">Tên<p-sortIcon field="name" /></th>
+                <th>Hình ảnh</th>
+                <th pSortableColumn="description">Mô tả<p-sortIcon field="description" /></th>
+                <th pSortableColumn="created">Ngày tạo <p-sortIcon field="created" /></th>
+                <th pSortableColumn="category">Danh mục <p-sortIcon field="category" /></th>
+                <th pSortableColumn="inventoryStatus">Status <p-sortIcon field="inventoryStatus" /></th>
+                <th>Action</th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product let-expanded="expanded">
+          <tr>
+              <td>
+                  <p-button type="button" pRipple [pRowToggler]="product" [text]="true" [rounded]="true" [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'" />
+              </td>
+              <td>{{ product.name }}</td>
+              <td>
+                <ng-container *ngFor="let imageUrl of product.imageUrls">
+                  <img [src]="imageUrl.url" alt="Hình ảnh sản phẩm" style="width: 50px; height: 50px" />
+                </ng-container>
+              </td>
+
+              <td>{{ product.description }}</td>
+              <td>{{ product.created | date : 'dd/MM/yyyy' }}</td>
+              <td>
+                <ng-container *ngFor="let categoryId of product.categoryIds">
+                  {{ categoryId }}
+                </ng-container>
+
+              </td>
+              <td>
+                  <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+              </td>
+              <td>
+                <p-button
+                  icon="pi pi-file-edit"
+                  label="Sửa"
+                  [rounded]="true"
+                  severity="info"
+                  size="small"
+                  class="mr-2"
+                ></p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  label="Xóa"
+                  [rounded]="true"
+                  severity="danger"
+                  size="small"
+                ></p-button>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="rowexpansion" let-product>
+          <tr>
+              <td colspan="7">
+                  <div class="p-3">
+                      <p-table [value]="product.variants" dataKey="id">
+                          <ng-template pTemplate="header">
+                              <tr>
+                                  <th pSortableColumn="id">Id Thể loại <p-sortIcon field="id" /></th>
+                                  <th pSortableColumn="Giá">Giá <p-sortIcon field="price" /></th>
+                                  <th pSortableColumn="Giá giảm">Giá giảm <p-sortIcon field="priceSell" /></th>
+                                  <th pSortableColumn="Số lượng">Số lượng <p-sortIcon field="quantity" /></th>
+                                  <th pSortableColumn="Kích thước">Kích thước <p-sortIcon field="sizeId" /></th>
+                                  <th pSortableColumn="Màu">Màu <p-sortIcon field="colorId" /></th>
+                                  <th style="width: 4rem"></th>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="body" let-variant>
+                              <tr>
+                                  <td>{{ variant.id }}</td>
+                                  <td>{{ variant.price | currency : 'VND' }}</td>
+                                  <td>{{ variant.priceSell | currency : 'VND' }}</td>
+                                  <td>{{ variant.quantity }}</td>
+                                  <td>{{ variant.sizeId }}</td> <!-- Assuming you have size information -->
+                                  <td>{{ variant.colorId }}</td> <!-- Assuming you have color information -->
+                                  <td><p-button type="button" icon="pi pi-search" /></td>
+                                  <td></td>
+                              </tr>
+                          </ng-template>
+                          <ng-template pTemplate="emptymessage">
+                              <tr>
+                                  <td colspan="6">No variants available</td>
+                              </tr>
+                          </ng-template>
+                      </p-table>
+                  </div>
+              </td>
+          </tr>
+      </ng-template>
+
+</p-table>

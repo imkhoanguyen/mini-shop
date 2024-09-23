@@ -1,26 +1,26 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
+import { TabViewModule } from 'primeng/tabview';
+import { TagModule } from 'primeng/tag';
+import { TerminalModule } from 'primeng/terminal';
+import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DividerModule } from 'primeng/divider';  
-import { SplitterModule } from 'primeng/splitter';
-import { InputTextModule } from 'primeng/inputtext';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { KeyFilterModule } from 'primeng/keyfilter';
-import { ReactiveFormsModule } from '@angular/forms';
+import { RatingModule } from 'primeng/rating';
+import { ToastModule } from 'primeng/toast';
+import { CommonModule } from '@angular/common';
+
 @NgModule({
-  exports: [
-    CardModule,
+  imports: [
+
+    TabViewModule,
+    TagModule,
+    TerminalModule,
+    TableModule,
     ButtonModule,
-    DividerModule,
-    SplitterModule,
+    RatingModule,
+    ToastModule,
     CommonModule,
-    InputTextModule,
-    FormsModule,
-    FloatLabelModule,
-    KeyFilterModule,
-    ReactiveFormsModule,
-  ]
+
+  ],
+  providers: [],
 })
-export class SharedModule { }
+export class SharedModule {}

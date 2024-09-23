@@ -3,7 +3,6 @@ using API.DTOs;
 using API.Entities;
 using API.Helpers;
 using API.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -11,10 +10,12 @@ namespace api.Controllers
     public class ProductController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IImageService _imageService;
 
-        public ProductController(IUnitOfWork unitOfWork)
+        public ProductController(IUnitOfWork unitOfWork, IImageService imageService)
         {
             _unitOfWork = unitOfWork;
+            _imageService = imageService;
         }
 
         [HttpGet("GetProductById{id}")]
@@ -22,7 +23,7 @@ namespace api.Controllers
         {
             var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
             if (product == null) return NotFound("Không tìm thấy sản phẩm nào.");
-            var productDto = Product.toProductDto(product);
+            var productDto = Product.toProductGetDto(product);
             return Ok(productDto);
         }
         [HttpGet("GetAll")]
@@ -33,10 +34,17 @@ namespace api.Controllers
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
-            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
             return Ok(productDto);
         }
-
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetProductByName(string name)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductByName(name);
+            if (product == null) return NotFound("không tìm thấy sản phẩm với tên = " + name);
+            var productDto = Product.toProductGetDto(product);
+            return Ok(productDto);
+        }
         [HttpGet("GetAllPaging")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
         {
@@ -45,7 +53,7 @@ namespace api.Controllers
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
-            var productDto = product.Select(p => Product.toProductDto(p)).ToList();
+            var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
             return Ok(productDto);
         }
 
@@ -60,14 +68,12 @@ namespace api.Controllers
             {
                 return BadRequest("Sản phẩm với tên này đã tồn tại.");
             }
-
             var product = ProductAddDto.toProduct(productAddDto);
 
             if (product.Id != 0)
             {
                 return BadRequest("Product Id đã được gán trước khi thêm vào cơ sở dữ liệu.");
             }
-
             await _unitOfWork.ProductRepository.AddProduct(product);
 
             if (await _unitOfWork.Complete())
@@ -77,7 +83,7 @@ namespace api.Controllers
 
         // PUT api/Product/Update
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto)
+        public async Task<IActionResult> UpdateProduct([FromForm] ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -105,7 +111,7 @@ namespace api.Controllers
             if (await _unitOfWork.Complete())
                 return Ok("Delete Product successfully.");
             return BadRequest("Delete Product failed.");
-
+            
         }
     }
 }

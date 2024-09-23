@@ -19,7 +19,7 @@ namespace API.Controllers
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllcolorsAsync()
         {
-            var colors = await _unitOfWork.colorRepository.GetAllColorsAsync();
+            var colors = await _unitOfWork.ColorRepository.GetAllColorsAsync();
             if (colors == null)
             {
                 return NotFound("Không tìm thấy color nào.");
@@ -31,7 +31,7 @@ namespace API.Controllers
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetcolorsById(int id)
         {
-            var colors = await _unitOfWork.colorRepository.GetColorsById(id);
+            var colors = await _unitOfWork.ColorRepository.GetColorsById(id);
             if (colors == null)
             {
                 return NotFound("Không tìm thấy color nào.");
@@ -43,7 +43,7 @@ namespace API.Controllers
         [HttpGet("GetAllPaging")]
         public async Task<ActionResult<IEnumerable<ColorDto>>> GetAllcolorsAsync([FromQuery] ColorParams colorParams)
         {
-            var colors = await _unitOfWork.colorRepository.GetAllColorsAsync(colorParams);
+            var colors = await _unitOfWork.ColorRepository.GetAllColorsAsync(colorParams);
             if (colors == null)
             {
                 return NotFound("Không tìm thấy color nào.");
@@ -58,12 +58,12 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (await _unitOfWork.colorRepository.colorExistsAsync(colorAddDto.Name!))
+            if (await _unitOfWork.ColorRepository.colorExistsAsync(colorAddDto.Name!))
             {
                 return BadRequest("color với tên này đã tồn tại.");
             }
             var color = ColorAddDto.toColor(colorAddDto);
-            _unitOfWork.colorRepository.AddColor(color);
+            _unitOfWork.ColorRepository.AddColor(color);
 
             if (await _unitOfWork.Complete())
                 return Ok("Add color successfully.");
@@ -76,12 +76,12 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (await _unitOfWork.colorRepository.colorExistsAsync(colorDto.Name!))
+            if (await _unitOfWork.ColorRepository.colorExistsAsync(colorDto.Name!))
             {
                 return BadRequest("color với tên này đã tồn tại.");
             }
             var color = ColorDto.toColor(colorDto);
-            _unitOfWork.colorRepository.UpdateColor(color);
+            _unitOfWork.ColorRepository.UpdateColor(color);
 
             if (await _unitOfWork.Complete())
                 return Ok("Update color successfully.");
@@ -95,7 +95,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var color = ColorDto.toColor(colorDto);
-            _unitOfWork.colorRepository.DeleteColor(color);
+            _unitOfWork.ColorRepository.DeleteColor(color);
 
             if (await _unitOfWork.Complete())
                 return Ok("Delete color successfully.");

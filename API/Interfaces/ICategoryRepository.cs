@@ -9,6 +9,7 @@ namespace API.Interfaces
         void UpdateCategory(Category category);
         void DeleteCategory(Category category);
         Task<Category?> GetCategoriesById(int id);
+        Task<string?> GetCategoryNameById(int id);
         Task<IEnumerable<Category>> GetAllCategoriesAsync();
         Task<bool> CategoryExistsAsync(string name);
         Task<PageList<Category>> GetAllCategoriesAsync(CategoryParams categoryParams);
