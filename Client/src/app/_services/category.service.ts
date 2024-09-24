@@ -22,12 +22,7 @@ export class CategoryService {
   });
 
   addCategory(data: Category): Observable<Category>{
-    return this.http.post<Category>(this.apiUrl + "/Category/Add", data).pipe(
-      tap((newCategory) => {
-        this.categoryList.update((categories) => [...categories, newCategory]);
-        this.categoryItems.update((categoryItem) => ({ ...categoryItem, name: newCategory.name }));
-      })
-    );
+    return this.http.post<Category>(this.apiUrl + "/Category/Add", data);
   }
 
   updateCategory(data: Category): Observable<any>{

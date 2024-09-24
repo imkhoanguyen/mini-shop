@@ -17,7 +17,6 @@ import {
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
-import { Pagination } from '../../../_models/pagination.module';
 
 @Component({
   selector: 'app-categorylist',
@@ -47,6 +46,7 @@ export class CategoryComponent implements OnInit {
   categoryForm: any;
 
   paginatedCategory: any;
+  totalRecords: number = 0;
   pageSizeOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
@@ -54,7 +54,7 @@ export class CategoryComponent implements OnInit {
     { label: '50', value: 50 },
   ];
 
-  pageSize: number = 10;
+  pageSize: number = 5;
   pageNumber: number = 1;
   searchString: string = "";
 
@@ -79,7 +79,7 @@ export class CategoryComponent implements OnInit {
     });
   }
   onPageChange(event: any): void {
-    this.pageNumber = event.page;
+    this.pageNumber = event.page + 1;
     this.loadCategories();
   }
   onPageSizeChange(newPageSize: any): void {
@@ -94,14 +94,16 @@ export class CategoryComponent implements OnInit {
   }
   loadCategories(): void {
     this.categoryService.getCategoriesAllPaging(this.pageNumber, this.pageSize, this.searchString).subscribe(
-      (res: Pagination<Category>) => {
-        this.paginatedCategory = res;
-        console.log(this.paginatedCategory.data);
-        this.selectedCategories = [res.data];
-      },
-      (error) => {
-        console.error('Error loading categories:', error);
-      }
+        (pagination) => {
+          console.log(pagination);
+          this.paginatedCategory = pagination;
+          this.totalRecords = pagination.count;
+          console.log(this.totalRecords);
+        },
+        (error) => {
+          const errorMessage = error.error?.message || 'L��i tải danh mục';
+          this.showMessage('error', 'Thất Bại', errorMessage);
+        }
     );
   }
 
