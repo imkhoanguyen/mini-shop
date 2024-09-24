@@ -135,9 +135,6 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("Updated")
                         .HasColumnType("TEXT");
 
