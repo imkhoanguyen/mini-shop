@@ -4,6 +4,7 @@ using API.Entities;
 using API.Helper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -28,22 +29,30 @@ namespace API.Controllers
                 query = query.Where(r => r.Name!.ToLower().Contains(roleParams.Query.ToLower()));
             }
 
-            query = roleParams.OrderBy switch
+            if (!string.IsNullOrEmpty(roleParams.OrderBy))
             {
-                "id" => query.OrderBy(r => r.Id),
-                "id_desc" => query.OrderByDescending(r => r.Id),
-                "name" => query.OrderBy(r => r.Name!.ToLower()),
-                "name_desc" => query.OrderByDescending(r => r.Name!.ToLower()),
-                _ => query.OrderBy(r => r.Name!.ToLower()),
-            };
+                query = roleParams.OrderBy switch
+                {
+                    "id" => query.OrderBy(r => r.Id),
+                    "id_desc" => query.OrderByDescending(r => r.Id),
+                    "name" => query.OrderBy(r => r.Name!.ToLower()),
+                    "name_desc" => query.OrderByDescending(r => r.Name!.ToLower()),
+                    "created_desc" => query.OrderByDescending(r => r.Created),
+                    "created" => query.OrderBy(r=>r.Created),
+                    _ => query.OrderByDescending(r => r.Created),
+                };
+            }
 
             // Không dùng RoleDto.FromEntity ở đây vì phương thức này ko thể dịch sang sql
             var roleDtosQuery = query.Select(r => new RoleDto // mapping
             {
                 Id = r.Id,
                 Name = r.Name!,
-                Description = r.Description!
+                Description = r.Description!,
+                Created = r.Created,
             });
+
+            
 
             var roleDtos = await PagedList<RoleDto>.CreateAsync(roleDtosQuery, roleParams.PageNumber, roleParams.PageSize);
 
@@ -65,11 +74,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<RoleDto>> CreateRole(RoleCreateDto roleCreateDto)
         {
-            // check validation ...  (lam sau)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
 
             if (await RoleNameExists(roleCreateDto.Name))
-                return BadRequest("Role đã tồn tại");
+                return BadRequest("Tên quyền đã tồn tại");
 
             var appRole = new AppRole
             {
@@ -85,29 +95,34 @@ namespace API.Controllers
                 return CreatedAtAction("GetRole", new { id = appRole.Id }, roleDto);
             }
 
-            return BadRequest("Đã xảy ra lỗi khi thêm role");
+            return BadRequest("Đã xảy ra lỗi khi thêm quyền");
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateRole(string id, RoleDto roleDto)
         {
-            if (roleDto.Id != id || await RoleNameExists(roleDto.Name)
-                || await RoleIdExists(roleDto.Id))
-                return BadRequest("Không thể cập nhật role");
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var appRole = new AppRole
-            {
-                Id = id,
-                Name = roleDto.Name,
-                Description = roleDto.Description,
-            };
+            if (roleDto.Id != id)
+                return BadRequest("Không thể cập nhật quyền");
 
-            var result = await _roleManager.UpdateAsync(appRole);
+            if (await CheckEdit(roleDto.Name, id))
+                return BadRequest("Tên quyền đã tồn tại");
+
+            var roleFromDb = await _roleManager.FindByIdAsync(id);
+
+            if (roleFromDb == null) return NotFound("Không tìm thấy quyền");
+
+            roleFromDb.Name = roleDto.Name;
+            roleFromDb.Description = roleDto.Description;
+
+            var result = await _roleManager.UpdateAsync(roleFromDb);
 
             if (result.Succeeded)
                 return NoContent();
 
-            return BadRequest("Đã xảy ra lỗi khi cập nhật role");
+            return BadRequest("Đã xảy ra lỗi khi cập nhật quyền");
         }
 
         [HttpDelete("{id}")]
@@ -134,7 +149,16 @@ namespace API.Controllers
 
         private async Task<bool> RoleNameExists(string roleName)
         {
-            var role = await _roleManager.FindByNameAsync(roleName);
+            var role = await _roleManager.Roles
+                .FirstOrDefaultAsync(r => r.Name!.ToLower() == roleName.ToLower());
+            if (role != null) return true;
+            return false;
+        }
+
+        private async Task<bool> CheckEdit(string roleName, string roleId)
+        {
+            var role = await _roleManager.Roles
+                .FirstOrDefaultAsync(r => r.Name!.ToLower() == roleName.ToLower() && r.Id != roleId);
             if (role != null) return true;
             return false;
         }

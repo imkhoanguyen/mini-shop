@@ -9,9 +9,10 @@ import { ProductComponent } from './component/admin/product/product.component';
 import { ProductaddComponent } from './component/admin/product/productadd/productadd.component';
 
 export const routes: Routes = [
-  { path: '', component: HeaderComponent,},
+  { path: '', component: HeaderComponent },
   {
-    path: 'admin',component: AdminComponent,
+    path: 'admin',
+    component: AdminComponent,
     children: [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
@@ -19,7 +20,7 @@ export const routes: Routes = [
       { path: 'product', component: ProductComponent },
       { path: 'product/productadd', component: ProductaddComponent },
       { path: 'chat', component: ChatComponent },
-      { path: 'role', component: RoleComponent }
-    ]
+      { path: 'quyen', component: RoleComponent },
+    ],
   },
 ];
