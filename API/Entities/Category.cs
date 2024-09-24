@@ -8,7 +8,7 @@ namespace API.Entities
         [Required]
         public string Name { get; set; } = null!;
         public DateTime Created { get; set; } = DateTime.UtcNow;
-        public DateTime Updated { get; set; }
+        public DateTime Updated { get; set; } = DateTime.UtcNow;
         public bool IsDelete {get ; set; } = false;
         public ICollection<ProductCategory>? ProductCategories  { get; set; } = new List<ProductCategory>();
     
@@ -16,6 +16,8 @@ namespace API.Entities
             return new CategoryDto{
                 Id = category.Id,
                 Name = category.Name,
+                Created = category.Created,
+                Updated = category.Updated,
             };    
         }
     }

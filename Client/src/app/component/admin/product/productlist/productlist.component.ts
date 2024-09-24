@@ -11,11 +11,21 @@ import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Product } from '../../../../_models/product.module';
 import { ProductService } from '../../../../_services/product.service';
-
+import { DropdownModule } from 'primeng/dropdown';
+import { Route, Router } from '@angular/router';
 @Component({
   selector: 'app-productlist',
   standalone: true,
-  imports: [TabViewModule, TagModule, TerminalModule, TableModule, ButtonModule, RatingModule, ToastModule, CommonModule, FormsModule],
+  imports: [TabViewModule,
+    TagModule,
+    TerminalModule,
+    TableModule,
+    ButtonModule,
+    RatingModule,
+    ToastModule,
+    CommonModule,
+    FormsModule,
+    DropdownModule],
   templateUrl: './productlist.component.html',
   styleUrl: './productlist.component.css',
   providers: [MessageService]
@@ -26,7 +36,9 @@ export class ProductlistComponent {
 
     expandedRows: { [key: number]: boolean } = {};
 
-    constructor(private productService: ProductService, private messageService: MessageService) {}
+    constructor(private productService: ProductService,
+      private messageService: MessageService,
+      private router: Router) {}
 
     ngOnInit() {
         this.productService.getAllProduct().subscribe(
@@ -88,5 +100,8 @@ export class ProductlistComponent {
 
     onRowCollapse(event: TableRowCollapseEvent) {
         this.messageService.add({ severity: 'success', summary: 'Product Collapsed', detail: event.data.name, life: 3000 });
+    }
+    addProduct(){
+      this.router.navigateByUrl('/admin/product/productadd');
     }
 }

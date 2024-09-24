@@ -1,4 +1,16 @@
 <p-toast />
+<div class="row align-items-center mb-3">
+  <div class="col">
+    <input type="text" pInputText placeholder="Tìm kiếm..." class="w-100" />
+  </div>
+  <div class="col-auto">
+    <p-dropdown optionLabel="name" placeholder="Số lượng trang"></p-dropdown>
+  </div>
+  <div class="col-auto">
+    <p-button label="Thêm Sản Phẩm" icon="pi pi-plus" size="large" severity="success" class="ml-2"
+      (onClick)="addProduct()"></p-button>
+  </div>
+</div>
 <p-table [value]="products" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }" [expandedRowKeys]="expandedRows"
   (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
   <ng-template pTemplate="header">
