@@ -9,6 +9,7 @@ namespace API.Interfaces
         ISizeRepository SizeRepository { get; }
         IColorRepository ColorRepository{ get; }
         IVariantRepository VariantRepository { get; }
+        ICartItemsRepository CartItemsRepository {get;}
         IShoppingCartRepository ShoppingCartRepository{get;}
         IImageRepository ImageRepository { get; }
         IMessageRepository MessageRepository { get; }

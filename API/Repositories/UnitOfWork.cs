@@ -13,11 +13,14 @@ namespace API.Repositories
         private readonly IMessageRepository _messageRepository;
         private readonly IImageRepository _imageRepository;
         private readonly IVariantRepository _variantRepository; 
+        private readonly ICartItemsRepository _cartItemsRepository;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
 
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
-             IImageRepository imageRepository, IVariantRepository variantRepository)
+             IImageRepository imageRepository, IVariantRepository variantRepository,
+             ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -27,6 +30,8 @@ namespace API.Repositories
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
             _variantRepository = variantRepository;
+            _cartItemsRepository=cartItemsRepository;
+            _shoppingCartRepository=shoppingCartRepository;
         }
         public ICategoryRepository CategoryRepository => _categoryRepository;
         public IProductRepository ProductRepository => _productRepository;
@@ -35,7 +40,8 @@ namespace API.Repositories
         public IMessageRepository MessageRepository => _messageRepository;
         public IImageRepository ImageRepository => _imageRepository;
         public IVariantRepository VariantRepository => _variantRepository;
-
+        public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
+        public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
         public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;
