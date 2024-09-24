@@ -5,6 +5,6 @@ namespace API.Helper
     public class RoleParams : PaginationParams
     {
         public string? Query { get; set; }
-        public string OrderBy { get; set; } = "name";
+        public string OrderBy { get; set; } = "created_desc";
     }
 }

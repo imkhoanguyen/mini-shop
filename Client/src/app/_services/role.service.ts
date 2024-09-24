@@ -13,4 +13,16 @@ export class RoleService {
   getRoles() {
     return this.http.get<Role[]>(this.baseUrl + '/role');
   }
+
+  addRole(role: Role) {
+    return this.http.post<Role>(this.baseUrl + '/role', role);
+  }
+
+  updateRole(roleId: string, role: Role) {
+    return this.http.put(`${this.baseUrl}/role/${roleId}`, role);
+  }
+
+  deleteRole(roleId: string) {
+    return this.http.delete(`${this.baseUrl}/role/${roleId}`);
+  }
 }
