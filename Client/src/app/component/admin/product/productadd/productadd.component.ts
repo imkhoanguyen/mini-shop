@@ -4,16 +4,24 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
-import { MessageService, PrimeNGConfig } from 'primeng/api';
+import { MessageService} from 'primeng/api';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../../_services/product.service';
 import { StepperModule } from 'primeng/stepper';
 import { EditorModule } from 'primeng/editor';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUploadModule, FileUploadEvent} from 'primeng/fileupload';
 import { BadgeModule } from 'primeng/badge';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { Category } from '../../../../_models/category.module';
+import { CategoryService } from '../../../../_services/category.service';
+import { Size } from '../../../../_models/size.module';
+import { Color } from '../../../../_models/color.module';
+import { SizeService } from '../../../../_services/size.service';
+import { ColorService } from '../../../../_services/color.service';
+
 @Component({
   selector: 'app-productadd',
   standalone: true,
@@ -31,19 +39,35 @@ import { InputNumberModule } from 'primeng/inputnumber';
     FormsModule,
     FileUploadModule,
     BadgeModule,
-    InputNumberModule
+    InputNumberModule,
+    MultiSelectModule,
+    ToastModule
+
   ],
   providers: [MessageService],
   templateUrl: './productadd.component.html',
   styleUrls: ['./productadd.component.css'],
 })
 export class ProductaddComponent {
-  visible: boolean = false;
+  productForm!: FormGroup;
+  variantsForm: FormGroup;
+  //Category
+  categories: Category[] = [];
+  selectedCategories: any[] = [];
+  searchCategory: string = '';
+
+  //Size
+  sizes: Size[] = [];
+  selectedSizes: any[] = [];
+  searchSize: string = '';
+
+  //color
+  colors: Color[] = [];
+  selectedColors: any[] = [];
+  searchColor: string = '';
+
+  uploadedFiles: any[] = [];
   btnText: string = 'Thêm';
-  productForm: any;
-  text: string | undefined;
-  files = [];
-   variants: any[] = [{ type: 'Size', value: '' }];
 
   // Options for the dropdown (Size, Color, etc.)
   variantOptions = [
@@ -57,91 +81,188 @@ export class ProductaddComponent {
 
   constructor(
     private builder: FormBuilder,
-    public productService: ProductService,
+    private productService: ProductService,
     private messageService: MessageService,
-    private config: PrimeNGConfig
-  ) {}
+    private categoryService: CategoryService,
+    private sizeService: SizeService,
+    private colorService: ColorService)
+  {
+    this.variantsForm = this.builder.group({
+      variants: this.builder.array([]),
+    });
+  }
 
   ngOnInit(): void {
+    this.initializeProductForm();
+    this.loadCategories();
+    this.loadSizes();
+    this.loadColors();
+    this.loadProductData();
+
+  }
+  initializeProductForm(): void {
     this.productForm = this.builder.group({
-      id: this.builder.control(0),
-      name: this.builder.control(''),
+      id: [0],
+      name: ['', Validators.required],
+      selectedCategory: [null, Validators.required],
+      description: ['', Validators.required],
     });
-    this.variants.push(1);
+  }
+  private showMessage(severity: string, summary: string, detail: string, life: number = 3000): void {
+    this.messageService.add({ severity, summary, detail, life });
+  }
+  addCategory() {
+    const data : Category = {
+      id: 0,
+      name: this.searchCategory,
+      created: new Date(),
+      updated: new Date(),
 
+    };
+    console.log('item: '+ this.searchCategory);
+    this.categoryService.addCategory(data).subscribe(
+      (res: any) => {
+        this.showMessage('success', 'Thành Công', 'Thêm danh mục thành công.');
+        this.loadCategories();
+      },
+      (error) => {
+        this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm danh mục.');
+        console.error('Failed to add category', error);
+      }
+    );
+  }
+  addSize() {
+    const data : Size = {
+      id: 0,
+      name: this.searchSize,
+
+    };
+    console.log('item: '+ this.searchSize);
+    this.sizeService.addSize(data).subscribe(
+      (res: any) => {
+        this.showMessage('success', 'Thành Công', 'Thêm kích thước thành công.');
+        this.loadSizes();
+      },
+      (error) => {
+        this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm kích thước.');
+        console.error('Failed to add Size', error);
+      }
+    );
+  }
+  addColor() {
+    const data : Color = {
+      id: 0,
+      name: this.searchColor,
+      code: ""
+
+    };
+    console.log('item: '+ this.searchColor);
+    this.colorService.addColor(data).subscribe(
+      (res: any) => {
+        this.showMessage('success', 'Thành Công', 'Thêm màu thành công.');
+        this.loadColors();
+      },
+      (error) => {
+        this.showMessage('error', 'Thất Bại', 'Li khi thêm màu.');
+        console.error('Failed to add Color', error);
+      }
+    );
+  }
+  // ----------------Category------------------
+  loadCategories(): void {
+    this.categoryService.getAllCategories().subscribe(
+      (data: Category[]) => {
+        this.categories = data
+      },
+      (error) => {
+        this.showMessage('error', 'Thất Bại', 'Lỗi khi tải danh mục.');
+        console.error('Failed to load categories', error);
+      }
+    );
+  }
+  loadSizes(): void {
+    this.sizeService.getAllSizes().subscribe(
+      (data: Size[]) => {
+        this.sizes = data
+      },
+      (error) => {
+        this.showMessage('error', 'Thất Bại', 'Lỗi khi tải kích thước.');
+        console.error('Failed to load Sizes', error);
+      }
+    );
+  }
+  loadColors(): void {
+    this.colorService.getAllColors().subscribe(
+      (data: Color[]) => {
+        this.colors = data;
+      },
+      (error) => {
+        this.showMessage('error', 'Thất Bại', 'Lỗi khi tải màu sắc.');
+        console.error('Failed to load Colors', error);
+      }
+    );
+  }
+  onCategoryFilter(event: any) {
+    this.searchCategory = event.filter;
+  }
+  onSizeFilter(event: any) {
+    this.searchSize = event.filter;
+  }
+  onColorFilter(event: any) {
+    this.searchColor = event.filter;
+  }
+  loadProductData(): void {
     const productItems = this.productService.productItems();
-    this.productForm.setValue({
-      id: productItems.id,
-      name: productItems.name,
-    });
-    this.btnText = productItems.id > 0 ? 'Cập Nhật' : 'Thêm';
-  }
-
-  showForm() {
-    this.visible = true;
-  }
-
-  addProduct() {}
-
-  choose(event: any, callback: Function) {
-    callback();
-  }
-
-  onRemoveTemplatingFile(event: any, file: any, removeFileCallback: Function, index: number) {
-    removeFileCallback(event, index);
-    this.totalSize -= parseInt(this.formatSize(file.size));
-    this.totalSizePercent = this.totalSize / 10;
-  }
-
-  onClearTemplatingUpload(clear: Function) {
-    clear();
-    this.totalSize = 0;
-    this.totalSizePercent = 0;
-  }
-
-  onTemplatedUpload() {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Success',
-      detail: 'File Uploaded',
-      life: 3000,
-    });
-  }
-
-  onSelectedFiles(event: any) {
-    this.files = event.currentFiles;
-    this.files.forEach((file: any) => {
-      this.totalSize += parseInt(this.formatSize(file.size));
-    });
-    this.totalSizePercent = this.totalSize / 10;
-  }
-
-  uploadEvent(callback: Function) {
-    callback();
-  }
-
-  formatSize(bytes: number): string {
-    const k = 1024;
-    const dm = 3;
-    const sizes = this.config.translation?.fileSizeTypes || ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    if (bytes === 0) {
-      return `0 ${sizes[0]}`;
+    if (productItems) {
+      this.productForm.patchValue({
+        id: productItems.id,
+        name: productItems.name,
+        selectedCategory: productItems.categoryIds,
+        description: productItems.description
+      });
+      this.btnText = productItems.id > 0 ? 'Cập Nhật' : 'Thêm';
     }
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    const formattedSize = parseFloat((bytes / Math.pow(k, i)).toFixed(dm));
-
-    return `${formattedSize} ${sizes[i]}`;
+  }
+  addProduct(){}
+  // ----------------Image------------------
+  onUpload(event: any): void {
+    for (let file of event.files) {
+      this.uploadedFiles.push(file);
+    }
+    this.messageService.add({ severity: 'info', summary: 'File Uploaded', detail: '' });
   }
 
-   addVariant() {
-    this.variants.push({ type: 'Size', value: '' });
-    console.log(this.variants);
+  //-----------Variant------------
+  get variants(): FormArray {
+    return this.variantsForm.get('variants') as FormArray;
+  }
+  createVariant(): FormGroup {
+    return this.builder.group({
+      price: ['', Validators.required],
+      discountPrice: [null],
+      quantity: [1, Validators.required],
+      size: ['', Validators.required],
+      color: ['', Validators.required]
+    });
+  }
+  addVariant(): void {
+    const variantGroup = this.builder.group({
+      selectedColors: this.builder.control([], Validators.required),
+      selectedSizes: this.builder.control([], Validators.required),
+      price: this.builder.control(null, Validators.required),
+      priceSell: this.builder.control(null),
+      quantity: this.builder.control(null, Validators.required),
+    });
+
+    this.variants.push(variantGroup);
+  }
+  removeVariant(index: number): void {
+    this.variants.removeAt(index);
   }
 
-  // Method to remove a variant
-  removeVariant(index: number) {
-    this.variants.splice(index, 1);
+
+  onSubmit(): void {
+    console.log(this.variantsForm.value);
   }
 
 }

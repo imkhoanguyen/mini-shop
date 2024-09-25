@@ -62,14 +62,14 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             if (await _unitOfWork.SizeRepository.SizeExistsAsync(sizeAddDto.Name!))
             {
-                return BadRequest("size với tên này đã tồn tại.");
+                return BadRequest(new {message = "Size với tên này đã tồn tại."});
             }
             var size = SizeAddDto.toSize(sizeAddDto);
             _unitOfWork.SizeRepository.AddSize(size);
 
             if (await _unitOfWork.Complete())
-                return Ok("Add size successfully.");
-            return BadRequest("Add size failed.");
+                return Ok(new {message ="Thêm kích thước thành công"});
+            return BadRequest(new {message ="Thêm kích thước thất bại"});
 
         }
 
@@ -81,14 +81,14 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             if (await _unitOfWork.SizeRepository.SizeExistsAsync(sizeDto.Name!))
             {
-                return BadRequest("size với tên này đã tồn tại.");
+                return BadRequest(new {message ="size với tên này đã tồn tại."});
             }
             var size = SizeDto.toSize(sizeDto);
             _unitOfWork.SizeRepository.UpdateSize(size);
 
             if (await _unitOfWork.Complete())
-                return Ok("Update size successfully.");
-            return BadRequest("Update size failed.");
+                return Ok(new {message ="Cập nhật kích thước thành công."});
+            return BadRequest(new {message ="Cập nhật kích thước thất bại."});
 
         }
 

@@ -41,9 +41,6 @@ export class CategoryService {
 
   getAllCategories(){
     return this.http.get<Category[]>(this.apiUrl + "/Category/GetAll")
-      .subscribe((data) => {
-        this.categoryList.set(data);
-      });
   }
 
   getCategoriesAllPaging(pageNumber: number, pageSize: number, searchString?: string): Observable<Pagination<Category>>{
