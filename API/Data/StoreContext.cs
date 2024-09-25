@@ -21,7 +21,7 @@ namespace API.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts {get;set;}
         public DbSet<ShippingMethod> ShippingMethods {get;set;}
-        //public DbSet<Address> Addresses { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()

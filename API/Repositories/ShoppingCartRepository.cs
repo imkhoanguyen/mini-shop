@@ -37,10 +37,6 @@ namespace API.Repositories
 
         }
 
-        void IShoppingCartRepository.AddShoppingCart(ShoppingCart shoppingCart)
-        {
-            throw new NotImplementedException();
-        }
     }
     
 }
