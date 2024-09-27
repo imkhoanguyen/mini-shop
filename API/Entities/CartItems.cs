@@ -13,7 +13,7 @@ namespace API.Entities
         [ForeignKey("ShoppingCartId")]
         public ShoppingCart? ShoppingCart{get;set;}
         public int Quantity{get;set;}
-        public Decimal Price{get;set;}
+        public decimal Price{get;set;}
 
     }
 }

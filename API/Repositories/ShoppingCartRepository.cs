@@ -28,15 +28,6 @@ namespace API.Repositories
         {
             
         }
-
-        
-        public async Task UpdateShoppingCart (ShoppingCart shoppingCart)
-        {
-            
-
-
-        }
-
     }
     
 }

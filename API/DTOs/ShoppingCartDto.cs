@@ -10,10 +10,8 @@ namespace API.DTOs
         {
             return new ShoppingCart{
                 Id=shogpingCartDto.Id
-                
             };
         }
-        
     }
     public class ShoppingCartAddDto
     {

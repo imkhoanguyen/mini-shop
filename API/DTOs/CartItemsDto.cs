@@ -43,5 +43,23 @@ namespace API.DTOs
                 ShoppingCartId=cartItemsAddDto.ShoppingCartId
             };
         }
+        
+    }
+    public class CartItemsUpdateDto
+    {
+        public int ShoppingCartId { get; set; }
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public decimal Price { get; set; }
+        public static CartItems toCartItems(CartItemsUpdateDto cartItemsUpdateDto)
+        {
+            return new CartItems
+            {
+                Price=cartItemsUpdateDto.Price,
+                Quantity=cartItemsUpdateDto.Quantity,
+                ProductId=cartItemsUpdateDto.ProductId,
+                ShoppingCartId=cartItemsUpdateDto.ShoppingCartId
+            };
+        }
     }
 }
