@@ -4,14 +4,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import {FormArray,FormBuilder,FormGroup,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
@@ -34,7 +27,6 @@ import { VariantService } from '../../../../_services/variant.service';
 import { Variant, VariantAdd } from '../../../../_models/variant.module';
 import { Image, ImageAdd } from '../../../../_models/image.module';
 import { Product, ProductAdd } from '../../../../_models/product.module';
-
 @Component({
   selector: 'app-productadd',
   standalone: true,

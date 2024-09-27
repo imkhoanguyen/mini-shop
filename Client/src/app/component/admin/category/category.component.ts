@@ -41,16 +41,15 @@ export class CategoryComponent implements OnInit, OnDestroy {
   btnText: string = 'Thêm';
   headerText: string = 'Thêm Danh Mục';
   categoryForm: any;
-
-  paginatedCategory: any;
-  totalRecords: number = 0;
+  
   pageSizeOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
     { label: '20', value: 20 },
     { label: '50', value: 50 },
   ];
-
+  paginatedCategory: any;
+  totalRecords: number = 0;
   pageSize: number = 5;
   pageNumber: number = 1;
   searchString: string = "";
