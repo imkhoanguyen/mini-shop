@@ -12,22 +12,22 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("AddVariant")]
-        public async Task<IActionResult> AddVariant([FromForm] VariantAddDto variantAddDto)
+        public async Task<IActionResult> AddVariant([FromBody] VariantAddDto variantAddDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Dữ liệu không hợp lệ.");
+                return BadRequest(new {message ="Dữ liệu không hợp lệ."});
             }
             var variant = VariantAddDto.toVariant(variantAddDto);
             _unitOfWork.VariantRepository.AddVariant(variant);
             if (await _unitOfWork.Complete())
             {
-                return Ok("Add variant successfully.");
+                return Ok(new {message ="Add variant successfully."});
             }
-            return BadRequest("Add variant failed.");
+            return BadRequest(new {message ="Add variant failed."});
         }
         [HttpPost("UpdateVariant")]
-        public async Task<IActionResult> UpdateVariant([FromForm] VariantDto variantDto)
+        public async Task<IActionResult> UpdateVariant([FromBody] VariantDto variantDto)
         {
             if (!ModelState.IsValid)
             {

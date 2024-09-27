@@ -16,15 +16,15 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Dữ liệu không hợp lệ.");
+                return BadRequest(new {message ="Dữ liệu không hợp lệ."});
             }
             var image = await ImageAddDto.toImage(imageAddDto, imageService);
             _unitOfWork.ImageRepository.AddImage(image);
             if (await _unitOfWork.Complete())
             {
-                return Ok("Add image successfully.");
+                return Ok(new {message ="Add image successfully."});
             }
-            return BadRequest("Add image failed.");
+            return BadRequest(new {message ="Add image failed."});
         }
         [HttpPut("UpdateImages")]
         public async Task<IActionResult> UpdateImages([FromForm] ImageUpdateDto imageUpdateDto, IImageService imageService)

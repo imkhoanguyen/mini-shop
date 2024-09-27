@@ -8,8 +8,15 @@ export interface Product
   name: string;
   description: string;
   created: Date;
+  updated: Date;
   variants: Variant[];
   categoryIds: Category[];
   imageUrls: Image[];
   status: number;
+}
+
+export interface ProductAdd{
+  name: string;
+  description: string;
+  categoryIds: Category[];
 }

@@ -1,4 +1,3 @@
-using api.Data.Seed;
 using API.Data;
 using API.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +10,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddAuthentication();
+builder.Services.SeedDataServices();
 
 var app = builder.Build();
 
@@ -24,27 +25,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+//app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// seed data
-builder.Services.SeedDataServices();
-try
-{
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<StoreContext>();
-    await context.Database.MigrateAsync();
-    await StoreContextSeed.SeedAsync(context);
-}
-catch (Exception ex)
-{
-    Console.WriteLine(ex.ToString());
-    throw;
-}
-
 app.Map("/", () => Results.Redirect("/swagger"));
 app.Run();

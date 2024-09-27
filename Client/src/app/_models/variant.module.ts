@@ -6,6 +6,16 @@ export interface Variant{
   price: number;
   priceSell: number;
   quantity: number;
-  sizeId: Size[];
-  colorId: Color[];
+  sizeId: number;
+  colorId: number;
+  productId: number;
 }
+export interface VariantAdd{
+  price: number;
+  priceSell: number;
+  quantity: number;
+  sizeId: number;
+  colorId: number;
+  productId: number;
+}
+

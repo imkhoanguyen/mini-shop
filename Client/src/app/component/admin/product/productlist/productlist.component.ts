@@ -7,12 +7,13 @@ import { ButtonModule } from 'primeng/button';
 import { RatingModule } from 'primeng/rating';
 import { ToastModule } from 'primeng/toast';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Product } from '../../../../_models/product.module';
 import { ProductService } from '../../../../_services/product.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { Route, Router } from '@angular/router';
+import { InputSwitchModule } from 'primeng/inputswitch';
 @Component({
   selector: 'app-productlist',
   standalone: true,
@@ -25,14 +26,15 @@ import { Route, Router } from '@angular/router';
     ToastModule,
     CommonModule,
     FormsModule,
-    DropdownModule],
+    DropdownModule,
+    InputSwitchModule],
   templateUrl: './productlist.component.html',
   styleUrl: './productlist.component.css',
   providers: [MessageService]
 })
 export class ProductlistComponent {
   products!: Product[];
-
+  formGroup: FormGroup | undefined;
 
     expandedRows: { [key: number]: boolean } = {};
 
@@ -44,15 +46,12 @@ export class ProductlistComponent {
         this.productService.getAllProduct().subscribe(
             (products: Product[]) => {
                 this.products = products;
-
-                this.products.forEach((product) => {
-                  console.log(product);
-                });
             },
             (error) => {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to load products', life: 3000 });
             }
         );
+        
     }
 
     expandAll() {
@@ -88,9 +87,9 @@ export class ProductlistComponent {
         case 'danger':
           return 'danger';
         case 'unknown':
-          return undefined; // or another valid type if needed
+          return undefined;
         default:
-          return 'secondary'; // fallback type if necessary
+          return 'secondary';
       }
     }
 

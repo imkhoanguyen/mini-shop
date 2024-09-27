@@ -1,7 +1,8 @@
 import { Injectable, signal } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { HttpClient } from "@angular/common/http";
-import { Product } from "../_models/product.module";
+import { Product, ProductAdd } from "../_models/product.module";
+import { Observable } from "rxjs";
 
 @Injectable(
 {
@@ -18,12 +19,13 @@ export class ProductService {
   name: "",
   description: "",
   created: new Date(),
+  updated: new Date(),
   variants: [],
   categoryIds: [],
   imageUrls: [],
   status: 0,
   });
-  addProduct(data: Product){
+  addProduct(data: ProductAdd): Observable<any>{
     return this.http.post(this.apiUrl + "/Product/Add", data);
   }
   updateProduct(data: Product){

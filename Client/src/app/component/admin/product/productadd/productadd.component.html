@@ -1,4 +1,4 @@
-<div class="card" style="height: auto;">
+<div class="card" style="height: auto">
   <div>
     <form [formGroup]="productForm" (ngSubmit)="addProduct()">
       <p-toast />
@@ -6,33 +6,22 @@
         <p-stepperPanel header="Bước I">
           <ng-template pTemplate="content" let-nextCallback="nextCallback">
             <div class="flex flex-column p-4">
-              <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium p-3">
+              <div
+                class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium p-3">
                 <div class="row">
                   <div class="mb-4 col-md-6">
                     <label for="name" class="font-semibold">Tên:</label>
-                    <input
-                      pInputText
-                      id="name"
-                      class="flex-auto"
-                      autocomplete="on"
-                      formControlName="name"
-                    />
+                    <input pInputText id="name" class="flex-auto" autocomplete="on" formControlName="name" />
                   </div>
                   <div class="mb-4 col-md-6">
                     <label for="categories" class="font-semibold">Danh Mục:</label>
-                    <p-multiSelect
-                      [options]="categories"
-                      formControlName="selectedCategories"
-                      placeholder="Chọn Danh Mục"
-                      optionLabel="name"
-                      optionValue="id"
-                      display="chip"
-                      [(ngModel)]="selectedCategories"
-                      [showClear]="true"
-                      [filter]="true"
-                      (onFilter)="onCategoryFilter($event)"
-                    >
-                      <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                    <p-multiSelect [options]="categories" formControlName="selectedCategories"
+                      placeholder="Chọn Danh Mục" optionLabel="name" optionValue="id" display="chip"
+                      [(ngModel)]="selectedCategories" [showClear]="true" [filter]="true"
+                      (onFilter)="onCategoryFilter($event)">
+                      <ng-template let-item pTemplate="item">{{
+                        item.name
+                        }}</ng-template>
                       <ng-template pTemplate="empty">
                         <div class="no-data">
                           No data found.
@@ -46,21 +35,12 @@
                 </div>
                 <div class="mb-4">
                   <label for="description" class="font-semibold">Mô tả:</label>
-                  <textarea
-                    rows="5"
-                    pInputTextarea
-                    formControlName="description"
-                  ></textarea>
+                  <textarea rows="5" pInputTextarea formControlName="description" style="width: 100%"></textarea>
                 </div>
               </div>
             </div>
             <div class="flex justify-content-end">
-              <p-button
-                label="Tiếp theo"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                (onClick)="nextCallback.emit()"
-              />
+              <p-button label="Tiếp theo" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
             </div>
           </ng-template>
         </p-stepperPanel>
@@ -68,37 +48,29 @@
         <p-stepperPanel header="Bước II">
           <ng-template pTemplate="content" let-prevCallback="prevCallback" let-nextCallback="nextCallback">
             <div class="flex flex-column p-4">
-              <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium p-3">
-                <p-fileUpload
-                  name="demo[]"
-                  url="https://www.primefaces.org/cdn/api/upload.php"
-                  (onUpload)="onUpload($event)"
-                  [multiple]="true"
-                  accept="image/*"
-                  maxFileSize="1000000"
-                >
-                  <ng-template pTemplate="content">
-                    <ul *ngIf="uploadedFiles.length">
-                      <li *ngFor="let file of uploadedFiles">
-                        {{ file.name }} - {{ file.size }} bytes
-                      </li>
-                    </ul>
-                  </ng-template>
-                </p-fileUpload>
+              <div
+                class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium p-3">
+                <form [formGroup]="imageForm">
+                  <p-fileUpload name="demo[]" url="https://www.primefaces.org/cdn/api/upload.php"
+                    (onUpload)="onUpload($event)" [multiple]="true" accept="image/*" maxFileSize="1000000">
+                    <ng-template pTemplate="content">
+                      <ol *ngIf="uploadedFiles.length">
+                        <li *ngFor="let file of uploadedFiles; let i = index">
+                          <p-radioButton name="selectedMainImage" [value]="file.name"
+                            formControlName="selectedMainImage" [inputId]="'isMainId' + i"></p-radioButton>
+                          <label [for]="'isMainId' + i" class="ml-2">IsMain</label>
+                          {{ file.name }} - {{ file.size }} bytes
+                        </li>
+                      </ol>
+                    </ng-template>
+                  </p-fileUpload>
+                </form>
               </div>
+
             </div>
-            <div class="flex justify-content-between pt-4">
-              <p-button
-                label="Quay lại"
-                icon="pi pi-arrow-left"
-                (onClick)="prevCallback.emit()"
-              />
-              <p-button
-                label="Tiếp theo"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                (onClick)="nextCallback.emit()"
-              />
+            <div class="d-flex justify-content-between">
+              <p-button label="Quay lại" icon="pi pi-arrow-left" (onClick)="prevCallback.emit()" />
+              <p-button label="Tiếp theo" icon="pi pi-arrow-right" iconPos="right" (onClick)="nextCallback.emit()" />
             </div>
           </ng-template>
         </p-stepperPanel>
@@ -111,114 +83,46 @@
                   <h5 class="card-title mb-0">Variants</h5>
                 </div>
                 <div class="card-body">
-                  <form [formGroup]="variantsForm" (ngSubmit)="onSubmit()">
+                  <form [formGroup]="variantsForm">
                     <div formArrayName="variants">
                       <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="row g-4 mb-4 border p-3 rounded">
                         <div class="col-md-4">
                           <label class="form-label">Giá tiền</label>
-                          <p-inputNumber
-                            placeholder="Giá tiền"
-                            mode="currency"
-                            currency="VND"
-                            locale="en-US"
-                            formControlName="price"
-                            class="w-100 mb-2"
-                          />
-                          <p-inputNumber
-                            placeholder="Giá tiền giảm (nếu có)"
-                            mode="currency"
-                            currency="VND"
-                            locale="en-US"
-                            formControlName="priceSell"
-                            class="w-100 mb-2"
-                          />
-                          <p-inputNumber
-                            placeholder="Số lượng"
-                            mode="decimal"
-                            inputId="withoutgrouping"
-                            [useGrouping]="false"
-                            formControlName="quantity"
-                            class="w-100"
-                          />
+                          <p-inputNumber placeholder="Giá tiền" mode="currency" currency="VND" locale="en-US" formControlName="price" class="w-100 mb-2" />
+                          <p-inputNumber placeholder="Giá tiền giảm (nếu có)" mode="currency" currency="VND" locale="en-US" formControlName="priceSell" class="w-100 mb-2" />
+                          <p-inputNumber placeholder="Số lượng" mode="decimal" [useGrouping]="false" formControlName="quantity" class="w-100" />
                         </div>
 
                         <div class="col-md-4">
                           <label class="form-label">Size</label>
-                          <p-multiSelect
-                            [options]="sizes"
-                            formControlName="selectedSizes"
-                            placeholder="Chọn Kích thước"
-                            optionLabel="name"
-                            optionValue="id"
-                            display="chip"
-                            [(ngModel)]="selectedSizes"
-                            [showClear]="true"
-                            [filter]="true"
-                            (onFilter)="onSizeFilter($event)"
-                          >
+                          <p-dropdown [options]="sizes" formControlName="sizeId" placeholder="Chọn Kích thước" optionLabel="name" optionValue="id" display="chip" [showClear]="true" [filter]="true">
                             <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
-                            <ng-template pTemplate="empty">
-                              <div class="no-data">
-                                No data found.
-                                <button (click)="addSize()" class="btn btn-primary">Add Size</button>
-                              </div>
-                            </ng-template>
-                          </p-multiSelect>
+                          </p-dropdown>
 
-                          <br><label class="form-label">Color</label>
-                          <p-multiSelect
-                            [options]="colors"
-                            formControlName="selectedColors"
-                            placeholder="Chọn Màu Sắc"
-                            optionLabel="name"
-                            optionValue="id"
-                            display="chip"
-                            [(ngModel)]="selectedColors"
-                            [showClear]="true"
-                            [filter]="true"
-                            (onFilter)="onColorFilter($event)"
-                          >
+                          <label class="form-label">Color</label>
+                          <p-dropdown [options]="colors" formControlName="colorId" placeholder="Chọn Màu Sắc" optionLabel="name" optionValue="id" display="chip" [showClear]="true" [filter]="true">
                             <ng-template let-item pTemplate="item">
                               <div class="flex align-items-center">
                                 <span class="color-box" [ngStyle]="{ backgroundColor: item.color }"></span>
                                 <span class="ml-2">{{ item.name }}</span>
                               </div>
                             </ng-template>
-                            <ng-template pTemplate="empty">
-                              <div class="no-data">
-                                No data found.
-                                <button (click)="addColor()" class="btn btn-primary">Add Color</button>
-                              </div>
-                            </ng-template>
-                          </p-multiSelect>
+                          </p-dropdown>
                         </div>
 
                         <div class="col-md-4 d-flex align-items-end">
-                          <p-button
-                            icon="pi pi-times"
-                            (click)="removeVariant(i)"
-                            class="me-2"
-                            severity="danger"
-                            label="Remove"
-                          ></p-button>
+                          <p-button icon="pi pi-times" (click)="removeVariant(i)" class="me-2" severity="danger" label="Remove"></p-button>
                         </div>
                       </div>
                     </div>
                   </form>
+
                 </div>
                 <div class="card-footer">
                   <div class="d-flex justify-content-between">
-                    <p-button
-                      label="Thêm biến thể"
-                      icon="pi pi-plus"
-                      (click)="addVariant()"
-                    ></p-button>
-                    <p-button
-                      label="Lưu sản phẩm"
-                      icon="pi pi-check"
-                      (click)="onSubmit()"
-                      [disabled]="!productForm.valid || !variantsForm.valid"
-                    ></p-button>
+                    <p-button label="Thêm biến thể" icon="pi pi-plus" (click)="addVariant()"></p-button>
+                    <p-button label="Lưu sản phẩm" icon="pi pi-check" (click)="onSubmit()"
+                      [disabled]="!productForm.valid || !variantsForm.valid"></p-button>
                   </div>
                 </div>
               </div>
