@@ -12,6 +12,7 @@ namespace API.Entities
         
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
+        public CartItems CartItems{get;set;}
         public ProductStatus Status { get; set; } = ProductStatus.Draft;
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; } = DateTime.UtcNow;

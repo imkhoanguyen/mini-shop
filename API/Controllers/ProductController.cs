@@ -59,26 +59,22 @@ namespace api.Controllers
 
         // POST api/Product/Add
         [HttpPost("Add")]
-        public async Task<IActionResult> AddProduct([FromForm] ProductAddDto productAddDto)
+        public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             if (await _unitOfWork.ProductRepository.ProductExistsAsync(productAddDto.Name!))
             {
-                return BadRequest("Sản phẩm với tên này đã tồn tại.");
+                return BadRequest(new {message ="Sản phẩm với tên này đã tồn tại."});
             }
             var product = ProductAddDto.toProduct(productAddDto);
-
-            if (product.Id != 0)
-            {
-                return BadRequest("Product Id đã được gán trước khi thêm vào cơ sở dữ liệu.");
-            }
-            await _unitOfWork.ProductRepository.AddProduct(product);
+            _unitOfWork.ProductRepository.AddProduct(product);
 
             if (await _unitOfWork.Complete())
-                return Ok("Add Product successfully.");
-            return BadRequest("Add Product failed.");
+                return Ok(new {id = product.Id, message ="Add Product successfully."});
+                await _unitOfWork.ProductRepository.AddProductCategory(product);
+            return BadRequest(new {message ="Add Product failed."});
         }
 
         // PUT api/Product/Update

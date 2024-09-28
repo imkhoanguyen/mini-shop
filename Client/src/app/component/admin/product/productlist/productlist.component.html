@@ -11,7 +11,7 @@
       (onClick)="addProduct()"></p-button>
   </div>
 </div>
-<p-table [value]="products" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }" [expandedRowKeys]="expandedRows"
+<p-table  [value]="products" dataKey="id" [tableStyle]="{ 'min-width': '60rem' }" [expandedRowKeys]="expandedRows"
   (onRowExpand)="onRowExpand($event)" (onRowCollapse)="onRowCollapse($event)">
   <ng-template pTemplate="header">
     <tr>
@@ -47,7 +47,7 @@
 
       </td>
       <td>
-        <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product.inventoryStatus)" />
+        <p-inputSwitch formControlName="checked" />
       </td>
       <td>
         <p-button icon="pi pi-file-edit" [rounded]="true" severity="info"></p-button>
@@ -77,8 +77,8 @@
       <td>{{ variant.price | currency : 'VND' }}</td>
       <td>{{ variant.priceSell | currency : 'VND' }}</td>
       <td>{{ variant.quantity }}</td>
-      <td>{{ variant.sizeId }}</td> <!-- Assuming you have size information -->
-      <td>{{ variant.colorId }}</td> <!-- Assuming you have color information -->
+      <td>{{ variant.sizeId }}</td>
+      <td>{{ variant.colorId }}</td> 
       <td><p-button type="button" icon="pi pi-search" /></td>
       <td></td>
     </tr>

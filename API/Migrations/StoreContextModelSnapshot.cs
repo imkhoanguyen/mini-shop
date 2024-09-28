@@ -148,7 +148,8 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.HasIndex("ShoppingCartId");
 
@@ -741,8 +742,8 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.CartItems", b =>
                 {
                     b.HasOne("API.Entities.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithOne("CartItems")
+                        .HasForeignKey("API.Entities.CartItems", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -956,6 +957,9 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Product", b =>
                 {
+                    b.Navigation("CartItems")
+                        .IsRequired();
+
                     b.Navigation("Images");
 
                     b.Navigation("ProductCategories");

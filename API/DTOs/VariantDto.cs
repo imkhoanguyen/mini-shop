@@ -35,11 +35,7 @@ namespace API.DTOs
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        
-        [Required]
         public int SizeId { get; set; }
-
-        [Required]
         public int ColorId { get; set; }
         public static Variant toVariant(VariantAddDto variantAddDto)
         {

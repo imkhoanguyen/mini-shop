@@ -15,11 +15,13 @@ namespace API.Repositories
             _context = context;
             _variantRepository = variantRepository;
         }
-        public async Task AddProduct(Product product)
+        public void AddProduct(Product product)
         {
             _context.Products.Add(product);
-            await _context.SaveChangesAsync();
-
+            //await _context.SaveChangesAsync();
+        }
+        public async Task AddProductCategory(Product product)
+        {
             if (product.ProductCategories != null && product.ProductCategories.Count > 0)
             {
                 foreach (var productCategory in product.ProductCategories)
@@ -148,5 +150,7 @@ namespace API.Repositories
             return new PageList<Product>(products, count, productParams.PageNumber, productParams.PageSize);
 
         }
+
+        
     }
 }
