@@ -43,7 +43,7 @@ namespace API.Controllers
             };
         }
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login([FromForm]LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -59,8 +59,7 @@ namespace API.Controllers
 
             if (user == null) return Unauthorized(new ApiResponse(401));
 
-            var result = await _signInManager.PasswordSignInAsync(
-                user.UserName!, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
+           var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (result.IsLockedOut)
             {
@@ -80,7 +79,7 @@ namespace API.Controllers
             return Unauthorized(new ApiResponse(401));
         }
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody]RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,14 +97,8 @@ namespace API.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
-           if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
-
-            return new UserDto
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                Token = _tokenService.CreateToken(user),
-            };
+            if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
+            return Ok(new { token = _tokenService.CreateToken(user) });
         }
 
         [HttpGet("emailexists")]

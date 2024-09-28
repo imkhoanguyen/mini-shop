@@ -1,10 +1,9 @@
 <div class="container" id="container">
-  
+
   <div class="form-container sign-up">
-    <form class="w-full md:w-6" action="" [formGroup]="registerForm">
-      <h1 class="text-center">Đăng ký Tài Khoản</h1>
+    <form class="w-full md:w-6" [formGroup]="registerForm">
+      <h1 class="text-center">Đăng ký </h1>
       <div class="mb-3">
-        <span>Đăng ký với E-Mail</span>
         <div class="flex flex-column gap-2">
           <label for="email">Email</label>
           <input
@@ -13,6 +12,15 @@
             aria-describedby="email-help"
             formControlName="email"
             placeholder="Nhập Email"
+            required
+          />
+        </div><div class="flex flex-column gap-2">
+          <label for="email">Username</label>
+          <input
+            pInputText
+            id="username"
+            formControlName="username"
+            placeholder="Nhập Username"
             required
           />
         </div>
@@ -42,6 +50,7 @@
           label="Đăng ký"
           icon="pi pi-user-plus"
           styleClass="p-button-success w-full"
+          (click)="onSubmit()"
         ></p-button>
       </div>
     </form>
@@ -51,7 +60,7 @@
       <div class="toggle-panel toggle-right">
         <h1>Đăng nhập tài khoản</h1>
         <p>Đăng nhập để truy cập đầy đủ các tính năng của ứng dụng.</p>
-        <button class="hidden" id="login" (click)="loginForm()">Đăng nhập</button>
+        <button class="hidden" (click)="loginForm()">Đăng nhập</button>
       </div>
     </div>
   </div>

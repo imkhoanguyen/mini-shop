@@ -4,15 +4,15 @@
     <form class="w-full md:w-6" action="" [formGroup]="loginForm">
       <h1 class="text-center">Đăng Nhập</h1>
       <div class="mb-3">
-        <span>Đăng nhập với E-Mail</span><br>
+        <span>Đăng nhập với Tài khoản</span><br>
         <div class="flex flex-column gap-2">
-          <label for="email">Email</label>
+          <label for="usernameOrEmail">Tài khoản</label>
           <input
             pInputText
-            id="email"
+            id="userOrEmail"
             aria-describedby="email-help"
-            formControlName="email"
-            placeholder="Nhập Email"
+            formControlName="userOrEmail"
+            placeholder="Nhập Email hoặc Username"
             required
           />
         </div>
@@ -31,6 +31,7 @@
           label="Đăng nhập"
           icon="pi pi-user"
           styleClass="w-full mx-auto"
+          (click)="onSubmit()"
         ></p-button>
       </div>
 
