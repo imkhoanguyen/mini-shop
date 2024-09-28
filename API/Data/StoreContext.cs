@@ -46,11 +46,6 @@ namespace API.Data
                 .HasForeignKey(m => m.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // builder.Entity<Image>()
-            //     .HasOne(i => i.Product)
-            //     .WithMany(p => p.Images)
-            //     .HasForeignKey(i => i.ProductId)
-            //     .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Product>()
                 .HasMany(p => p.Images)
                 .WithOne(i => i.Product)
