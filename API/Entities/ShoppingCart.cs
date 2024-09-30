@@ -6,7 +6,7 @@ namespace API.Entities
     public class ShoppingCart : BaseEntity
     {
         [Required]
-        public DateTime Created{get;set;}=DateTime.UtcNow;
+        public DateTime Created{get;set;}= DateTime.UtcNow;
         public DateTime? Updated{get;set;}
         public List<CartItems>?CartItems{get;set;}
     }

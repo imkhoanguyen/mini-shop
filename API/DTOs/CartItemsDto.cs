@@ -11,7 +11,6 @@ namespace API.DTOs
         public int Quantity{get;set;}
         [Required]
         public int ProductId { get; set; }
-        [Required]
         public int ShoppingCartId { get; set; }
         public static CartItems toCartItems(CartItemsDto cartItemsDto)
         {

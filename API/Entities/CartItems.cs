@@ -7,9 +7,10 @@ namespace API.Entities
     {
         [Required]
         public int ProductId {get;set;}
-        public int ShoppingCartId{get;set;}
         [ForeignKey("ProductId")]
         public Product? Product{get;set;}
+        public int ShoppingCartId{get;set;}
+        
         [ForeignKey("ShoppingCartId")]
         public ShoppingCart? ShoppingCart{get;set;}
         public int Quantity{get;set;}

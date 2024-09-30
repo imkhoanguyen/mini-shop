@@ -112,7 +112,7 @@ export class ProductlistComponent {
       .subscribe(
         (pagination) => {
           this.paginatedProduct = pagination;
-          this.totalRecords = pagination.count;
+          this.totalRecords = pagination.totalCount;
         },
         (error) => this.handleError(error, 'Lấy sản phẩm')
       );

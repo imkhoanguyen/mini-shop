@@ -42,9 +42,6 @@ namespace API.Data
                 .WithMany(sc =>sc.CartItems)
                 .HasForeignKey(ci=>ci.ShoppingCartId);
 
-            // builder.Entity<CartItems>()
-            //     .HasOne(ci=>ci.Product)
-            //     .WithOne(p=>p.CartItems)
 
             builder.Entity<Message>()
                 .HasOne(m => m.Sender)
