@@ -110,5 +110,6 @@ namespace api.Controllers
             return BadRequest("Delete Product failed.");
             
         }
+        
     }
 }

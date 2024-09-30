@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using API.Data.Enum;
 using API.DTOs;
 using Microsoft.VisualBasic;
@@ -8,8 +9,10 @@ namespace API.Entities
     public class Product : BaseEntity
     {
         [Required]
+        
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
+        public CartItems CartItems{get;set;}
         public ProductStatus Status { get; set; } = ProductStatus.Draft;
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; } = DateTime.UtcNow;

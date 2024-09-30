@@ -42,6 +42,7 @@ namespace API.Controllers
                 Token = _tokenService.CreateToken(user)
             };
         }
+
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
@@ -78,6 +79,7 @@ namespace API.Controllers
 
             return Unauthorized(new ApiResponse(401));
         }
+
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register([FromBody]RegisterDto registerDto)
         {
@@ -89,23 +91,19 @@ namespace API.Controllers
                 return new BadRequestObjectResult(new ApiValidationErrorResponse
                 { Errors = new[] { "Email address is in use" } });
             }
-
             var user = new AppUser
             {
                 Email = registerDto.Email,
                 UserName = registerDto.UserName
             };
-
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
             return Ok(new { token = _tokenService.CreateToken(user) });
         }
-
         [HttpGet("emailexists")]
         public async Task<ActionResult<bool>> CheckEmailExistsAsync([FromQuery] string email)
         {
             return await _userManager.FindByEmailAsync(email) != null;
         }
-
     }
 }
