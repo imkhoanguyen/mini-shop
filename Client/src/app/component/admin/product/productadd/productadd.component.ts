@@ -4,7 +4,14 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
-import {FormArray,FormBuilder,FormGroup,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
@@ -24,9 +31,10 @@ import { SizeService } from '../../../../_services/size.service';
 import { ColorService } from '../../../../_services/color.service';
 import { ImageService } from '../../../../_services/image.service';
 import { VariantService } from '../../../../_services/variant.service';
-import { Variant, VariantAdd } from '../../../../_models/variant.module';
-import { Image, ImageAdd } from '../../../../_models/image.module';
-import { Product, ProductAdd } from '../../../../_models/product.module';
+import { VariantAdd } from '../../../../_models/variant.module';
+import { Product, ProductAdd, ProductUpdate } from '../../../../_models/product.module';
+import { ActivatedRoute } from '@angular/router';
+import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
   selector: 'app-productadd',
   standalone: true,
@@ -48,6 +56,7 @@ import { Product, ProductAdd } from '../../../../_models/product.module';
     MultiSelectModule,
     ToastModule,
     RadioButtonModule,
+    ColorPickerModule,
   ],
   providers: [MessageService],
   templateUrl: './productadd.component.html',
@@ -86,7 +95,8 @@ export class ProductaddComponent {
     private variantService: VariantService,
     private imageService: ImageService,
     private sizeService: SizeService,
-    private colorService: ColorService
+    private colorService: ColorService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -95,7 +105,40 @@ export class ProductaddComponent {
     this.loadSizes();
     this.loadColors();
     this.loadProductData();
+    this.route.paramMap.subscribe((params) => {
+      const id = Number(params.get('id'));
+      if (id) {
+        this.productService.getProductById(id).subscribe((product) => {
+          console.log('Product:', product);
+          this.productForm.patchValue({
+            name: product.name,
+            selectedCategory: product.categoryIds,
+            description: product.description,
+          });
+          const variantsFormArray = this.variantsForm.get(
+            'variants'
+          ) as FormArray;
+          variantsFormArray.clear();
+          product.variants.forEach((variant) => {
+            const variantGroup = this.builder.group({
+              price: [variant.price],
+              priceSell: [variant.priceSell],
+              quantity: [variant.quantity],
+              sizeId: [variant.sizeId],
+              colorId: [variant.colorId],
+            });
+            variantsFormArray.push(variantGroup);
+          });
+          this.imageForm.patchValue({
+            selectedMainImage: product.imageUrls.find((image) => image.isMain)
+              ?.url,
+          });
+          this.uploadedFiles = product.imageUrls;
+        });
+      }
+    });
   }
+
   initializeProductForm(): void {
     this.productForm = this.builder.group({
       id: [0],
@@ -232,32 +275,57 @@ export class ProductaddComponent {
       this.btnText = productItems.id > 0 ? 'Cập Nhật' : 'Thêm';
     }
   }
-  addProduct() {
-    const productAdd: ProductAdd = {
-      name: this.productForm.value.name,
-      description: this.productForm.value.description,
-      categoryIds: this.productForm.value.selectedCategories,
-    };
-    console.log('product', productAdd);
-    this.productService.addProduct(productAdd).subscribe(
-      (productResponse: any) => {
-        const productId = productResponse?.id;
+  addOrUpdateProduct() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if(id==0){
+      const productAdd: ProductAdd = {
+        name: this.productForm.value.name,
+        description: this.productForm.value.description,
+        categoryIds: this.productForm.value.selectedCategories,
+      };
+      this.productService.addProduct(productAdd).subscribe(
+        (productResponse: any) => {
+          const productId = productResponse?.id;
+          if (productId) {
+            console.log('Product ID received:', productId);
+            this.addImages(productId);
+            this.addVariants(productId);
+          } else {
+            console.error('Product ID not received:', productResponse);
+          }
 
-        if (productId) {
-          console.log('Product ID received:', productId);
-          this.addImages(productId);
-          this.addVariants(productId);
-        } else {
-          console.error('Product ID not received:', productResponse);
+          this.showMessage('success', 'Thành Công', 'Thêm sản phẩm thành công.');
+        },
+        (error) => {
+          this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm sản phẩm.');
+          console.error('Failed to add product', error);
         }
-
-        this.showMessage('success', 'Thành Công', 'Thêm sản phẩm thành công.');
-      },
-      (error) => {
-        this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm sản phẩm.');
-        console.error('Failed to add product', error);
+      );
+    }else{
+      const productUpdate: ProductUpdate = {
+        id: id,
+        name: this.productForm.value.name,
+        description: this.productForm.value.description,
+        categoryIds: this.productForm.value.selectedCategories,
       }
-    );
+      this.productService.updateProduct(productUpdate).subscribe(
+        (productResponse: any) => {
+          const productId = productResponse?.id;
+          if (productId) {
+            console.log('Product ID received:', productId);
+            this.addImages(productId);
+            this.addVariants(productId);
+          } else {
+            console.error('Product ID not received:', productResponse);
+          }
+          this.showMessage('success', 'Thành Công', 'Cập nhật sản phẩm thành công.');
+        },
+        (error) => {
+          this.showMessage('error', 'Thất Bại', 'Lỗi khi cập nhật sản phẩm.');
+          console.error('Failed to update product', error);
+        }
+      );
+    }
   }
   addImages(productId: number) {
     const mainImage = this.imageForm.value.selectedMainImage;
@@ -269,7 +337,11 @@ export class ProductaddComponent {
       imageAdd.append('productId', productId.toString());
       this.imageService.addImage(imageAdd).subscribe(
         (response: any) => {
-          this.showMessage('success', 'Thành Công', 'Ảnh được thêm thành công!');
+          this.showMessage(
+            'success',
+            'Thành Công',
+            'Ảnh được thêm thành công!'
+          );
         },
         (error) => {
           this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm ảnh.');
@@ -279,9 +351,8 @@ export class ProductaddComponent {
     });
   }
 
-
   addVariants(productId: number) {
-    this.variants.controls.forEach(variantGroup => {
+    this.variants.controls.forEach((variantGroup) => {
       const variantAdd: VariantAdd = {
         price: variantGroup.value.price,
         priceSell: variantGroup.value.priceSell,
@@ -293,8 +364,14 @@ export class ProductaddComponent {
 
       console.log('variant', variantAdd);
       this.variantService.addVariant(variantAdd).subscribe(
-        () => this.showMessage('success', 'Thành Công', 'Biến thể được thêm thành công!'),
-        (error) => this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm biến thể.')
+        () =>
+          this.showMessage(
+            'success',
+            'Thành Công',
+            'Biến thể được thêm thành công!'
+          ),
+        (error) =>
+          this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm biến thể.')
       );
     });
   }
@@ -326,7 +403,15 @@ export class ProductaddComponent {
   }
   onUpload(event: any): void {
     for (let file of event.files) {
-      this.uploadedFiles.push(file);
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.uploadedFiles.push({
+          name: file.name,
+          size: file.size,
+          url: e.target.result, // Lưu URL hình ảnh
+        });
+      };
+      reader.readAsDataURL(file);
     }
     this.messageService.add({
       severity: 'info',
@@ -336,7 +421,7 @@ export class ProductaddComponent {
   }
   onSubmit(): void {
     if (this.productForm.valid && this.variantsForm.valid) {
-      this.addProduct();
+      this.addOrUpdateProduct();
     } else {
       this.showMessage('error', 'Thất Bại', 'Vui lòng điền đầy đủ thông tin.');
     }

@@ -13,8 +13,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
-import { count, Subscription } from 'rxjs';
-import { Pagination } from '../../../_models/pagination.module';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-categorylist',

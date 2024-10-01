@@ -1,7 +1,7 @@
 import { Injectable, signal } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Product, ProductAdd } from "../_models/product.module";
+import { Product, ProductAdd, ProductUpdate } from "../_models/product.module";
 import { Observable } from "rxjs";
 import { Pagination } from "../_models/pagination.module";
 
@@ -29,14 +29,14 @@ export class ProductService {
   addProduct(data: ProductAdd): Observable<any>{
     return this.http.post(this.apiUrl + "/Product/Add", data);
   }
-  updateProduct(data: Product){
+  updateProduct(data: ProductUpdate){
     return this.http.put(this.apiUrl + "/Product/Update", data);
   }
   deleteProduct(id: number){
     return this.http.delete(this.apiUrl + "/Product/Delete/" + id);
   }
   getProductById(id: number){
-    return this.http.get<Product>(this.apiUrl + "/Product/GetById/" + id);
+    return this.http.get<Product>(this.apiUrl + "/Product/GetProductById" + id);
   }
   getAllProduct(){
     return this.http.get<Product[]>(this.apiUrl + "/Product/GetAll");
@@ -49,7 +49,7 @@ export class ProductService {
     if(searchString){
       param = param.set("searchString", searchString);
     }
-    
+
     return this.http.get<Pagination<Product>>(this.apiUrl + "/Product/GetAllPaging", { params: param });
   }
 }

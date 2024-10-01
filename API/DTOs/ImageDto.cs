@@ -6,7 +6,7 @@ namespace API.DTOs
     public class ImageUpdateDto
     {
         public int Id { get; set; }
-        public int ProductId { get; set; }
+        public int VariantId { get; set; }
         public IFormFile? Url { get; set; }
         public bool IsMain { get; set; }
 
@@ -19,7 +19,7 @@ namespace API.DTOs
                 return new Image
                 {
                     Id = imageDto.Id,
-                    ProductId = imageDto.ProductId,
+                    VariantId = imageDto.VariantId,
                     Url = uploadResult.Url.ToString(),
                     PublicId = uploadResult.PublicId,
                     IsMain = imageDto.IsMain
@@ -30,7 +30,7 @@ namespace API.DTOs
     }
     public class ImageAddDto
     {
-        public int ProductId { get; set; }
+        public int VariantId { get; set; }
         public IFormFile? Url { get; set; }
         public bool IsMain { get; set; }
 
@@ -42,7 +42,7 @@ namespace API.DTOs
 
                 return new Image
                 {
-                    ProductId = imageAddDto.ProductId,
+                    VariantId = imageAddDto.VariantId,
                     Url = uploadResult.Url.ToString(),
                     PublicId = uploadResult.PublicId,
                     IsMain = imageAddDto.IsMain

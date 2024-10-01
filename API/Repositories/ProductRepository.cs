@@ -85,7 +85,6 @@ namespace API.Repositories
             var productDb = await _context.Products
                 .Include(p => p.Variants)
                 .Include(p => p.ProductCategories)
-                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
 
 
@@ -97,7 +96,6 @@ namespace API.Repositories
             var productDb = await _context.Products
                 .Include(p => p.Variants)
                 .Include(p => p.ProductCategories)
-                .Include(p => p.Images)
                 .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower() && !p.IsDelete);
             return productDb;
         }
@@ -111,7 +109,6 @@ namespace API.Repositories
             var productDb = await _context.Products
                 .Include(p => p.Variants)
                 .Include(p => p.ProductCategories)
-                .Include(p => p.Images)
                 .Where(p => !p.IsDelete).ToListAsync();
             return productDb;
         }
@@ -121,7 +118,6 @@ namespace API.Repositories
             var query = _context.Products
                 .Include(p => p.Variants)
                 .Include(p => p.ProductCategories)
-                .Include(p => p.Images)
                 .Where(p => !p.IsDelete)
                 .OrderBy(p => p.Id)
                 .AsQueryable();
@@ -139,7 +135,6 @@ namespace API.Repositories
                 .Where(p => productIds.Contains(p.Id))
                 .Include(p => p.Variants)
                 .Include(p => p.ProductCategories)
-                .Include(p => p.Images)
                 .ToListAsync();
 
             return new PageList<Product>(products, count, productParams.PageNumber, productParams.PageSize);

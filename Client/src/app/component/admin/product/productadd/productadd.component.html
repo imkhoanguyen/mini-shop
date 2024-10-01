@@ -1,6 +1,6 @@
 <div class="card" style="height: auto">
   <div>
-    <form [formGroup]="productForm" (ngSubmit)="addProduct()">
+    <form [formGroup]="productForm" (ngSubmit)="addOrUpdateProduct()">
       <p-toast />
       <p-stepper>
         <p-stepperPanel header="Bước I">
@@ -106,7 +106,7 @@
                           <label [for]="'isMainId' + i" class="ml-2"
                             >IsMain</label
                           >
-                          {{ file.name }} - {{ file.size }} bytes
+                          <img [src]="file.url" [alt]="file.name" width="50" height="50" />
                         </li>
                       </ol>
                     </ng-template>

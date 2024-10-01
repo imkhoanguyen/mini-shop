@@ -11,16 +11,19 @@ namespace API.Entities
         public int Quantity { get; set; }
         public VariantStatus Status { get; set; } = VariantStatus.Draft;
         public bool IsDelete { get; set; } = false;
+        
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         public Product? Product { get; set; }
-        public int SizeId { get; set; }
-        [ForeignKey("SizeId")]
+        public int? SizeId { get; set; }
         public Size? Size { get; set; }
-        public int ColorId { get; set; }
-        [ForeignKey("ColorId")]
+        
+        public int? ColorId { get; set; }
         public Color? Color { get; set; }
-        public static VariantDto toVariantDto(Variant variant)
+        
+        public List<Image> Images { get; set; } = new List<Image>();
+
+        public static VariantDto ToVariantDto(Variant variant)
         {
             return new VariantDto
             {
@@ -29,7 +32,13 @@ namespace API.Entities
                 PriceSell = variant.PriceSell,
                 Quantity = variant.Quantity,
                 SizeId = variant.SizeId,
-                ColorId = variant.ColorId
+                ColorId = variant.ColorId,
+                ImageUrls = variant.Images.Select(i => new ImageGetDto
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsMain = i.IsMain
+                }).ToList()
             };
         }
     }

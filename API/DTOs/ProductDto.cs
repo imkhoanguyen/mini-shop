@@ -47,6 +47,6 @@ namespace API.DTOs
         public DateTime Created { get; set; }
         public List<int> CategoryIds { get; set; } = new List<int>();
         public List<VariantDto> Variants { get; set; } = new List<VariantDto>();
-        public List<ImageGetDto> ImageUrls { get; set; } = new List<ImageGetDto>();
+        
     }
 }

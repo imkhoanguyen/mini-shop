@@ -20,3 +20,9 @@ export interface ProductAdd{
   description: string;
   categoryIds: Category[];
 }
+export interface ProductUpdate{
+  id: number;
+  name: string;
+  description: string;
+  categoryIds: Category[];
+}
