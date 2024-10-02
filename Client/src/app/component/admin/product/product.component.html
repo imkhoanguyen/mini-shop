@@ -43,27 +43,12 @@
   <ng-template pTemplate="header">
     <tr>
       <th style="width: 5rem"></th>
-      <th pSortableColumn="name">
-        Tên
-        <p-sortIcon field="name" />
-      </th>
-      <th>Hình ảnh</th>
-      <th pSortableColumn="description">
-        Mô tả
-        <p-sortIcon field="description" />
-      </th>
-      <th pSortableColumn="created">
-        Ngày tạo
-        <p-sortIcon field="created" />
-      </th>
-      <th pSortableColumn="category">
-        Danh mục
-        <p-sortIcon field="category" />
-      </th>
-      <th pSortableColumn="inventoryStatus">
-        Status
-        <p-sortIcon field="inventoryStatus" />
-      </th>
+      <th pSortableColumn="name">Tên sản phẩm</th>
+      <th pSortableColumn="description">Mô tả</th>
+      <th pSortableColumn="created">Ngày tạo</th>
+      <th pSortableColumn="updated">Ngày sửa</th>
+      <th pSortableColumn="category">Danh mục</th>
+      <th pSortableColumn="inventoryStatus">Status</th>
       <th>Action</th>
     </tr>
   </ng-template>
@@ -82,16 +67,6 @@
         ></p-button>
       </td>
       <td>{{ product.name }}</td>
-      <td>
-        <ng-container *ngFor="let imageUrl of product.imageUrls">
-          <img
-            [src]="imageUrl.url"
-            alt="Hình ảnh sản phẩm"
-            class="rounded img-thumbnail"
-            style="width: 50px; height: 50px; margin-right: 5px;"
-          />
-        </ng-container>
-      </td>
       <td>{{ product.description }}</td>
       <td>{{ product.created | date: 'dd/MM/yyyy' }}</td>
       <td>
@@ -127,7 +102,8 @@
           <p-table [value]="product.variants" dataKey="id">
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="id">Id Thể loại <p-sortIcon field="id" /></th>
+                <th pSortableColumn="id">ID<p-sortIcon field="id" /></th>
+                <th>Hình ảnh</th>
                 <th pSortableColumn="price">Giá <p-sortIcon field="price" /></th>
                 <th pSortableColumn="priceSell">Giá giảm <p-sortIcon field="priceSell" /></th>
                 <th pSortableColumn="quantity">Số lượng <p-sortIcon field="quantity" /></th>
@@ -139,6 +115,16 @@
             <ng-template pTemplate="body" let-variant>
               <tr>
                 <td>{{ variant.id }}</td>
+                <td>
+                  <ng-container *ngFor="let imageUrl of variant.imageUrls">
+                    <img
+                      [src]="imageUrl.url"
+                      alt="Hình ảnh sản phẩm"
+                      class="rounded img-thumbnail"
+                      style="width: 50px; height: 50px; margin-right: 5px;"
+                    />
+                  </ng-container>
+                </td>
                 <td>{{ variant.price | currency: 'VND' }}</td>
                 <td>{{ variant.priceSell | currency: 'VND' }}</td>
                 <td>{{ variant.quantity }}</td>

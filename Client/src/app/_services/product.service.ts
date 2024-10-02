@@ -23,7 +23,6 @@ export class ProductService {
   updated: new Date(),
   variants: [],
   categoryIds: [],
-  imageUrls: [],
   status: 0,
   });
   addProduct(data: ProductAdd): Observable<any>{

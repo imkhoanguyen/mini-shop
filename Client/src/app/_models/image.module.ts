@@ -3,11 +3,11 @@ export interface Image{
   url: File;
   isMain: boolean;
   publicId: string;
-  productId: number;
+  variantId: number;
 }
 export interface ImageAdd{
   url: File;
   isMain: boolean;
-  productId: number;
+  variantId: number;
 }
 

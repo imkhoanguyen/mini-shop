@@ -13,6 +13,8 @@ import { AccountService } from '../../_services/account.service';
 })
 export class LoginComponent {
   loginForm!: FormGroup;
+  isLoggedIn = false;
+  user: any;
   constructor(private router: Router,
               private accountService: AccountService
   ) {
@@ -34,11 +36,13 @@ export class LoginComponent {
     this.accountService.login(data).subscribe(
       (res: any) => {
         console.log("Login success", res);
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('userName', res.userName);
+        localStorage.setItem('role', 'user');
         this.router.navigateByUrl('/');
       },
       (error) => {
         console.log("Login failed", error);
       }
-    )
-  }
+    )}
 }

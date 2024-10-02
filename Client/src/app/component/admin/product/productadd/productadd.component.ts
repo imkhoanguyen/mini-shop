@@ -32,7 +32,11 @@ import { ColorService } from '../../../../_services/color.service';
 import { ImageService } from '../../../../_services/image.service';
 import { VariantService } from '../../../../_services/variant.service';
 import { VariantAdd } from '../../../../_models/variant.module';
-import { Product, ProductAdd, ProductUpdate } from '../../../../_models/product.module';
+import {
+  Product,
+  ProductAdd,
+  ProductUpdate,
+} from '../../../../_models/product.module';
 import { ActivatedRoute } from '@angular/router';
 import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
@@ -126,14 +130,11 @@ export class ProductaddComponent {
               quantity: [variant.quantity],
               sizeId: [variant.sizeId],
               colorId: [variant.colorId],
+              selectedMainImage: variant.imageUrls.find((image) => image.isMain)
+                ?.url,
             });
             variantsFormArray.push(variantGroup);
           });
-          this.imageForm.patchValue({
-            selectedMainImage: product.imageUrls.find((image) => image.isMain)
-              ?.url,
-          });
-          this.uploadedFiles = product.imageUrls;
         });
       }
     });
@@ -148,9 +149,6 @@ export class ProductaddComponent {
     });
     this.variantsForm = this.builder.group({
       variants: this.builder.array([]),
-    });
-    this.imageForm = this.builder.group({
-      selectedMainImage: [''],
     });
   }
   private showMessage(
@@ -270,14 +268,13 @@ export class ProductaddComponent {
         selectedCategory: productItems.categoryIds,
         description: productItems.description,
         variants: productItems.variants,
-        imageUrls: productItems.imageUrls,
       });
       this.btnText = productItems.id > 0 ? 'Cập Nhật' : 'Thêm';
     }
   }
   addOrUpdateProduct() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    if(id==0){
+    if (id == 0) {
       const productAdd: ProductAdd = {
         name: this.productForm.value.name,
         description: this.productForm.value.description,
@@ -288,26 +285,29 @@ export class ProductaddComponent {
           const productId = productResponse?.id;
           if (productId) {
             console.log('Product ID received:', productId);
-            this.addImages(productId);
             this.addVariants(productId);
           } else {
             console.error('Product ID not received:', productResponse);
           }
 
-          this.showMessage('success', 'Thành Công', 'Thêm sản phẩm thành công.');
+          this.showMessage(
+            'success',
+            'Thành Công',
+            'Thêm sản phẩm thành công.'
+          );
         },
         (error) => {
           this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm sản phẩm.');
           console.error('Failed to add product', error);
         }
       );
-    }else{
+    } else {
       const productUpdate: ProductUpdate = {
         id: id,
         name: this.productForm.value.name,
         description: this.productForm.value.description,
         categoryIds: this.productForm.value.selectedCategories,
-      }
+      };
       this.productService.updateProduct(productUpdate).subscribe(
         (productResponse: any) => {
           const productId = productResponse?.id;
@@ -318,7 +318,11 @@ export class ProductaddComponent {
           } else {
             console.error('Product ID not received:', productResponse);
           }
-          this.showMessage('success', 'Thành Công', 'Cập nhật sản phẩm thành công.');
+          this.showMessage(
+            'success',
+            'Thành Công',
+            'Cập nhật sản phẩm thành công.'
+          );
         },
         (error) => {
           this.showMessage('error', 'Thất Bại', 'Lỗi khi cập nhật sản phẩm.');
@@ -364,12 +368,15 @@ export class ProductaddComponent {
 
       console.log('variant', variantAdd);
       this.variantService.addVariant(variantAdd).subscribe(
-        () =>
+        (variantResponse) => {
+          const variantId = variantResponse?.id;
+          this.addImages(variantId);
           this.showMessage(
             'success',
             'Thành Công',
             'Biến thể được thêm thành công!'
-          ),
+          );
+        },
         (error) =>
           this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm biến thể.')
       );
@@ -386,6 +393,8 @@ export class ProductaddComponent {
       quantity: [1, Validators.required],
       sizeId: [''],
       colorId: [''],
+      images: this.builder.array([]),
+      selectedMainImage: [''],
     });
   }
   addVariant(): void {
@@ -395,21 +404,23 @@ export class ProductaddComponent {
       price: this.builder.control(null, Validators.required),
       priceSell: this.builder.control(null),
       quantity: this.builder.control(null, Validators.required),
+      images: this.builder.array([]),
     });
     this.variants.push(variantGroup);
   }
   removeVariant(index: number): void {
     this.variants.removeAt(index);
   }
-  onUpload(event: any): void {
+  onUpload(event: any, i: number): void {
+    const variantImages = this.variants.at(i).get('images') as FormArray;
     for (let file of event.files) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.uploadedFiles.push({
+        variantImages.push(this.builder.group({
           name: file.name,
           size: file.size,
           url: e.target.result, // Lưu URL hình ảnh
-        });
+      }));
       };
       reader.readAsDataURL(file);
     }

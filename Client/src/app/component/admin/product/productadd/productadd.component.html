@@ -76,67 +76,13 @@
         </p-stepperPanel>
 
         <p-stepperPanel header="Bước II">
-          <ng-template
-            pTemplate="content"
-            let-prevCallback="prevCallback"
-            let-nextCallback="nextCallback"
-          >
-            <div class="flex flex-column p-4">
-              <div
-                class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium p-3"
-              >
-                <form [formGroup]="imageForm">
-                  <p-fileUpload
-                    name="demo[]"
-                    url="https://www.primefaces.org/cdn/api/upload.php"
-                    (onUpload)="onUpload($event)"
-                    [multiple]="true"
-                    accept="image/*"
-                    maxFileSize="1000000"
-                  >
-                    <ng-template pTemplate="content">
-                      <ol *ngIf="uploadedFiles.length">
-                        <li *ngFor="let file of uploadedFiles; let i = index">
-                          <p-radioButton
-                            name="selectedMainImage"
-                            [value]="file.name"
-                            formControlName="selectedMainImage"
-                            [inputId]="'isMainId' + i"
-                          ></p-radioButton>
-                          <label [for]="'isMainId' + i" class="ml-2"
-                            >IsMain</label
-                          >
-                          <img [src]="file.url" [alt]="file.name" width="50" height="50" />
-                        </li>
-                      </ol>
-                    </ng-template>
-                  </p-fileUpload>
-                </form>
-              </div>
-            </div>
-            <div class="d-flex justify-content-between">
-              <p-button
-                label="Quay lại"
-                icon="pi pi-arrow-left"
-                (onClick)="prevCallback.emit()"
-              />
-              <p-button
-                label="Tiếp theo"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                (onClick)="nextCallback.emit()"
-              />
-            </div>
-          </ng-template>
-        </p-stepperPanel>
-
-        <p-stepperPanel header="Bước III">
           <ng-template pTemplate="content" let-prevCallback="prevCallback">
             <div class="flex flex-column p-4">
               <div class="card mb-6">
                 <div class="card-header">
                   <h5 class="card-title mb-0">Variants</h5>
                 </div>
+
                 <div class="card-body">
                   <form [formGroup]="variantsForm">
                     <div formArrayName="variants">
@@ -145,89 +91,119 @@
                         [formGroupName]="i"
                         class="row g-4 mb-4 border p-3 rounded"
                       >
+                        <!-- Price and Quantity Section -->
                         <div class="col-md-4">
-                          <label class="form-label">Giá tiền</label>
-                          <p-inputNumber
-                            placeholder="Giá tiền"
-                            mode="currency"
-                            currency="VND"
-                            locale="en-US"
-                            formControlName="price"
-                            class="w-100 mb-2"
-                          />
-                          <p-inputNumber
-                            placeholder="Giá tiền giảm (nếu có)"
-                            mode="currency"
-                            currency="VND"
-                            locale="en-US"
-                            formControlName="priceSell"
-                            class="w-100 mb-2"
-                          />
-                          <p-inputNumber
-                            placeholder="Số lượng"
-                            mode="decimal"
-                            [useGrouping]="false"
-                            formControlName="quantity"
-                            class="w-100"
-                          />
-                        </div>
+                          <div class="mb-2">
+                            <p-inputNumber
+                              placeholder="Giá tiền"
+                              mode="currency"
+                              currency="VND"
+                              locale="en-US"
+                              formControlName="price"
+                              class="w-100"
+                            />
+                          </div>
+                          <div class="mb-2">
+                            <p-inputNumber
+                              placeholder="Giá tiền giảm (nếu có)"
+                              mode="currency"
+                              currency="VND"
+                              locale="en-US"
+                              formControlName="priceSell"
+                              class="w-100"
+                            />
+                          </div>
+                          <div class="mb-2">
+                            <p-inputNumber
+                              placeholder="Số lượng"
+                              mode="decimal"
+                              [useGrouping]="false"
+                              formControlName="quantity"
+                              class="w-100"
+                            />
+                          </div>
 
-                        <div class="col-md-4">
-                          <label class="form-label">Size</label>
-                          <p-dropdown
-                          [options]="sizes"
-                          formControlName="sizeId"
-                          placeholder="Chọn Kích thước"
-                          optionLabel="name"
-                          optionValue="id"
-                          display="chip"
-                          [showClear]="true"
-                          [filter]="true"
-                          (onFilter)="onSizeFilter($event)">
-                          <ng-template let-item pTemplate="item">{{
-                            item.name
-                          }}</ng-template>
-                          <ng-template pTemplate="empty">
-                            <div class="no-data">
-                              No data found.
-                              <button
-                                (click)="addSize()"
-                                class="btn btn-primary"
+
+                          <!-- Size and Color Section -->
+                          <div class="col-md-8">
+                            <div class="mb-2">
+                              <p-dropdown
+                                [options]="sizes"
+                                formControlName="sizeId"
+                                placeholder="Chọn Kích thước"
+                                optionLabel="name"
+                                optionValue="id"
+                                [showClear]="true"
+                                [filter]="true"
+                                (onFilter)="onSizeFilter($event)"
+                                class="w-100"
                               >
-                                Add Size
-                              </button>
+                                <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                                <ng-template pTemplate="empty">
+                                  <div class="no-data">
+                                    No data found.
+                                    <button (click)="addSize()" class="btn btn-primary">Add Size</button>
+                                  </div>
+                                </ng-template>
+                              </p-dropdown>
                             </div>
-                          </ng-template>
-                        </p-dropdown>
+                            <div class="mb-2">
+                              <p-dropdown
+                                [options]="colors"
+                                formControlName="colorId"
+                                placeholder="Chọn Màu Sắc"
+                                optionLabel="name"
+                                optionValue="id"
+                                [showClear]="true"
+                                [filter]="true"
+                                (onFilter)="onColorFilter($event)"
+                                class="w-100"
+                              >
+                                <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                                <ng-template pTemplate="empty">
+                                  <div class="no-data">
+                                    No data found.
+                                    <button (click)="addColor()" class="btn btn-primary">Add Color</button>
+                                  </div>
+                                </ng-template>
+                              </p-dropdown>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Image Upload Section -->
+                        <div class="col-md-8" style="height: 100%;">
+                          <p-fileUpload
+                            name="variantImages"
+                            url="https://www.primefaces.org/cdn/api/upload.php"
+                            (onUpload)="onUpload($event, i)"
+                            [multiple]="true"
+                            accept="image/*"
+                            maxFileSize="1000000"
+                          >
+                            <ng-template pTemplate="content">
+                              <ol *ngIf="variant.get('images')?.value">
+                                <li *ngFor="let image of variant.get('images')?.value; let i = index">
+                                  <img
+                                    [src]="image.url"
+                                    [alt]="image.name"
+                                    width="50"
+                                    height="50"
+                                  />
 
-                          <label class="form-label">Color</label>
-                          <p-dropdown
-                            [options]="colors"
-                            formControlName="colorId"
-                            placeholder="Chọn Màu Sắc"
-                            optionLabel="name"
-                            optionValue="id"
-                            display="chip"
-                            [showClear]="true"
-                            [filter]="true"
-                            (onFilter)="onColorFilter($event)">
-                            <ng-template let-item pTemplate="item">{{
-                              item.name
-                            }}</ng-template>
-                            <ng-template pTemplate="empty">
-                              <div class="no-data">
-                                No data found.
-                                <button
-                                  (click)="addColor()"
-                                  class="btn btn-primary"
-                                >
-                                  Add Color
-                                </button>
-                              </div>
+                                  <label [for]="'isMainId' + i" class="ml-2">IsMain</label>
+                                  <p-radioButton
+                                    name="selectedMainImage"
+                                    [value]="image.name"
+                                    formControlName="selectedMainImage"
+                                    [inputId]="'isMainId' + i"
+                                  ></p-radioButton>
+                                </li>
+                              </ol>
                             </ng-template>
-                          </p-dropdown>
+                          </p-fileUpload>
                         </div>
 
+                        <!-- Remove Variant Button -->
                         <div class="col-md-4 d-flex align-items-end">
                           <p-button
                             icon="pi pi-times"
@@ -241,6 +217,8 @@
                     </div>
                   </form>
                 </div>
+
+                <!-- Footer Buttons -->
                 <div class="card-footer">
                   <div class="d-flex justify-content-between">
                     <p-button
@@ -260,6 +238,7 @@
             </div>
           </ng-template>
         </p-stepperPanel>
+
       </p-stepper>
     </form>
   </div>

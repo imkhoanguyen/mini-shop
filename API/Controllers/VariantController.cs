@@ -22,7 +22,7 @@ namespace API.Controllers
             _unitOfWork.VariantRepository.AddVariant(variant);
             if (await _unitOfWork.Complete())
             {
-                return Ok(new {message ="Add variant successfully."});
+                return Ok(new {id = variant.Id, message ="Add variant successfully."});
             }
             return BadRequest(new {message ="Add variant failed."});
         }
