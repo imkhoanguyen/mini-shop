@@ -70,11 +70,8 @@ namespace API.Repositories
 
         public async Task<string?> GetCategoryNameById(int id)
         {
-            var category = await _context.Categories
-                                .Where(c => c.Id == id)
-                                .Select(c => c.Name)
-                                .FirstOrDefaultAsync();
-            return category;
+             var category = await _context.Categories.FindAsync(id);
+            return category?.Name;
         }
     }
 }

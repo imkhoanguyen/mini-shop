@@ -25,32 +25,6 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("GetAdminUsers")]
-        public async Task<ActionResult<UserDto>> GetAdminUsers()
-        {
-            var users = await _userManager.GetUsersInRoleAsync("Admin");
-            return Ok(users);
-        }
-
-        [Authorize(Roles = "User ")]
-        [HttpGet("GetUsers")]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
-        {
-            var user = await _userManager.FindByEmailFromClaimsPrincipal(User);
-            if (user == null)
-            {
-                return NotFound(new ApiResponse(404));
-            }
-
-            return new UserDto
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                Avatar = user.Avatar,
-                Token = _tokenService.CreateToken(user)
-            };
-        }
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)

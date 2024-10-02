@@ -31,6 +31,7 @@ namespace API.Entities
                 Name = product.Name,
                 Description = product.Description,
                 Created = product.Created,
+                Updated = product.Updated,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
                 Variants = product.Variants.Select(v => new VariantDto
                 {

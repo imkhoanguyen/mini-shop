@@ -21,6 +21,7 @@ export class SizeService {
   getAllSizes(){
     return this.http.get<Size[]>(this.apiUrl + "/Size/GetAll");
   }
-
-
+  getSizeById(id: number){
+    return this.http.get<Size>(this.apiUrl + "/Size/GetById/" + id);
+  }
 }

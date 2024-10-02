@@ -69,13 +69,18 @@
       <td>{{ product.name }}</td>
       <td>{{ product.description }}</td>
       <td>{{ product.created | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ product.updated | date: 'dd/MM/yyyy' }}</td>
       <td>
         <ng-container *ngFor="let categoryId of product.categoryIds">
-          <span class="badge bg-primary">{{ categoryId }}</span>
+          <span class="badge bg-primary">{{ getCategoryNameById(categoryId) }}</span>
         </ng-container>
       </td>
       <td>
-        <p-inputSwitch [(ngModel)]="product.status"></p-inputSwitch>
+        <p-selectButton
+        [options]="productStatus"
+        [(ngModel)]="value"
+        optionLabel="label"
+        optionValue="value" />
       </td>
       <td>
         <p-button
@@ -128,8 +133,11 @@
                 <td>{{ variant.price | currency: 'VND' }}</td>
                 <td>{{ variant.priceSell | currency: 'VND' }}</td>
                 <td>{{ variant.quantity }}</td>
-                <td>{{ variant.sizeId }}</td>
-                <td>{{ variant.colorId }}</td>
+                <td>{{ getSizeNameById(variant.sizeId) }}</td>
+                <td>
+                  <p-colorPicker [(ngModel)]="selectedColorCode" ></p-colorPicker>
+                </td>
+
                 <td>
                   <p-button
                     type="button"

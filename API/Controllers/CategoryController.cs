@@ -40,6 +40,18 @@ namespace api.Controllers
             var categoryDto = Category.toCategoryDto(categories);
             return Ok(categoryDto);
         }
+        [HttpGet("GetCategoryNameById/{id}")]
+        public async Task<IActionResult> GetCategoryNameById(int id)
+        {
+            var categoryName = await _unitOfWork.CategoryRepository.GetCategoryNameById(id);
+
+            if (categoryName == null)
+            {
+                return NotFound("Không tìm thấy danh mục nào.");
+            }
+
+            return Ok(new { message=categoryName});
+        }
 
         [HttpGet("GetAllPaging")]
         public async Task<ActionResult<PageListDto<CategoryDto>>> GetAllCategoriesAsync([FromQuery] CategoryParams categoryParams)

@@ -4,14 +4,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
-import {
-  FormArray,
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import {FormArray,FormBuilder,FormGroup,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
@@ -32,11 +25,7 @@ import { ColorService } from '../../../../_services/color.service';
 import { ImageService } from '../../../../_services/image.service';
 import { VariantService } from '../../../../_services/variant.service';
 import { VariantAdd } from '../../../../_models/variant.module';
-import {
-  Product,
-  ProductAdd,
-  ProductUpdate,
-} from '../../../../_models/product.module';
+import { Product,ProductAdd,ProductUpdate,} from '../../../../_models/product.module';
 import { ActivatedRoute } from '@angular/router';
 import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
@@ -79,6 +68,8 @@ export class ProductaddComponent {
   sizeId: number = 0;
   searchSize: string = '';
   //color
+  code!: string;
+  name!: string;
   colors: Color[] = [];
   colorId: number = 0;
   searchColor: string = '';
@@ -86,7 +77,7 @@ export class ProductaddComponent {
   uploadedFiles: any[] = [];
   selectedMainImage!: string;
   btnText: string = 'Thêm';
-
+  visible: boolean = false;
   nextCallback = new EventEmitter<void>();
   totalSize: number = 0;
   totalSizePercent: number = 0;
@@ -116,7 +107,7 @@ export class ProductaddComponent {
           console.log('Product:', product);
           this.productForm.patchValue({
             name: product.name,
-            selectedCategory: product.categoryIds,
+            selectedCategories: product.categoryIds,
             description: product.description,
           });
           const variantsFormArray = this.variantsForm.get(
@@ -199,20 +190,28 @@ export class ProductaddComponent {
       }
     );
   }
-  addColor() {
+  showColorDialog() {
+    this.visible = true;
+  }
+  updateColorFromInput(value: string) {
+    this.code = value;
+  }
+  addColor(){
     const data: Color = {
       id: 0,
-      name: this.searchColor,
-      code: '',
+      name: this.name,
+      code: this.code,
     };
-    console.log('item: ' + this.searchColor);
     this.colorService.addColor(data).subscribe(
       (res: any) => {
         this.showMessage('success', 'Thành Công', 'Thêm màu thành công.');
         this.loadColors();
+        setTimeout(() => {
+          this.visible = false;
+        }, 1000);
       },
       (error) => {
-        this.showMessage('error', 'Thất Bại', 'Li khi thêm màu.');
+        this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm màu.');
         console.error('Failed to add Color', error);
       }
     );
@@ -313,7 +312,6 @@ export class ProductaddComponent {
           const productId = productResponse?.id;
           if (productId) {
             console.log('Product ID received:', productId);
-            this.addImages(productId);
             this.addVariants(productId);
           } else {
             console.error('Product ID not received:', productResponse);
@@ -331,14 +329,14 @@ export class ProductaddComponent {
       );
     }
   }
-  addImages(productId: number) {
+  addImages(variantId: number) {
     const mainImage = this.imageForm.value.selectedMainImage;
     this.uploadedFiles.forEach((file) => {
       const isMain = file.name === mainImage;
       const imageAdd = new FormData();
       imageAdd.append('url', file);
       imageAdd.append('isMain', isMain.toString());
-      imageAdd.append('productId', productId.toString());
+      imageAdd.append('variantId', variantId.toString());
       this.imageService.addImage(imageAdd).subscribe(
         (response: any) => {
           this.showMessage(
@@ -381,6 +379,9 @@ export class ProductaddComponent {
           this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm biến thể.')
       );
     });
+  }
+  showDialog(){
+    this.visible = true;
   }
   //-----------Variant------------
   get variants(): FormArray {

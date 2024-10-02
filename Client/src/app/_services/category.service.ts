@@ -42,6 +42,9 @@ export class CategoryService {
   getAllCategories(){
     return this.http.get<Category[]>(this.apiUrl + "/Category/GetAll")
   }
+  getCategoryNameById(categoryId: number){
+    return this.http.get(this.apiUrl + "/Category/GetCategoryNameById/" + categoryId);
+  }
 
   getCategoriesAllPaging(pageNumber: number, pageSize: number, searchString?: string): Observable<Pagination<Category>>{
     let param = new HttpParams()

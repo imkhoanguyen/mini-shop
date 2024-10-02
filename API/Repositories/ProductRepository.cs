@@ -84,6 +84,7 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
 
@@ -108,6 +109,7 @@ namespace API.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .Where(p => !p.IsDelete).ToListAsync();
             return productDb;
@@ -117,6 +119,7 @@ namespace API.Repositories
         {
             var query = _context.Products
                 .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .Where(p => !p.IsDelete)
                 .OrderBy(p => p.Id)
@@ -134,6 +137,7 @@ namespace API.Repositories
             var products = await _context.Products
                 .Where(p => productIds.Contains(p.Id))
                 .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .ToListAsync();
 

@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import {FormBuilder,ReactiveFormsModule,Validators,} from '@angular/forms';
+import {FormBuilder,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
@@ -15,7 +15,12 @@ import { Subscription } from 'rxjs';
 import { Product } from '../../../_models/product.module';
 import { Image } from '../../../_models/image.module';
 import { ProductService } from '../../../_services/product.service';
-import { Router} from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { CategoryService } from '../../../_services/category.service';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { SizeService } from '../../../_services/size.service';
+import { ColorService } from '../../../_services/color.service';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 @Component({
   selector: 'app-product',
@@ -32,6 +37,10 @@ import { Router} from '@angular/router';
     ReactiveFormsModule,
     PaginatorModule,
     ConfirmDialogModule,
+    SelectButtonModule,
+    ColorPickerModule,
+    FormsModule,
+    RouterModule
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product.component.html',
@@ -40,8 +49,10 @@ import { Router} from '@angular/router';
 export class ProductComponent {
   products!: Product[];
   productForm: any;
-
-
+  categoryNames: { [key: number]: string } = {};
+  sizeNames: { [key: number]: string } = {};
+  colorCodes: { [key: number]: string } = {};
+  selectedColorCode: string = '';
   expandedRows: { [key: number]: boolean } = {};
   pageSizeOptions = [
     { label: '5', value: 5 },
@@ -49,6 +60,10 @@ export class ProductComponent {
     { label: '20', value: 20 },
     { label: '50', value: 50 },
   ];
+  productStatus: any[] = [{ label: 'Draft', value: '0' },{ label: 'Public', value: '1' }];
+
+    value: string = '0';
+
   first: number = 0;
   paginatedProduct: any;
   totalRecords: number = 0;
@@ -62,7 +77,10 @@ export class ProductComponent {
 
   constructor(
     private builder: FormBuilder,
+    private categoryService: CategoryService,
     private productService: ProductService,
+    private sizeService: SizeService,
+    private colorService: ColorService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private router: Router
@@ -71,6 +89,9 @@ export class ProductComponent {
   ngOnInit() {
     this.initializeForm();
     this.loadProducts();
+    this.fetchCategoryNames();
+    this.fetchSizeNames();
+    this.fetchColorCodes();
   }
   initializeForm(): void {
     this.productForm = this.builder.group({
@@ -79,6 +100,50 @@ export class ProductComponent {
       description: ['', Validators.required],
     });
   }
+  fetchCategoryNames() {
+    this.categoryService.getAllCategories().subscribe((data: any[]) => {
+      this.categoryNames = data.reduce((acc, category) => {
+        acc[category.id] = category.name;
+        return acc;
+      }, {});
+      console.log("Đã lấy tên danh mục:", this.categoryNames);
+    });
+  }
+
+  fetchSizeNames() {
+    this.sizeService.getAllSizes().subscribe((data: any[]) => {
+      this.sizeNames = data.reduce((acc, size) => {
+        acc[size.id] = size.name;
+        return acc;
+      }, {});
+      console.log("Đã lấy tên kích thước:", this.sizeNames);
+    });
+  }
+
+  fetchColorCodes() {
+    this.colorService.getAllColors().subscribe((data: any[]) => {
+      this.colorCodes = data.reduce((acc, color) => {
+        acc[color.id] = color.code;
+        return acc;
+      }, {});
+      console.log("Đã lấy mã màu:", this.colorCodes);
+      
+    });
+  }
+
+  getCategoryNameById(categoryId: number): string {
+    return this.categoryNames[categoryId] || 'Danh mục không xác định';
+  }
+
+  getSizeNameById(sizeId: number): string {
+    return this.sizeNames[sizeId] || 'Kích thước không xác định';
+  }
+
+  getColorCodeById(colorId: number): string {
+    return this.colorCodes[colorId] || 'Mã màu không xác định';
+  }
+
+
   expandAll() {
     this.expandedRows = this.products.reduce(
       (acc: { [key: number]: boolean }, p: Product) => {
@@ -131,6 +196,7 @@ export class ProductComponent {
       .subscribe(
         (pagination) => {
           this.paginatedProduct = pagination.items;
+          console.log(this.paginatedProduct);
           this.totalRecords = pagination.totalCount;
         },
         (error) => this.handleError(error, 'Lấy sản phẩm')
