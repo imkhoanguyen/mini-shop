@@ -123,7 +123,6 @@
                             />
                           </div>
 
-
                           <!-- Size and Color Section -->
                           <div class="col-md-8">
                             <div class="mb-2">
@@ -182,27 +181,25 @@
                           >
                             <ng-template pTemplate="content">
                               <ol *ngIf="variant.get('images')?.value">
-                                <li *ngFor="let image of variant.get('images')?.value; let i = index">
+                                <li *ngFor="let image of variant.get('images')?.value; let j = index">
                                   <img
                                     [src]="image.url"
                                     [alt]="image.name"
                                     width="50"
                                     height="50"
                                   />
-
-                                  <label [for]="'isMainId' + i" class="ml-2">IsMain</label>
+                                  <label [for]="'isMainId' + j" class="ml-2">IsMain</label>
                                   <p-radioButton
                                     name="selectedMainImage"
                                     [value]="image.name"
                                     formControlName="selectedMainImage"
-                                    [inputId]="'isMainId' + i"
+                                    [inputId]="'isMainId' + j"
                                   ></p-radioButton>
                                 </li>
                               </ol>
                             </ng-template>
                           </p-fileUpload>
                         </div>
-
                         <!-- Remove Variant Button -->
                         <div class="col-md-4 d-flex align-items-end">
                           <p-button
@@ -216,6 +213,7 @@
                       </div>
                     </div>
                   </form>
+
                 </div>
 
                 <!-- Footer Buttons -->

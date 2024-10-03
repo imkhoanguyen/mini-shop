@@ -4,7 +4,14 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
-import {FormArray,FormBuilder,FormGroup,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
@@ -25,7 +32,11 @@ import { ColorService } from '../../../../_services/color.service';
 import { ImageService } from '../../../../_services/image.service';
 import { VariantService } from '../../../../_services/variant.service';
 import { VariantAdd } from '../../../../_models/variant.module';
-import { Product,ProductAdd,ProductUpdate,} from '../../../../_models/product.module';
+import {
+  Product,
+  ProductAdd,
+  ProductUpdate,
+} from '../../../../_models/product.module';
 import { ActivatedRoute } from '@angular/router';
 import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
@@ -74,13 +85,9 @@ export class ProductaddComponent {
   colorId: number = 0;
   searchColor: string = '';
 
-  uploadedFiles: any[] = [];
   selectedMainImage!: string;
   btnText: string = 'Thêm';
   visible: boolean = false;
-  nextCallback = new EventEmitter<void>();
-  totalSize: number = 0;
-  totalSizePercent: number = 0;
 
   constructor(
     private builder: FormBuilder,
@@ -123,6 +130,7 @@ export class ProductaddComponent {
               colorId: [variant.colorId],
               selectedMainImage: variant.imageUrls.find((image) => image.isMain)
                 ?.url,
+              imageUrls: [variant.imageUrls.map((image) => image.url)],
             });
             variantsFormArray.push(variantGroup);
           });
@@ -196,7 +204,7 @@ export class ProductaddComponent {
   updateColorFromInput(value: string) {
     this.code = value;
   }
-  addColor(){
+  addColor() {
     const data: Color = {
       id: 0,
       name: this.name,
@@ -329,14 +337,74 @@ export class ProductaddComponent {
       );
     }
   }
-  addImages(variantId: number) {
-    const mainImage = this.imageForm.value.selectedMainImage;
-    this.uploadedFiles.forEach((file) => {
-      const isMain = file.name === mainImage;
+  addVariants(productId: number) {
+    this.variants.controls.forEach((variantGroup, index) => {
+      const variantAdd: VariantAdd = {
+        price: variantGroup.value.price,
+        priceSell: variantGroup.value.priceSell,
+        quantity: variantGroup.value.quantity,
+        sizeId: variantGroup.value.sizeId,
+        colorId: variantGroup.value.colorId,
+        productId: productId,
+      };
+
+      console.log('variant', variantAdd);
+      this.variantService.addVariant(variantAdd).subscribe(
+        (variantResponse) => {
+          const variantId = variantResponse?.id;
+          console.log('variantId', variantId);
+          this.addImages(variantId, index);
+          this.showMessage(
+            'success',
+            'Thành Công',
+            'Biến thể được thêm thành công!'
+          );
+        },
+        (error) =>
+          this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm biến thể.')
+      );
+    });
+  }
+  onUpload(event: any, i: number): void {
+    const variantImages = this.variants.at(i).get('images') as FormArray;
+    for (let file of event.files) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        variantImages.push(
+          this.builder.group({
+            name: file.name,
+            size: file.size,
+            url: e.target.result,
+            file: file,
+            isMain: false,
+          })
+        );
+      };
+      reader.readAsDataURL(file);
+    }
+    this.messageService.add({
+      severity: 'info',
+      summary: 'File Uploaded',
+      detail: '',
+    });
+  }
+
+  getFormControlName(index: number): string {
+    return `images.${index}.isMain`;
+  }
+  addImages(variantId: number, variantIndex: number) {
+    const variant = this.variants.at(variantIndex);
+    const variantImages = variant.get('images') as FormArray;
+    const selectedMainImage = variant.get('selectedMainImage')?.value;
+    variantImages.controls.forEach((image: any) => {
+      const file = image.value.file;
+      const isMain = image.value.name === selectedMainImage;
+      console.log('Hình ảnh:', file, 'isMain:', isMain);
       const imageAdd = new FormData();
       imageAdd.append('url', file);
       imageAdd.append('isMain', isMain.toString());
       imageAdd.append('variantId', variantId.toString());
+
       this.imageService.addImage(imageAdd).subscribe(
         (response: any) => {
           this.showMessage(
@@ -352,85 +420,26 @@ export class ProductaddComponent {
       );
     });
   }
-
-  addVariants(productId: number) {
-    this.variants.controls.forEach((variantGroup) => {
-      const variantAdd: VariantAdd = {
-        price: variantGroup.value.price,
-        priceSell: variantGroup.value.priceSell,
-        quantity: variantGroup.value.quantity,
-        sizeId: variantGroup.value.sizeId,
-        colorId: variantGroup.value.colorId,
-        productId: productId,
-      };
-
-      console.log('variant', variantAdd);
-      this.variantService.addVariant(variantAdd).subscribe(
-        (variantResponse) => {
-          const variantId = variantResponse?.id;
-          this.addImages(variantId);
-          this.showMessage(
-            'success',
-            'Thành Công',
-            'Biến thể được thêm thành công!'
-          );
-        },
-        (error) =>
-          this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm biến thể.')
-      );
-    });
-  }
-  showDialog(){
-    this.visible = true;
-  }
   //-----------Variant------------
   get variants(): FormArray {
     return this.variantsForm.get('variants') as FormArray;
   }
-  createVariant(): FormGroup {
-    return this.builder.group({
-      price: [null, Validators.required],
-      priceSell: [null],
-      quantity: [1, Validators.required],
-      sizeId: [''],
-      colorId: [''],
-      images: this.builder.array([]),
-      selectedMainImage: [''],
-    });
-  }
   addVariant(): void {
     const variantGroup = this.builder.group({
-      colorId: this.builder.control(0),
-      sizeId: this.builder.control(0),
       price: this.builder.control(null, Validators.required),
       priceSell: this.builder.control(null),
       quantity: this.builder.control(null, Validators.required),
+      colorId: this.builder.control(null),
+      sizeId: this.builder.control(null),
       images: this.builder.array([]),
+      selectedMainImage: this.builder.control('', Validators.required),
     });
     this.variants.push(variantGroup);
   }
   removeVariant(index: number): void {
     this.variants.removeAt(index);
   }
-  onUpload(event: any, i: number): void {
-    const variantImages = this.variants.at(i).get('images') as FormArray;
-    for (let file of event.files) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        variantImages.push(this.builder.group({
-          name: file.name,
-          size: file.size,
-          url: e.target.result, // Lưu URL hình ảnh
-      }));
-      };
-      reader.readAsDataURL(file);
-    }
-    this.messageService.add({
-      severity: 'info',
-      summary: 'File Uploaded',
-      detail: '',
-    });
-  }
+
   onSubmit(): void {
     if (this.productForm.valid && this.variantsForm.valid) {
       this.addOrUpdateProduct();

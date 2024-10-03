@@ -127,20 +127,20 @@ export class ProductComponent {
         return acc;
       }, {});
       console.log("Đã lấy mã màu:", this.colorCodes);
-      
+
     });
   }
 
   getCategoryNameById(categoryId: number): string {
-    return this.categoryNames[categoryId] || 'Danh mục không xác định';
+    return this.categoryNames[categoryId];
   }
 
   getSizeNameById(sizeId: number): string {
-    return this.sizeNames[sizeId] || 'Kích thước không xác định';
+    return this.sizeNames[sizeId];
   }
 
   getColorCodeById(colorId: number): string {
-    return this.colorCodes[colorId] || 'Mã màu không xác định';
+    return this.colorCodes[colorId];
   }
 
 
