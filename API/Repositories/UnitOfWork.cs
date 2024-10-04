@@ -12,15 +12,18 @@ namespace API.Repositories
         private readonly IColorRepository _colorRepository;
         private readonly IMessageRepository _messageRepository;
         private readonly IImageRepository _imageRepository;
+        private readonly IImageService _imageService;
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
 
+
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
-             IImageRepository imageRepository, IVariantRepository variantRepository,
-             ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository)
+             IImageRepository imageRepository, IImageService imageService,
+             IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
+             IShoppingCartRepository shoppingCartRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -29,6 +32,7 @@ namespace API.Repositories
             _colorRepository = colorRepository;
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
+            _imageService = imageService;
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
@@ -42,6 +46,9 @@ namespace API.Repositories
         public IVariantRepository VariantRepository => _variantRepository;
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
+
+        public IImageService ImageService => _imageService;
+
         public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;

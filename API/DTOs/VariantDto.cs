@@ -12,8 +12,6 @@ namespace API.DTOs
         public int Quantity { get; set; }
         public int? SizeId { get; set; }
         public int? ColorId { get; set; }
-        public List<ImageGetDto> ImageUrls { get; set; } = new List<ImageGetDto>();
-
         public static Variant toVariant(VariantDto variantDto)
         {
             return new Variant
@@ -52,5 +50,14 @@ namespace API.DTOs
             };
             return variant;
         }
+    }
+    public class VariantGetDto{
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public decimal PriceSell { get; set; }
+        public int Quantity { get; set; }
+        public int? SizeId { get; set; }
+        public int? ColorId { get; set; }
+        public List<ImageGetDto> ImageUrls { get; set; } = new List<ImageGetDto>();
     }
 }

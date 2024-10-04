@@ -6,7 +6,6 @@ namespace API.DTOs
     public class ImageUpdateDto
     {
         public int Id { get; set; }
-        public int VariantId { get; set; }
         public IFormFile? Url { get; set; }
         public bool IsMain { get; set; }
 
@@ -19,7 +18,6 @@ namespace API.DTOs
                 return new Image
                 {
                     Id = imageDto.Id,
-                    VariantId = imageDto.VariantId,
                     Url = uploadResult.Url.ToString(),
                     PublicId = uploadResult.PublicId,
                     IsMain = imageDto.IsMain

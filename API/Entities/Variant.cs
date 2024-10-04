@@ -9,7 +9,7 @@ namespace API.Entities
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        public VariantStatus Status { get; set; } = VariantStatus.Draft;
+        public VariantStatus Status { get; set; } = VariantStatus.Public;
         public bool IsDelete { get; set; } = false;
         
         public int ProductId { get; set; }
@@ -23,9 +23,9 @@ namespace API.Entities
         
         public List<Image> Images { get; set; } = new List<Image>();
 
-        public static VariantDto ToVariantDto(Variant variant)
+        public static VariantGetDto ToVariantDto(Variant variant)
         {
-            return new VariantDto
+            return new VariantGetDto
             {
                 Id = variant.Id,
                 Price = variant.Price,

@@ -20,7 +20,7 @@ namespace API.Repositories
 
         public void DeleteVariant(Variant variant)
         {
-            var variantDb = _context.Variants.FirstOrDefault(v => v.ProductId == variant.ProductId);
+            var variantDb = _context.Variants.FirstOrDefault(v => v.Id == variant.Id);
             if (variantDb is not null)
             {
                 variantDb.IsDelete = true;
@@ -28,7 +28,7 @@ namespace API.Repositories
         }
         public void UpdateVariant(Variant variant)
         {
-            var variantDb = _context.Variants.FirstOrDefault(v => v.ProductId == variant.ProductId);
+            var variantDb = _context.Variants.FirstOrDefault(v => v.Id == variant.Id);
             if (variantDb is not null)
             {
                 variantDb.Price = variant.Price;

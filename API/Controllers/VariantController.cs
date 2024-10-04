@@ -26,7 +26,7 @@ namespace API.Controllers
             }
             return BadRequest(new {message ="Add variant failed."});
         }
-        [HttpPost("UpdateVariant")]
+        [HttpPut("UpdateVariant")]
         public async Task<IActionResult> UpdateVariant([FromBody] VariantDto variantDto)
         {
             if (!ModelState.IsValid)
@@ -37,9 +37,24 @@ namespace API.Controllers
             _unitOfWork.VariantRepository.UpdateVariant(variant);
             if (await _unitOfWork.Complete())
             {
-                return Ok("Update variant successfully.");
+                return Ok(new {message ="Update variant successfully."});
             }
-            return BadRequest("Update variant failed.");
+            return BadRequest(new {message ="Update variant failed."});
+        }
+        [HttpDelete("DeleteVariant")]
+        public async Task<IActionResult> DeleteVariant(VariantDto variantDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Dữ liệu không hợp lệ.");
+            }
+            var variant = VariantDto.toVariant(variantDto);
+            _unitOfWork.VariantRepository.DeleteVariant(variant);
+            if (await _unitOfWork.Complete())
+            {
+                return Ok(new {message ="Delete variant successfully."});
+            }
+            return BadRequest(new {message ="Delete variant failed."});
         }
     }
 }

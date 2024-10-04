@@ -22,7 +22,7 @@ namespace API.Repositories
         public void UpdateImage(Image image)
         {
             var existingImage = _context.Images
-            .FirstOrDefault(i => i.Id == image.Id && i.VariantId == image.VariantId);
+            .FirstOrDefault(i => i.Id == image.Id);
             if (existingImage is not null)
             {
                 existingImage.Url = image.Url;

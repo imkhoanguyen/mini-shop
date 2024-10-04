@@ -180,8 +180,8 @@
                             maxFileSize="1000000"
                           >
                             <ng-template pTemplate="content">
-                              <ol *ngIf="variant.get('images')?.value">
-                                <li *ngFor="let image of variant.get('images')?.value; let j = index">
+                              <ol *ngIf="variant.get('imageUrls')?.value">
+                                <li *ngFor="let image of variant.get('imageUrls')?.value; let j = index">
                                   <img
                                     [src]="image.url"
                                     [alt]="image.name"

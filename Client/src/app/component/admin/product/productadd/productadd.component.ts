@@ -37,7 +37,7 @@ import {
   ProductAdd,
   ProductUpdate,
 } from '../../../../_models/product.module';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ColorPickerModule } from 'primeng/colorpicker';
 @Component({
   selector: 'app-productadd',
@@ -98,7 +98,8 @@ export class ProductaddComponent {
     private imageService: ImageService,
     private sizeService: SizeService,
     private colorService: ColorService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -106,7 +107,6 @@ export class ProductaddComponent {
     this.loadCategories();
     this.loadSizes();
     this.loadColors();
-    this.loadProductData();
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('id'));
       if (id) {
@@ -117,20 +117,18 @@ export class ProductaddComponent {
             selectedCategories: product.categoryIds,
             description: product.description,
           });
-          const variantsFormArray = this.variantsForm.get(
-            'variants'
-          ) as FormArray;
+          const variantsFormArray = this.variantsForm.get('variants') as FormArray;
           variantsFormArray.clear();
           product.variants.forEach((variant) => {
             const variantGroup = this.builder.group({
+              id: [variant.id],
               price: [variant.price],
               priceSell: [variant.priceSell],
               quantity: [variant.quantity],
               sizeId: [variant.sizeId],
               colorId: [variant.colorId],
-              selectedMainImage: variant.imageUrls.find((image) => image.isMain)
-                ?.url,
-              imageUrls: [variant.imageUrls.map((image) => image.url)],
+              imageUrls: [variant.imageUrls],
+              selectedMainImage: variant.imageUrls.find((image) => image.isMain),
             });
             variantsFormArray.push(variantGroup);
           });
@@ -266,19 +264,7 @@ export class ProductaddComponent {
   onColorFilter(event: any) {
     this.searchColor = event.filter;
   }
-  loadProductData(): void {
-    const productItems = this.productService.productItems();
-    if (productItems) {
-      this.productForm.patchValue({
-        id: productItems.id,
-        name: productItems.name,
-        selectedCategory: productItems.categoryIds,
-        description: productItems.description,
-        variants: productItems.variants,
-      });
-      this.btnText = productItems.id > 0 ? 'Cập Nhật' : 'Thêm';
-    }
-  }
+
   addOrUpdateProduct() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id == 0) {
@@ -291,17 +277,11 @@ export class ProductaddComponent {
         (productResponse: any) => {
           const productId = productResponse?.id;
           if (productId) {
-            console.log('Product ID received:', productId);
             this.addVariants(productId);
           } else {
             console.error('Product ID not received:', productResponse);
           }
-
-          this.showMessage(
-            'success',
-            'Thành Công',
-            'Thêm sản phẩm thành công.'
-          );
+          this.showMessage('success','Thành Công','Thêm sản phẩm thành công.');
         },
         (error) => {
           this.showMessage('error', 'Thất Bại', 'Lỗi khi thêm sản phẩm.');
@@ -366,7 +346,7 @@ export class ProductaddComponent {
     });
   }
   onUpload(event: any, i: number): void {
-    const variantImages = this.variants.at(i).get('images') as FormArray;
+    const variantImages = this.variants.at(i).get('imageUrls') as FormArray;
     for (let file of event.files) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -390,16 +370,15 @@ export class ProductaddComponent {
   }
 
   getFormControlName(index: number): string {
-    return `images.${index}.isMain`;
+    return `imageUrls.${index}.isMain`;
   }
   addImages(variantId: number, variantIndex: number) {
     const variant = this.variants.at(variantIndex);
-    const variantImages = variant.get('images') as FormArray;
+    const variantImages = variant.get('imageUrls') as FormArray;
     const selectedMainImage = variant.get('selectedMainImage')?.value;
     variantImages.controls.forEach((image: any) => {
       const file = image.value.file;
       const isMain = image.value.name === selectedMainImage;
-      console.log('Hình ảnh:', file, 'isMain:', isMain);
       const imageAdd = new FormData();
       imageAdd.append('url', file);
       imageAdd.append('isMain', isMain.toString());
@@ -431,7 +410,7 @@ export class ProductaddComponent {
       quantity: this.builder.control(null, Validators.required),
       colorId: this.builder.control(null),
       sizeId: this.builder.control(null),
-      images: this.builder.array([]),
+      imageUrls: this.builder.array([]),
       selectedMainImage: this.builder.control('', Validators.required),
     });
     this.variants.push(variantGroup);
@@ -443,6 +422,7 @@ export class ProductaddComponent {
   onSubmit(): void {
     if (this.productForm.valid && this.variantsForm.valid) {
       this.addOrUpdateProduct();
+      this.router.navigateByUrl('/admin/product');
     } else {
       this.showMessage('error', 'Thất Bại', 'Vui lòng điền đầy đủ thông tin.');
     }
