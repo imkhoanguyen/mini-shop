@@ -137,21 +137,20 @@ namespace API.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<int>("ShoppingCartId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("VariantId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
-
                     b.HasIndex("ShoppingCartId");
+
+                    b.HasIndex("VariantId");
 
                     b.ToTable("CartItems");
                 });
@@ -741,21 +740,21 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.CartItems", b =>
                 {
-                    b.HasOne("API.Entities.Product", "Product")
-                        .WithOne("CartItems")
-                        .HasForeignKey("API.Entities.CartItems", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("API.Entities.ShoppingCart", "ShoppingCart")
                         .WithMany("CartItems")
                         .HasForeignKey("ShoppingCartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.HasOne("API.Entities.Variant", "Variant")
+                        .WithMany()
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ShoppingCart");
+
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("API.Entities.Image", b =>
@@ -957,9 +956,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Product", b =>
                 {
-                    b.Navigation("CartItems")
-                        .IsRequired();
-
                     b.Navigation("Images");
 
                     b.Navigation("ProductCategories");
