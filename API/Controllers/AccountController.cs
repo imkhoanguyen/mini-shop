@@ -11,10 +11,10 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly ITokenService _tokenService;
-        private readonly IUnitOfWork _unitOfWork;
+            private readonly UserManager<AppUser> _userManager;
+            private readonly SignInManager<AppUser> _signInManager;
+            private readonly ITokenService _tokenService;
+            private readonly IUnitOfWork _unitOfWork;
         public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
             ITokenService tokenService, IUnitOfWork unitOfWork)
         {

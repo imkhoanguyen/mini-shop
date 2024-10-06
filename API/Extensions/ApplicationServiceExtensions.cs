@@ -17,7 +17,7 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                opt.UseSqlServer (config.GetConnectionString("DefaultConnection"));
             });
             services.AddSingleton(c =>
                 {
@@ -46,6 +46,7 @@ namespace API.Extensions
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IBlogRepository, BlogsRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {

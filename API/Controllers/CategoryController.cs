@@ -51,7 +51,7 @@ namespace api.Controllers
             }
             var categoriesDto = categories.Select(c => Category.toCategoryDto(c)).ToList();
             return Ok(categoriesDto);
-        }
+        }   
 
         // POST api/category/Add
         [HttpPost("Add")]

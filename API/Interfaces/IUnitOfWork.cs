@@ -9,6 +9,9 @@ namespace API.Interfaces
         IVariantRepository VariantRepository { get; }
         IImageRepository ImageRepository { get; }
         IMessageRepository MessageRepository { get; }
+        
+        IBlogRepository BlogRepository { get; }
+        
 
         Task<bool> Complete();
     }

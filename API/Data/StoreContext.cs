@@ -18,6 +18,7 @@ namespace API.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Variant> Variants { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
         //public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -65,6 +66,7 @@ namespace API.Data
 
 
         }
+       
 
     }
 }
