@@ -1,7 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, OnInit } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { Role } from '../_models/role.model';
+import { Role } from '../_models/role';
+import { PaginatedResult } from '../_models/pagination';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,9 +11,34 @@ import { Role } from '../_models/role.model';
 export class RoleService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
+  paginatedResult: PaginatedResult<Role[]> = new PaginatedResult<Role[]>();
 
-  getRoles() {
-    return this.http.get<Role[]>(this.baseUrl + '/role');
+  getRoles(page?: number, itemPerPage?: number, search?: string) {
+    let params = new HttpParams();
+    if (page && itemPerPage) {
+      params = params.append('pageNumber', page);
+      params = params.append('pageSize', itemPerPage);
+    }
+
+    if (search) params = params.append('query', search);
+
+    return this.http
+      .get<Role[]>(this.baseUrl + '/role', {
+        observe: 'response',
+        params,
+      })
+      .pipe(
+        map((response) => {
+          if (response.body) {
+            this.paginatedResult.items = response.body;
+          }
+          const pagination = response.headers.get('Pagination');
+          if (pagination) {
+            this.paginatedResult.pagination = JSON.parse(pagination);
+          }
+          return this.paginatedResult;
+        })
+      );
   }
 
   addRole(role: Role) {
