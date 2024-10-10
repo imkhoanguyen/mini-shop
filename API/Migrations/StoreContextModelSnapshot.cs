@@ -287,47 +287,91 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Order_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reciever_name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("ShippingMethodId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("Shipping_fee")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("created")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("order_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("phone")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("reciever_name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("shipping_fee")
+                    b.Property<decimal>("Total_price")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("total_price")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("updated")
+                    b.Property<DateTime>("Updated")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ShippingMethodId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("API.Entities.OrderItems", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ColorName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ShippingMethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SizeName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ProductId", "OrderId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ShippingMethodId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("API.Entities.Payments", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -335,46 +379,24 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("ProductId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("Payment_date")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("colorName")
+                    b.Property<string>("Payment_method")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("orderId")
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("price")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("productId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("productName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("sizeName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("subtotal")
-                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrderItems");
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("API.Entities.Product", b =>
@@ -472,8 +494,8 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Cost")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("numeric");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -794,7 +816,7 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.Order", b =>
                 {
                     b.HasOne("API.Entities.ShippingMethod", "ShippingMethod")
-                        .WithMany("Orders")
+                        .WithMany()
                         .HasForeignKey("ShippingMethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -804,17 +826,40 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.OrderItems", b =>
                 {
-                    b.HasOne("API.Entities.Order", "order")
+                    b.HasOne("API.Entities.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("API.Entities.Product", "product")
+                    b.HasOne("API.Entities.Product", "Product")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Entities.ShippingMethod", "ShippingMethod")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ShippingMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("order");
+                    b.Navigation("Order");
 
-                    b.Navigation("product");
+                    b.Navigation("Product");
+
+                    b.Navigation("ShippingMethod");
+                });
+
+            modelBuilder.Entity("API.Entities.Payments", b =>
+                {
+                    b.HasOne("API.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("API.Entities.ProductCategory", b =>
@@ -958,16 +1003,13 @@ namespace API.Migrations
                 {
                     b.Navigation("Images");
 
+                    b.Navigation("OrderItems");
+
                     b.Navigation("ProductCategories");
 
                     b.Navigation("Reviews");
 
                     b.Navigation("Variants");
-                });
-
-            modelBuilder.Entity("API.Entities.ShippingMethod", b =>
-                {
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("API.Entities.ShoppingCart", b =>

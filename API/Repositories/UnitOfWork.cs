@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace API.Repositories
 {
@@ -15,12 +16,18 @@ namespace API.Repositories
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IShippingMethodRepository _shippingMethodRepository;
+        private readonly IPaymentsRepository _paymentsRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemsRepository _orderItemsRepository;
 
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
              IImageRepository imageRepository, IVariantRepository variantRepository,
-             ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository)
+             ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
+             IShippingMethodRepository shippingMethodRepository,IPaymentsRepository paymentsRepository,
+             IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -32,6 +39,10 @@ namespace API.Repositories
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
+            _shippingMethodRepository=shippingMethodRepository;
+            _paymentsRepository=paymentsRepository;
+            _orderRepository=orderRepository;
+            _orderItemsRepository=orderItemsRepository;
         }
         public ICategoryRepository CategoryRepository => _categoryRepository;
         public IProductRepository ProductRepository => _productRepository;
@@ -42,6 +53,10 @@ namespace API.Repositories
         public IVariantRepository VariantRepository => _variantRepository;
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
+        public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
+        public IPaymentsRepository PaymentsRepository => _paymentsRepository;
+        public IOrderRepository OrderRepository => _orderRepository;
+        public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
         public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;

@@ -21,6 +21,7 @@ namespace API.Entities
         public List<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public List<Image> Images { get; set; } = new List<Image>();
         public List<Review> Reviews { get; set; } = new List<Review>();
+        public List<OrderItems> OrderItems{get;set;}=new List<OrderItems>();
 
 
         public static ProductGetDto toProductGetDto(Product product)

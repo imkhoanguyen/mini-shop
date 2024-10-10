@@ -9,7 +9,6 @@ namespace API.Repositories
     public class CartItemsRepository : ICartItemsRepository
     {
         private readonly StoreContext _context;
-        private readonly VariantRepository _variantRepository;
         public CartItemsRepository(StoreContext context)
         {
             _context =context;

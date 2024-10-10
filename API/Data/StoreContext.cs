@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using System.Security.Cryptography;
+using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -22,10 +23,15 @@ namespace API.Data
         public DbSet<ShoppingCart> ShoppingCarts {get;set;}
         public DbSet<ShippingMethod> ShippingMethods {get;set;}
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Payments> Payments{get;set;}
+        public DbSet<Order> Orders{get;set;}
+        public DbSet<OrderItems> OrderItems{get;set;}
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
                 .HasKey(pc => new { pc.ProductId, pc.CategoryId });
+            builder.Entity<OrderItems>()
+                .HasKey(oi => new{ oi.ProductId, oi.OrderId});
 
             builder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
@@ -41,6 +47,15 @@ namespace API.Data
                 .HasOne(ci=>ci.ShoppingCart)
                 .WithMany(sc =>sc.CartItems)
                 .HasForeignKey(ci=>ci.ShoppingCartId);
+            builder.Entity<OrderItems>()
+                .HasOne(oi=>oi.Product)
+                .WithMany(p=>p.OrderItems)
+                .HasForeignKey(p=>p.ProductId);
+
+            builder.Entity<OrderItems>()
+                .HasOne(oi=>oi.Order)
+                .WithMany(o=>o.OrderItems)
+                .HasForeignKey(o=>o.OrderId);
             
             
             // builder.Entity<CartItems>()
@@ -74,7 +89,17 @@ namespace API.Data
                 .WithOne(v => v.Product)
                 .HasForeignKey(v => v.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // builder.Entity<Product>()
+            //     .HasMany(p=>p.OrderItems)
+            //     .WithOne(oi=>oi.Product)
+            //     .HasForeignKey(oi=>oi.ProductId);
+            // builder.Entity<Order>()
+            //     .HasMany(o=>o.OrderItems)
+            //     .WithOne(oi=>oi.Order)
+            //     .HasForeignKey(oi=>oi.OrderId);
+                
             base.OnModelCreating(builder);
+            
 
 
         }
