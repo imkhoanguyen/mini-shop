@@ -18,12 +18,19 @@ namespace API.Data
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Variant> Variants { get; set; }
         public DbSet<Message> Messages { get; set; }
+
+        public DbSet<Voucher> Vouchers{ get; set; }
+        public DbSet<Product_Voucher> Product_Vouchers{ get; set; }
+        public DbSet<Payments> Payments { get; set; }
+        public DbSet<ShippingMethod> ShippingMethods{ get; set; }
+        public DbSet<Order> Orders{ get; set; }
+        public DbSet<OrderItems> OrderItems{ get; set; }
         //public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
                 .HasKey(pc => new { pc.ProductId, pc.CategoryId });
-
+            
             builder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
                 .WithMany(p => p.ProductCategories)
@@ -63,7 +70,8 @@ namespace API.Data
                 .OnDelete(DeleteBehavior.Cascade);
             base.OnModelCreating(builder);
 
-
+            builder.Entity<Product_Voucher>()
+                .HasKey(pc => new { pc.ProductId, pc.VoucherId });
         }
 
     }

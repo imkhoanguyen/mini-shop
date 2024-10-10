@@ -17,7 +17,8 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                var serverVersion = new MySqlServerVersion(new Version(8, 0, 21));  // Adjust the version to match your MySQL version
+                opt.UseMySql(config.GetConnectionString("DefaultConnection"), serverVersion);
             });
             services.AddSingleton(c =>
                 {
@@ -47,6 +48,9 @@ namespace API.Extensions
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IVoucherRepository, VoucherRepository>();
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
