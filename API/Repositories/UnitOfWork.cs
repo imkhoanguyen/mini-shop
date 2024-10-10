@@ -29,7 +29,7 @@ namespace API.Repositories
              IImageRepository imageRepository, IVariantRepository variantRepository,
              ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
              IShippingMethodRepository shippingMethodRepository,IPaymentsRepository paymentsRepository,
-             IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository)
+             IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository, ImageService imageService)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -38,7 +38,7 @@ namespace API.Repositories
             _colorRepository = colorRepository;
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
-            _imageService = ImageService;
+            _imageService = imageService;
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
@@ -53,7 +53,7 @@ namespace API.Repositories
         public IColorRepository ColorRepository => _colorRepository;
         public IMessageRepository MessageRepository => _messageRepository;
         public IImageRepository ImageRepository => _imageRepository;
-        public IVariantRepository VariantRepository => _variantRepository;
+        public IImageService ImageService => _imageService;
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
         public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
@@ -61,7 +61,7 @@ namespace API.Repositories
         public IOrderRepository OrderRepository => _orderRepository;
         public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
 
-        public IImageService ImageService => throw new NotImplementedException();
+        public IVariantRepository VariantRepository => _variantRepository;
 
         public async Task<bool> Complete()
         {
