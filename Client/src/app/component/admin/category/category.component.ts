@@ -42,15 +42,15 @@ export class CategoryComponent implements OnInit, OnDestroy {
   headerText: string = 'Thêm Danh Mục';
   categoryForm: any;
 
-  paginatedCategory: any;
-  totalRecords: number = 0;
   pageSizeOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
     { label: '20', value: 20 },
     { label: '50', value: 50 },
   ];
-
+  first: number = 0;
+  paginatedCategory: any;
+  totalRecords: number = 0;
   pageSize: number = 5;
   pageNumber: number = 1;
   searchString: string = "";
@@ -90,7 +90,9 @@ export class CategoryComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: any): void {
+    this.first = event.first;
     this.pageNumber = event.page + 1;
+    this.pageSize = event.rows;
     this.loadCategories();
   }
 
@@ -107,14 +109,16 @@ export class CategoryComponent implements OnInit, OnDestroy {
 
   loadCategories(): void {
     const categorySub = this.categoryService.getCategoriesAllPaging(this.pageNumber, this.pageSize, this.searchString)
-      .subscribe(
-        (pagination) => {
-          this.paginatedCategory = pagination;
-          this.totalRecords = pagination.count;
-        },
-        (error) => this.handleError(error, 'Lấy danh mục')
-      );
-    this.subscriptions.add(categorySub);
+    .subscribe(
+      (pagination) => {
+        this.paginatedCategory = pagination.items;
+        this.totalRecords = pagination.totalCount;
+        console.log('danh mục:', this.paginatedCategory);
+        console.log('Tổng số danh mục:', this.totalRecords);
+      },
+      (error) => this.handleError(error, 'Lấy danh mục')
+    );
+  this.subscriptions.add(categorySub);
   }
 
   showDialog(): void {

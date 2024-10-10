@@ -58,6 +58,9 @@ namespace API.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Avatar")
+                        .HasColumnType("text");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
@@ -222,9 +225,6 @@ namespace API.Migrations
                     b.Property<bool>("IsMain")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PublicId")
                         .HasColumnType("text");
 
@@ -232,11 +232,14 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("VariantId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("VariantId");
 
                     b.ToTable("Images");
                 });
@@ -562,7 +565,7 @@ namespace API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ColorId")
+                    b.Property<int?>("ColorId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsDelete")
@@ -580,7 +583,7 @@ namespace API.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("SizeId")
+                    b.Property<int?>("SizeId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Status")
@@ -785,15 +788,15 @@ namespace API.Migrations
                         .WithMany("Images")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("API.Entities.Product", "Product")
+                    b.HasOne("API.Entities.Variant", "Variant")
                         .WithMany("Images")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("VariantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
 
-                    b.Navigation("Product");
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("API.Entities.Message", b =>
@@ -904,9 +907,7 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Entities.Color", "Color")
                         .WithMany()
-                        .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ColorId");
 
                     b.HasOne("API.Entities.Product", "Product")
                         .WithMany("Variants")
@@ -916,9 +917,7 @@ namespace API.Migrations
 
                     b.HasOne("API.Entities.Size", "Size")
                         .WithMany()
-                        .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SizeId");
 
                     b.Navigation("Color");
 
@@ -1014,7 +1013,7 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.ShoppingCart", b =>
                 {
-                    b.Navigation("CartItems");
+                    b.Navigation("Images");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,4 @@
-import { Color } from "./color.module";
-import { Size } from "./size.module";
-
+import { Image} from "./image.module";
 export interface Variant{
   id: number;
   price: number;
@@ -8,6 +6,7 @@ export interface Variant{
   quantity: number;
   sizeId: number;
   colorId: number;
+  imageUrls: Image[];
   productId: number;
 }
 export interface VariantAdd{

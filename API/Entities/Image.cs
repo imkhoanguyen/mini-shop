@@ -12,10 +12,10 @@ namespace API.Entities
         public bool IsMain { get; set; } = false;
         public string? PublicId { get; set; }
         public bool IsApproved { get; set; }
-        public int ProductId { get; set; }
+        public int VariantId { get; set; }
 
-        [ForeignKey("ProductId")]
-        public Product? Product { get; set; }
+        [ForeignKey("VariantId")]
+        public Variant? Variant { get; set; }
 
         public string? AppUserId { get; set; }
 

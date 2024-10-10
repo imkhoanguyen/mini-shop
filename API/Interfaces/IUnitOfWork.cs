@@ -12,6 +12,7 @@ namespace API.Interfaces
         ICartItemsRepository CartItemsRepository {get;}
         IShoppingCartRepository ShoppingCartRepository{get;}
         IImageRepository ImageRepository { get; }
+        IImageService ImageService { get; }
         IMessageRepository MessageRepository { get; }
         IShippingMethodRepository ShippingMethodRepository{get;}
         IPaymentsRepository PaymentsRepository{get;}

@@ -26,6 +26,14 @@ namespace api.Controllers
             var productDto = Product.toProductGetDto(product);
             return Ok(productDto);
         }
+        [HttpGet("GetByName")]
+        public async Task<IActionResult> GetProductByName(string name)
+        {
+            var product = await _unitOfWork.ProductRepository.GetProductByName(name);
+            if (product == null) return NotFound("không tìm thấy sản phẩm với tên = " + name);
+            var productDto = Product.toProductGetDto(product);
+            return Ok(productDto);
+        }
         [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllProductsAsync()
         {
@@ -37,24 +45,24 @@ namespace api.Controllers
             var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
             return Ok(productDto);
         }
-        [HttpGet("GetByName")]
-        public async Task<IActionResult> GetProductByName(string name)
-        {
-            var product = await _unitOfWork.ProductRepository.GetProductByName(name);
-            if (product == null) return NotFound("không tìm thấy sản phẩm với tên = " + name);
-            var productDto = Product.toProductGetDto(product);
-            return Ok(productDto);
-        }
+        
         [HttpGet("GetAllPaging")]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
         {
-            var product = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
-            if (product == null)
+            var pageList = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
+            if (pageList == null)
             {
                 return NotFound("Không tìm thấy sản phẩm nào.");
             }
-            var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
-            return Ok(productDto);
+             var pageListDto = new PageListDto<ProductGetDto>
+            {
+                PageIndex = pageList.PageIndex,
+                PageSize = pageList.PageSize,
+                TotalCount = pageList.TotalCount,
+                TotalPages = pageList.TotalPages,
+                Items = pageList.Select(c => Product.toProductGetDto(c)).ToList()
+            };
+            return Ok(pageListDto);
         }
 
         // POST api/Product/Add
@@ -79,14 +87,10 @@ namespace api.Controllers
 
         // PUT api/Product/Update
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateProduct([FromForm] ProductDto productDto)
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (await _unitOfWork.ProductRepository.ProductExistsAsync(productDto.Name!))
-            {
-                return BadRequest("Sản phẩm với tên này đã tồn tại.");
-            }
             var product = ProductDto.toProduct(productDto);
 
             await _unitOfWork.ProductRepository.UpdateProduct(product);

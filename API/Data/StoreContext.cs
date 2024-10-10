@@ -74,16 +74,12 @@ namespace API.Data
                 .HasForeignKey(m => m.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // builder.Entity<Image>()
-            //     .HasOne(i => i.Product)
-            //     .WithMany(p => p.Images)
-            //     .HasForeignKey(i => i.ProductId)
-            //     .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Product>()
+            builder.Entity<Variant>()
                 .HasMany(p => p.Images)
-                .WithOne(i => i.Product)
-                .HasForeignKey(i => i.ProductId)
+                .WithOne(i => i.Variant)
+                .HasForeignKey(i => i.VariantId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
             builder.Entity<Product>()
                 .HasMany(p => p.Variants)
                 .WithOne(v => v.Product)

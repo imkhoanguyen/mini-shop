@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Mini Shop</a>
     <button
@@ -13,7 +13,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li>
@@ -23,13 +23,21 @@
         <li class="nav-item">
           <a class="nav-link" href="#">Sản Phẩm</a>
         </li>
-        <li class="nav-item">
-          <p-button class="nav-link" routerLink="/admin">Admin</p-button>
+        <li class="nav-item" >
+          <a class="btn btn-primary ms-2" routerLink="/admin">Admin</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a class="nav-link" routerLink="/login">Đăng nhập</a>
+        </li>
+        <li class="nav-item" *ngIf="!isLoggedIn">
+          <a class="nav-link" routerLink="/register">Đăng ký</a>
+        </li>
+        <li class="nav-item" *ngIf="isLoggedIn">
+          <a class="nav-link" href="#">Xin chào, {{ usernameOrEmail }}</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
-
-
-

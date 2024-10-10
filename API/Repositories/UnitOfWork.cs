@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Interfaces;
+using API.Services;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace API.Repositories
@@ -13,6 +14,7 @@ namespace API.Repositories
         private readonly IColorRepository _colorRepository;
         private readonly IMessageRepository _messageRepository;
         private readonly IImageRepository _imageRepository;
+        private readonly IImageService _imageService;
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
@@ -36,6 +38,7 @@ namespace API.Repositories
             _colorRepository = colorRepository;
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
+            _imageService = ImageService;
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
@@ -57,6 +60,9 @@ namespace API.Repositories
         public IPaymentsRepository PaymentsRepository => _paymentsRepository;
         public IOrderRepository OrderRepository => _orderRepository;
         public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
+
+        public IImageService ImageService => throw new NotImplementedException();
+
         public async Task<bool> Complete()
         {
             return await _context.SaveChangesAsync() > 0;

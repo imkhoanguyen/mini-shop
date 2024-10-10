@@ -9,27 +9,36 @@ namespace API.Entities
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        public VariantStatus Status { get; set; } = VariantStatus.Draft;
+        public VariantStatus Status { get; set; } = VariantStatus.Public;
         public bool IsDelete { get; set; } = false;
+        
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         public Product? Product { get; set; }
-        public int SizeId { get; set; }
-        [ForeignKey("SizeId")]
+        public int? SizeId { get; set; }
         public Size? Size { get; set; }
-        public int ColorId { get; set; }
-        [ForeignKey("ColorId")]
+        
+        public int? ColorId { get; set; }
         public Color? Color { get; set; }
-        public static VariantDto toVariantDto(Variant variant)
+        
+        public List<Image> Images { get; set; } = new List<Image>();
+
+        public static VariantGetDto ToVariantDto(Variant variant)
         {
-            return new VariantDto
+            return new VariantGetDto
             {
                 Id = variant.Id,
                 Price = variant.Price,
                 PriceSell = variant.PriceSell,
                 Quantity = variant.Quantity,
                 SizeId = variant.SizeId,
-                ColorId = variant.ColorId
+                ColorId = variant.ColorId,
+                ImageUrls = variant.Images.Select(i => new ImageGetDto
+                {
+                    Id = i.Id,
+                    Url = i.Url,
+                    IsMain = i.IsMain
+                }).ToList()
             };
         }
     }
