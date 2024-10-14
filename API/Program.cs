@@ -1,6 +1,9 @@
 using api.Data.Seed;
 using API.Data;
+using API.Data.Seed;
+using API.Entities;
 using API.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -32,13 +35,16 @@ app.MapControllers();
 
 // seed data
 builder.Services.SeedDataServices();
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
 try
 {
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
     var context = services.GetRequiredService<StoreContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
-    await StoreContextSeed.SeedAsync(context);
+    await RoleSeed.SeedAsync(roleManager);
+    await RoleClaimSeed.SeedAsync(context, roleManager);
 }
 catch (Exception ex)
 {

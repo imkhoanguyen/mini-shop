@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using API.Constains;
+using API.Data;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
@@ -52,8 +53,6 @@ namespace API.Controllers
                 Description = r.Description!,
                 Created = r.Created,
             });
-
-            
 
             var roleDtos = await PagedList<RoleDto>.CreateAsync(roleDtosQuery, roleParams.PageNumber, roleParams.PageSize);
 
@@ -143,6 +142,13 @@ namespace API.Controllers
             return BadRequest("Đã xảy ra lỗi khi xóa role");
         }
 
+        [HttpGet("permissions")]
+        public ActionResult<List<PermissionGroupDto>> GetAllPermission()
+        {
+            return ClaimStore.AllPermissionGroups;
+        }
+
+
         private async Task<bool> RoleIdExists(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -165,5 +171,7 @@ namespace API.Controllers
             if (role != null) return true;
             return false;
         }
+
+        
     }
 }
