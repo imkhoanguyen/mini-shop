@@ -1,4 +1,3 @@
-using api.Data.Seed;
 using API.Data;
 using API.Data.Seed;
 using API.Entities;
@@ -14,6 +13,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddAuthentication();
+builder.Services.SeedDataServices();
 builder.Services.AddPolicy();
 
 var app = builder.Build();
@@ -28,6 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+//app.UseCors("CorsPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

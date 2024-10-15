@@ -7,6 +7,8 @@ import { AdminComponent } from './component/admin/admin.component';
 import { DashboardComponent } from './component/admin/dashboard/dashboard.component';
 import { ProductComponent } from './component/admin/product/product.component';
 import { ProductaddComponent } from './component/admin/product/productadd/productadd.component';
+import { LoginComponent } from './component/login/login.component';
+import { RegisterComponent } from './component/register/register.component';
 import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
 
 export const routes: Routes = [
@@ -20,9 +22,13 @@ export const routes: Routes = [
       { path: 'category', component: CategoryComponent },
       { path: 'product', component: ProductComponent },
       { path: 'product/productadd', component: ProductaddComponent },
+      { path: 'product/productadd/:id', component: ProductaddComponent },
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
     ],
   },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+
 ];

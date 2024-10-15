@@ -11,11 +11,12 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
+        private readonly UserManager<AppUser > _userManager;
+        private readonly SignInManager<AppUser > _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
+
+        public AccountController(UserManager<AppUser > userManager, SignInManager<AppUser > signInManager,
             ITokenService tokenService, IUnitOfWork unitOfWork)
         {
             _tokenService = tokenService;
@@ -24,30 +25,13 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize]
-        [HttpGet]
-        public async Task<ActionResult<UserDto>> GetCurrentUser()
-        {
-            var user = await _userManager.FindByEmailFromClaimsPrincipal(User);
 
-            if (user == null)
-            {
-                return NotFound(new ApiResponse(404));
-            }
-
-            return new UserDto
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                Token = await _tokenService.CreateToken(user)
-            };
-        }
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> Login([FromForm]LoginDto loginDto)
+        public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            AppUser? user;
+            AppUser ? user;
             if (loginDto.UserNameOrEmail!.Contains('@'))
             {
                 user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
@@ -59,28 +43,26 @@ namespace API.Controllers
 
             if (user == null) return Unauthorized(new ApiResponse(401));
 
-            var result = await _signInManager.PasswordSignInAsync(
-                user.UserName!, loginDto.Password, isPersistent: false, lockoutOnFailure: false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (result.IsLockedOut)
             {
-                return Unauthorized("User account is locked out.");
+                return Unauthorized("User  account is locked out.");
             }
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
+                return Unauthorized(new ApiResponse(401));
+            return new UserDto
             {
-                return new UserDto
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = await _tokenService.CreateToken(user),
-                };
-            }
-
-            return Unauthorized(new ApiResponse(401));
+                UserName = user.UserName,
+                Email = user.Email,
+                Avatar = user.Avatar,
+                Token = _tokenService.CreateToken(user)
+            };
         }
+
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -90,21 +72,22 @@ namespace API.Controllers
                 return new BadRequestObjectResult(new ApiValidationErrorResponse
                 { Errors = new[] { "Email address is in use" } });
             }
-
-            var user = new AppUser
+            var user = new AppUser 
             {
                 Email = registerDto.Email,
                 UserName = registerDto.UserName
             };
-
             var result = await _userManager.CreateAsync(user, registerDto.Password);
-           if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
+            if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
 
+            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
+            if (!roleResult.Succeeded) return Unauthorized(new ApiResponse(401));
             return new UserDto
             {
                 UserName = user.UserName,
                 Email = user.Email,
-                Token = await _tokenService.CreateToken(user),
+                Avatar = user.Avatar,
+                Token = _tokenService.CreateToken(user)
             };
         }
 
@@ -113,6 +96,5 @@ namespace API.Controllers
         {
             return await _userManager.FindByEmailAsync(email) != null;
         }
-
     }
 }

@@ -25,8 +25,9 @@ namespace API.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Email, user.Email!),
-                new Claim(ClaimTypes.GivenName, user.UserName!)
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email)
             };
 
             // Thêm các claims dựa trên role
@@ -47,13 +48,11 @@ namespace API.Services
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds,
                 Issuer = _config["Token:Issuer"],
-                Audience = _config["Token:Audience"]    
+                Audience = _config["Token:Audience"]
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-
             var token = tokenHandler.CreateToken(tokenDescriptor);
-
             return tokenHandler.WriteToken(token);
         }
     }

@@ -46,6 +46,8 @@ namespace API.Extensions
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ICartItemsRepository, CartItemsRepository>();
+            services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
