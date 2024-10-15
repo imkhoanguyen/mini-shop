@@ -57,7 +57,7 @@ namespace API.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 Avatar = user.Avatar,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             };
         }
 
@@ -87,7 +87,7 @@ namespace API.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 Avatar = user.Avatar,
-                Token = _tokenService.CreateToken(user)
+                Token = await _tokenService.CreateToken(user)
             };
         }
 

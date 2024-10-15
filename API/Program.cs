@@ -1,5 +1,8 @@
 using API.Data;
+using API.Data.Seed;
+using API.Entities;
 using API.Extensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -12,6 +15,7 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.SeedDataServices();
+builder.Services.AddPolicy();
 
 var app = builder.Build();
 
@@ -31,5 +35,25 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// seed data
+builder.Services.SeedDataServices();
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    var context = services.GetRequiredService<StoreContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
+    await context.Database.MigrateAsync();
+    await RoleSeed.SeedAsync(roleManager);
+    await RoleClaimSeed.SeedAsync(context, roleManager);
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.ToString());
+    throw;
+}
+
 app.Map("/", () => Results.Redirect("/swagger"));
 app.Run();
