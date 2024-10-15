@@ -25,7 +25,7 @@ namespace API.Constains
         public const string Size_Delete = "Size.Delete";
 
         // product
-        public const string Product_View = "Product.Create";
+        public const string Product_View = "Product.View";
         public const string Product_Create = "Product.Create";
         public const string Product_Edit = "Product.Edit";
         public const string Product_Delete = "Product.Delete";

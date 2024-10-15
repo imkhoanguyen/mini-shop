@@ -7,6 +7,7 @@ import { AdminComponent } from './component/admin/admin.component';
 import { DashboardComponent } from './component/admin/dashboard/dashboard.component';
 import { ProductComponent } from './component/admin/product/product.component';
 import { ProductaddComponent } from './component/admin/product/productadd/productadd.component';
+import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
 
 export const routes: Routes = [
   { path: '', component: HeaderComponent },
@@ -20,7 +21,8 @@ export const routes: Routes = [
       { path: 'product', component: ProductComponent },
       { path: 'product/productadd', component: ProductaddComponent },
       { path: 'chat', component: ChatComponent },
-      { path: 'quyen', component: RoleComponent },
+      { path: 'role', component: RoleComponent },
+      { path: 'role/permission/:id', component: RolePermissionComponent },
     ],
   },
 ];
