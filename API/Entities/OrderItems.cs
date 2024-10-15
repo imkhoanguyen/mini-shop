@@ -13,9 +13,9 @@ namespace API.Entities
         public string productName{get;set;}
         public string sizeName { get; set; }
         public string colorName { get; set; }
-        [ForeignKey("OrderId")]
+        [ForeignKey("orderId")]
         public Order? order{get;set;}
-        [ForeignKey("ProductId")]
+        [ForeignKey("productId")]
         public Product? product{get;set;}
     }
 }
