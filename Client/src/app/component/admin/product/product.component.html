@@ -1,3 +1,4 @@
+<p-toast />
 <div class="row align-items-center mb-3">
   <div class="col">
     <input
@@ -6,7 +7,7 @@
       (input)="onSearch()"
       pInputText
       placeholder="Tìm kiếm..."
-      class="w-100 px-3 py-2"
+      class="w-100"
     />
   </div>
   <div class="col-auto">
@@ -16,16 +17,13 @@
       optionLabel="label"
       [placeholder]="'Số lượng trang'"
       (onChange)="onPageSizeChange($event.value)"
-      class="mx-2"
     ></p-dropdown>
   </div>
   <div class="col-auto">
     <p-button
       label="Thêm Sản phẩm"
       icon="pi pi-plus"
-      size="large"
       severity="success"
-      class="ml-2 p-button-rounded"
       (click)="addProduct()"
     ></p-button>
   </div>
@@ -72,17 +70,15 @@
       <td>{{ product.updated | date: 'dd/MM/yyyy' }}</td>
       <td>
         <ng-container *ngFor="let categoryId of product.categoryIds">
-          <span class="badge bg-primary">{{ getCategoryNameById(categoryId) }}</span>
+          <p-tag severity="success" value="{{ getCategoryNameById(categoryId) }}"></p-tag>
         </ng-container>
       </td>
       <td>
-        <p-selectButton
-          [options]="productStatus"
-          [(ngModel)]="value"
-          optionLabel="label"
-          optionValue="value"
-          class="p-button-sm"
-        />
+        <p-inputSwitch
+          [pTooltip]="product.status === 1 ? 'Published' : 'Draft'"
+          tooltipPosition="bottom"
+          [ngModel]="getStatus(product.status)"
+          (onChange)="setStatus(product, $event.checked)" />
       </td>
       <td>
         <p-button

@@ -1,0 +1,41 @@
+.card-body {
+  padding: 1rem;
+}
+
+/* General Styles for the Variant Row */
+.variant-row {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Price and Quantity Section */
+.variant-row .col-md-4 {
+  flex: 1;
+}
+
+/* Image Upload Section */
+.variant-row .col-md-8 {
+  flex: 2;
+}
+
+/* Button to Remove Variant */
+.variant-row .d-flex.align-items-end {
+  justify-content: flex-end;
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+  .variant-row {
+    flex-direction: column; /* Stack on smaller screens */
+  }
+
+  .variant-row .col-md-4,
+  .variant-row .col-md-8 {
+    flex: 100%; /* Full width on small screens */
+    margin-bottom: 1rem; /* Add spacing between stacked elements */
+  }
+}
+.custom-dropdown {
+  width: 200px; /* Use 100% to make it responsive */
+  max-width: 300px; /* Set a maximum width as needed */
+}

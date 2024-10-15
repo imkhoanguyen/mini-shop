@@ -80,6 +80,8 @@ namespace API.Controllers
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
 
+            var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
+            if (!roleResult.Succeeded) return Unauthorized(new ApiResponse(401));
             return new UserDto
             {
                 UserName = user.UserName,

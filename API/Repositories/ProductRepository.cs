@@ -83,7 +83,7 @@ namespace API.Repositories
         public async Task<Product?> GetProductByIdAsync(int id)
         {
             var productDb = await _context.Products
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
@@ -118,7 +118,7 @@ namespace API.Repositories
         public async Task<PageList<Product>> GetAllProductsAsync(ProductParams productParams)
         {
             var query = _context.Products
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .Where(p => !p.IsDelete)
@@ -136,7 +136,7 @@ namespace API.Repositories
                                         .ToListAsync();
             var products = await _context.Products
                 .Where(p => productIds.Contains(p.Id))
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .ToListAsync();

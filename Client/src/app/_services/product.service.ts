@@ -28,11 +28,11 @@ export class ProductService {
   addProduct(data: ProductAdd): Observable<any>{
     return this.http.post(this.apiUrl + "/Product/Add", data);
   }
-  updateProduct(data: ProductUpdate){
+  updateProduct(data: ProductUpdate): Observable<any>{
     return this.http.put(this.apiUrl + "/Product/Update", data);
   }
-  deleteProduct(id: number){
-    return this.http.delete(this.apiUrl + "/Product/Delete/" + id);
+  deleteProduct(data: Product): Observable<any>{
+    return this.http.delete(this.apiUrl + "/Product/Delete/", { body: data });
   }
   getProductById(id: number){
     return this.http.get<Product>(this.apiUrl + "/Product/GetProductById" + id);

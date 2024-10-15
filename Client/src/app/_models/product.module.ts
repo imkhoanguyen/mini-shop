@@ -23,4 +23,5 @@ export interface ProductUpdate{
   name: string;
   description: string;
   categoryIds: Category[];
+  status: number;
 }

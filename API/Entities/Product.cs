@@ -48,7 +48,7 @@ namespace API.Entities
                         IsMain = i.IsMain 
                     }).ToList()
                 }).ToList(),
-                
+                Status = (int)product.Status
             };
         }
 

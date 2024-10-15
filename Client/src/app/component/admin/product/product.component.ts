@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgModule } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
 import { Subscription } from 'rxjs';
-import { Product } from '../../../_models/product.module';
+import { Product, ProductUpdate } from '../../../_models/product.module';
 import { Image } from '../../../_models/image.module';
 import { ProductService } from '../../../_services/product.service';
 import { Router, RouterModule } from '@angular/router';
@@ -21,7 +21,9 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { SizeService } from '../../../_services/size.service';
 import { ColorService } from '../../../_services/color.service';
 import { ColorPickerModule } from 'primeng/colorpicker';
-
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { TooltipModule } from 'primeng/tooltip';
+import { TagModule } from 'primeng/tag';
 @Component({
   selector: 'app-product',
   standalone: true,
@@ -39,8 +41,10 @@ import { ColorPickerModule } from 'primeng/colorpicker';
     ConfirmDialogModule,
     SelectButtonModule,
     ColorPickerModule,
-    FormsModule,
-    RouterModule
+    RouterModule,
+    InputSwitchModule,
+    TooltipModule,
+    TagModule
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product.component.html',
@@ -60,10 +64,7 @@ export class ProductComponent {
     { label: '20', value: 20 },
     { label: '50', value: 50 },
   ];
-  productStatus: any[] = [{ label: 'Draft', value: '0' },{ label: 'Public', value: '1' }];
-
-    value: string = '0';
-
+  checked: boolean = false;
   first: number = 0;
   paginatedProduct: any;
   totalRecords: number = 0;
@@ -98,6 +99,7 @@ export class ProductComponent {
       id: [0],
       name: ['', Validators.required],
       description: ['', Validators.required],
+      status: [false],
     });
   }
   fetchCategoryNames() {
@@ -106,7 +108,6 @@ export class ProductComponent {
         acc[category.id] = category.name;
         return acc;
       }, {});
-      console.log("Đã lấy tên danh mục:", this.categoryNames);
     });
   }
 
@@ -116,7 +117,6 @@ export class ProductComponent {
         acc[size.id] = size.name;
         return acc;
       }, {});
-      console.log("Đã lấy tên kích thước:", this.sizeNames);
     });
   }
 
@@ -126,8 +126,6 @@ export class ProductComponent {
         acc[color.id] = color.code;
         return acc;
       }, {});
-      console.log("Đã lấy mã màu:", this.colorCodes);
-
     });
   }
 
@@ -141,6 +139,30 @@ export class ProductComponent {
 
   getColorCodeById(colorId: number): string {
     return this.colorCodes[colorId];
+  }
+  getStatus(status: number): boolean{
+    if(status == 1){
+      return true;
+    }
+    return false;
+  }
+  setStatus(product: Product, value: boolean) {
+    const productUpdate: ProductUpdate = {
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      categoryIds: [],
+      status: value ? 1 : 0
+    };
+    console.log(productUpdate);
+    this.productService.updateProduct(productUpdate).subscribe({
+      next: () => {
+        this.showMessage('success', 'Thành Công', 'Cập nhật trạng thái thành công');
+        this.loadProducts();
+
+      }
+
+    });
   }
 
 
@@ -272,8 +294,15 @@ export class ProductComponent {
     });
   }
 
-  deleteProduct(id: number) {
-
+  deleteProduct(product: Product) {
+    this.productService.deleteProduct(product).subscribe({
+      next: () => {
+        console.log('Xóa sản phẩm thành công');
+        this.showMessage('success', 'Thành Công', 'Xóa sản phẩm thành công');
+        this.loadProducts();
+      },
+      error: (error) => this.handleError(error, 'Xóa sản phẩm'),
+    });
   }
 
 }
