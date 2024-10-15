@@ -4,6 +4,7 @@ using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Helper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -75,6 +76,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = ClaimStore.Role_Create)]
         public async Task<ActionResult<RoleDto>> CreateRole(RoleCreateDto roleCreateDto)
         {
             if (!ModelState.IsValid)
