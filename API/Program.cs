@@ -14,7 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddAuthentication();
-builder.Services.SeedDataServices();
 builder.Services.AddPolicy();
 
 var app = builder.Build();
@@ -48,6 +47,8 @@ try
     await context.Database.MigrateAsync();
     await RoleSeed.SeedAsync(roleManager);
     await RoleClaimSeed.SeedAsync(context, roleManager);
+    await UserSeed.SeedAsync(userManager, roleManager);
+    await UserRoleSeed.SeedAsync(userManager, context);
 }
 catch (Exception ex)
 {
