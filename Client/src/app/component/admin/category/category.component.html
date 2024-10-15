@@ -1,26 +1,30 @@
-<p-toast></p-toast>
+<p-toast />
 <p-confirmDialog />
 <div class="row align-items-center mb-3">
   <div class="col">
-    <input type="text" [(ngModel)]="searchString" (input)="onSearch()" pInputText placeholder="Tìm kiếm..." class="w-100" />
+    <input
+      type="text"
+      [(ngModel)]="searchString"
+      (input)="onSearch()"
+      pInputText
+      placeholder="Tìm kiếm..."
+      class="w-100"
+    />
   </div>
   <div class="col-auto">
     <p-dropdown
-  [options]="pageSizeOptions"
-  [(ngModel)]="pageSize"
-  optionLabel="label"
-  [placeholder]="'Số lượng trang'"
-  (onChange)="onPageSizeChange($event.value)"
-></p-dropdown>
-
+      [options]="pageSizeOptions"
+      [(ngModel)]="pageSize"
+      optionLabel="label"
+      [placeholder]="'Số lượng trang'"
+      (onChange)="onPageSizeChange($event.value)"
+    ></p-dropdown>
   </div>
   <div class="col-auto">
     <p-button
       label="Thêm Danh mục"
       icon="pi pi-plus"
-      size="large"
       severity="success"
-      class="ml-2"
       (click)="showDialog()"
     ></p-button>
   </div>
@@ -40,13 +44,16 @@
         pInputText
         id="name"
         class="flex-auto"
-        autocomplete="on"
+        autocomplete="off"
         formControlName="name"
       />
+      <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+        <small class="text-danger">Tên không được để trống</small>
+      </div>
     </div>
     <div class="flex justify-content-end gap-2">
       <p-button label="Cancel" severity="secondary" (click)="visible = false"></p-button>
-      <p-button label="{{btnText}}" type="submit"></p-button>
+      <p-button label="{{ btnText }}" type="submit"></p-button>
     </div>
   </form>
 </p-dialog>
@@ -71,19 +78,27 @@
     <tr>
       <td>{{ category.id }}</td>
       <td>{{ category.name }}</td>
-      <td>{{ category.created | date : 'dd/MM/yyyy, hh:mm a' }}</td>
-      <td>{{ category.updated | date : 'dd/MM/yyyy, hh:mm a' }}</td>
-
+      <td>{{ category.created | date: 'dd/MM/yyyy, hh:mm a' }}</td>
+      <td>{{ category.updated | date: 'dd/MM/yyyy, hh:mm a' }}</td>
       <td>
-        <p-button icon="pi pi-file-edit" severity="info" (click)="openUpdateDialog(category)"></p-button>
-        <p-button icon="pi pi-trash" severity="danger"  (click)="confirmDelete(category, $event)"></p-button>
+        <p-button
+          icon="pi pi-file-edit"
+          severity="info"
+          (click)="openUpdateDialog(category)"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          (click)="confirmDelete(category, $event)"
+        ></p-button>
       </td>
     </tr>
   </ng-template>
 </p-table>
-<p-paginator
-        (onPageChange)="onPageChange($event)"
-        [first]="pageNumber"
-        [rows]="pageSize"
-        [totalRecords]="120" />
 
+<p-paginator
+  (onPageChange)="onPageChange($event)"
+  [first]="first"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords"
+></p-paginator>

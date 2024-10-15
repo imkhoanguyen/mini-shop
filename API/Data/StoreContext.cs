@@ -13,12 +13,15 @@ namespace API.Data
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<CartItems>CartItems{get;set;}
         public DbSet<Image> Images { get; set; }
         public DbSet<AppRole> AppRoles { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Variant> Variants { get; set; }
         public DbSet<Message> Messages { get; set; }
-        //public DbSet<Address> Addresses { get; set; }
+        public DbSet<ShoppingCart> ShoppingCarts {get;set;}
+        public DbSet<ShippingMethod> ShippingMethods {get;set;}
+        public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
@@ -34,6 +37,12 @@ namespace API.Data
                 .WithMany(c => c.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryId);
 
+            builder.Entity<CartItems>()
+                .HasOne(ci=>ci.ShoppingCart)
+                .WithMany(sc =>sc.CartItems)
+                .HasForeignKey(ci=>ci.ShoppingCartId);
+
+
             builder.Entity<Message>()
                 .HasOne(m => m.Sender)
                 .WithMany(u => u.MessageSent)
@@ -46,16 +55,12 @@ namespace API.Data
                 .HasForeignKey(m => m.RecipientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // builder.Entity<Image>()
-            //     .HasOne(i => i.Product)
-            //     .WithMany(p => p.Images)
-            //     .HasForeignKey(i => i.ProductId)
-            //     .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Product>()
+            builder.Entity<Variant>()
                 .HasMany(p => p.Images)
-                .WithOne(i => i.Product)
-                .HasForeignKey(i => i.ProductId)
+                .WithOne(i => i.Variant)
+                .HasForeignKey(i => i.VariantId)
                 .OnDelete(DeleteBehavior.Cascade);
+                
             builder.Entity<Product>()
                 .HasMany(p => p.Variants)
                 .WithOne(v => v.Product)

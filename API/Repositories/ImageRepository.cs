@@ -16,13 +16,13 @@ namespace API.Repositories
 
         public void AddImage(Image image)
         {
-            var existingImage = _context.Images.FirstOrDefault(i => i.ProductId == image.ProductId);
+            var existingImage = _context.Images.FirstOrDefault(i => i.VariantId == image.VariantId);
             _context.Images.Add(image);
         }
         public void UpdateImage(Image image)
         {
             var existingImage = _context.Images
-            .FirstOrDefault(i => i.Id == image.Id && i.ProductId == image.ProductId);
+            .FirstOrDefault(i => i.Id == image.Id);
             if (existingImage is not null)
             {
                 existingImage.Url = image.Url;
@@ -44,7 +44,7 @@ namespace API.Repositories
                     Id = x.Id,
                     Url = x.Url,
                     UserName = x.AppUser!.UserName,
-                    ProductId = x.ProductId,
+                    VariantId = x.VariantId,
                     IsApproved = x.IsApproved
                 }).ToListAsync();
         }
