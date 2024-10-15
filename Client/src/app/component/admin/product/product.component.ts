@@ -286,7 +286,7 @@ export class ProductComponent {
     });
   }
   addProduct() {
-    this.router.navigateByUrl('/admin/product/productadd');
+    this.router.navigate(['/admin/productForm/addProduct']);
   }
   editProduct(id: number) {
     this.productService.getProductById(id).subscribe(() => {

@@ -1,1 +1,169 @@
-<p>add-variant works!</p>
+<div class="flex flex-column p-4">
+  <form [formGroup]="variantsForm">
+    <div formArrayName="variants">
+      <div
+        *ngFor="let variant of variants.controls; let i = index"
+        [formGroupName]="i"
+        class="row g-4 mb-4 border p-3 rounded"
+      >
+        <!-- Price and Quantity Section -->
+        <div class="col-md-4">
+          <div class="mb-2">
+            <p-inputNumber
+              placeholder="Giá tiền"
+              mode="currency"
+              currency="VND"
+              locale="en-US"
+              formControlName="price"
+              class="w-100"
+            />
+          </div>
+          <div class="mb-2">
+            <p-inputNumber
+              placeholder="Giá tiền giảm (nếu có)"
+              mode="currency"
+              currency="VND"
+              locale="en-US"
+              formControlName="priceSell"
+              class="w-100"
+            />
+          </div>
+          <div class="mb-2">
+            <p-inputNumber
+              placeholder="Số lượng"
+              mode="decimal"
+              [useGrouping]="false"
+              formControlName="quantity"
+              class="w-100"
+            />
+          </div>
+          <div class="mb-2">
+            <p-dropdown
+              class="custom-dropdown"
+              [options]="sizes"
+              formControlName="sizeId"
+              placeholder="Chọn Kích thước"
+              optionLabel="name"
+              optionValue="id"
+              [showClear]="true"
+              [filter]="true"
+              (onFilter)="onSizeFilter($event)"
+            >
+              <ng-template let-item pTemplate="item">{{
+                item.name
+              }}</ng-template>
+              <ng-template pTemplate="empty">
+                <div class="no-data">
+                  No data found.
+                  <button (click)="addSize()" class="btn btn-primary">
+                    Add Size
+                  </button>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+          <div class="mb-2">
+            <p-dropdown
+              class="custom-dropdown"
+              [options]="colors"
+              formControlName="colorId"
+              placeholder="Chọn Màu Sắc"
+              optionLabel="name"
+              optionValue="id"
+              [showClear]="true"
+              [filter]="true"
+              (onFilter)="onColorFilter($event)"
+            >
+              <ng-template let-item pTemplate="item">{{
+                item.name
+              }}</ng-template>
+              <ng-template pTemplate="empty">
+                <div class="no-data">
+                  No data found.
+                  <button (click)="showColorDialog()" class="btn btn-primary">
+                    Add Color
+                  </button>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+        </div>
+        <!-- Image Upload Section -->
+        <div class="col-md-8" style="height: 100%">
+          <p-fileUpload
+            name="variantImages"
+            url="https://www.primefaces.org/cdn/api/upload.php"
+            (onUpload)="onUpload($event, i)"
+            [multiple]="true"
+            accept="image/*"
+            maxFileSize="1000000"
+          >
+            <ng-template pTemplate="content">
+              <ol *ngIf="variant.get('imageUrls')?.value">
+                <li
+                  *ngFor="
+                    let image of variant.get('imageUrls')?.value;
+                    let j = index
+                  "
+                >
+                  <img
+                    [src]="image.url"
+                    [alt]="image.name"
+                    width="50"
+                    height="50"
+                  />
+                  <label [for]="'isMainId' + j" class="ml-2">IsMain</label>
+                  <p-radioButton
+                    name="selectedMainImage"
+                    [value]="image.name"
+                    formControlName="selectedMainImage"
+                    [inputId]="'isMainId' + j"
+                  ></p-radioButton>
+                </li>
+              </ol>
+            </ng-template>
+          </p-fileUpload>
+        </div>
+        <!-- Remove Variant Button -->
+        <div class="col-md-4 d-flex align-items-end">
+          <p-button
+            icon="pi pi-times"
+            (click)="removeVariant(i)"
+            class="me-2"
+            severity="danger"
+            label="Remove"
+          ></p-button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Footer Buttons -->
+
+<div class="d-flex justify-content-between">
+  <p-button
+    label="Thêm biến thể"
+    icon="pi pi-plus"
+    (click)="addVariant()"
+  ></p-button>
+  <p-button
+    label="Lưu sản phẩm"
+    icon="pi pi-check"
+    (click)="onSubmit()"
+    [disabled]="!variantsForm.valid"
+  ></p-button>
+</div>
+
+<div class="row mt-4">
+  <div class="col d-flex justify-content-start">
+    <button (click)="prevPage()" class="btn btn-primary btn-lg me-2">
+      <i class="bi bi-arrow-left-circle"></i> Back
+    </button>
+  </div>
+  <div class="col d-flex justify-content-end">
+    <button (click)="nextPage()" class="btn btn-primary btn-lg">
+      Next <i class="bi bi-arrow-right-circle"></i>
+    </button>
+  </div>
+</div>
