@@ -1,8 +1,7 @@
-﻿using API.Data;
-using API.Entities;
+﻿using API.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace api.Data.Seed
+namespace API.Data.Seed
 {
     public class RoleSeed
     {
