@@ -5,7 +5,7 @@ namespace api.Data.Seed
 {
     public class CategorySeed
     {
-        public static void Seed(StoreContext context){
+        public static async Task SeedAsync(StoreContext context){
             if(context.Categories.Any()){
                 return;
             }
@@ -19,8 +19,7 @@ namespace api.Data.Seed
                 new Category { Name = "Sách giáo khoa" },            
                 new Category { Name = "Sách thiếu nhi" },     
             };
-            context.Categories.AddRange(categories);
-            context.SaveChanges();
+            await context.Categories.AddRangeAsync(categories);
         }
     }
 

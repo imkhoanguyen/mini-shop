@@ -2,12 +2,21 @@ import { Component, OnInit, OnDestroy, NgModule } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CommonModule } from '@angular/common';
-import {TableModule,TableRowCollapseEvent,TableRowExpandEvent} from 'primeng/table';
+import {
+  TableModule,
+  TableRowCollapseEvent,
+  TableRowExpandEvent,
+} from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import {FormBuilder,FormsModule,ReactiveFormsModule,Validators,} from '@angular/forms';
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
@@ -44,7 +53,7 @@ import { TagModule } from 'primeng/tag';
     RouterModule,
     InputSwitchModule,
     TooltipModule,
-    TagModule
+    TagModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './product.component.html',
@@ -75,7 +84,6 @@ export class ProductComponent {
   private subscriptions: Subscription = new Subscription();
   uploadedFiles!: Image[];
 
-
   constructor(
     private builder: FormBuilder,
     private categoryService: CategoryService,
@@ -85,7 +93,7 @@ export class ProductComponent {
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.initializeForm();
@@ -140,8 +148,8 @@ export class ProductComponent {
   getColorCodeById(colorId: number): string {
     return this.colorCodes[colorId];
   }
-  getStatus(status: number): boolean{
-    if(status == 1){
+  getStatus(status: number): boolean {
+    if (status == 1) {
       return true;
     }
     return false;
@@ -152,19 +160,20 @@ export class ProductComponent {
       name: product.name,
       description: product.description,
       categoryIds: [],
-      status: value ? 1 : 0
+      status: value ? 1 : 0,
     };
     console.log(productUpdate);
     this.productService.updateProduct(productUpdate).subscribe({
       next: () => {
-        this.showMessage('success', 'Thành Công', 'Cập nhật trạng thái thành công');
+        this.showMessage(
+          'success',
+          'Thành Công',
+          'Cập nhật trạng thái thành công'
+        );
         this.loadProducts();
-
-      }
-
+      },
     });
   }
-
 
   expandAll() {
     this.expandedRows = this.products.reduce(
@@ -286,11 +295,11 @@ export class ProductComponent {
     });
   }
   addProduct() {
-    this.router.navigate(['/admin/productForm/addProduct']);
+    this.router.navigate(['/admin/product/add']);
   }
   editProduct(id: number) {
     this.productService.getProductById(id).subscribe(() => {
-      this.router.navigateByUrl('/admin/product/productadd/' + id);
+      this.router.navigateByUrl('/admin/product/edit/' + id);
     });
   }
 
@@ -304,5 +313,4 @@ export class ProductComponent {
       error: (error) => this.handleError(error, 'Xóa sản phẩm'),
     });
   }
-
 }
