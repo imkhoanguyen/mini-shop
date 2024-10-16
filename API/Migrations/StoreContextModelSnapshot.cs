@@ -405,36 +405,63 @@ namespace API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDelete")
+                    b.Property<int?>("ParentReviewId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Rating")
+                    b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("Rating")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ReviewText")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("isVisible")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentReviewId");
 
                     b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Review");
+                });
+
+            modelBuilder.Entity("API.Entities.ReviewImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImgUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId");
+
+                    b.ToTable("ReviewImage");
                 });
 
             modelBuilder.Entity("API.Entities.ShippingMethod", b =>
@@ -803,6 +830,11 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Review", b =>
                 {
+                    b.HasOne("API.Entities.Review", "ParentReview")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentReviewId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("API.Entities.Product", "Product")
                         .WithMany("Reviews")
                         .HasForeignKey("ProductId")
@@ -817,7 +849,20 @@ namespace API.Migrations
 
                     b.Navigation("AppUser");
 
+                    b.Navigation("ParentReview");
+
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("API.Entities.ReviewImage", b =>
+                {
+                    b.HasOne("API.Entities.Review", "Review")
+                        .WithMany("Images")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("API.Entities.Variant", b =>
@@ -925,6 +970,13 @@ namespace API.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("API.Entities.Review", b =>
+                {
+                    b.Navigation("Images");
+
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("API.Entities.ShippingMethod", b =>

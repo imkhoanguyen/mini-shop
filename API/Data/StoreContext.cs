@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace API.Data
 {
@@ -22,6 +23,7 @@ namespace API.Data
         public DbSet<ShoppingCart> ShoppingCarts {get;set;}
         public DbSet<ShippingMethod> ShippingMethods {get;set;}
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
@@ -66,6 +68,15 @@ namespace API.Data
                 .WithOne(v => v.Product)
                 .HasForeignKey(v => v.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+            // Self-referencing relationship for replies in Review
+            builder.Entity<Review>()
+                .HasOne(r => r.ParentReview)
+                .WithMany(r => r.Replies)
+                .HasForeignKey(r => r.ParentReviewId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(builder);
 
 

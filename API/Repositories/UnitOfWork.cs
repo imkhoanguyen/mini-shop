@@ -16,14 +16,14 @@ namespace API.Repositories
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
-
+        private readonly IReviewRepository _reviewRepository;
 
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
              IImageRepository imageRepository, IImageService imageService,
              IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
-             IShoppingCartRepository shoppingCartRepository)
+             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -36,6 +36,7 @@ namespace API.Repositories
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
+            _reviewRepository = reviewRepository;
         }
         public ICategoryRepository CategoryRepository => _categoryRepository;
         public IProductRepository ProductRepository => _productRepository;
@@ -48,6 +49,7 @@ namespace API.Repositories
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
 
         public IImageService ImageService => _imageService;
+        public IReviewRepository ReviewRepository => _reviewRepository;
 
         public async Task<bool> Complete()
         {

@@ -50,6 +50,7 @@ namespace API.Extensions
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ICartItemsRepository, CartItemsRepository>();
             services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
