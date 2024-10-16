@@ -13,7 +13,7 @@ namespace API.Controllers
             _unit = unit;
         }
 
-        [HttpGet("{int:productId}")]
+        [HttpGet("{productId:int}")]
         public async Task<ActionResult<IEnumerable<Review>>> GetAllReviews(int productId)
         {
             var reviews = await _unit.ReviewRepository.GetAllAsync(productId);
