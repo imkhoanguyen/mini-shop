@@ -9,6 +9,8 @@ import { ProductComponent } from './component/admin/product/product.component';
 import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
 import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
+import { ForgotpasswordComponent } from './component/forgotpassword/forgotpassword.component';
+import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 
 export const routes: Routes = [
@@ -16,7 +18,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
-    children: [
+    children: [ 
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'category', component: CategoryComponent },
@@ -30,5 +32,6 @@ export const routes: Routes = [
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-
+  { path: 'forgot-password', component: ForgotpasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
 ];

@@ -50,6 +50,7 @@ try
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
     await CategorySeed.SeedAsync(context);
+    await ProductSeed.SeedAsync(context);
     await RoleSeed.SeedAsync(roleManager);
     await RoleClaimSeed.SeedAsync(context, roleManager);
     await UserSeed.SeedAsync(userManager, roleManager);
