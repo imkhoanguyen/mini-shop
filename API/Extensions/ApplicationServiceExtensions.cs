@@ -82,7 +82,7 @@ namespace API.Extensions
             // setting thời gian hết hạn của token do asp.net identity tạo ra
             services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
-                options.TokenLifespan = TimeSpan.FromSeconds(30); // 30s
+                options.TokenLifespan = TimeSpan.FromSeconds(60*5); // 5p
             });
             return services;
         }

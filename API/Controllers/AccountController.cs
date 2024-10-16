@@ -106,7 +106,7 @@ namespace API.Controllers
 
 
         [HttpGet("forget-password")]
-        public async Task<IActionResult> ForgetPassword(CancellationToken cancellationToken ,string email)
+        public async Task<IActionResult> ForgetPassword(CancellationToken cancellationToken, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null) return BadRequest("Email không tồn tại");
@@ -129,7 +129,7 @@ namespace API.Controllers
                 Content = body,
             });
 
-            return Ok("Vui lòng kiểm tra email");
+            return Ok(new { message = "Vui lòng kiểm tra email" });
         }
 
         [HttpPost("reset-password")]
@@ -147,13 +147,12 @@ namespace API.Controllers
 
             if (identityResult.Succeeded)
             {
-                return Ok("Reset Password thành công");
-            } else
+                return Ok(new { message = "Reset password thành công" });
+            }
+            else
             {
                 return BadRequest(identityResult.Errors.ToList()[0].Description);
             }
-
-            
         }
     }
 }
