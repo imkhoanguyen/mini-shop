@@ -1,0 +1,61 @@
+.font-semibold{
+  font-weight: 600;
+  width: 10%;
+}
+.pInputText{
+width: 90%;
+}
+
+.image-container{
+position: relative;
+display: flex;
+flex-wrap: wrap;
+margin: 10px;
+gap: 10px;
+border-radius: 10px;
+overflow: hidden;
+box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.986);
+}
+.image-preview img{
+display: block;
+width: 100px;
+height: 100px;
+object-fit: cover;
+border-radius: 10px;
+transition: tranform 0.3s ease;
+}
+.image-preview img:hover{
+transform: scale(1.05);
+}
+.close-button{
+position: absolute;
+top: 5px;
+left: 5px;
+background-color: rgba(255, 0, 0, 0.8);
+color: white;
+border: none;
+border-radius: 50%;
+width: 25px;
+height: 25px;
+font-size: 16px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: background-color 0.3s ease;
+
+}
+.close-button:hover {
+background-color: rgba(255, 0, 0, 1);
+}
+
+.image-preview {
+position: relative;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.square{
+background-color: #82b4e9;
+}

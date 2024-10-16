@@ -2,9 +2,8 @@
 using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.AspNetCore.Identity;
 namespace API.Extensions
 {
     public static class IdentityServiceExtensions
