@@ -28,6 +28,7 @@ namespace API.Services
                 message.To.Add(emailRequest.To);
                 message.Subject = emailRequest.Subject;
                 message.Body = emailRequest.Content;
+                message.IsBodyHtml = true;
 
                 await smtpClient.SendMailAsync(message, cancellationToken);
                 message.Dispose();

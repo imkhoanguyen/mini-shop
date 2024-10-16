@@ -121,10 +121,11 @@ namespace API.Controllers
 
             string body = $"Để reset password của bạn vui lòng click vào đây: <a href=\"{resetPasswordUrl}\">link</a>";
 
+
             await _emailService.SendMailAsync(cancellationToken, new EmailRequest
             {
                 To = user.Email,
-                Subject = "Reset Password ",
+                Subject = "Reset Your Password ",
                 Content = body,
             });
 
