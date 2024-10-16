@@ -1,5 +1,5 @@
-
-  <div  *ngIf="!isAdminPage()">
-    <router-outlet></router-outlet>
+<div *ngIf="!isAdminPage()">
+  <app-header></app-header>
+  <router-outlet></router-outlet>
 </div>
 <router-outlet *ngIf="isAdminPage()"></router-outlet>
