@@ -1,3 +1,4 @@
+﻿using API.Configurations;
 using API.Data;
 using API.Errors;
 using API.Helpers;
@@ -5,6 +6,7 @@ using API.Interfaces;
 using API.Repositories;
 using API.Services;
 using CloudinaryDotNet;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,6 +77,13 @@ namespace API.Extensions
             //    });
             //});
 
+            services.Configure<EmailConfig>(config.GetSection("MailSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+            // setting thời gian hết hạn của token do asp.net identity tạo ra
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromSeconds(30); // 30s
+            });
             return services;
         }
     }
