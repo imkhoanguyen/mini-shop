@@ -18,9 +18,10 @@ namespace API.Repositories
         {
             var query = _context.Reviews.AsQueryable();
 
-            query = query.Include(r => r.AppUser).Include(r => r.ParentReview);
+            query = query.Include(r => r.AppUser).Include(r => r.ParentReview).Include(r => r.Images).Include(r => r.Replies) 
+            .ThenInclude(reply => reply.AppUser);
 
-            query = query.Where(r => r.ProductId == productId);
+            query = query.Where(r => r.ProductId == productId && r.ParentReview == null);
 
             return await query.ToListAsync();
         }
