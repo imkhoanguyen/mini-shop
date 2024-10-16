@@ -18,6 +18,7 @@ import { Role } from '../../../_models/role';
 import { Pagination } from '../../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../_services/auth.service';
 
 @Component({
   selector: 'app-role',
@@ -52,7 +53,8 @@ export class RoleComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    public authServices: AuthService
   ) {}
 
   ngOnInit(): void {

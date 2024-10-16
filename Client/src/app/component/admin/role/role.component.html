@@ -9,10 +9,13 @@
       name="search"
     />
   </form>
+
+  @if(authServices.hasClaim('Role.Create')) {
   <button class="btn ms-auto btn-primary" (click)="showDialog()">
     <i class="pi pi-plus"></i>
     <span class="d-inline-block ms-1">Thêm quyền</span>
   </button>
+  }
 </div>
 
 <!-- list role-->
@@ -43,7 +46,9 @@
       <td>{{ role.created | date : "medium" }}</td>
       <td>{{ role.description }}</td>
       <td>
-        <button class="btn btn-primary" (click)="onGoRolePermission(role.id)">Chỉnh sửa</button>
+        <button class="btn btn-primary" (click)="onGoRolePermission(role.id)">
+          Chỉnh sửa
+        </button>
       </td>
       <td class="d-flex gap-1 align-items-center justify-content-center">
         <button class="btn" (click)="showDialog(role.id)">
