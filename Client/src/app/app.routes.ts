@@ -6,9 +6,9 @@ import { RoleComponent } from './component/admin/role/role.component';
 import { AdminComponent } from './component/admin/admin.component';
 import { DashboardComponent } from './component/admin/dashboard/dashboard.component';
 import { ProductComponent } from './component/admin/product/product.component';
-
+import { ProductUserComponent } from './component/client/product/product.component';
 export const routes: Routes = [
-  { path: '', component: HeaderComponent },
+  { path: '', component: ProductUserComponent },
   {
     path: 'admin',
     component: AdminComponent,
