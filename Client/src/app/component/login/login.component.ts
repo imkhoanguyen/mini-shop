@@ -1,48 +1,80 @@
-import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+declare var google: any;
+import { Component, inject, OnInit } from '@angular/core';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { Login } from '../../_models/login.module';
 import { AccountService } from '../../_services/account.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ButtonModule,ReactiveFormsModule],
+  imports: [ButtonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   isLoggedIn = false;
   user: any;
-  constructor(private router: Router,
-              private accountService: AccountService
-  ) {
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+  ngOnInit(): void {
+
+    google.accounts.id.initialize({
+      client_id: '306838179156-gha4u6q5u2pfvti0e1b25fm9bf0067js.apps.googleusercontent.com',
+      callback: (response: any) => this.handleLogin(response)
+    });
+    google.accounts.id.renderButton(document.getElementById("google-btn"),{
+      theme: 'filled_blue',
+      size: 'large',
+      share: 'rectangle',
+      width: '200'
+    });
     this.loginForm = new FormGroup({
-    userOrEmail: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', Validators.required),
+      userNameOrEmail: new FormControl('', [Validators.required]),
+      password: new FormControl('', Validators.required),
     });
   }
-  registerForm(){
-    this.router.navigateByUrl('/register');
 
+  registerForm() {
+    this.router.navigateByUrl('/register');
   }
-  onSubmit(){
+  onSubmit() {
     const data: Login = {
-      usernameOrEmail: this.loginForm.value.userOrEmail,
-      password: this.loginForm.value.password
-    }
-    console.log("login", data);
+      userNameOrEmail: this.loginForm.value.userNameOrEmail,
+      password: this.loginForm.value.password,
+    };
+    console.log('login', data);
     this.accountService.login(data).subscribe(
-      (res: any) => {
-        console.log("Login success", res);
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('userName', res.userName);
-        localStorage.setItem('role', 'user');
+      (res) => {
         this.router.navigateByUrl('/');
       },
       (error) => {
-        console.log("Login failed", error);
+        console.log('Login failed', error);
       }
-    )}
+    );
+  }
+  private decodeToken(token: string) {
+    return JSON.parse(atob(token.split('.')[1]));
+  }
+  handleLogin(response: any) {
+    if(response){
+      const payLoad = this.decodeToken(response.credential);
+      localStorage.setItem('token', JSON.stringify(payLoad));
+      const userInfo = {
+        fullname: payLoad.name,
+        email: payLoad.email,
+        picture: payLoad.picture,
+      };
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+
+      this.router.navigateByUrl('/');
+    }
+  }
+
 }

@@ -20,5 +20,8 @@ export class VariantService {
     return this.http.put(this.apiUrl + "/Variant/UpdateVariant", data);
   }
 
+  deleteVariant(data: Variant){
+    return this.http.delete(this.apiUrl + "/Variant/DeleteVariant/" + data);
+  }
 
 }

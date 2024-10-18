@@ -61,6 +61,7 @@ namespace API.Controllers
                 return Unauthorized(new ApiResponse(401));
             return new UserDto
             {
+                Fullname = user.Fullname,
                 UserName = user.UserName,
                 Email = user.Email,
                 Avatar = user.Avatar,
@@ -71,18 +72,21 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
-            if (!ModelState.IsValid)
+           if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (CheckEmailExistsAsync(registerDto.Email).Result.Value)
+            var emailExistsResult = await CheckEmailExistsAsync(registerDto.Email!);
+            if (emailExistsResult.Value)
             {
                 return new BadRequestObjectResult(new ApiValidationErrorResponse
-                { Errors = new[] { "Email address is in use" } });
+                { Errors = new[] { "Email address is in use" } 
+                });
             }
             var user = new AppUser
             {
+                Fullname = registerDto.Fullname,
                 Email = registerDto.Email,
-                UserName = registerDto.UserName
+                UserName = registerDto.UserName,
             };
             var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
@@ -91,6 +95,7 @@ namespace API.Controllers
             if (!roleResult.Succeeded) return Unauthorized(new ApiResponse(401));
             return new UserDto
             {
+                Fullname = user.Fullname,
                 UserName = user.UserName,
                 Email = user.Email,
                 Avatar = user.Avatar,

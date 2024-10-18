@@ -22,6 +22,11 @@ namespace API.Repositories
         }
         public async Task AddProductCategory(Product product)
         {
+            var existingProductCategories = await _context.ProductCategories
+                .Where(pc => pc.ProductId == product.Id)
+                .ToListAsync();
+
+            _context.ProductCategories.RemoveRange(existingProductCategories);
             if (product.ProductCategories != null && product.ProductCategories.Count > 0)
             {
                 foreach (var productCategory in product.ProductCategories)
@@ -102,7 +107,7 @@ namespace API.Repositories
         }
         public async Task<bool> ProductExistsAsync(string name)
         {
-            return await _context.Products.AnyAsync(c => c.Name == name);
+            return await _context.Products.AnyAsync(c => !c.IsDelete && c.Name == name);
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
