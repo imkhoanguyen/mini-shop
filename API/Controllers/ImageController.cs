@@ -43,28 +43,20 @@ namespace API.Controllers
             return BadRequest(new { message = "Update image failed." });
         }
         [HttpDelete("RemoveImage")]
-        public async Task<IActionResult> RemoveImage(ImageUpdateDto imageUpdateDto)
+        public async Task<IActionResult> RemoveImage(int id)
         {
-            var image = await _unitOfWork.ImageRepository.GetImageById(imageUpdateDto.Id);
+            var image = await _unitOfWork.ImageRepository.GetImageById(id);
             if (image is null)
             {
                 return BadRequest(new { message = "Image not found." });
             }
-            var deleteResult = await _unitOfWork.ImageService.DeleteImageAsync(image.PublicId);
-            if (deleteResult.Result == "ok")
+            _unitOfWork.ImageRepository.RemoveImage(image);
+            if (await _unitOfWork.Complete())
             {
-                _unitOfWork.ImageRepository.RemoveImage(image);
-                if (await _unitOfWork.Complete())
-                {
-                    return Ok(new { message = "Remove image successfully." });
-                }
-                else
-                {
-                    return BadRequest(new { message = "Failed to save changes to the database." });
-                }
+                return Ok(new { message = "Remove image successfully." });
             }
-            return BadRequest(new { message = "Remove image failed on Cloudinary." });
+            return BadRequest(new { message = "Remove image failed." });
         }
-
+       
     }
 }

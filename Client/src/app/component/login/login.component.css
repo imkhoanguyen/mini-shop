@@ -1,103 +1,40 @@
-.container{
-  background-color: #fff;
-  border-radius: 30px;
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.35);
-  position: relative;
+.container {
+  width: 900px;
+  margin: 50px auto;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  width: 768px;
-  max-width: 100%;
-  min-height: 480px;
 }
-.container p{
+.info, .form {
+  padding: 30px;
+}
+.info {
+  background-color: #1c7fc0;
+  color: white;
+}
+.info h2 {
+  font-size: 24px;
+  font-weight: bold;
+}
+.info p {
   font-size: 14px;
-  line-height: 20px;
-  letter-spacing: 0.3px;
-  margin: 20px 0;
+  margin-bottom: 20px;
 }
-.container span{
-  font-size: 12px;
+.info .btn {
+  background-color: white;
+  color: #297db4;
+  font-weight: bold;
 }
-.container a{
-  color: #333;
-  font-size: 13px;
-  text-decoration: none;
-  margin: 15px 0 10px;
+.form h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #196da5;
 }
-.container button{
-  background-color: rgb(255, 13, 13);
-  color: #fff;
-  font-size: 12px;
-  padding: 10px 45px;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin-top: 10px;
-  cursor: pointer;
+.form .form-control {
+  margin-bottom: 15px;
 }
-.container form{
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0 40px;
-  height: 100%;
-}
-.container input{
-  background-color: #eee;
-  border:none;
-  margin: 8px 0;
-  padding: 10px 15px;
-  font-size: 13px;
-  border-radius: 8px;
-  width: 100%;
-  outline: none;
-}
-.form-container{
-  position: absolute;
-  top: 0;
-  height: 100%;
-}
-.sign-in{
-  right: 0;
-  width: 50%;
-  z-index: 1;
-}
-.toggle-container{
-  position: absolute;
-  top: 0;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  border-radius: 20px;
-  z-index: 1000;
-}
-.toggle{
-  background-color: rgba(255, 4, 4, 0.952);
-  height: 100%;
-  color: #fff;
-  position: relative;
-  height: 100%;
-  width: 200%;
-
-}
-.container button.hidden{
-  background-color: transparent;
-  border-color: #fff;
+.form .form-check-label {
+  font-size: 14px;
 }
 
-.toggle-panel{
-  position: absolute;
-  width: 50%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0 30px;
-  text-align: center;
-  top: 0;
-
-}

@@ -1,9 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Sidebar, SidebarModule } from 'primeng/sidebar';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { MenuModule } from 'primeng/menu';
 import { CommonModule } from '@angular/common';
+import { AccountService } from '../../_services/account.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -12,25 +14,24 @@ import { CommonModule } from '@angular/common';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
+
   sidebarVisible: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
-  isAdmin = false;
-  isLoggedIn = false;
-  usernameOrEmail: string | null = null;
-  closeCallback(e: Event): void {
-      this.sidebarRef.close(e);
-  }
-
+  private router = inject(Router);
+  accountService = inject(AccountService);
+  userInfo: any;
   ngOnInit(): void {
-    if (localStorage.getItem('role') === 'admin') {
-      this.isAdmin = true;
-    }
-    if (localStorage.getItem('token') !== null) {
-      this.isLoggedIn = true;
-      console.log(this.isLoggedIn);
-      this.usernameOrEmail = localStorage.getItem('userName');
-      console.log(this.usernameOrEmail);
-    }
+    this.userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
+  }
+  loginForm(){
+    this.router.navigateByUrl('/login');
+  }
+  registerForm(){
+    this.router.navigateByUrl('/register');
+  }
+  logout(){
+    this.accountService.logout();
   }
 }
