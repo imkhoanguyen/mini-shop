@@ -30,6 +30,7 @@ export class AccountService {
         if(user){
           console.log(user);
           localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('token', user.token);
           this.currentUser.set(user);
         }
       })
