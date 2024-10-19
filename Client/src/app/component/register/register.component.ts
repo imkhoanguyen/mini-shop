@@ -6,11 +6,11 @@ import { Register } from '../../_models/register.module';
 import { AccountService } from '../../_services/account.service';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
-
+import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ButtonModule,ReactiveFormsModule, CommonModule, RouterModule],
+  imports: [ButtonModule,ReactiveFormsModule, CommonModule, RouterModule, ToastModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
   providers: [MessageService]
@@ -38,7 +38,19 @@ export class RegisterComponent implements OnInit {
     this.router.navigateByUrl('/login');
 
   }
-  onSubmit(){
+  private showMessage(severity: string, detail: string): void {
+    const summary: string = '';
+    const life: number = 3000;
+    if (severity === 'error') {
+      this.messageService.add({ severity, summary: 'Thất Bại', detail, life });
+    } else if (severity === 'success') {
+      this.messageService.add({severity,summary: 'Thành Công',detail,life,});
+    } else {
+      this.messageService.add({ severity, summary: 'Cảnh báo', detail, life });
+    }
+  }
+  onSubmit()
+  {
     const data : Register = {
       fullname: this.registerForm.get('fullname')?.value,
       email: this.registerForm.get('email')?.value,
@@ -49,9 +61,14 @@ export class RegisterComponent implements OnInit {
     this.accountService.register(data).subscribe(
       (res: any) => {
         console.log("Register success", res);
-        this.router.navigateByUrl('/login');
+        this.showMessage('success', 'Đăng ký thành công. Đang chuyển sang đăng nhập')
+        setTimeout(() =>{
+          this.router.navigateByUrl('/login');
+        }, 1000);
+
       },
       (error) => {
+        this.showMessage('error', 'Đăng ký không thành công.');
         console.log("Register failed", error);
       }
     )

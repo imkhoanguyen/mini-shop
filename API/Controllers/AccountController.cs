@@ -61,6 +61,7 @@ namespace API.Controllers
                 return Unauthorized(new ApiResponse(401));
             return new UserDto
             {
+                Id = user.Id,
                 Fullname = user.Fullname,
                 UserName = user.UserName,
                 Email = user.Email,
@@ -84,6 +85,7 @@ namespace API.Controllers
             }
             var user = new AppUser
             {
+                
                 Fullname = registerDto.Fullname,
                 Email = registerDto.Email,
                 UserName = registerDto.UserName,

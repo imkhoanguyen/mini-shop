@@ -91,7 +91,6 @@ export class ProductFormComponent implements OnInit {
   //Image
   selectedImages: any[] = [];
   mainImage: { variantIndex: number; imageIndex: number } | null = null;
-  btnText: string = 'Thêm';
   visible: boolean = false;
   isUpdate: boolean = false;
 
@@ -117,7 +116,6 @@ export class ProductFormComponent implements OnInit {
       const id = Number(params.get('id'));
       if (id) {
         this.getProductToUpdate(id);
-        this.btnText = 'Cập nhật';
       }
     });
   }

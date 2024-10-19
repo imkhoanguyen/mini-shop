@@ -93,10 +93,11 @@ namespace api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var product = ProductDto.toProduct(productDto);
-
+            await _unitOfWork.ProductRepository.AddProductCategory(product);
             await _unitOfWork.ProductRepository.UpdateProduct(product);
+            
             if (await _unitOfWork.Complete()){
-                await _unitOfWork.ProductRepository.AddProductCategory(product);
+                
                 return Ok(new {message = "Update Product successfully."});
             }
             return BadRequest(new {message = "Update Product failed."});
