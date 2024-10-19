@@ -143,7 +143,7 @@
             <!-- Footer Buttons -->
             <div class="d-flex justify-content-between">
               <p-button label="Thêm biến thể" icon="pi pi-plus" (click)="createVariant()"></p-button>
-              <p-button label="Thêm sản phẩm" icon="pi pi-check" type="submit" (click)="onSubmit()" [disabled]="!productForm.valid &&!variantsForm.valid"></p-button>
+              <p-button label="{{isUpdate? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}}" icon="{{isUpdate? 'pi pi-pencil' : 'pi pi-plus'}}" type="button" (click)="onSubmit()" [disabled]="!productForm.valid &&!variantsForm.valid"></p-button>
             </div>
 
             <div class="row mt-4">

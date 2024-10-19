@@ -19,4 +19,7 @@ export class ImageService{
   updateImage(data: Image){
     return this.http.put(this.apiUrl + "/Image/UpdateImages", data);
   }
+  deleteImage(data: number){
+    return this.http.delete(this.apiUrl + "/Image/RemoveImage/" + data);
+  }
 }

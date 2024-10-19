@@ -1,57 +1,43 @@
-<div class="container" id="container">
-  <!-- Form Đăng Nhập -->
-  <div class="form-container sign-in">
-    <form class="w-full md:w-6" action="" [formGroup]="loginForm">
-      <h1 class="text-center">Đăng Nhập</h1>
+<div class="container px-0 d-flex justify-content-center">
+  <div class="form col-md-6 col-sm-12 p-5 border-end">
+    <h2 class="mb-4">ĐĂNG NHẬP</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="mb-3">
-        <span>Đăng nhập với Tài khoản</span><br>
-        <div class="flex flex-column gap-2">
-          <label for="usernameOrEmail">Tài khoản</label>
-          <input
-            pInputText
-            id="userOrEmail"
-            aria-describedby="email-help"
-            formControlName="userOrEmail"
-            placeholder="Nhập Email hoặc Username"
-            required
-          />
-        </div>
-        <div class="flex flex-column gap-2">
-          <label for="password">Mật khẩu</label>
-          <input
-            pInputText
-            id="password"
-            [type]="'password'"
-            formControlName="password"
-            placeholder="Nhập mật khẩu"
-            required
-          />
-        </div>
-        <p-button
-          label="Đăng nhập"
-          icon="pi pi-user"
-          styleClass="w-full mx-auto"
-          (click)="onSubmit()"
-        ></p-button>
+        <input type="email" formControlName="userNameOrEmail" class="form-control" placeholder="Your Email Or Username" required>
+      </div>
+      <div class="mb-3">
+        <input type="password" formControlName="password" class="form-control" placeholder="Password" required>
+      </div>
+      <div class="form-forgot d-flex justify-content-end mb-3">
+        <a [routerLink]="['/forgot-password']"  routerLinkActive="router-link-active" style="text-decoration: none;">Forgot Password?</a>
+      </div>
+      <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+
+      <div class="social-login text-center mb-3">
+        <span>-Or Login with-</span>
       </div>
 
-      <span>Hoặc đăng nhập với:</span>
-      <div class="flex justify-content-between mt-3">
-        <a href="#">Facebook</a>
-        <div class="g-signin2" data-onsuccess="onSignIn">hi</div>
-      </div>
-      <div class="mt-3 text-center">
-        <a href="#">Quên mật khẩu?</a>
+      <div class="row g-2">
+        <div class="col-6">
+          <div id="google-btn" ></div>
+
+
+        </div>
+        <div class="col-6">
+          <button type="button" class="btn btn-primary w-100">
+            <i class="bi bi-facebook"></i> Facebook
+          </button>
+        </div>
       </div>
     </form>
   </div>
-  <div class="toggle-container">
-    <div class="toggle">
-      <div class="toggle-panel toggle-left">
-        <h1>Tạo tài khoản mới</h1>
-        <p>Tạo tài khoản ngay để bắt đầu hành trình cùng chúng tôi.</p>
-        <button class="hidden" id="register" (click)="registerForm()">Đăng Ký</button>
-      </div>
+
+  <!-- Registration Info -->
+  <div class="info col-md-6 col-sm-12 d-flex flex-column justify-content-center align-items-center p-5 text-center">
+    <h2 class="mb-4">Tạo tài khoản mới</h2>
+    <p class="mb-4">Tạo tài khoản ngay để bắt đầu hành trình cùng chúng tôi.</p>
+    <div class="justify-content-center text-center align-items-center">
+      <button class="btn btn-primary" [routerLink]="['/register']"  routerLinkActive="router-link-active" >Đăng ký</button>
     </div>
   </div>
 </div>

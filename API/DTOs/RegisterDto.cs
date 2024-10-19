@@ -3,9 +3,10 @@ namespace API.DTOs
 {
     public class RegisterDto
     {
-        public string UserName { get; set; } = null!;
-        public string Password { get; set; } = null!;
+        public required string Fullname { get; set; }
+        public required string UserName { get; set; }
+        public required string Password { get; set; }
         [EmailAddress]
-        public string? Email { get; set; }
+        public required string? Email { get; set; }
     }
 }

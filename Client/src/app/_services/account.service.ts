@@ -1,22 +1,43 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
-import { Register } from '../_models/register.module';
-import { Login } from '../_models/login.module';
-import { ResetPassword } from '../_models/resetPassword';
+import { HttpClient } from "@angular/common/http";
+import { inject, Injectable, signal } from "@angular/core";
+import { map, pipe } from "rxjs";
+import { Login } from "../_models/login.module";
+import { environment } from "../../environments/environment";
+import { ResetPassword } from "../_models/resetPassword";
+import { User } from "../_models/user.module";
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AccountService {
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
   apiUrl = environment.apiUrl;
 
-  register(data: Register) {
-    return this.http.post(this.apiUrl + '/Account/Register', data);
+  currentUser = signal<User | null>(null);
+
+  register(data: any){
+    return this.http.post<User>(this.apiUrl + "/Account/Register", data).pipe(
+      map(user => {
+        if(user){
+          localStorage.setItem('user', JSON.stringify(user));
+          this.currentUser.set(user);
+        }
+        return user;
+      })
+    );
   }
-  login(data: Login) {
-    return this.http.post(this.apiUrl + '/Account/Login', data);
+  login(data: Login){
+    return this.http.post<User>(this.apiUrl + "/Account/Login", data).pipe(
+      map((user: User) => {
+        if(user){
+          console.log(user);
+          localStorage.setItem('user', JSON.stringify(user));
+          this.currentUser.set(user);
+        }
+      })
+    )
+  }
+  logout(){
+    localStorage.removeItem('user');
+    this.currentUser.set(null);
   }
 
   forgotPassword(email: string) {

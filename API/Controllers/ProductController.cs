@@ -79,9 +79,10 @@ namespace api.Controllers
             var product = ProductAddDto.toProduct(productAddDto);
             _unitOfWork.ProductRepository.AddProduct(product);
 
-            if (await _unitOfWork.Complete())
-                return Ok(new {id = product.Id, message ="Add Product successfully."});
+            if (await _unitOfWork.Complete()){
                 await _unitOfWork.ProductRepository.AddProductCategory(product);
+                return Ok(new {id = product.Id, message ="Add Product successfully."});
+            }
             return BadRequest(new {message ="Add Product failed."});
         }
 
@@ -92,10 +93,13 @@ namespace api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var product = ProductDto.toProduct(productDto);
-
+            await _unitOfWork.ProductRepository.AddProductCategory(product);
             await _unitOfWork.ProductRepository.UpdateProduct(product);
-            if (await _unitOfWork.Complete())
+            
+            if (await _unitOfWork.Complete()){
+                
                 return Ok(new {message = "Update Product successfully."});
+            }
             return BadRequest(new {message = "Update Product failed."});
         }
 

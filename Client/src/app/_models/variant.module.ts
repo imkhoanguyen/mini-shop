@@ -7,6 +7,7 @@ export interface Variant{
   sizeId: number;
   colorId: number;
   imageUrls: Image[];
+  productId: number;
 }
 export interface VariantAdd{
   price: number;
