@@ -1,0 +1,11 @@
+.position-relative:hover .dropdown-menu {
+  display: block;
+}
+
+.video-preview {
+  position: relative; /* Để video có thể được căn chỉnh */
+  width: 100%; /* Để video chiếm toàn bộ chiều rộng */
+  height: 200px; /* Chiều cao của video preview */
+  overflow: hidden; /* Ẩn các phần video thừa */
+  border-radius: 5px; /* Góc bo tròn cho video */
+}

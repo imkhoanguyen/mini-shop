@@ -13,10 +13,10 @@ import { ForgotpasswordComponent } from './component/forgotpassword/forgotpasswo
 import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
 
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
-
+import { HomeComponent } from './component/home/home.component';
 
 export const routes: Routes = [
-  { path: '', component: HeaderComponent },
+  { path: '', component: HomeComponent },
   {
     path: 'admin',
     component: AdminComponent,
@@ -24,9 +24,9 @@ export const routes: Routes = [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'category', component: CategoryComponent },
-      { path: 'product', component: ProductComponent},
+      { path: 'product', component: ProductComponent },
       { path: 'product/add', component: ProductFormComponent },
-      { path: 'product/edit/:id', component: ProductFormComponent},
+      { path: 'product/edit/:id', component: ProductFormComponent },
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
@@ -36,4 +36,5 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotpasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'home', component: HomeComponent },
 ];

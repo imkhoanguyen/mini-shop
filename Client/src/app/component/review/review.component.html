@@ -1,0 +1,308 @@
+<div class="container shadow-lg p-5">
+  <div class="row">
+    <h3 class="col-6 mb-3">Đánh giá sản phẩm</h3>
+    <div class="col-6 text-end">
+      <button class="btn btn-primary" (click)="openFormCreateReview()">
+        Đánh giá
+      </button>
+    </div>
+  </div>
+  <div
+    class="alert d-flex gap-5 p-5 mb-3"
+    role="alert"
+    style="background-color: #e7f5ff"
+  >
+    <div class="start-box d-flex flex-column gap-3">
+      <div class="fw-bold text-primary">
+        <span style="font-size: 30px">4.9</span>
+        <span style="font-size: 18px"> trên 5</span>
+      </div>
+      <p-rating [ngModel]="5" [readonly]="true" [cancel]="false" />
+    </div>
+    <div class="filter-box d-flex align-items-center gap-2">
+      <button class="btn btn-outline-primary active">Tất cả</button>
+      <button class="btn btn-outline-primary">5 sao</button>
+      <button class="btn btn-outline-primary">4 sao</button>
+      <button class="btn btn-outline-primary">3 sao</button>
+      <button class="btn btn-outline-primary">2 sao</button>
+      <button class="btn btn-outline-primary">1 sao</button>
+      <button class="btn btn-outline-primary">Có Hình Ảnh / Video</button>
+    </div>
+  </div>
+  <div *ngIf="reviews.length > 0">
+    <div *ngFor="let review of reviews">
+      <div class="review">
+        <div class="review-header d-flex gap-3 align-items-start">
+          <div class="img-container">
+            <img
+              alt="User profile picture"
+              height="80"
+              src="https://storage.googleapis.com/a1aa/image/NPDbclikWUbBCNCMqDanxYYtY8HJRcd3PR4VQyprAuMGT45E.jpg"
+              width="80"
+              style="border-radius: 50%"
+            />
+          </div>
+
+          <div class="review-content d-flex flex-column gap-1 w-100">
+            <strong style="margin-bottom: 5px">
+              {{ review.userReview.fullName }}
+            </strong>
+            <p-rating
+              [ngModel]="review.rating"
+              [readonly]="true"
+              [cancel]="false"
+            ></p-rating>
+            <div>({{ review.created | date : "short" }})</div>
+
+            <div class="review-body">
+              {{ review.reviewText }}
+            </div>
+
+            <div class="review-images d-flex gap-2 mt-2">
+              <img
+                alt="Product image 1"
+                height="100"
+                src="https://storage.googleapis.com/a1aa/image/A81tTyMmM9rnJBKvhUdpFmrOnTEPFuooUlYmJH6TyroFT45E.jpg"
+                width="100"
+              />
+              <video
+                width="100"
+                height="100"
+                controls=""
+                src="https://placehold.co/100x100"
+              ></video>
+              <img
+                alt="Product image 2"
+                height="100"
+                src="https://storage.googleapis.com/a1aa/image/ENT6P9CjrI7DP1KFwT7YzjD5PJzSZK0tUPD75QA4SddFT45E.jpg"
+                width="100"
+              />
+            </div>
+
+            <div class="review-footer">
+              <div class="footer-btn d-flex">
+                <a
+                  class="text-primary"
+                  type="button"
+                  (click)="toggleReplies(review.id)"
+                  style="text-decoration: none"
+                >
+                  {{ showReplies[review.id] ? "Hide" : "Show" }}
+                </a>
+                <div class="ms-auto">
+                  <div
+                    class="position-relative"
+                    (mouseenter)="showDropdown[review.id] = true"
+                    (mouseleave)="showDropdown[review.id] = false"
+                  >
+                    <a
+                      class="text-dark fw-bold"
+                      id="dropdownMenuButton"
+                      aria-expanded="false"
+                      style="text-decoration: none; cursor: pointer"
+                      (click)="toggleDropdown(review.id)"
+                    >
+                      <i class="pi pi-ellipsis-v" style="font-size: 1rem"></i>
+                    </a>
+
+                    <div
+                      class="dropdown-menu"
+                      *ngIf="showDropdown[review.id]"
+                      style="position: absolute; z-index: 1000"
+                    >
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        (click)="edit(review.id)"
+                      >
+                        <i class="pi pi-send"></i>
+                        <span style="margin-left: 10px">Phản hồi</span>
+                      </button>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        (click)="edit(review.id)"
+                      >
+                        <i class="pi pi-pencil"></i>
+                        <span style="margin-left: 10px">Sửa</span>
+                      </button>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        (click)="delete(review.id)"
+                      >
+                        <i class="pi pi-trash"></i>
+                        <span style="margin-left: 10px">Xóa</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị replies khi người dùng nhấn vào nút -->
+              <div
+                *ngIf="showReplies[review.id]"
+                class="replies mt-3 py-3 rounded"
+                style="background-color: #f5f5f5"
+              >
+                <div
+                  *ngFor="let reply of review.replies"
+                  class="reply"
+                  [ngStyle]="{ 'margin-left': '10px' }"
+                >
+                  <div class="reply-header d-flex gap-2 align-items-start">
+                    <div class="img-container">
+                      <img
+                        alt="User profile picture"
+                        height="50"
+                        src="https://storage.googleapis.com/a1aa/image/ENT6P9CjrI7DP1KFwT7YzjD5PJzSZK0tUPD75QA4SddFT45E.jpg"
+                        width="50"
+                        style="border-radius: 50%"
+                      />
+                    </div>
+                    <div class="title-container d-flex flex-column gap-1 w-100">
+                      <div class="d-flex">
+                        <strong>{{ reply.userReview.fullName }}</strong>
+
+                        <!-- Dropdown cho reply -->
+                        <div class="position-relative ms-auto pe-3">
+                          <a
+                            class="text-dark fw-bold"
+                            style="text-decoration: none; cursor: pointer"
+                            (click)="toggleReplyDropdown(review.id, reply.id)"
+                          >
+                            <i
+                              class="pi pi-ellipsis-h"
+                              style="font-size: 1rem"
+                            ></i>
+                          </a>
+
+                          <div
+                            class="dropdown-menu"
+                            *ngIf="showReplyDropdown[review.id]?.[reply.id]"
+                            style="position: absolute; z-index: 1000"
+                          >
+                            <button
+                              class="dropdown-item"
+                              type="button"
+                              (click)="editReply(review.id, reply.id)"
+                            >
+                              <i class="pi pi-pencil"></i>
+                              <span style="margin-left: 10px">Sửa</span>
+                            </button>
+                            <button
+                              class="dropdown-item text-danger"
+                              type="button"
+                              (click)="deleteReply(review.id, reply.id)"
+                            >
+                              <i class="pi pi-trash"></i>
+                              <span style="margin-left: 10px">Xóa</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div>({{ reply.created | date : "short" }})</div>
+                      <div class="reply-body">
+                        {{ reply.reviewText }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- form create review -->
+<p-dialog
+  header="Đánh giá sản phẩm"
+  [modal]="true"
+  [(visible)]="visibleFrmCreateView"
+  [style]="{ width: '50rem' }"
+  (onHide)="closeFormCreateReview()"
+>
+  <form
+    [formGroup]="frmCreateReview"
+    (ngSubmit)="onSubmitFrmCreateReview()"
+    enctype="multipart/form-data"
+  >
+    <div class="mb-3 d-flex gap-5 align-items-center">
+      <span class="form-label">Đánh giá sản phẩm: </span>
+      <p-rating formControlName="rating" [cancel]="false" />
+    </div>
+    <div class="mb-3">
+      <label for="reviewText" class="form-label">Nội dung đánh giá</label>
+      <textarea
+        id="reviewText"
+        class="form-control"
+        formControlName="reviewText"
+        placeholder="Hãy chia sẽ những điều bạn thích về sản phẩm này với những người mua khác nhé."
+        style="height: 150px"
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <!-- maxFileSize = 10MB = 1,048,576 byte * 10 -->
+      <p-fileUpload
+        name="files"
+        (onSelect)="onSelectImgFile($event)"
+        (onRemove)="onRemoveImgFile($event)"
+        (onClear)="onClearAllImageFiles($event)"
+        [multiple]="true"
+        accept="image/*"
+        maxFileSize="10485760"
+        [showUploadButton]="false"
+        [chooseLabel]="'Chọn ảnh'"
+        [cancelLabel]="'Hủy'"
+      />
+    </div>
+
+    <div class="mb-3 file-upload-container">
+      <p-fileUpload
+        name="files"
+        (onSelect)="onSelectVideoFile($event)"
+        (onRemove)="onRemoveVideoFile()"
+        (onClear)="onRemoveVideoFile()"
+        [multiple]="false"
+        accept="video/*"
+        maxFileSize="10485760"
+        [showUploadButton]="false"
+        [chooseLabel]="'Chọn video'"
+        [cancelLabel]="'Hủy'"
+      >
+        <!-- Tùy chỉnh nội dung hiển thị bên trong box -->
+        <ng-template pTemplate="content">
+          <div *ngIf="videoUrl" class="video-preview">
+            <video [src]="videoUrl" controls width="100%" height="100%">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="closeFormCreateReview()"
+      >
+        <i class="pi pi-times me-1"></i>
+        <span>Đóng</span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="frmCreateReview.invalid || !frmCreateReview.dirty"
+      >
+        <i class="pi pi-check me-1"></i>
+        <span>Lưu</span>
+      </button>
+    </div>
+  </form>
+</p-dialog>
