@@ -6,11 +6,12 @@ import { MenuModule } from 'primeng/menu';
 import { CommonModule } from '@angular/common';
 import { AccountService } from '../../_services/account.service';
 import { Router } from '@angular/router';
+import { User } from '../../_models/user.module';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [SidebarModule, ButtonModule, PanelMenuModule, MenuModule, CommonModule],
+  imports: [SidebarModule, ButtonModule, PanelMenuModule, MenuModule, CommonModule,],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -21,8 +22,15 @@ export class HeaderComponent implements OnInit {
   private router = inject(Router);
   accountService = inject(AccountService);
   userInfo: any;
+  constructor() {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      const user = JSON.parse(userJson) as User;
+      this.accountService.setCurrentUser(user);
+    }
+  }
   ngOnInit(): void {
-    this.userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+
 
   }
   loginForm(){

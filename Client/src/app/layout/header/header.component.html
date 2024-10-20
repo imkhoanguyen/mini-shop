@@ -29,7 +29,12 @@
         </div>
         <div *ngIf="accountService.currentUser()" class="dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img class="img-rounded" src="http://localhost:5000/avatar/{{accountService.currentUser()?.avatar}}" alt="User Avatar">
+            <img
+            class="img-rounded"
+            [src]="accountService.currentUser()?.avatar ?
+              accountService.currentUser()?.avatar :
+             'http://localhost:5000/avatar/{{accountService.currentUser()?.avatar}}'"
+            alt="User Avatar">
             <i class="fas fa-user"></i> {{ accountService.currentUser()?.fullname }}
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
