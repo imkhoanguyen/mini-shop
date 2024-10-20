@@ -7,8 +7,11 @@ import { ButtonModule } from 'primeng/button';
 import { RatingModule } from 'primeng/rating';
 import { ToastModule } from 'primeng/toast';
 import { CommonModule } from '@angular/common';
+import { AppComponent } from '../app.component';
+import { ProductUserComponent } from '../component/client/product/product.component';
 
 @NgModule({
+
   imports: [
 
     TabViewModule,
@@ -22,5 +25,6 @@ import { CommonModule } from '@angular/common';
 
   ],
   providers: [],
+
 })
 export class SharedModule {}
