@@ -10,7 +10,10 @@ export  class   productUserService {
 constructor (private http : HttpClient){}
 
 getAllProduct ( ) : Observable<any[]>{
-    console.log ("tesk1")
     return this.http.get<any[]>("http://localhost:3000/products/GetAllProducts");
+}
+
+getAllProductByCategory (id  : number ) : Observable<any[]>{
+      return this.http.get<any[]>(`http://localhost:3000/products/GetAllProductsByCategory?id=${id}`);
 }
 }
