@@ -14,7 +14,6 @@ namespace API.Repositories
         private readonly IColorRepository _colorRepository;
         private readonly IMessageRepository _messageRepository;
         private readonly IImageRepository _imageRepository;
-        private readonly IImageService _imageService;
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
@@ -29,7 +28,7 @@ namespace API.Repositories
              IImageRepository imageRepository, IVariantRepository variantRepository,
              ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
              IShippingMethodRepository shippingMethodRepository,IPaymentsRepository paymentsRepository,
-             IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository, ImageService imageService)
+             IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -38,7 +37,7 @@ namespace API.Repositories
             _colorRepository = colorRepository;
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
-            _imageService = imageService;
+
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
@@ -53,7 +52,7 @@ namespace API.Repositories
         public IColorRepository ColorRepository => _colorRepository;
         public IMessageRepository MessageRepository => _messageRepository;
         public IImageRepository ImageRepository => _imageRepository;
-        public IImageService ImageService => _imageService;
+
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
         public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
@@ -62,6 +61,8 @@ namespace API.Repositories
         public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
 
         public IVariantRepository VariantRepository => _variantRepository;
+
+        public IImageService ImageService => throw new NotImplementedException();
 
         public async Task<bool> Complete()
         {

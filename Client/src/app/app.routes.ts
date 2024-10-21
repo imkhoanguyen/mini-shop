@@ -9,6 +9,8 @@ import { ProductComponent } from './component/admin/product/product.component';
 import { ProductaddComponent } from './component/admin/product/productadd/productadd.component';
 import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
+import { OrderComponent } from './component/admin/order/order.component';
+import { CourterComponent } from './component/admin/courter/courter.component';
 
 export const routes: Routes = [
   { path: '', component: HeaderComponent },
@@ -24,9 +26,10 @@ export const routes: Routes = [
       { path: 'product/productadd/:id', component: ProductaddComponent },
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
+      { path: 'order',component: OrderComponent},
+      { path: 'courter',component:CourterComponent}
     ],
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-
 ];
