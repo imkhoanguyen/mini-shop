@@ -3,6 +3,7 @@ using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace API.Data
 {
@@ -15,8 +16,8 @@ namespace API.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<CartItems>CartItems{get;set;}
-        public DbSet<Image> Images { get; set; }
         public DbSet<AppRole> AppRoles { get; set; }
+        public DbSet<Image> Images { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Variant> Variants { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -26,6 +27,7 @@ namespace API.Data
         public DbSet<Payments> Payments{get;set;}
         public DbSet<Order> Orders{get;set;}
         public DbSet<OrderItems> OrderItems{get;set;}
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
@@ -94,6 +96,15 @@ namespace API.Data
             //     .WithOne(oi=>oi.Order)
             //     .HasForeignKey(oi=>oi.OrderId);
                 
+
+
+            // Self-referencing relationship for replies in Review
+            builder.Entity<Review>()
+                .HasOne(r => r.ParentReview)
+                .WithMany(r => r.Replies)
+                .HasForeignKey(r => r.ParentReviewId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(builder);
             
 

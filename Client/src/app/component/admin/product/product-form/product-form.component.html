@@ -1,0 +1,179 @@
+<p-toast />
+<div class="container" style="height: auto">
+  <div>
+    <form [formGroup]="productForm" >
+      <p-stepper>
+        <p-stepperPanel header="Bước I">
+
+          <ng-template pTemplate="content" let-nextCallback="nextCallback">
+
+            <div class="flex flex-column p-4">
+              <div class="border-2 border-dashed surface-border border-round surface-ground flex-auto flex justify-content-center align-items-center font-medium p-3">
+                <div class="row">
+                  <div class="mb-4">
+                    <label for="name" class="font-semibold">Tên:</label>
+                    <input pInputText id="name" class="pInputText" autocomplete="on" formControlName="name" required />
+                    <div *ngIf="productForm.get('name')?.invalid && (productForm.get('name')?.touched || productForm.get('name')?.dirty)" class="text-danger">
+                      Tên sản phẩm là bắt buộc.
+                    </div>
+                  </div>
+
+
+                  <div class="mb-4">
+                    <label for="categories" class="font-semibold">Danh Mục:</label>
+                    <p-multiSelect
+                      [options]="categories"
+                      formControlName="selectedCategories"
+                      placeholder="Chọn Danh Mục"
+                      optionLabel="name"
+                      optionValue="id"
+                      display="chip"
+                      [showClear]="true"
+                      [filter]="true"
+                      [style]="{ width: '90%' }"
+                      (onFilter)="onCategoryFilter($event)">
+
+                      <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+
+                      <ng-template pTemplate="empty">
+                        <div class="no-data text-center">
+                          No data found.
+                          <button (click)="addCategory()" class="btn btn-primary mt-2">
+                            Add Category
+                          </button>
+                        </div>
+                      </ng-template>
+                    </p-multiSelect>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="description" class="font-semibold">Mô tả:</label>
+                  <textarea
+                    rows="5"
+                    pInputTextarea
+                    formControlName="description"
+                    style="width: 100%"
+                    required
+                    placeholder="Nhập mô tả..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button (click)="nextCallback.emit()" class="btn btn-primary btn-lg">
+                Tiếp theo <i class="bi bi-arrow-right-circle"></i>
+              </button>
+            </div>
+
+          </ng-template>
+        </p-stepperPanel>
+
+        <p-stepperPanel header="Bước II">
+          <ng-template pTemplate="content" let-prevCallback="prevCallback">
+            <form [formGroup]="variantsForm">
+            <div class="flex flex-column p-4">
+
+                <div formArrayName="variants">
+                  <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="row g-4 mb-4 border p-3 rounded">
+
+                    <!-- Price and Quantity Section -->
+                    <div class="col-5">
+                      <div class="mb-2">
+                        <p-inputNumber placeholder="Giá tiền" mode="currency" currency="VND" locale="en-US" formControlName="price" [style]="{width: '100%'}" class="pInputText"/>
+                      </div>
+                      <div class="mb-2">
+                        <p-inputNumber placeholder="Giá tiền giảm (nếu có)" mode="currency" currency="VND" locale="en-US" formControlName="priceSell" [style]="{width: '100%'}" class="pInputText"/>
+                      </div>
+                      <div class="mb-2">
+                        <p-inputNumber placeholder="Số lượng" mode="decimal" [useGrouping]="false" formControlName="quantity" [style]="{width: '100%'}" class="pInputText"/>
+                      </div>
+                      <div class="mb-2">
+                        <p-dropdown  [style]="{width: '90%'}" [options]="sizes" formControlName="sizeId" placeholder="Chọn Kích thước" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" (onFilter)="onSizeFilter($event)">
+                          <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                          <ng-template pTemplate="empty">
+                            <div class="no-data">
+                              No data found.
+                              <button (click)="addSize()" class="btn btn-primary">Add Size</button>
+                            </div>
+                          </ng-template>
+                        </p-dropdown>
+                      </div>
+                      <div class="mb-2">
+                        <p-dropdown [style]="{width: '90%'}" [options]="colors" formControlName="colorId" placeholder="Chọn Màu Sắc" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" (onFilter)="onColorFilter($event)">
+                          <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                          <ng-template pTemplate="empty">
+                            <div class="no-data">
+                              No data found.
+                              <button (click)="showColorDialog()" class="btn btn-primary">Add Color</button>
+                            </div>
+                          </ng-template>
+                        </p-dropdown>
+                      </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="col-7" style="height: 100%">
+                      <label class="btn btn-primary btn-lg" [for]="'fileInput_' + i">
+                        <i class="bi bi-upload"></i> Chọn ảnh
+                      </label>
+                      <input type="file" [id]="'fileInput_' + i" (change)="onFileSelected($event, i)" multiple style="display: none;" />
+
+                      <div class="image-container" *ngIf="selectedImages[i]?.length > 0">
+                        <div *ngFor="let image of selectedImages[i]; let j = index" class="image-preview">
+                          <img [src]="image.src" alt="Image Preview" style="max-width: 100px; margin-bottom: 10px;">
+                          <button class="close-button" (click)="removeImage(i, j)">X</button>
+                          <input type="radio" [id]="'radio_' + i + '_' + j" name="mainImage"
+                                 [value]="{variantIndex: i, imageIndex: j}" (change)="selectMainImage(i, j)" [checked]="isMainImage(i, j)">
+                          <label [for]="'radio_' + i + '_' + j" class="ml-2">Chọn ảnh chính</label>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <!-- Remove Variant Button -->
+                    <div class="d-flex justify-content-end">
+                      <p-button icon="pi pi-times" (click)="removeVariant(i)" class="me-2" severity="danger" label="Remove"></p-button>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="d-flex justify-content-between">
+              <p-button label="Thêm biến thể" icon="pi pi-plus" (click)="createVariant()"></p-button>
+              <p-button label="{{isUpdate? 'Cập nhật sản phẩm' : 'Thêm sản phẩm'}}" icon="{{isUpdate? 'pi pi-pencil' : 'pi pi-plus'}}" type="button" (click)="onSubmit()" [disabled]="!productForm.valid &&!variantsForm.valid"></p-button>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col d-flex justify-content-start">
+                <button (click)="prevCallback.emit()" class="btn btn-primary btn-lg">
+                  <i class="bi bi-arrow-left-circle"></i> Trở lại
+                </button>
+              </div>
+            </div>
+          </form>
+          </ng-template>
+        </p-stepperPanel>
+
+      </p-stepper>
+    </form>
+  </div>
+</div>
+
+<p-dialog header="Thêm màu" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }">
+  <div class="flex align-items-center gap-3 mb-3">
+    <label for="name" class="font-semibold w-6rem">Tên</label>
+    <input pInputText id="name" [(ngModel)]="name" autocomplete="off" />
+  </div>
+  <div class="flex align-items-center gap-3 mb-5">
+    <label for="code" class="font-semibold w-6rem">Code</label>
+    <p-colorPicker [(ngModel)]="code"></p-colorPicker>
+    <input type="text" placeholder="Nhập mã màu" [(ngModel)]="code" (ngModelChange)="updateColorFromInput($event)" />
+  </div>
+  <div class="flex justify-content-end gap-2">
+    <p-button label="Hủy" severity="secondary" (onClick)="visible = false"></p-button>
+    <p-button label="Thêm" (onClick)="addColor()"></p-button>
+  </div>
+</p-dialog>

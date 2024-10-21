@@ -37,7 +37,7 @@ namespace API.Controllers
             _unitOfWork.VariantRepository.UpdateVariant(variant);
             if (await _unitOfWork.Complete())
             {
-                return Ok(new {message ="Update variant successfully."});
+                return Ok(new {id =  variant.Id, message ="Update variant successfully."});
             }
             return BadRequest(new {message ="Update variant failed."});
         }

@@ -17,6 +17,7 @@ namespace API.Repositories
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IShippingMethodRepository _shippingMethodRepository;
         private readonly IPaymentsRepository _paymentsRepository;
         private readonly IOrderRepository _orderRepository;
@@ -25,6 +26,9 @@ namespace API.Repositories
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
+             IImageRepository imageRepository, IImageService imageService,
+             IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
+             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository)
              IImageRepository imageRepository, IVariantRepository variantRepository,
              ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
              IShippingMethodRepository shippingMethodRepository,IPaymentsRepository paymentsRepository,
@@ -41,6 +45,7 @@ namespace API.Repositories
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
+            _reviewRepository = reviewRepository;
             _shippingMethodRepository=shippingMethodRepository;
             _paymentsRepository=paymentsRepository;
             _orderRepository=orderRepository;
@@ -55,6 +60,9 @@ namespace API.Repositories
 
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
+
+        public IImageService ImageService => _imageService;
+        public IReviewRepository ReviewRepository => _reviewRepository;
         public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
         public IPaymentsRepository PaymentsRepository => _paymentsRepository;
         public IOrderRepository OrderRepository => _orderRepository;

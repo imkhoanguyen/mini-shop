@@ -17,12 +17,13 @@ import { DatePipe } from '@angular/common';
 import { Role } from '../../../_models/role';
 import { Pagination } from '../../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../_services/auth.service';
 
 @Component({
   selector: 'app-role',
   standalone: true,
   imports: [
-    ToastModule,
     DialogModule,
     ToastModule,
     FormsModule,
@@ -40,6 +41,7 @@ export class RoleComponent implements OnInit {
   private roleServices = inject(RoleService);
   roles: Role[] = [];
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   frm: FormGroup = new FormGroup({});
   visible: boolean = false;
   edit = false;
@@ -51,7 +53,8 @@ export class RoleComponent implements OnInit {
 
   constructor(
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    public authServices: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -193,5 +196,8 @@ export class RoleComponent implements OnInit {
       detail: detail,
       life: 3000,
     });
+  }
+  onGoRolePermission(roleId: string) {
+    this.router.navigate(['/admin/role/permission', roleId]);
   }
 }

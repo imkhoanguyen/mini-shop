@@ -1,3 +1,4 @@
+﻿using API.Configurations;
 using API.Data;
 using API.Errors;
 using API.Helpers;
@@ -5,8 +6,10 @@ using API.Interfaces;
 using API.Repositories;
 using API.Services;
 using CloudinaryDotNet;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace API.Extensions
 {
@@ -52,6 +55,7 @@ namespace API.Extensions
             services.AddScoped<IOrderRepository,OrderRepository>();
             services.AddScoped<IOrderItemsRepository,OrderItemsRepository>();
             services.AddScoped<IShippingMethodRepository,ShippingMethodRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -79,6 +83,13 @@ namespace API.Extensions
             //    });
             //});
 
+            services.Configure<EmailConfig>(config.GetSection("MailSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+            // setting thời gian hết hạn của token do asp.net identity tạo ra
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromSeconds(60*5); // 5p
+            });
             return services;
         }
     }

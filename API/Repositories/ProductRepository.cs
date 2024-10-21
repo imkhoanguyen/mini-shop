@@ -18,27 +18,31 @@ namespace API.Repositories
         public void AddProduct(Product product)
         {
             _context.Products.Add(product);
-            //await _context.SaveChangesAsync();
         }
         public async Task AddProductCategory(Product product)
         {
+            var existingCategories = await _context.ProductCategories
+                .Where(pc => pc.ProductId == product.Id)
+                .ToListAsync();
+
+            if (existingCategories != null && existingCategories.Count > 0)
+            {
+                _context.ProductCategories.RemoveRange(existingCategories);
+            }
+
             if (product.ProductCategories != null && product.ProductCategories.Count > 0)
             {
                 foreach (var productCategory in product.ProductCategories)
                 {
-                    var existingProductCategory = await _context.ProductCategories
-                        .FirstOrDefaultAsync(pc => pc.ProductId == product.Id && pc.CategoryId == productCategory.CategoryId);
-                    if (existingProductCategory == null)
+                    _context.ProductCategories.Add(new ProductCategory
                     {
-                        _context.ProductCategories.Add(new ProductCategory
-                        {
-                            ProductId = product.Id,
-                            CategoryId = productCategory.CategoryId
-                        });
-                    }
+                        ProductId = product.Id,
+                        CategoryId = productCategory.CategoryId
+                    });
                 }
             }
         }
+
         public async Task UpdateProduct(Product product)
         {
             var productDb = await _context.Products
@@ -83,7 +87,7 @@ namespace API.Repositories
         public async Task<Product?> GetProductByIdAsync(int id)
         {
             var productDb = await _context.Products
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
@@ -102,7 +106,7 @@ namespace API.Repositories
         }
         public async Task<bool> ProductExistsAsync(string name)
         {
-            return await _context.Products.AnyAsync(c => c.Name == name);
+            return await _context.Products.AnyAsync(c => !c.IsDelete && c.Name == name);
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync()
@@ -118,7 +122,7 @@ namespace API.Repositories
         public async Task<PageList<Product>> GetAllProductsAsync(ProductParams productParams)
         {
             var query = _context.Products
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .Where(p => !p.IsDelete)
@@ -136,7 +140,7 @@ namespace API.Repositories
                                         .ToListAsync();
             var products = await _context.Products
                 .Where(p => productIds.Contains(p.Id))
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Include(p => p.ProductCategories)
                 .ToListAsync();

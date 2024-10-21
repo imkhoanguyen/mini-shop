@@ -79,9 +79,10 @@ namespace api.Controllers
             var product = ProductAddDto.toProduct(productAddDto);
             _unitOfWork.ProductRepository.AddProduct(product);
 
-            if (await _unitOfWork.Complete())
-                return Ok(new {id = product.Id, message ="Add Product successfully."});
+            if (await _unitOfWork.Complete()){
                 await _unitOfWork.ProductRepository.AddProductCategory(product);
+                return Ok(new {id = product.Id, message ="Add Product successfully."});
+            }
             return BadRequest(new {message ="Add Product failed."});
         }
 
@@ -92,16 +93,19 @@ namespace api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var product = ProductDto.toProduct(productDto);
-
+            await _unitOfWork.ProductRepository.AddProductCategory(product);
             await _unitOfWork.ProductRepository.UpdateProduct(product);
-            if (await _unitOfWork.Complete())
-                return Ok("Update Product successfully.");
-            return BadRequest("Update Product failed.");
+            
+            if (await _unitOfWork.Complete()){
+                
+                return Ok(new {message = "Update Product successfully."});
+            }
+            return BadRequest(new {message = "Update Product failed."});
         }
 
         // DELETE api/Product/Delete
         [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteProduct(ProductDto productDto)
+        public async Task<IActionResult> DeleteProduct([FromBody]ProductDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -109,8 +113,8 @@ namespace api.Controllers
             _unitOfWork.ProductRepository.DeleteProduct(product);
 
             if (await _unitOfWork.Complete())
-                return Ok("Delete Product successfully.");
-            return BadRequest("Delete Product failed.");
+                return Ok(new {message = "Delete Product successfully."});
+            return BadRequest(new {message = "Delete Product failed."});
             
         }
         

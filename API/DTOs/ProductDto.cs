@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using API.Interfaces;
 using API.Entities;
+using API.Data.Enum;
 
 namespace API.DTOs
 {
@@ -10,6 +11,7 @@ namespace API.DTOs
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public List<int> CategoryIds { get; set; } = new List<int>();
+        public int Status { get; set; }
 
         public static Product toProduct(ProductDto productDto)
         {
@@ -19,6 +21,7 @@ namespace API.DTOs
                 Name = productDto.Name,
                 Description = productDto.Description,
                 ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
+                Status = (ProductStatus)productDto.Status
             };
         }
     }
@@ -48,6 +51,7 @@ namespace API.DTOs
         public DateTime Updated { get; set; }
         public List<int> CategoryIds { get; set; } = new List<int>();
         public List<VariantGetDto> Variants { get; set; } = new List<VariantGetDto>();
+        public int Status { get; set;}
         
     }
 }
