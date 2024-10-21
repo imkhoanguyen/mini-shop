@@ -7,8 +7,10 @@ import { AdminComponent } from './component/admin/admin.component';
 import { DashboardComponent } from './component/admin/dashboard/dashboard.component';
 import { ProductComponent } from './component/admin/product/product.component';
 import { ProductUserComponent } from './component/client/product/product.component';
+import { ProductListComponent } from './component/client/productList/productList.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
+  { path: 'product/productList/:id', component: ProductListComponent },
   {
     path: 'admin',
     component: AdminComponent,

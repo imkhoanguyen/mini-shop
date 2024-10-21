@@ -5,13 +5,12 @@ import { PanelMenuModule } from 'primeng/panelmenu';
 import { MenuModule } from 'primeng/menu';
 
 @Component({
-  selector: 'app-header-client',
+  selector: 'app-footer-client',
   standalone: true,
   imports: [SidebarModule, ButtonModule, PanelMenuModule, MenuModule],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  templateUrl: './footerClient.component.html',
 })
-export class HeaderComponent {
+export class FooterClientComponent {
   sidebarVisible: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
 
