@@ -9,7 +9,7 @@
     </div>
   </div>
   <div
-    class="alert d-flex gap-5 p-5 mb-3"
+    class="alert d-flex gap-5 p-5 mb-5"
     role="alert"
     style="background-color: #e7f5ff"
   >
@@ -79,6 +79,7 @@
             <div class="review-footer">
               <div class="footer-btn d-flex">
                 <a
+                  *ngIf="review.replies.length > 0"
                   class="text-primary"
                   type="button"
                   (click)="toggleReplies(review.id)"
@@ -137,17 +138,16 @@
               </div>
 
               <!-- Hiển thị replies khi người dùng nhấn vào nút -->
-              <div
-                *ngIf="showReplies[review.id]"
-                class="replies mt-3 py-3 rounded"
-                style="background-color: #f5f5f5"
-              >
+              <div *ngIf="showReplies[review.id]" class="replies mt-3">
                 <div
                   *ngFor="let reply of review.replies"
                   class="reply"
                   [ngStyle]="{ 'margin-left': '10px' }"
                 >
-                  <div class="reply-header d-flex gap-2 align-items-start">
+                  <div
+                    class="reply-header mb-3 d-flex gap-2 align-items-start p-3 rounded"
+                    style="background-color: #f5f5f5"
+                  >
                     <div class="img-container">
                       <img
                         alt="User profile picture"
@@ -190,7 +190,7 @@
                               <span style="margin-left: 10px">Sửa</span>
                             </button>
                             <button
-                              class="dropdown-item text-danger"
+                              class="dropdown-item"
                               type="button"
                               (click)="onDeleteReview(reply.id)"
                             >
