@@ -1,3 +1,4 @@
+<p-toast />
 <div class="container shadow-lg p-5">
   <div class="row">
     <h3 class="col-6 mb-3">Đánh giá sản phẩm</h3>
@@ -59,22 +60,18 @@
             </div>
 
             <div class="review-images d-flex gap-2 mt-2">
-              <img
-                alt="Product image 1"
-                height="100"
-                src="https://storage.googleapis.com/a1aa/image/A81tTyMmM9rnJBKvhUdpFmrOnTEPFuooUlYmJH6TyroFT45E.jpg"
-                width="100"
-              />
               <video
+                *ngIf="review.videoUrl"
                 width="100"
                 height="100"
-                controls=""
-                src="https://placehold.co/100x100"
+                controls
+                [src]="review.videoUrl"
               ></video>
               <img
-                alt="Product image 2"
+                *ngFor="let image of review.images"
+                [src]="image.imgUrl"
+                alt="Product image"
                 height="100"
-                src="https://storage.googleapis.com/a1aa/image/ENT6P9CjrI7DP1KFwT7YzjD5PJzSZK0tUPD75QA4SddFT45E.jpg"
                 width="100"
               />
             </div>
@@ -113,7 +110,7 @@
                       <button
                         class="dropdown-item"
                         type="button"
-                        (click)="edit(review.id)"
+                        (click)="openFormEditReview(review.id)"
                       >
                         <i class="pi pi-send"></i>
                         <span style="margin-left: 10px">Phản hồi</span>
@@ -219,7 +216,7 @@
   </div>
 </div>
 
-<!-- form create review -->
+<!-- ****************************** Start form create review *********************************** -->
 <p-dialog
   header="Đánh giá sản phẩm"
   [modal]="true"
@@ -249,6 +246,7 @@
     <div class="mb-3">
       <!-- maxFileSize = 10MB = 1,048,576 byte * 10 -->
       <p-fileUpload
+        #imageUpload
         name="files"
         (onSelect)="onSelectImgFile($event)"
         (onRemove)="onRemoveImgFile($event)"
@@ -264,6 +262,7 @@
 
     <div class="mb-3 file-upload-container">
       <p-fileUpload
+        #videoUpload
         name="files"
         (onSelect)="onSelectVideoFile($event)"
         (onRemove)="onRemoveVideoFile()"
@@ -306,3 +305,154 @@
     </div>
   </form>
 </p-dialog>
+<!-- ****************************** End form create review *********************************** -->
+
+<!-- ****************************** Start form update review *********************************** -->
+<p-dialog
+  header="Cập nhật đánh giá"
+  [modal]="true"
+  [(visible)]="visibleFrmEditView"
+  [style]="{ width: '50rem' }"
+  (onHide)="closeFormEditReview()"
+>
+  <div class="card">
+    <p-tabView>
+      <p-tabPanel header="Thông tin">
+        <form
+          [formGroup]="frmEditReview"
+          (ngSubmit)="onSubmitFrmEditReview()"
+          enctype="multipart/form-data"
+        >
+          <div class="mb-3 d-flex gap-5 align-items-center">
+            <span class="form-label">Đánh giá sản phẩm: </span>
+            <p-rating formControlName="rating" [cancel]="false" />
+          </div>
+          <div class="mb-3">
+            <label for="reviewText" class="form-label">Nội dung đánh giá</label>
+            <textarea
+              id="reviewText"
+              class="form-control"
+              formControlName="reviewText"
+              placeholder="Hãy chia sẽ những điều bạn thích về sản phẩm này với những người mua khác nhé."
+              style="height: 150px"
+            ></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeFormCreateReview()"
+            >
+              <i class="pi pi-times me-1"></i>
+              <span>Đóng</span>
+            </button>
+            <button
+              class="btn btn-primary"
+              type="submit"
+              [disabled]="frmEditReview.invalid || !frmEditReview.dirty"
+            >
+              <i class="pi pi-check me-1"></i>
+              <span>Lưu</span>
+            </button>
+          </div>
+        </form>
+      </p-tabPanel>
+      <p-tabPanel header="Hình ảnh">
+        <div class="mb-3 d-flex">
+          <div class="fw-bold">Thêm ảnh mới</div>
+          <button
+            *ngIf="listImgRequest.length > 0"
+            class="btn btn-primary mt-3 ms-auto"
+            (click)="onUploadImgEdit()"
+          >
+            Upload hình ảnh đã chọn
+          </button>
+        </div>
+        <p-fileUpload
+          #imageUploadEdit
+          name="files"
+          (onSelect)="onSelectImgFileEdit($event)"
+          (onRemove)="onRemoveImgFileEdit($event)"
+          (onClear)="onClearAllImageFilesEdit($event)"
+          [multiple]="true"
+          [showUploadButton]="false"
+          accept="image/*"
+          maxFileSize="10485760"
+          [chooseLabel]="'Chọn ảnh'"
+          [cancelLabel]="'Hủy'"
+        />
+
+        <div *ngIf="imgListForEdit.length > 0" class="mb-3 fw-bold mt-4">
+          Ảnh hiện tại
+        </div>
+        <div
+          class="row row-cols-2 row-cols-md-3 g-3"
+          *ngIf="imgListForEdit.length > 0"
+        >
+          <div *ngFor="let img of imgListForEdit" class="col text-center">
+            <img [src]="img.imgUrl" width="200" alt="img review" />
+            <button class="btn btn-danger mt-2" (click)="removeImage(img.id)">
+              Xóa ảnh
+            </button>
+          </div>
+        </div>
+      </p-tabPanel>
+      <p-tabPanel header="Video">
+        <div class="mb-3 d-flex">
+          <div *ngIf="showAddVideoBox == true" class="fw-bold">
+            Thêm video mới
+          </div>
+          <button
+            *ngIf="videoRequest != null"
+            class="btn btn-primary mt-3 ms-auto"
+            (click)="onUploadVideoEdit()"
+          >
+            Upload video đã chọn
+          </button>
+        </div>
+        <div *ngIf="showAddVideoBox == true" class="file-upload-container">
+          <p-fileUpload
+            #videoUploadEdit
+            name="files"
+            (onSelect)="onSelectVideoFileEdit($event)"
+            (onRemove)="onRemoveVideoFileEdit()"
+            (onClear)="onRemoveVideoFileEdit()"
+            [multiple]="false"
+            accept="video/*"
+            maxFileSize="10485760"
+            [showUploadButton]="false"
+            [chooseLabel]="'Chọn video'"
+            [cancelLabel]="'Hủy'"
+          >
+            <!-- Tùy chỉnh nội dung hiển thị bên trong box -->
+            <ng-template pTemplate="content">
+              <div *ngIf="videoUrl" class="video-preview">
+                <video [src]="videoUrl" controls width="100%" height="100%">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </ng-template>
+          </p-fileUpload>
+        </div>
+        <div *ngIf="videoUrlForEdit" class="mb-3 fw-bold mt-4">
+          Video hiện tại
+        </div>
+        <video
+          *ngIf="videoUrlForEdit"
+          class="video-preview"
+          controls
+          [src]="videoUrlForEdit"
+        ></video>
+        <button
+          (click)="removeVideo()"
+          *ngIf="videoUrlForEdit && videoRequest == null"
+          class="btn btn-danger mt-2 w-100"
+        >
+          Xóa video
+        </button>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</p-dialog>
+<!-- ****************************** End form update review *********************************** -->

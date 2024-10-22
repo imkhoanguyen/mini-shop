@@ -1,10 +1,10 @@
-import { HttpClient } from "@angular/common/http";
-import { inject, Injectable, signal } from "@angular/core";
-import { map, pipe } from "rxjs";
-import { Login } from "../_models/login.module";
-import { environment } from "../../environments/environment";
-import { ResetPassword } from "../_models/resetPassword";
-import { User } from "../_models/user.module";
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
+import { map, pipe } from 'rxjs';
+import { Login } from '../_models/login.module';
+import { environment } from '../../environments/environment';
+import { ResetPassword } from '../_models/resetPassword';
+import { User } from '../_models/user.module';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -13,10 +13,10 @@ export class AccountService {
 
   currentUser = signal<User | null>(null);
 
-  register(data: any){
-    return this.http.post<User>(this.apiUrl + "/Account/Register", data).pipe(
-      map(user => {
-        if(user){
+  register(data: any) {
+    return this.http.post<User>(this.apiUrl + '/Account/Register', data).pipe(
+      map((user) => {
+        if (user) {
           localStorage.setItem('user', JSON.stringify(user));
           this.currentUser.set(user);
         }
@@ -24,19 +24,19 @@ export class AccountService {
       })
     );
   }
-  login(data: Login){
-    return this.http.post<User>(this.apiUrl + "/Account/Login", data).pipe(
+  login(data: Login) {
+    return this.http.post<User>(this.apiUrl + '/Account/Login', data).pipe(
       map((user: User) => {
-        if(user){
+        if (user) {
           console.log(user);
           localStorage.setItem('user', JSON.stringify(user));
           localStorage.setItem('token', user.token);
           this.currentUser.set(user);
         }
       })
-    )
+    );
   }
-  logout(){
+  logout() {
     localStorage.removeItem('user');
     this.currentUser.set(null);
   }
@@ -52,5 +52,19 @@ export class AccountService {
       this.apiUrl + '/account/reset-password',
       resetPassword
     );
+  }
+
+  getCurrentUser(): User | null {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      try {
+        const user: User = JSON.parse(userJson);
+        return user;
+      } catch (error) {
+        console.error('Error parsing user from localStorage', error);
+        return null;
+      }
+    }
+    return null; // Trả về null nếu không có user trong localStorage
   }
 }

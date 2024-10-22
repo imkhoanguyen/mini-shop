@@ -10,28 +10,30 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [SidebarModule, ButtonModule, PanelMenuModule, MenuModule, CommonModule],
+  imports: [
+    SidebarModule,
+    ButtonModule,
+    PanelMenuModule,
+    MenuModule,
+    CommonModule,
+  ],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
-
   sidebarVisible: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   private router = inject(Router);
   accountService = inject(AccountService);
   userInfo: any;
-  ngOnInit(): void {
-    this.userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-
-  }
-  loginForm(){
+  ngOnInit(): void {}
+  loginForm() {
     this.router.navigateByUrl('/login');
   }
-  registerForm(){
+  registerForm() {
     this.router.navigateByUrl('/register');
   }
-  logout(){
+  logout() {
     this.accountService.logout();
   }
 }

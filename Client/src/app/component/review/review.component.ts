@@ -1,9 +1,9 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { ReviewDto } from '../../_models/review';
+import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { ReviewDto, ReviewEditDto, ReviewImage } from '../../_models/review';
 import { ReviewService } from '../../_services/review.service';
 import { CommonModule } from '@angular/common';
 import { RatingModule } from 'primeng/rating';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUpload, FileUploadModule } from 'primeng/fileupload';
 import {
   FormBuilder,
   FormControl,
@@ -13,23 +13,31 @@ import {
   Validators,
 } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
+import { AccountService } from '../../_services/account.service';
+import { TabViewModule } from 'primeng/tabview';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-review',
   standalone: true,
   imports: [
+    ToastModule,
     CommonModule,
     RatingModule,
     FormsModule,
     DialogModule,
     ReactiveFormsModule,
     FileUploadModule,
+    TabViewModule,
   ],
   templateUrl: './review.component.html',
   styleUrl: './review.component.css',
+  providers: [MessageService],
 })
 export class ReviewComponent implements OnInit {
-  @Input() productId!: number;
+  @Input() productId: number = 0;
+  constructor(private messageService: MessageService) {}
   reviews: ReviewDto[] = [];
   showReplies: { [key: number]: boolean } = {};
   showDropdown: { [key: number]: boolean } = {};
@@ -39,16 +47,17 @@ export class ReviewComponent implements OnInit {
   visibleFrmCreateView = false;
   imgFiles: any[] = [];
   videoUrl: string = '';
+  private accountServices = inject(AccountService);
+  currentUser = this.accountServices.getCurrentUser();
 
   private fb = inject(FormBuilder);
-
-  frmCreateReview: FormGroup = new FormGroup({});
 
   private reviewServices = inject(ReviewService);
 
   ngOnInit(): void {
     this.loadReviews();
     this.initFormCreateView();
+    this.initFrmEdit();
   }
 
   loadReviews() {
@@ -98,7 +107,30 @@ export class ReviewComponent implements OnInit {
     );
   }
 
+  showError(detail: string, summary?: string) {
+    this.messageService.add({
+      severity: 'error',
+      summary: summary || 'Error',
+      detail: detail,
+      life: 3000,
+    });
+  }
+
+  showSuccess(detail: string) {
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: detail,
+      life: 3000,
+    });
+  }
+
   // ********************************************** Start Create Form Review **********************************************
+
+  @ViewChild('imageUpload') imageFileUpload!: FileUpload;
+  @ViewChild('videoUpload') videoFileUpload!: FileUpload;
+
+  frmCreateReview: FormGroup = new FormGroup({});
 
   initFormCreateView() {
     this.frmCreateReview = this.fb.group({
@@ -115,11 +147,25 @@ export class ReviewComponent implements OnInit {
 
   closeFormCreateReview() {
     this.visibleFrmCreateView = false;
+    this.frmCreateReview.reset();
+    this.imgFiles = [];
+    this.videoUrl = '';
+    this.imageFileUpload.clear();
+    this.videoFileUpload.clear();
   }
 
   onSelectImgFile(event: any) {
     const files = event.currentFiles;
-    this.imgFiles.push(...files);
+
+    files.forEach((file: File) => {
+      if (
+        !this.imgFiles.some(
+          (existingFile: File) => existingFile.name === file.name
+        )
+      ) {
+        this.imgFiles.push(file);
+      }
+    });
 
     this.frmCreateReview.patchValue({
       imageFile: this.imgFiles,
@@ -127,6 +173,7 @@ export class ReviewComponent implements OnInit {
     this.frmCreateReview.get('files')?.updateValueAndValidity();
 
     console.log(this.imgFiles);
+    console.log('current form value: ', this.frmCreateReview.value);
   }
 
   onRemoveImgFile(event: any) {
@@ -191,13 +238,230 @@ export class ReviewComponent implements OnInit {
     if (this.frmCreateReview.value.videoFile) {
       formData.append('videoFile', this.frmCreateReview.value.videoFile);
     }
-
-    if (this.frmCreateReview.value.imageFile) {
-      formData.append('imgFile', this.frmCreateReview.value.imageFile);
+    if (
+      this.frmCreateReview.value.imageFile &&
+      this.frmCreateReview.value.imageFile.length > 0
+    ) {
+      for (let i = 0; i < this.frmCreateReview.value.imageFile.length; i++) {
+        formData.append('imageFile', this.frmCreateReview.value.imageFile[i]);
+      }
     }
 
-    if(this.frmCreateReview)
+    if (this.currentUser) {
+      formData.append('UserId', this.currentUser.id.toString());
+    }
+
+    if (this.productId > 0) {
+      formData.append('productId', this.productId.toString());
+    }
+    console.log(this.currentUser);
+
+    this.reviewServices.addReview(formData).subscribe({
+      next: (response) => {
+        this.loadReviews();
+      },
+      error: (er) => {
+        console.log(er);
+      },
+    });
   }
 
   // ********************************************** End Create Form Review **********************************************
+
+  // ********************************************** Start Edit Form Review **********************************************
+  @ViewChild('imageUploadEdit') imageFileUploadEdit!: FileUpload;
+  @ViewChild('videoUploadEdit') videoFileUploadEdit!: FileUpload;
+  frmEditReview: FormGroup = new FormGroup({});
+
+  visibleFrmEditView: boolean = false;
+  imgListForEdit: ReviewImage[] = []; // read-only
+  videoUrlForEdit: string | null = ''; // read-only
+  listImgRequest: File[] = [];
+  videoRequest: File | null = null;
+  showAddVideoBox = false;
+
+  initFrmEdit() {
+    this.frmEditReview = this.fb.group({
+      id: 0,
+      reviewText: new FormControl<string>('', [Validators.required]),
+      rating: new FormControl<number>(5, [Validators.required]),
+    });
+  }
+
+  openFormEditReview(reviewId: number) {
+    const review = this.reviews.find((r) => r.id === reviewId);
+    if (review != null) {
+      this.frmEditReview.patchValue({
+        id: reviewId,
+        reviewText: review?.reviewText,
+        rating: review?.rating,
+      });
+      this.imgListForEdit = review.images;
+      this.videoUrlForEdit = review.videoUrl || null;
+      if (this.videoUrlForEdit == null) this.showAddVideoBox = true;
+    }
+
+    this.visibleFrmEditView = true;
+  }
+
+  onSubmitFrmEditReview() {
+    const reviewEditDto: ReviewEditDto = {
+      id: this.frmEditReview.value.id,
+      reviewText: this.frmEditReview.value.reviewText,
+      rating: this.frmEditReview.value.rating,
+    };
+
+    this.reviewServices.updateReview(reviewEditDto).subscribe({
+      next: (_) => {
+        this.showSuccess('Cập nhật đánh giá thành công');
+        this.loadReviews();
+      },
+    });
+  }
+
+  closeFormEditReview() {
+    this.frmEditReview.reset();
+    // img reset
+    this.imgListForEdit = [];
+    this.listImgRequest = [];
+    // video reset
+    this.videoUrlForEdit = '';
+    this.videoRequest = null;
+    this.showAddVideoBox = false;
+    //
+    this.imageFileUploadEdit.clear();
+    if (this.videoUrlForEdit !== '') this.videoFileUploadEdit.clear();
+    this.visibleFrmEditView = false;
+  }
+
+  onSelectImgFileEdit(event: any) {
+    const files = event.currentFiles;
+
+    files.forEach((file: File) => {
+      if (
+        !this.listImgRequest.some(
+          (existingFile: File) => existingFile.name === file.name
+        )
+      ) {
+        this.listImgRequest.push(file);
+      }
+    });
+
+    console.log(this.listImgRequest);
+  }
+
+  onRemoveImgFileEdit(event: any) {
+    const fileToRemove = event.file;
+
+    this.listImgRequest = this.listImgRequest.filter(
+      (file) => file !== fileToRemove
+    );
+
+    console.log('Current img list request after remove:', this.listImgRequest);
+  }
+
+  onClearAllImageFilesEdit(event: any) {
+    this.listImgRequest = [];
+    console.log('Current img list request after clear:', this.listImgRequest);
+  }
+
+  onUploadImgEdit() {
+    let frmData = new FormData();
+    if (this.listImgRequest && this.listImgRequest.length > 0) {
+      for (let i = 0; i < this.listImgRequest.length; i++) {
+        frmData.append('imageFiles', this.listImgRequest[i]);
+      }
+    }
+    console.log(frmData);
+    this.reviewServices
+      .addImages(this.frmEditReview.value.id, frmData)
+      .subscribe({
+        next: (_) => {
+          this.showSuccess('Thêm ảnh đánh giá sản phẩm thành công');
+          this.loadReviews();
+          this.closeFormEditReview();
+        },
+        error: (er) => {
+          console.log(er);
+          this.showError('Thêm ảnh đánh giá sản phẩm thất bại');
+        },
+      });
+  }
+
+  removeImage(imgId: number) {
+    this.reviewServices
+      .removeImage(this.frmEditReview.value.id, imgId)
+      .subscribe({
+        next: (_) => {
+          this.showSuccess('Xóa hình ảnh thành công');
+          this.loadReviews();
+          this.closeFormEditReview();
+        },
+        error: (er) => {
+          console.log(er);
+          this.showError('Xóa hình ảnh thất bại');
+        },
+      });
+  }
+
+  // video file
+  onSelectVideoFileEdit(event: any) {
+    const file = event.files[0];
+
+    if (file && file.type.startsWith('video/')) {
+      this.videoRequest = file;
+
+      const fileReader = new FileReader();
+      fileReader.onload = (e: any) => {
+        this.videoUrlForEdit = e.target.result; // Hiển thị URL của video để preview
+      };
+      fileReader.readAsDataURL(file); // Đọc tệp để tạo URL hiển thị trước
+    } else {
+      console.log('Invalid file format. Please select a valid video file.');
+      this.onRemoveVideoFileEdit();
+    }
+    console.log('Current form value:', this.frmCreateReview.value);
+  }
+
+  onRemoveVideoFileEdit() {
+    this.videoRequest = null;
+    this.videoUrlForEdit = '';
+    console.log(
+      'current videoUrl after remove',
+      this.videoRequest,
+      this.videoUrlForEdit
+    );
+  }
+
+  onUploadVideoEdit() {
+    let formData = new FormData();
+    if (this.videoRequest != null) {
+      formData.append('videoFile', this.videoRequest);
+      this.reviewServices
+        .addVideo(this.frmEditReview.value.id, formData)
+        .subscribe({
+          next: (_) => {
+            this.showSuccess('Thêm video thành công');
+            this.loadReviews();
+            this.closeFormEditReview();
+          },
+        });
+    } else {
+      this.showError('Chưa có video');
+    }
+  }
+
+  removeVideo() {
+    this.reviewServices.removeVideo(this.frmEditReview.value.id).subscribe({
+      next: (_) => {
+        this.showSuccess('Xóa video thành công');
+        this.closeFormEditReview();
+        this.loadReviews();
+      },
+      error: (er) => {
+        console.log(er);
+        this.showError(er);
+      },
+    });
+  }
 }
