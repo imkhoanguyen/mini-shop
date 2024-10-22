@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { ReviewDto, ReviewEditDto } from '../_models/review';
+import { ReplyCreateDto, ReviewDto, ReviewEditDto } from '../_models/review';
 
 @Injectable({
   providedIn: 'root',
@@ -47,5 +47,9 @@ export class ReviewService {
 
   removeVideo(reviewId: number) {
     return this.http.delete(`${this.apiUrl}/review/remove-video/${reviewId}`);
+  }
+
+  addReply(reply: ReplyCreateDto) {
+    return this.http.post(`${this.apiUrl}/review/add-reply`, reply);
   }
 }

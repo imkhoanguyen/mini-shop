@@ -26,3 +26,10 @@ export interface ReviewEditDto {
   rating?: number | null;
   reviewText: string;
 }
+
+export interface ReplyCreateDto {
+  reviewText: string;
+  parentReviewId: number;
+  userId: string;
+  productId: number;
+}

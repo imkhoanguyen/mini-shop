@@ -232,5 +232,33 @@ namespace API.Controllers
 
             return BadRequest("Problem with remove video review");
         }
+
+        [HttpPost("add-reply")]
+        public async Task<IActionResult> CreateReview([FromBody] ReplyCreateDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(dto.UserId);
+            if (user == null)
+                return BadRequest("Không tìm thấy người dùng");
+
+
+            var review = new Review
+            {
+                ProductId = dto.ProductId,
+                ParentReviewId = dto.ParentReviewId,
+                UserId = user.Id,
+                ReviewText = dto.ReviewText,
+            };
+
+            _unit.ReviewRepository.Add(review);
+
+            if (await _unit.Complete())
+            {
+                var reviewDto = ReviewDto.FromEntity(review);
+                return Ok(new { message = "Repply added successfully", reviewDto });
+            }
+
+            return BadRequest("Xảy ra lỗi khi thêm reivew");
+
+        }
     }
 }

@@ -73,9 +73,12 @@ namespace API.DTOs
         public required string ReviewText { get; set; }
     }
 
-    public class RemoveImageDto()
+    public class ReplyCreateDto()
     {
-        public int Id { get; set; }
-        public int ImageId { get; set; }
+        public required string ReviewText { get; set; }
+        public int ParentReviewId { get; set; }
+        public required string UserId { get; set; }
+        public int ProductId { get; set; }
     }
+
 }

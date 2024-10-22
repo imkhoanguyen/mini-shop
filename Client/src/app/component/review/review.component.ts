@@ -1,5 +1,10 @@
 import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
-import { ReviewDto, ReviewEditDto, ReviewImage } from '../../_models/review';
+import {
+  ReplyCreateDto,
+  ReviewDto,
+  ReviewEditDto,
+  ReviewImage,
+} from '../../_models/review';
 import { ReviewService } from '../../_services/review.service';
 import { CommonModule } from '@angular/common';
 import { RatingModule } from 'primeng/rating';
@@ -58,6 +63,7 @@ export class ReviewComponent implements OnInit {
     this.loadReviews();
     this.initFormCreateView();
     this.initFrmEdit();
+    this.initFormCreateReply();
   }
 
   loadReviews() {
@@ -87,18 +93,8 @@ export class ReviewComponent implements OnInit {
       !this.showReplyDropdown[reviewId][replyId];
   }
 
-  edit(reviewId: number) {
-    console.log(`Edit review with ID: ${reviewId}`);
-  }
-
   delete(reviewId: number) {
     console.log(`Delete review with ID: ${reviewId}`);
-  }
-
-  editReply(reviewId: number, replyId: number) {
-    console.log(
-      `Edit reply with ID: ${replyId} for review with ID: ${reviewId}`
-    );
   }
 
   deleteReply(reviewId: number, replyId: number) {
@@ -125,7 +121,7 @@ export class ReviewComponent implements OnInit {
     });
   }
 
-  // ********************************************** Start Create Form Review **********************************************
+  // ********************************************** Start Create Form Review & Reply **********************************************
 
   @ViewChild('imageUpload') imageFileUpload!: FileUpload;
   @ViewChild('videoUpload') videoFileUpload!: FileUpload;
@@ -464,4 +460,83 @@ export class ReviewComponent implements OnInit {
       },
     });
   }
+
+  // ********************************************** End Edit Form Review **********************************************
+
+  // ********************************************** Start Create Form Reply **********************************************
+  frmCreateReply: FormGroup = new FormGroup({});
+  visibleFrmCreateReply = false;
+  parentId = 0;
+  editReply = false;
+  reviewIdForEditReply = 0;
+  initFormCreateReply() {
+    this.frmCreateReply = this.fb.group({
+      reviewText: new FormControl<string>('', [Validators.required]),
+    });
+  }
+  closeFormCreateReply() {
+    this.visibleFrmCreateReply = false;
+    this.frmCreateReply.reset();
+    this.parentId = 0;
+    this.editReply = false;
+    this.reviewIdForEditReply = 0;
+  }
+
+  openFormCreateReply(reviewId: number, reviewText?: string) {
+    this.visibleFrmCreateReply = true;
+    this.parentId = reviewId;
+    if (reviewText) {
+      this.editReply = true;
+      this.frmCreateReply.patchValue({
+        reviewText: reviewText,
+      });
+      this.reviewIdForEditReply = reviewId;
+    }
+  }
+
+  onSubmitFrmCreateReply() {
+    if (!this.currentUser) {
+      this.showError('Bạn chưa đăng nhập');
+      return;
+    }
+
+    if (this.editReply) {
+      const reply: ReviewEditDto = {
+        id: this.reviewIdForEditReply,
+        reviewText: this.frmCreateReply.value.reviewText,
+        rating: null,
+      };
+
+      this.reviewServices.updateReview(reply).subscribe({
+        next: (_) => {
+          this.showSuccess('Cập nhật phản hồi thành công');
+          this.loadReviews();
+          this.closeFormCreateReply();
+        },
+        error: (er) => {
+          console.log(er), this.showError('Cập nhật phản hồi thất bại');
+        },
+      });
+    } else {
+      const reply: ReplyCreateDto = {
+        reviewText: this.frmCreateReply.value.reviewText,
+        parentReviewId: this.parentId,
+        userId: this.currentUser?.id.toString(),
+        productId: this.productId,
+      };
+
+      this.reviewServices.addReply(reply).subscribe({
+        next: (_) => {
+          this.showSuccess('Thêm phản hồi thành công');
+          this.loadReviews();
+          this.closeFormCreateReply();
+        },
+        error: (er) => {
+          console.log(er);
+          this.showError(er);
+        },
+      });
+    }
+  }
+  // ********************************************** End Create Form Reply **********************************************
 }

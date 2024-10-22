@@ -110,7 +110,7 @@
                       <button
                         class="dropdown-item"
                         type="button"
-                        (click)="openFormEditReview(review.id)"
+                        (click)="openFormCreateReply(review.id)"
                       >
                         <i class="pi pi-send"></i>
                         <span style="margin-left: 10px">Phản hồi</span>
@@ -118,7 +118,7 @@
                       <button
                         class="dropdown-item"
                         type="button"
-                        (click)="edit(review.id)"
+                        (click)="openFormEditReview(review.id)"
                       >
                         <i class="pi pi-pencil"></i>
                         <span style="margin-left: 10px">Sửa</span>
@@ -182,7 +182,12 @@
                             <button
                               class="dropdown-item"
                               type="button"
-                              (click)="editReply(review.id, reply.id)"
+                              (click)="
+                                openFormCreateReply(
+                                  reply.id,
+                                  reply.reviewText
+                                )
+                              "
                             >
                               <i class="pi pi-pencil"></i>
                               <span style="margin-left: 10px">Sửa</span>
@@ -456,3 +461,49 @@
   </div>
 </p-dialog>
 <!-- ****************************** End form update review *********************************** -->
+
+<!-- ****************************** Start form create reply *********************************** -->
+<p-dialog
+  [header]="
+    editReply
+      ? 'Cập nhật phản hồi đánh giá sản phẩm'
+      : 'Phản hồi đánh giá sản phẩm'
+  "
+  [modal]="true"
+  [(visible)]="visibleFrmCreateReply"
+  [style]="{ width: '50rem' }"
+  (onHide)="closeFormCreateReply()"
+>
+  <form [formGroup]="frmCreateReply" (ngSubmit)="onSubmitFrmCreateReply()">
+    <div class="mb-3">
+      <label for="reviewText" class="form-label">Nội dung phản hồi</label>
+      <textarea
+        id="reviewText"
+        class="form-control"
+        formControlName="reviewText"
+        placeholder="Hãy chia sẽ những sản hồi của bạn ở đây nhé."
+        style="height: 150px"
+      ></textarea>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="closeFormCreateReply()"
+      >
+        <i class="pi pi-times me-1"></i>
+        <span>Đóng</span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="frmCreateReply.invalid || !frmCreateReply.dirty"
+      >
+        <i class="pi pi-check me-1"></i>
+        <span>Lưu</span>
+      </button>
+    </div>
+  </form>
+</p-dialog>
+<!-- ****************************** End form create reply *********************************** -->
