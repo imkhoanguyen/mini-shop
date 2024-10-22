@@ -52,4 +52,8 @@ export class ReviewService {
   addReply(reply: ReplyCreateDto) {
     return this.http.post(`${this.apiUrl}/review/add-reply`, reply);
   }
+
+  deleteReview(reviewId: number) {
+    return this.http.delete(`${this.apiUrl}/review/${reviewId}`);
+  }
 }

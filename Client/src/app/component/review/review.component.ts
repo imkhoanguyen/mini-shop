@@ -93,14 +93,17 @@ export class ReviewComponent implements OnInit {
       !this.showReplyDropdown[reviewId][replyId];
   }
 
-  delete(reviewId: number) {
-    console.log(`Delete review with ID: ${reviewId}`);
-  }
-
-  deleteReply(reviewId: number, replyId: number) {
-    console.log(
-      `Delete reply with ID: ${replyId} for review with ID: ${reviewId}`
-    );
+  onDeleteReview(reviewId: number) {
+    this.reviewServices.deleteReview(reviewId).subscribe({
+      next: (_) => {
+        this.loadReviews();
+        this.showSuccess('Xóa đánh giá thành công');
+      },
+      error: (er) => {
+        console.log(er);
+        this.showError(er);
+      },
+    });
   }
 
   showError(detail: string, summary?: string) {

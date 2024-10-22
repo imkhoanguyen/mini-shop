@@ -260,5 +260,47 @@ namespace API.Controllers
             return BadRequest("Xảy ra lỗi khi thêm reivew");
 
         }
+
+        [HttpDelete("{reviewId:int}")]
+        public async Task<IActionResult> RemoveReview([FromRoute] int reviewId)
+        {
+            var review = await _unit.ReviewRepository.GetAsync(reviewId);
+            if (review == null) return BadRequest("review notfond");
+
+            // remove video of main review on cloudinary
+            if (review.PublicId != null)
+            {
+                var resultDeleteVideoMain = await _cloudinaryService.DeleteImageAsync(review.PublicId);
+                if (resultDeleteVideoMain.Error != null)
+                {
+                    return BadRequest(resultDeleteVideoMain.Error.Message);
+                }
+            }
+
+            // remove images of main review on cloudinary
+            if (review.Images.Count > 0)
+            {
+                foreach (var image in review.Images)
+                {
+                    if (image.PublicId != null)
+                    {
+                        var resultDeleteImageMain = await _cloudinaryService.DeleteImageAsync(image.PublicId);
+                        if (resultDeleteImageMain.Error != null)
+                        {
+                            return BadRequest(resultDeleteImageMain.Error.Message);
+                        }
+                    }
+                }
+            }
+
+            _unit.ReviewRepository.Delete(review);
+
+            if(await _unit.Complete())
+            {
+                return NoContent();
+            }
+
+            return BadRequest("Problem with remove review");
+        }
     }
 }

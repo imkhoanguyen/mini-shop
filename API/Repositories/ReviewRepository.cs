@@ -42,6 +42,11 @@ namespace API.Repositories
             _context.Reviews.Add(review);
         }
 
+        public void Delete(Review review)
+        {
+            _context.Reviews.Remove(review);    
+        }
+
         public async Task UpdateAsync(ReviewEditDto review)
         {
             var reviewFromDb = await _context.Reviews.FirstOrDefaultAsync(r => r.Id == review.Id);
