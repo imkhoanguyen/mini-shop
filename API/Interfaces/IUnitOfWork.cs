@@ -12,7 +12,7 @@ namespace API.Interfaces
         ICartItemsRepository CartItemsRepository {get;}
         IShoppingCartRepository ShoppingCartRepository{get;}
         IImageRepository ImageRepository { get; }
-        IImageService ImageService { get; }
+        ICloudinaryService ImageService { get; }
         IMessageRepository MessageRepository { get; }
         IReviewRepository ReviewRepository { get; }
 

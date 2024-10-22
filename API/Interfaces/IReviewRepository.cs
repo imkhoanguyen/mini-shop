@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.DTOs;
+using API.Entities;
 
 namespace API.Interfaces
 {
@@ -6,5 +7,9 @@ namespace API.Interfaces
     {
         void Add(Review review);
         Task<IEnumerable<Review>> GetAllAsync(int productId);
+
+        Task UpdateAsync(ReviewEditDto dto);
+        Task<Review?> GetAsync(int reviewId);
+
     }
 }

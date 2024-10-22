@@ -48,7 +48,7 @@ namespace API.Extensions
             services.AddScoped<IVariantRepository, VariantRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<ICartItemsRepository, CartItemsRepository>();
             services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
