@@ -1,8 +1,10 @@
 ﻿using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using API.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
@@ -12,12 +14,15 @@ namespace API.Controllers
         private readonly IUnitOfWork _unit;
         private readonly UserManager<AppUser> _userManager;
         private readonly ICloudinaryService _cloudinaryService;
+        private readonly IHubContext<ReviewHub> _hub;
 
-        public ReviewController(IUnitOfWork unit, UserManager<AppUser> userManager, ICloudinaryService cloudinaryService)
+        public ReviewController(IUnitOfWork unit, UserManager<AppUser> userManager, 
+            ICloudinaryService cloudinaryService, IHubContext<ReviewHub> hub)
         {
             _unit = unit;
             _userManager = userManager;
             _cloudinaryService = cloudinaryService;
+            _hub = hub;
         }
 
         [HttpGet("{productId:int}")]
@@ -83,6 +88,7 @@ namespace API.Controllers
             if (await _unit.Complete())
             {
                 var reviewDto = ReviewDto.FromEntity(review);
+                await _hub.Clients.All.SendAsync("add-review", reviewDto);
                 return Ok(new { message = "Review added successfully", reviewDto });
             }
 
@@ -90,10 +96,11 @@ namespace API.Controllers
 
         }
 
+        // update review & reply
         [HttpPut("{reviewId:int}")]
         public async Task<IActionResult> UpdateReview([FromRoute] int reviewId, [FromBody] ReviewEditDto dto)
         {
-            var review = _unit.ReviewRepository.GetAsync(dto.Id);
+            var review = await _unit.ReviewRepository.GetAsync(dto.Id);
 
             if (review == null) return BadRequest("review notfound");
 
@@ -101,6 +108,9 @@ namespace API.Controllers
 
             if (await _unit.Complete())
             {
+                var reviewAfterUpdate = await _unit.ReviewRepository.GetAsync(review.Id);
+                var reviewDto = ReviewDto.FromEntity(reviewAfterUpdate);
+                await _hub.Clients.All.SendAsync("edit-review", reviewDto);
                 return NoContent();
             }
 
@@ -133,6 +143,9 @@ namespace API.Controllers
 
             if (await _unit.Complete())
             {
+                var reviewAfterUpdate = await _unit.ReviewRepository.GetAsync(review.Id);
+                var reviewDto = ReviewDto.FromEntity(reviewAfterUpdate);
+                await _hub.Clients.All.SendAsync("edit-review", reviewDto);
                 return NoContent();
             }
 
@@ -162,6 +175,9 @@ namespace API.Controllers
 
             if (await _unit.Complete())
             {
+                var reviewAfterUpdate = await _unit.ReviewRepository.GetAsync(review.Id);
+                var reviewDto = ReviewDto.FromEntity(reviewAfterUpdate);
+                await _hub.Clients.All.SendAsync("edit-review", reviewDto);
                 return NoContent();
             }
 
@@ -200,6 +216,9 @@ namespace API.Controllers
 
             if (await _unit.Complete())
             {
+                var reviewAfterUpdate = await _unit.ReviewRepository.GetAsync(review.Id);
+                var reviewDto = ReviewDto.FromEntity(reviewAfterUpdate);
+                await _hub.Clients.All.SendAsync("edit-review", reviewDto);
                 return NoContent();
             }
 
@@ -227,6 +246,9 @@ namespace API.Controllers
 
             if (await _unit.Complete())
             {
+                var reviewAfterUpdate = await _unit.ReviewRepository.GetAsync(review.Id);
+                var reviewDto = ReviewDto.FromEntity(reviewAfterUpdate);
+                await _hub.Clients.All.SendAsync("edit-review", reviewDto);
                 return NoContent();
             }
 
@@ -234,7 +256,7 @@ namespace API.Controllers
         }
 
         [HttpPost("add-reply")]
-        public async Task<IActionResult> CreateReview([FromBody] ReplyCreateDto dto)
+        public async Task<IActionResult> CreateReply([FromBody] ReplyCreateDto dto)
         {
             var user = await _userManager.FindByIdAsync(dto.UserId);
             if (user == null)
@@ -254,6 +276,7 @@ namespace API.Controllers
             if (await _unit.Complete())
             {
                 var reviewDto = ReviewDto.FromEntity(review);
+                await _hub.Clients.All.SendAsync("add-reply", reviewDto);
                 return Ok(new { message = "Repply added successfully", reviewDto });
             }
 
@@ -297,6 +320,7 @@ namespace API.Controllers
 
             if(await _unit.Complete())
             {
+                await _hub.Clients.All.SendAsync("delete-review", reviewId);
                 return NoContent();
             }
 

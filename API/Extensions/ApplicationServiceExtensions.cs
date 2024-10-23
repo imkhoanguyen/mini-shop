@@ -86,6 +86,8 @@ namespace API.Extensions
             {
                 options.TokenLifespan = TimeSpan.FromSeconds(60*5); // 5p
             });
+
+            services.AddSignalR();
             return services;
         }
     }

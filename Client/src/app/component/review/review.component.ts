@@ -1,4 +1,11 @@
-import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   ReplyCreateDto,
   ReviewDto,
@@ -22,7 +29,8 @@ import { AccountService } from '../../_services/account.service';
 import { TabViewModule } from 'primeng/tabview';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-
+import { SignalrService } from '../../_services/signalr.service';
+import { Subject, Subscription } from 'rxjs'; // Correct import from RxJS
 @Component({
   selector: 'app-review',
   standalone: true,
@@ -40,9 +48,9 @@ import { ToastModule } from 'primeng/toast';
   styleUrl: './review.component.css',
   providers: [MessageService],
 })
-export class ReviewComponent implements OnInit {
+export class ReviewComponent implements OnInit, OnDestroy {
   @Input() productId: number = 0;
-  constructor(private messageService: MessageService) {}
+
   reviews: ReviewDto[] = [];
   showReplies: { [key: number]: boolean } = {};
   showDropdown: { [key: number]: boolean } = {};
@@ -54,16 +62,85 @@ export class ReviewComponent implements OnInit {
   videoUrl: string = '';
   private accountServices = inject(AccountService);
   currentUser = this.accountServices.getCurrentUser();
-
   private fb = inject(FormBuilder);
 
   private reviewServices = inject(ReviewService);
+  private signalRService = inject(SignalrService);
+  private subscription: Subscription;
+  constructor(private messageService: MessageService) {
+    this.subscription = new Subscription();
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 
   ngOnInit(): void {
     this.loadReviews();
     this.initFormCreateView();
     this.initFrmEdit();
     this.initFormCreateReply();
+    this.signalRService.startConnection();
+
+    const reviewSubscription = this.signalRService.reviewReceived.subscribe(
+      (review: ReviewDto) => {
+        this.reviews.unshift(review);
+      }
+    );
+
+    const updateReviewSubscription =
+      this.signalRService.reviewUpdated.subscribe((reviewDto: ReviewDto) => {
+        const index = this.reviews.findIndex((r) => r.id === reviewDto.id);
+        if (index !== -1) {
+          this.reviews[index] = reviewDto;
+        } else {
+          const parentReviewId = reviewDto.parentReviewId;
+          const parentReview = this.reviews.find(
+            (review) => review.id === parentReviewId
+          );
+
+          if (parentReview) {
+            const replyIndex = parentReview.replies.findIndex(
+              (reply) => reply.id === reviewDto.id
+            );
+
+            if (replyIndex !== -1) {
+              parentReview.replies[replyIndex] = reviewDto;
+            }
+          }
+        }
+      });
+
+    const deleteReviewSubscription =
+      this.signalRService.reviewDeleted.subscribe((reviewId: number) => {
+        console.log('reviewId', reviewId);
+        const index = this.reviews.findIndex((r) => r.id === reviewId);
+        if (index !== -1)
+          this.reviews = this.reviews.filter((r) => r.id !== reviewId);
+        else
+          this.reviews.forEach((review) => {
+            review.replies = review.replies.filter(
+              (reply) => reply.id !== reviewId
+            );
+          });
+      });
+
+    const addReplySubscription = this.signalRService.replyReceived.subscribe(
+      (reviewDto: ReviewDto) => {
+        const parentReviewId = reviewDto.parentReviewId;
+
+        const parentReview = this.reviews.find(
+          (review) => review.id === parentReviewId
+        );
+
+        if (parentReview) {
+          parentReview.replies.unshift(reviewDto);
+        }
+      }
+    );
+    this.subscription.add(reviewSubscription);
+    this.subscription.add(updateReviewSubscription);
+    this.subscription.add(deleteReviewSubscription);
+    this.subscription.add(addReplySubscription);
   }
 
   loadReviews() {
@@ -258,6 +335,8 @@ export class ReviewComponent implements OnInit {
     this.reviewServices.addReview(formData).subscribe({
       next: (response) => {
         this.loadReviews();
+        this.showSuccess('Thêm đánh giá thành công');
+        this.closeFormCreateReview();
       },
       error: (er) => {
         console.log(er);
