@@ -1,5 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  Type,
+  ViewChild,
+} from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Message } from '../../../_models/message.module';
 import { User } from '../../../_models/user.module';
@@ -13,7 +20,7 @@ import { ChatService } from '../../../_services/chat.service';
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './chat.component.html',
-  styleUrl: './chat.component.css'
+  styleUrl: './chat.component.css',
 })
 export class ChatComponent implements OnInit {
   selectedUser: any;
@@ -23,6 +30,7 @@ export class ChatComponent implements OnInit {
   content: string = '';
   loadingOldMessages = false;
   lastMessage: string = '';
+  selectedFiles: { src: string; file: File; type: string }[] = [];
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
   private chatService = inject(ChatService);
@@ -44,86 +52,185 @@ export class ChatComponent implements OnInit {
       this.scrollToBottom();
     });
   }
-  loadUsersWithCustomerRole(){
-      this.userService.getUsersWithCustomerRole().subscribe((users) => {
-        this.customers = users;
-        this.customers.forEach((customer) => {
-          this.messageService.getLastMessage(this.user.id, customer.id).subscribe((message) => {
+  loadUsersWithCustomerRole() {
+    this.userService.getUsersWithCustomerRole().subscribe((users) => {
+      this.customers = users;
+      this.customers.forEach((customer) => {
+        this.messageService
+          .getLastMessage(this.user.id, customer.id)
+          .subscribe((message) => {
             customer.lastMessage = message.content || '';
           });
-        });
       });
-    }
-  onScroll(){
+    });
+  }
+  onScroll() {
     const element = this.messagesContainer.nativeElement;
-    if(element.scrollTop === 0 && !this.loadingOldMessages){
+    if (element.scrollTop === 0 && !this.loadingOldMessages) {
       this.loadOldMessages();
     }
   }
 
-  loadOldMessages(){
-    if(!this.selectedUser) return;
+  loadOldMessages() {
+    if (!this.selectedUser) return;
     this.loadingOldMessages = true;
     const skip = this.messages.length;
 
-    this.messageService.getMessages(this.user.id, this.selectedUser.id, skip, 20).subscribe(
-      (messages: Message[]) => {
-        if (messages.length > 0) {
-
-          this.messages = [...messages, ...this.messages];
-
-
+    this.messageService
+      .getMessages(this.user.id, this.selectedUser.id, skip, 20)
+      .subscribe(
+        (messages: Message[]) => {
+          if (messages.length > 0) {
+            this.messages = [...messages, ...this.messages];
+          }
+          this.loadingOldMessages = false;
+        },
+        (error) => {
+          console.error('Error occurred:', error);
+          this.loadingOldMessages = false;
         }
-        this.loadingOldMessages = false;
-      },
-      (error) => {
-        console.error('Error occurred:', error);
-        this.loadingOldMessages = false;
-      }
-    );
+      );
   }
 
-  selectUser(customer: any){
-    this.selectedUser  = customer;
+  selectUser(customer: any) {
+    this.selectedUser = customer;
     this.messages = [];
     this.loadOldMessages();
     this.scrollToBottom();
   }
-  scrollToBottom(){
+  scrollToBottom() {
     const element = this.messagesContainer.nativeElement;
     setTimeout(() => {
       element.scrollTop = element.scrollHeight;
     }, 100);
   }
+  onFileSelected(event: any) {
+    const files: FileList = event.target.files;
+    const newFiles: { src: string; file: File; type: string }[] = [];
 
-  sendMessage(){
-    if (this.content) {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileType = file.type;
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        if (fileType.startsWith('image/')) {
+          newFiles.push({
+            src: e.target.result,
+            file,
+            type: 'image',
+          });
+        } else {
+          newFiles.push({
+            src: e.target.result,
+            file,
+            type: 'video',
+          });
+        }
+        if (i === files.length - 1) {
+          this.selectedFiles = [...this.selectedFiles, ...newFiles];
+        }
+      };
+      if (fileType.startsWith('image/') || fileType.startsWith('video/')) {
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  onPaste(event: ClipboardEvent) {
+    const items = Array.from(event.clipboardData?.items || []);
+    items.forEach((item) => {
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile();
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            this.selectedFiles.push({
+              src: e.target.result,
+              file,
+              type: 'image',
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+    });
+  }
+  removeImage(index: number) {
+    this.selectedFiles.splice(index, 1);
+  }
+  isImage(fileType: string | undefined): boolean {
+    return fileType ? fileType.startsWith('image/') : false;
+  }
+
+  isVideo(fileType: string | undefined): boolean {
+    return fileType ? fileType.startsWith('video/') : false;
+  }
+  sendMessage() {
+
+    if (!this.content && this.selectedFiles.length === 0) {
+      return;
+    }
+
+    if (this.selectedFiles.length > 0) {
+      const formData = new FormData();
+      this.selectedFiles.forEach((file) => {
+        formData.append('files', file.file);
+      });
+
+      this.messageService.uploadFiles(formData).subscribe((response: any) => {
+        console.log(response);
+        for (let i = 0; i < response.files.length; i++) {
+          const message: Message = {
+            id: 0,
+            senderId: this.user.id,
+            recipientId: this.selectedUser.id,
+            content: this.content || '',
+            fileUrl: response.files[i].fileUrl,
+            fileType: response.files[i].fileType,
+            sentAt: new Date().toISOString(),
+          };
+          this.sendMessageToServer(message);
+        }
+        this.resetMessageInput();
+      });
+    } else {
       const message: Message = {
         id: 0,
         senderId: this.user.id,
         recipientId: this.selectedUser.id,
         content: this.content,
-        fileUrl: '',
-        fileType: '',
-        sentAt: new Date().toISOString()
-      }
-      this.messageService.sendMessage(message).subscribe(
-        (response) => {
-          console.log(response);
-          this.chatService.sendMessage(message);
-          this.content = '';
-          this.lastMessage = message.content || '';
-          const selectedCustomer = this.customers.find(customer => customer.id === this.selectedUser.id);
-          if (selectedCustomer) {
-            selectedCustomer.lastMessage = this.lastMessage; // Cập nhật lastMessage cho customer hiện tại
-          }
-          this.scrollToBottom();
-
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+        fileUrl: null,
+        fileType: undefined,
+        sentAt: new Date().toISOString(),
+      };
+      this.sendMessageToServer(message);
+      this.resetMessageInput();
     }
   }
-}
+
+  sendMessageToServer(message: Message) {
+    this.messageService.sendMessage(message).subscribe(
+      (response) => {
+        console.log(response);
+        this.chatService.sendMessage(message);
+        this.lastMessage = message.content || '';
+        const selectedCustomer = this.customers.find(
+          (customer) => customer.id === this.selectedUser.id
+        );
+        if (selectedCustomer) {
+          selectedCustomer.lastMessage = this.lastMessage;
+        }
+        this.scrollToBottom();
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  resetMessageInput() {
+    this.content = '';
+    this.selectedFiles = [];
+  }
+} 

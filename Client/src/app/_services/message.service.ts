@@ -19,6 +19,9 @@ export class MessageService {
       "&skip="+skip+
       "&take="+take);
   }
+  uploadFiles(files: FormData): Observable<{ fileUrl: string, fileType: string }[]> {
+    return this.http.post<{ fileUrl: string, fileType: string }[]>(this.apiUrl + "/Messages/UploadFile", files);
+  }
 
   sendMessage(data: Message): Observable<Message> {
     return this.http.post<Message>(this.apiUrl + "/Messages/SendMessage", data);

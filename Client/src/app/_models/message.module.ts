@@ -4,6 +4,6 @@ export interface Message {
   recipientId: string;
   content: string | null;
   fileUrl: string | null;
-  fileType: string | null;
+  fileType: string | undefined;
   sentAt: string;
 }
