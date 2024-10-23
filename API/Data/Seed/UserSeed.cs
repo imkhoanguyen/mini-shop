@@ -19,7 +19,7 @@ namespace API.Data.Seed
                     UserName = "admin",
                     Email = "itk21sgu@gmail.com",
                     PhoneNumber = "0123456789",
-                    Avatar = "~/avatar/user.jpg",
+                    Avatar = "user.jpg",
                 },
                 new AppUser
                 {
@@ -27,7 +27,7 @@ namespace API.Data.Seed
                     UserName = "customer",
                     Email = "khoasgu01@gmail.com",
                     PhoneNumber = "0987654321",
-                    Avatar = "~/avatar/user.jpg",
+                    Avatar = "user.jpg",
                 },
             };
 

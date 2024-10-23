@@ -1,4 +1,5 @@
 using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Helpers;
 using API.Interfaces;
@@ -12,61 +13,44 @@ namespace API.Repositories
         public MessageRepository(StoreContext context)
         {
             _context = context;
+
         }
         public void AddMessage(Message message)
         {
             _context.Messages.Add(message);
         }
 
-        public void DeleteMessage(Message message)
+        public async Task<IEnumerable<MessageDto?>> GetMessageThread(string senderId, string recipientId, int skip, int take)
         {
-            _context.Messages.Remove(message);
+            var messages = await _context.Messages
+                .Where(m => (m.Sender!.Id == senderId && m.Recipient!.Id == recipientId) ||
+                            (m.Sender.Id == recipientId && m.Recipient!.Id == senderId))
+                .OrderBy(m => m.SentAt)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return messages.Select(m => Message.toMessageDto(m));
         }
-
-        public async Task<Message?> GetMessage(int id)
+        public async Task<string> GetUserRoleById(string userId)
         {
-            return await _context.Messages.FindAsync(id);
+            var roleName = await _context.UserRoles
+                .Where(u => u.UserId == userId)
+                .Select(u => u.RoleId)
+                .Join(_context.Roles,
+                        roleId => roleId,
+                        role => role.Id,
+                        (roleId, role) => role.Name)
+                .FirstOrDefaultAsync();
+            return roleName ?? "No role assigned";
         }
-
-        public async Task<PageList<Message?>> GetMessagesForUser(MessageParams messageParams)
+        public async Task<Message?> GetLastMessage(string senderId, string recipientId)
         {
-            var query = _context.Messages
-            .OrderByDescending(m => m.MessageSend).AsQueryable();
-            query = messageParams.Container switch
-            {
-                "Inbox" => query.Where(u => u.RecipientUserName == messageParams.UserName),
-                "Outbox" => query.Where(u => u.SenderUserName == messageParams.UserName),
-                _ => query.Where(u => u.RecipientUserName == messageParams.UserName && u.DateRead == null)
-            };
-            var count = await query.CountAsync();
-            var messages = await query.Skip((messageParams.PageNumber - 1) * messageParams.PageSize)
-                                   .Take(messageParams.PageSize)
-                                   .Include(m => m.Sender)
-                                   .Include(m => m.Recipient)
-                                   .ToListAsync();
-            return new PageList<Message?>(messages!, count, messageParams.PageNumber, messageParams.PageSize);
-        }
-
-        public async Task<IEnumerable<Message?>> GetMessageThread(string currentUserName, string recipientUserName)
-        {
-            var query = _context.Messages
-                .Where(
-                m => m.RecipientUserName == currentUserName
-                && m.SenderUserName == recipientUserName
-                || m.RecipientUserName == recipientUserName
-                && m.SenderUserName == currentUserName
-                ).OrderBy(m => m.MessageSend).AsQueryable();
-
-            var unreadMessages = query.Where(m => m.DateRead == null && m.RecipientUserName == currentUserName).ToList();
-
-            if (unreadMessages.Any())
-            {
-                foreach (var message in unreadMessages)
-                {
-                    message.DateRead = DateTime.UtcNow;
-                }
-            }
-            return await query.ToListAsync();
+            return await _context.Messages
+                .Where(m => (m.Sender!.Id == senderId && m.Recipient!.Id == recipientId) ||
+                            (m.Sender.Id == recipientId && m.Recipient!.Id == senderId))
+                .OrderByDescending(m => m.SentAt)
+                .FirstOrDefaultAsync();
         }
     }
 }

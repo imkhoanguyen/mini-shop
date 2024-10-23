@@ -15,6 +15,7 @@ namespace API.Interfaces
         IImageService ImageService { get; }
         IMessageRepository MessageRepository { get; }
         IReviewRepository ReviewRepository { get; }
+        IUserRepository UserRepository { get; }
 
         Task<bool> Complete();
     }

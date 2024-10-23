@@ -17,13 +17,15 @@ namespace API.Repositories
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
         private readonly IReviewRepository _reviewRepository;
+        private readonly IUserRepository _userRepository;
 
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
              IImageRepository imageRepository, IImageService imageService,
              IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
-             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository)
+             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository,
+             IUserRepository userRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -37,6 +39,7 @@ namespace API.Repositories
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
             _reviewRepository = reviewRepository;
+            _userRepository = userRepository;
         }
         public ICategoryRepository CategoryRepository => _categoryRepository;
         public IProductRepository ProductRepository => _productRepository;
@@ -47,7 +50,7 @@ namespace API.Repositories
         public IVariantRepository VariantRepository => _variantRepository;
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
-
+        public IUserRepository UserRepository => _userRepository;
         public IImageService ImageService => _imageService;
         public IReviewRepository ReviewRepository => _reviewRepository;
 

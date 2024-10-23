@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /API/store.db-wal
 /API/Migrations
 /API/Migrations/StoreContextModelSnapshot.cs
+

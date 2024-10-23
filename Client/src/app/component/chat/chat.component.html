@@ -1,0 +1,49 @@
+<div class="chat-container">
+  <div class="chat-button" *ngIf="!showChatWindow" (click)="toggleChatWindow()">
+    <i class="bi bi-chat-dots"></i> Chat
+  </div>
+
+  <div class="chat-window" *ngIf="showChatWindow">
+    <div class="chat-header">
+      <div class="row" style="width: 100%;">
+        <div class="col-11">
+          <div class="d-flex align-items-center sidebar">
+            <img src="http://localhost:5000/avatar/{{adminUsers[0].avatar}}" />
+            <div class="chat-header-info">
+              <div class="chat-header-name">
+                {{adminUsers[0].fullname}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-1">
+          <span (click)="toggleChatWindow()"> <i class="bi bi-x-lg"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-body">
+      <div class="messages" *ngFor="let message of messages; track by message">
+        <!-- Tin nhắn bên trái dành cho recipient -->
+        <div *ngIf="message.recipientId === user.id" class="message left-message">
+          <img height="40" src="http://localhost:5000/avatar/{{ adminUsers[0].avatar }}" width="40" />
+          <div class="text">{{ message.content }}</div>
+          <!-- <div class="message-time">{{ formatMessageTime(message.sentAt) }}</div> -->
+        </div>
+        <!-- Tin nhắn bên phải dành cho sender -->
+        <div *ngIf="message.senderId === user.id" class="message right-message">
+          <div class="text">{{ message.content }}</div>
+          <!-- <div class="message-time">{{ formatMessageTime(message.sentAt) }}</div> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" />
+      <button (click)="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+        Send
+      </button>
+    </div>
+  </div>
+</div>

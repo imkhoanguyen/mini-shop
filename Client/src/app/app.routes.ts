@@ -11,7 +11,6 @@ import { RegisterComponent } from './component/register/register.component';
 import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
 import { ForgotpasswordComponent } from './component/forgotpassword/forgotpassword.component';
 import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
-
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 
 

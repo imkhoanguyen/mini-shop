@@ -7,5 +7,6 @@ export interface User {
   fullname: string;
   phoneNumber: string;
   address: string;
-  avatar: string
+  avatar: string;
+  lastMessage: string;
 }
