@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Mini Shop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Trang chủ</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Sản Phẩm</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-primary ms-2" routerLink="/admin">Admin</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <div class="ms-auto" *ngIf="!accountService.currentUser()">
+          <a class="btn btn-primary" (click)="loginForm()">Đăng nhập</a>
+          <a class="btn btn-secondary" (click)="registerForm()">Đăng ký</a>
+          <a class="nav-link" href="#" title="Thông báo">
+            <i class="fas fa-bell"></i>
+          </a>
+        </div>
+        <div *ngIf="accountService.currentUser()" class="dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @if(accountService.currentUser()?.avatar == "user.jpg"){
+              <img
+              class="img-rounded"
+              src="http://localhost:5000/avatar/{{accountService.currentUser()?.avatar}}"
+              alt="User Avatar">
+            }
+            @else{
+              <img
+              class="img-rounded"
+              [src]="accountService.currentUser()?.avatar"
+              alt="User Avatar">
+            }
+
+            <i class="fas fa-user"></i> {{ accountService.currentUser()?.fullname }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="#"><i class="bi bi-person-bounding-box"></i>Profile</a></li>
+            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+          </ul>
+        </div>
+      </ul>
+    </div>
+  </div>
+</nav>
+<app-chat></app-chat>
