@@ -15,9 +15,11 @@ import { ProductFormComponent } from './component/admin/product/product-form/pro
 import {VoucherComponent} from './component/admin/voucher/voucher.component';
 import { AddVoucherComponent } from './component/admin/voucher/add-voucher/add-voucher.component';
 import { HomeComponent } from './component/home/home.component';
-
+import { ProductUserComponent } from './component/client/product/product.component';
+import { ProductListComponent } from './component/client/productList/productList.component';
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: ProductUserComponent },
+  { path: 'product/productList/:id', component: ProductListComponent },
   {
     path: 'admin',
     component: AdminComponent,
