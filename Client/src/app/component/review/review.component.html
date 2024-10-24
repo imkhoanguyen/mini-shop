@@ -1,32 +1,47 @@
 <p-toast />
 <div class="container shadow-lg p-5">
   <div class="row mb-3">
-    <h3 class="col-6">Đánh giá sản phẩm</h3>
+    <h3 class="col-12 col-md-6">Đánh giá sản phẩm</h3>
     <div
-      class="col-6 text-end d-flex gap-2 align-items-center justify-content-end"
+      class="col-12 col-md-6 text-md-end d-flex gap-2 align-items-center justify-content-md-end justify-content-center"
     >
-      <select class="form-select w-50" (change)="onOrderByChange($event)">
+      <select
+        class="form-select w-100 w-md-50"
+        (change)="onOrderByChange($event)"
+      >
         <option value="id_desc" selected>Sắp xếp: Mới nhất</option>
-        <option value="id" selected>Sắp xếp: Cũ nhất</option>
+        <option value="id">Sắp xếp: Cũ nhất</option>
       </select>
-      <button class="btn btn-primary" (click)="openFormCreateReview()">
+      <button
+        class="btn btn-primary"
+        style="min-width: 100px"
+        (click)="openFormCreateReview()"
+      >
         Đánh giá
       </button>
     </div>
   </div>
+
   <div
-    class="alert d-flex gap-5 p-5 mb-5"
+    class="alert d-flex flex-wrap flex-md-nowrap gap-5 p-5 mb-5"
     role="alert"
     style="background-color: #e7f5ff"
   >
-    <div class="start-box d-flex flex-column gap-3">
+    <div class="start-box d-flex flex-column gap-3 text-center text-md-left">
       <div class="fw-bold text-primary">
         <span style="font-size: 30px">{{ totalRating.toFixed(1) }}</span>
         <span style="font-size: 18px"> trên 5</span>
       </div>
-      <p-rating [ngModel]="5" [readonly]="true" [cancel]="false" />
+      <p-rating
+        [ngModel]="totalRating.toFixed(0)"
+        [readonly]="true"
+        [cancel]="false"
+      ></p-rating>
     </div>
-    <div class="filter-box d-flex align-items-center gap-2">
+
+    <div
+      class="filter-box d-flex flex-wrap align-items-center gap-2 justify-content-center"
+    >
       <button
         class="btn btn-outline-primary"
         [ngClass]="{ active: prm.rating === 0 }"
@@ -78,6 +93,7 @@
       </button>
     </div>
   </div>
+
   <!-- review list -->
   <div *ngIf="reviews.length > 0">
     <div *ngFor="let review of reviews">
