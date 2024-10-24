@@ -20,7 +20,6 @@ namespace API.Data
         public DbSet<CartItems>CartItems{get;set;}
         public DbSet<AppRole> AppRoles { get; set; }
         public DbSet<Image> Images { get; set; }
-        public DbSet<Image> Images { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<Variant> Variants { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -35,25 +34,7 @@ namespace API.Data
         public DbSet<Voucher> Vouchers{ get; set; }
         public DbSet<Product_Voucher> Product_Vouchers{ get; set; }
 
-        public DbSet<ShoppingCart> ShoppingCarts {get;set;}
-        public DbSet<ShippingMethod> ShippingMethods {get;set;}
-        public DbSet<Address> Addresses { get; set; }
-        public DbSet<Review> Reviews { get; set; }
-        public DbSet<Payments> Payments{get;set;}
-        public DbSet<Order> Orders{get;set;}
-        public DbSet<OrderItems> OrderItems{get;set;}
-
-        public DbSet<Voucher> Vouchers{ get; set; }
-        public DbSet<Product_Voucher> Product_Vouchers{ get; set; }
-
-
-        public DbSet<Voucher> Vouchers{ get; set; }
-        public DbSet<Product_Voucher> Product_Vouchers{ get; set; }
-        public DbSet<Payments> Payments { get; set; }
-        public DbSet<ShippingMethod> ShippingMethods{ get; set; }
-        public DbSet<Order> Orders{ get; set; }
-        public DbSet<OrderItems> OrderItems{ get; set; }
-        //public DbSet<Address> Addresses { get; set; }
+ 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
@@ -128,10 +109,7 @@ namespace API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Variant>()
-            builder.Entity<Variant>()
                 .HasMany(p => p.Images)
-                .WithOne(i => i.Variant)
-                .HasForeignKey(i => i.VariantId)
                 .WithOne(i => i.Variant)
                 .HasForeignKey(i => i.VariantId)
                 .OnDelete(DeleteBehavior.Cascade);
