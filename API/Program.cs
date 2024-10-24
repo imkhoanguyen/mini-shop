@@ -92,6 +92,5 @@ catch (Exception ex)
     throw;
 }
 app.MapHub<ChatHub>("/chatHub");
-app.MapHub<ChatHub>("/chatHub");
 app.Map("/", () => Results.Redirect("/swagger"));
 app.Run();
