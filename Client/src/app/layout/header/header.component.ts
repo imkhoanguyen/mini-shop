@@ -14,10 +14,9 @@ import { ChatComponent } from "../../component/chat/chat.component";
   standalone: true,
   imports: [SidebarModule, ButtonModule, PanelMenuModule, MenuModule, CommonModule, ChatComponent],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
-
   sidebarVisible: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   private router = inject(Router);
@@ -36,10 +35,10 @@ export class HeaderComponent implements OnInit {
   loginForm(){
     this.router.navigateByUrl('/login');
   }
-  registerForm(){
+  registerForm() {
     this.router.navigateByUrl('/register');
   }
-  logout(){
+  logout() {
     this.accountService.logout();
   }
 }

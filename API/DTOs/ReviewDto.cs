@@ -14,7 +14,7 @@ namespace API.DTOs
         public UserReview? UserReview { get; set; }
         public int ProductId { get; set; }
         public List<ReviewDto> Replies { get; set; } = [];
-        public List<ReviewImage> Images { get; set; } = [];
+        public List<ImgReviewDto> Images { get; set; } = [];
 
         public static ReviewDto FromEntity(Review entity)
         {
@@ -29,12 +29,12 @@ namespace API.DTOs
                 UserReview = new UserReview { Id = entity.UserId, FullName = entity.AppUser.Fullname },
                 ProductId = entity.ProductId,
                 Replies = entity.Replies.Select(ReviewDto.FromEntity).ToList(),
-                Images = entity.Images,
-            }; 
+                Images = entity.Images.Select(ImgReviewDto.FromEntity).ToList(),
+            };
         }
     }
 
-    public class ReviewCreateDto
+    public class ReviewCreateDto        
     {
         public required string ReviewText { get; set; }
         public int? Rating { get; set; }
@@ -50,4 +50,35 @@ namespace API.DTOs
         public string? Id { get; set; }
         public string? FullName { get; set; }
     }
+
+    public class ImgReviewDto
+    {
+        public int Id { get; set; }
+        public required string ImgUrl { get; set; }
+
+        public static ImgReviewDto FromEntity(ReviewImage entity)
+        {
+            return new ImgReviewDto
+            {
+                Id = entity.Id,
+                ImgUrl = entity.ImgUrl
+            };
+        }
+    }
+
+    public class ReviewEditDto()
+    {
+        public int Id { get; set; }
+        public int? Rating { get; set; }
+        public required string ReviewText { get; set; }
+    }
+
+    public class ReplyCreateDto()
+    {
+        public required string ReviewText { get; set; }
+        public int ParentReviewId { get; set; }
+        public required string UserId { get; set; }
+        public int ProductId { get; set; }
+    }
+
 }

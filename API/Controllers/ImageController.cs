@@ -13,7 +13,7 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("AddImage")]
-        public async Task<IActionResult> AddImage([FromForm] ImageAddDto imageAddDto, IImageService imageService)
+        public async Task<IActionResult> AddImage([FromForm] ImageAddDto imageAddDto, ICloudinaryService imageService)
         {
             if (!ModelState.IsValid)
             {
@@ -28,7 +28,7 @@ namespace API.Controllers
             return BadRequest(new { message = "Add image failed." });
         }
         [HttpPut("UpdateImages")]
-        public async Task<IActionResult> UpdateImages([FromForm] ImageUpdateDto imageUpdateDto, IImageService imageService)
+        public async Task<IActionResult> UpdateImages([FromForm] ImageUpdateDto imageUpdateDto, ICloudinaryService imageService)
         {
             if (!ModelState.IsValid)
             {

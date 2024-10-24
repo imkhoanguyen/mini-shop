@@ -9,11 +9,11 @@ namespace API.DTOs
         public IFormFile? Url { get; set; }
         public bool IsMain { get; set; }
 
-        public static async Task<Image> toImage(ImageUpdateDto imageDto, IImageService imageService)
+        public static async Task<Image> toImage(ImageUpdateDto imageDto, ICloudinaryService imageService)
         {
             if (imageDto.Url != null)
             {
-                var uploadResult = await imageService.UploadImageAsync(imageDto.Url);
+                var uploadResult = await imageService.UploadPhotoAsync(imageDto.Url);
 
                 return new Image
                 {
@@ -32,11 +32,11 @@ namespace API.DTOs
         public IFormFile? Url { get; set; }
         public bool IsMain { get; set; }
 
-        public static async Task<Image> toImage(ImageAddDto imageAddDto, IImageService imageService)
+        public static async Task<Image> toImage(ImageAddDto imageAddDto, ICloudinaryService imageService)
         {
             if (imageAddDto.Url != null)
             {
-                var uploadResult = await imageService.UploadImageAsync(imageAddDto.Url);
+                var uploadResult = await imageService.UploadPhotoAsync(imageAddDto.Url);
 
                 return new Image
                 {

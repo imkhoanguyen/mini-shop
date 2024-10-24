@@ -20,8 +20,7 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
-                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
             });
             services.AddSingleton(c =>
                 {
@@ -56,7 +55,7 @@ namespace API.Extensions
             services.AddScoped<IVariantRepository, VariantRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<ICartItemsRepository, CartItemsRepository>();
             services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
             services.AddScoped<IPaymentsRepository,PaymentsRepository>();
@@ -66,9 +65,9 @@ namespace API.Extensions
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IVoucherRepository, VoucherRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            services.AddScoped<IVoucherRepository, VoucherRepository>();
 
             services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -95,6 +94,8 @@ namespace API.Extensions
             {
                 options.TokenLifespan = TimeSpan.FromSeconds(60 * 5); // 5p
             });
+
+            services.AddSignalR();
             return services;
         }
     }

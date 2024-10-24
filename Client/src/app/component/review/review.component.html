@@ -1,0 +1,585 @@
+<p-toast />
+<div class="container shadow-lg p-5">
+  <div class="row mb-3">
+    <h3 class="col-12 col-md-6">Đánh giá sản phẩm</h3>
+    <div
+      class="col-12 col-md-6 text-md-end d-flex gap-2 align-items-center justify-content-md-end justify-content-center"
+    >
+      <select
+        class="form-select w-100 w-md-50"
+        (change)="onOrderByChange($event)"
+      >
+        <option value="id_desc" selected>Sắp xếp: Mới nhất</option>
+        <option value="id">Sắp xếp: Cũ nhất</option>
+      </select>
+      <button
+        class="btn btn-primary"
+        style="min-width: 100px"
+        (click)="openFormCreateReview()"
+      >
+        Đánh giá
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="alert d-flex flex-wrap flex-md-nowrap gap-5 p-5 mb-5"
+    role="alert"
+    style="background-color: #e7f5ff"
+  >
+    <div class="start-box d-flex flex-column gap-3 text-center text-md-left">
+      <div class="fw-bold text-primary">
+        <span style="font-size: 30px">{{ totalRating.toFixed(1) }}</span>
+        <span style="font-size: 18px"> trên 5</span>
+      </div>
+      <p-rating
+        [ngModel]="totalRating.toFixed(0)"
+        [readonly]="true"
+        [cancel]="false"
+      ></p-rating>
+    </div>
+
+    <div
+      class="filter-box d-flex flex-wrap align-items-center gap-2 justify-content-center"
+    >
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 0 }"
+        (click)="filterReviews(0)"
+      >
+        Tất cả
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 5 }"
+        (click)="filterReviews(5)"
+      >
+        5 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 4 }"
+        (click)="filterReviews(4)"
+      >
+        4 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 3 }"
+        (click)="filterReviews(3)"
+      >
+        3 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 2 }"
+        (click)="filterReviews(2)"
+      >
+        2 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 1 }"
+        (click)="filterReviews(1)"
+      >
+        1 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 6 }"
+        (click)="filterReviews(6)"
+      >
+        Có Hình Ảnh / Video
+      </button>
+    </div>
+  </div>
+
+  <!-- review list -->
+  <div *ngIf="reviews.length > 0">
+    <div *ngFor="let review of reviews">
+      <div class="review">
+        <div class="review-header d-flex gap-3 align-items-start">
+          <div class="img-container">
+            <img
+              alt="User profile picture"
+              height="80"
+              src="https://storage.googleapis.com/a1aa/image/NPDbclikWUbBCNCMqDanxYYtY8HJRcd3PR4VQyprAuMGT45E.jpg"
+              width="80"
+              style="border-radius: 50%"
+            />
+          </div>
+
+          <div class="review-content d-flex flex-column gap-1 w-100">
+            <strong style="margin-bottom: 5px">
+              {{ review.userReview.fullName }}
+            </strong>
+            <p-rating
+              [ngModel]="review.rating"
+              [readonly]="true"
+              [cancel]="false"
+            ></p-rating>
+            <div>({{ review.created | date : "short" }})</div>
+
+            <div class="review-body">
+              {{ review.reviewText }}
+            </div>
+
+            <div class="review-images d-flex gap-2 mt-2">
+              <video
+                *ngIf="review.videoUrl"
+                width="100"
+                height="100"
+                controls
+                [src]="review.videoUrl"
+              ></video>
+              <img
+                *ngFor="let image of review.images"
+                [src]="image.imgUrl"
+                alt="Product image"
+                height="100"
+                width="100"
+              />
+            </div>
+
+            <div class="review-footer">
+              <div class="footer-btn d-flex">
+                <a
+                  *ngIf="review.replies.length > 0"
+                  class="text-primary"
+                  type="button"
+                  (click)="toggleReplies(review.id)"
+                  style="text-decoration: none"
+                >
+                  {{ showReplies[review.id] ? "Hide" : "Show" }}
+                </a>
+                <div class="ms-auto">
+                  <div
+                    class="position-relative"
+                    (mouseenter)="showDropdown[review.id] = true"
+                    (mouseleave)="showDropdown[review.id] = false"
+                  >
+                    <a
+                      class="text-dark fw-bold"
+                      id="dropdownMenuButton"
+                      aria-expanded="false"
+                      style="text-decoration: none; cursor: pointer"
+                      (click)="toggleDropdown(review.id)"
+                    >
+                      <i class="pi pi-ellipsis-v" style="font-size: 1rem"></i>
+                    </a>
+
+                    <div
+                      class="dropdown-menu"
+                      *ngIf="showDropdown[review.id]"
+                      style="position: absolute; z-index: 1000"
+                    >
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        (click)="openFormCreateReply(review.id)"
+                      >
+                        <i class="pi pi-send"></i>
+                        <span style="margin-left: 10px">Phản hồi</span>
+                      </button>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        (click)="openFormEditReview(review.id)"
+                      >
+                        <i class="pi pi-pencil"></i>
+                        <span style="margin-left: 10px">Sửa</span>
+                      </button>
+                      <button
+                        class="dropdown-item"
+                        type="button"
+                        (click)="onDeleteReview(review.id)"
+                      >
+                        <i class="pi pi-trash"></i>
+                        <span style="margin-left: 10px">Xóa</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hiển thị replies khi người dùng nhấn vào nút -->
+              <div *ngIf="showReplies[review.id]" class="replies mt-3">
+                <div
+                  *ngFor="let reply of review.replies"
+                  class="reply"
+                  [ngStyle]="{ 'margin-left': '10px' }"
+                >
+                  <div
+                    class="reply-header mb-3 d-flex gap-2 align-items-start p-3 rounded"
+                    style="background-color: #f5f5f5"
+                  >
+                    <div class="img-container">
+                      <img
+                        alt="User profile picture"
+                        height="50"
+                        src="https://storage.googleapis.com/a1aa/image/ENT6P9CjrI7DP1KFwT7YzjD5PJzSZK0tUPD75QA4SddFT45E.jpg"
+                        width="50"
+                        style="border-radius: 50%"
+                      />
+                    </div>
+                    <div class="title-container d-flex flex-column gap-1 w-100">
+                      <div class="d-flex">
+                        <strong>{{ reply.userReview.fullName }}</strong>
+
+                        <!-- Dropdown cho reply -->
+                        <div class="position-relative ms-auto pe-3">
+                          <a
+                            class="text-dark fw-bold"
+                            style="text-decoration: none; cursor: pointer"
+                            (click)="toggleReplyDropdown(review.id, reply.id)"
+                          >
+                            <i
+                              class="pi pi-ellipsis-h"
+                              style="font-size: 1rem"
+                            ></i>
+                          </a>
+
+                          <div
+                            class="dropdown-menu"
+                            *ngIf="showReplyDropdown[review.id]?.[reply.id]"
+                            style="position: absolute; z-index: 1000"
+                          >
+                            <button
+                              class="dropdown-item"
+                              type="button"
+                              (click)="
+                                openFormCreateReply(reply.id, reply.reviewText)
+                              "
+                            >
+                              <i class="pi pi-pencil"></i>
+                              <span style="margin-left: 10px">Sửa</span>
+                            </button>
+                            <button
+                              class="dropdown-item"
+                              type="button"
+                              (click)="onDeleteReview(reply.id)"
+                            >
+                              <i class="pi pi-trash"></i>
+                              <span style="margin-left: 10px">Xóa</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div>({{ reply.created | date : "short" }})</div>
+                      <div class="reply-body">
+                        {{ reply.reviewText }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+      </div>
+    </div>
+  </div>
+
+  <!-- pagination -->
+  @if(pagination) {
+  <div class="card flex justify-content-center mt-3">
+    <p-paginator
+      [first]="(pagination.currentPage - 1) * pageSize || 0"
+      [rows]="pageSize"
+      [totalRecords]="pagination.totalItems || 0"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="onPageChange($event)"
+    >
+    </p-paginator>
+  </div>
+  }
+</div>
+
+<!-- ****************************** Start form create review *********************************** -->
+<p-dialog
+  header="Đánh giá sản phẩm"
+  [modal]="true"
+  [(visible)]="visibleFrmCreateView"
+  [style]="{ width: '50rem' }"
+  (onHide)="closeFormCreateReview()"
+>
+  <form
+    [formGroup]="frmCreateReview"
+    (ngSubmit)="onSubmitFrmCreateReview()"
+    enctype="multipart/form-data"
+  >
+    <div class="mb-3 d-flex gap-5 align-items-center">
+      <span class="form-label">Đánh giá sản phẩm: </span>
+      <p-rating formControlName="rating" [cancel]="false" />
+    </div>
+    <div class="mb-3">
+      <label for="reviewText" class="form-label">Nội dung đánh giá</label>
+      <textarea
+        id="reviewText"
+        class="form-control"
+        formControlName="reviewText"
+        placeholder="Hãy chia sẽ những điều bạn thích về sản phẩm này với những người mua khác nhé."
+        style="height: 150px"
+      ></textarea>
+    </div>
+    <div class="mb-3">
+      <!-- maxFileSize = 10MB = 1,048,576 byte * 10 -->
+      <p-fileUpload
+        #imageUpload
+        name="files"
+        (onSelect)="onSelectImgFile($event)"
+        (onRemove)="onRemoveImgFile($event)"
+        (onClear)="onClearAllImageFiles($event)"
+        [multiple]="true"
+        accept="image/*"
+        maxFileSize="10485760"
+        [showUploadButton]="false"
+        [chooseLabel]="'Chọn ảnh'"
+        [cancelLabel]="'Hủy'"
+      />
+    </div>
+
+    <div class="mb-3 file-upload-container">
+      <p-fileUpload
+        #videoUpload
+        name="files"
+        (onSelect)="onSelectVideoFile($event)"
+        (onRemove)="onRemoveVideoFile()"
+        (onClear)="onRemoveVideoFile()"
+        [multiple]="false"
+        accept="video/*"
+        maxFileSize="10485760"
+        [showUploadButton]="false"
+        [chooseLabel]="'Chọn video'"
+        [cancelLabel]="'Hủy'"
+      >
+        <!-- Tùy chỉnh nội dung hiển thị bên trong box -->
+        <ng-template pTemplate="content">
+          <div *ngIf="videoUrl" class="video-preview">
+            <video [src]="videoUrl" controls width="100%" height="100%">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </ng-template>
+      </p-fileUpload>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="closeFormCreateReview()"
+      >
+        <i class="pi pi-times me-1"></i>
+        <span>Đóng</span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="frmCreateReview.invalid || !frmCreateReview.dirty"
+      >
+        <i class="pi pi-check me-1"></i>
+        <span>Lưu</span>
+      </button>
+    </div>
+  </form>
+</p-dialog>
+<!-- ****************************** End form create review *********************************** -->
+
+<!-- ****************************** Start form update review *********************************** -->
+<p-dialog
+  header="Cập nhật đánh giá"
+  [modal]="true"
+  [(visible)]="visibleFrmEditView"
+  [style]="{ width: '50rem' }"
+  (onHide)="closeFormEditReview()"
+>
+  <div class="card">
+    <p-tabView>
+      <p-tabPanel header="Thông tin">
+        <form
+          [formGroup]="frmEditReview"
+          (ngSubmit)="onSubmitFrmEditReview()"
+          enctype="multipart/form-data"
+        >
+          <div class="mb-3 d-flex gap-5 align-items-center">
+            <span class="form-label">Đánh giá sản phẩm: </span>
+            <p-rating formControlName="rating" [cancel]="false" />
+          </div>
+          <div class="mb-3">
+            <label for="reviewText" class="form-label">Nội dung đánh giá</label>
+            <textarea
+              id="reviewText"
+              class="form-control"
+              formControlName="reviewText"
+              placeholder="Hãy chia sẽ những điều bạn thích về sản phẩm này với những người mua khác nhé."
+              style="height: 150px"
+            ></textarea>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="closeFormEditReview()"
+            >
+              <i class="pi pi-times me-1"></i>
+              <span>Đóng</span>
+            </button>
+            <button
+              class="btn btn-primary"
+              type="submit"
+              [disabled]="frmEditReview.invalid || !frmEditReview.dirty"
+            >
+              <i class="pi pi-check me-1"></i>
+              <span>Lưu</span>
+            </button>
+          </div>
+        </form>
+      </p-tabPanel>
+      <p-tabPanel header="Hình ảnh">
+        <div class="mb-3 d-flex">
+          <div class="fw-bold">Thêm ảnh mới</div>
+          <button
+            *ngIf="listImgRequest.length > 0"
+            class="btn btn-primary mt-3 ms-auto"
+            (click)="onUploadImgEdit()"
+          >
+            Upload hình ảnh đã chọn
+          </button>
+        </div>
+        <p-fileUpload
+          #imageUploadEdit
+          name="files"
+          (onSelect)="onSelectImgFileEdit($event)"
+          (onRemove)="onRemoveImgFileEdit($event)"
+          (onClear)="onClearAllImageFilesEdit($event)"
+          [multiple]="true"
+          [showUploadButton]="false"
+          accept="image/*"
+          maxFileSize="10485760"
+          [chooseLabel]="'Chọn ảnh'"
+          [cancelLabel]="'Hủy'"
+        />
+
+        <div *ngIf="imgListForEdit.length > 0" class="mb-3 fw-bold mt-4">
+          Ảnh hiện tại
+        </div>
+        <div
+          class="row row-cols-2 row-cols-md-3 g-3"
+          *ngIf="imgListForEdit.length > 0"
+        >
+          <div *ngFor="let img of imgListForEdit" class="col text-center">
+            <img [src]="img.imgUrl" width="200" alt="img review" />
+            <button class="btn btn-danger mt-2" (click)="removeImage(img.id)">
+              Xóa ảnh
+            </button>
+          </div>
+        </div>
+      </p-tabPanel>
+      <p-tabPanel header="Video">
+        <div class="mb-3 d-flex">
+          <div *ngIf="showAddVideoBox == true" class="fw-bold">
+            Thêm video mới
+          </div>
+          <button
+            *ngIf="videoRequest != null"
+            class="btn btn-primary mt-3 ms-auto"
+            (click)="onUploadVideoEdit()"
+          >
+            Upload video đã chọn
+          </button>
+        </div>
+        <div *ngIf="showAddVideoBox == true" class="file-upload-container">
+          <p-fileUpload
+            #videoUploadEdit
+            name="files"
+            (onSelect)="onSelectVideoFileEdit($event)"
+            (onRemove)="onRemoveVideoFileEdit()"
+            (onClear)="onRemoveVideoFileEdit()"
+            [multiple]="false"
+            accept="video/*"
+            maxFileSize="10485760"
+            [showUploadButton]="false"
+            [chooseLabel]="'Chọn video'"
+            [cancelLabel]="'Hủy'"
+          >
+            <!-- Tùy chỉnh nội dung hiển thị bên trong box -->
+            <ng-template pTemplate="content">
+              <div *ngIf="videoUrl" class="video-preview">
+                <video [src]="videoUrl" controls width="100%" height="100%">
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </ng-template>
+          </p-fileUpload>
+        </div>
+        <div *ngIf="videoUrlForEdit" class="mb-3 fw-bold mt-4">
+          Video hiện tại
+        </div>
+        <video
+          *ngIf="videoUrlForEdit"
+          class="video-preview"
+          controls
+          [src]="videoUrlForEdit"
+        ></video>
+        <button
+          (click)="removeVideo()"
+          *ngIf="videoUrlForEdit && videoRequest == null"
+          class="btn btn-danger mt-2 w-100"
+        >
+          Xóa video
+        </button>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</p-dialog>
+<!-- ****************************** End form update review *********************************** -->
+
+<!-- ****************************** Start form create reply *********************************** -->
+<p-dialog
+  [header]="
+    editReply
+      ? 'Cập nhật phản hồi đánh giá sản phẩm'
+      : 'Phản hồi đánh giá sản phẩm'
+  "
+  [modal]="true"
+  [(visible)]="visibleFrmCreateReply"
+  [style]="{ width: '50rem' }"
+  (onHide)="closeFormCreateReply()"
+>
+  <form [formGroup]="frmCreateReply" (ngSubmit)="onSubmitFrmCreateReply()">
+    <div class="mb-3">
+      <label for="reviewText" class="form-label">Nội dung phản hồi</label>
+      <textarea
+        id="reviewText"
+        class="form-control"
+        formControlName="reviewText"
+        placeholder="Hãy chia sẽ những sản hồi của bạn ở đây nhé."
+        style="height: 150px"
+      ></textarea>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="closeFormCreateReply()"
+      >
+        <i class="pi pi-times me-1"></i>
+        <span>Đóng</span>
+      </button>
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="frmCreateReply.invalid || !frmCreateReply.dirty"
+      >
+        <i class="pi pi-check me-1"></i>
+        <span>Lưu</span>
+      </button>
+    </div>
+  </form>
+</p-dialog>
+<!-- ****************************** End form create reply *********************************** -->

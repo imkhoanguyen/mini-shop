@@ -10,9 +10,9 @@ namespace api.Controllers
     public class ProductController : BaseApiController
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IImageService _imageService;
+        private readonly ICloudinaryService _imageService;
 
-        public ProductController(IUnitOfWork unitOfWork, IImageService imageService)
+        public ProductController(IUnitOfWork unitOfWork, ICloudinaryService imageService)
         {
             _unitOfWork = unitOfWork;
             _imageService = imageService;

@@ -99,4 +99,19 @@ export class AccountService {
         );
     }
   }
+
+  getCurrentUser(): User | null {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      try {
+        const user: User = JSON.parse(userJson);
+        return user;
+      } catch (error) {
+        console.error('Error parsing user from localStorage', error);
+        return null;
+      }
+    }
+    return null; // Trả về null nếu không có user trong localStorage
+  }
 }
+  

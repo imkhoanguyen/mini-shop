@@ -1,13 +1,10 @@
 using api.Data.Seed;
 using api.SignalR;
-using api.SignalR;
 using API.Data;
 using API.Data.Seed;
 using API.Entities;
-using API.Data.Seed;
-using API.Entities;
 using API.Extensions;
-using Microsoft.AspNetCore.Identity;
+using API.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,12 +37,6 @@ app.UseCors(x => x
     .AllowAnyHeader()
     .AllowCredentials()
 );
-app.UseCors(x => x
-    .WithOrigins("http://localhost:4200", "https://localhost:4200")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials()
-);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -63,7 +54,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseDefaultFiles();
 app.MapControllers();
-
+app.MapHub<ReviewHub>("hubs/review");
 // seed data
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;

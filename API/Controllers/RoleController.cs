@@ -191,7 +191,7 @@ namespace API.Controllers
             // Thêm các claim mới
             foreach (var claimValue in claimsToAdd)
             {
-                var result = await _roleManager.AddClaimAsync(role, new Claim("permission", claimValue));
+                var result = await _roleManager.AddClaimAsync(role, new Claim("Permission", claimValue));
                 if (!result.Succeeded) return BadRequest($"Không thể thêm claim: {claimValue}");
             }
 

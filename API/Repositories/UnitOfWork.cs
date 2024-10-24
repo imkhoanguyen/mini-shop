@@ -7,84 +7,55 @@ namespace API.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly StoreContext _context;
-        private readonly ICategoryRepository _categoryRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly ISizeRepository _sizeRepository;
-        private readonly IColorRepository _colorRepository;
-        private readonly IMessageRepository _messageRepository;
-        private readonly IImageRepository _imageRepository;
-        private readonly IVariantRepository _variantRepository;
-        private readonly IVoucherRepository _voucherRepository;
-        private readonly IImageService _imageService;
-        private readonly ICartItemsRepository _cartItemsRepository;
-        private readonly IShoppingCartRepository _shoppingCartRepository;
-        private readonly IReviewRepository _reviewRepository;
-        private readonly IShippingMethodRepository _shippingMethodRepository;
-        private readonly IPaymentsRepository _paymentsRepository;
-        private readonly IOrderRepository _orderRepository;
-        private readonly IOrderItemsRepository _orderItemsRepository;
-        private readonly IUserRepository _userRepository;
+        public ICategoryRepository CategoryRepository { get; private set; }
 
-        public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
-             IProductRepository productRepository, ISizeRepository sizeRepository,
-             IColorRepository colorRepository, IMessageRepository messageRepository,
-             IImageRepository imageRepository, IVariantRepository variantRepository,
-             IVoucherRepository voucherRepository, IImageService imageService,
-             ICartItemsRepository cartItemsRepository, IShoppingCartRepository shoppingCartRepository,
-            IReviewRepository reviewRepository,IUserRepository userRepository,
-             IShippingMethodRepository shippingMethodRepository, IPaymentsRepository paymentsRepository,
-             IOrderRepository orderRepository, IOrderItemsRepository orderItemsRepository)
-        
+        public IProductRepository ProductRepository { get; private set; }
 
-            {
-                _context = context;
-                _categoryRepository = categoryRepository;
-                _productRepository = productRepository;
-                _sizeRepository = sizeRepository;
-                _colorRepository = colorRepository;
-                _messageRepository = messageRepository;
-                _imageRepository = imageRepository;
-                _imageService = imageService;
-                _imageService = imageService;
-                _variantRepository = variantRepository;
-                _voucherRepository = voucherRepository;
-                _cartItemsRepository = cartItemsRepository;
-                _shoppingCartRepository = shoppingCartRepository;
-                _reviewRepository = reviewRepository;
-                _shippingMethodRepository = shippingMethodRepository;
-                _paymentsRepository = paymentsRepository;
-                _orderRepository = orderRepository;
-                _orderItemsRepository = orderItemsRepository;
-                _reviewRepository = reviewRepository;
-                _userRepository = userRepository;
-                _voucherRepository = voucherRepository;
-                _cartItemsRepository = cartItemsRepository;
-                _shoppingCartRepository = shoppingCartRepository;
-                _reviewRepository = reviewRepository;
-                _shippingMethodRepository = shippingMethodRepository;
-                _paymentsRepository = paymentsRepository;
-                _orderRepository = orderRepository;
-                _orderItemsRepository = orderItemsRepository;
-                _reviewRepository = reviewRepository;
-                _userRepository = userRepository;
-            }
-        public ICategoryRepository CategoryRepository => _categoryRepository;
-        public IProductRepository ProductRepository => _productRepository;
-        public ISizeRepository SizeRepository => _sizeRepository;
-        public IColorRepository ColorRepository => _colorRepository;
-        public IMessageRepository MessageRepository => _messageRepository;
-        public IImageRepository ImageRepository => _imageRepository;
-        public ICartItemsRepository CartItemsRepository => _cartItemsRepository;
-        public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
-        public IImageService ImageService => _imageService;
-        public IReviewRepository ReviewRepository => _reviewRepository;
-        public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
-        public IPaymentsRepository PaymentsRepository => _paymentsRepository;
-        public IOrderRepository OrderRepository => _orderRepository;
-        public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
-        public IVariantRepository VariantRepository => _variantRepository;
-        public IVoucherRepository VoucherRepository => _voucherRepository;
-        public IUserRepository UserRepository => _userRepository;
+        public ISizeRepository SizeRepository { get; private set; }
+        public IColorRepository ColorRepository { get; private set; }
+
+        public IVariantRepository VariantRepository { get; private set; }
+
+        public ICartItemsRepository CartItemsRepository { get; private set; }
+
+        public IShoppingCartRepository ShoppingCartRepository { get; private set; }
+
+        public IMessageRepository MessageRepository { get; private set; }
+
+        public IReviewRepository ReviewRepository { get; private set; }
+
+        public IShippingMethodRepository ShippingMethodRepository { get; private set; }
+
+        public IPaymentsRepository PaymentsRepository { get; private set; }
+
+        public IOrderRepository OrderRepository { get; private set; }
+
+        public IOrderItemsRepository OrderItemsRepository { get; private set; }
+
+        public IVoucherRepository VoucherRepository { get; private set; }
+
+        public IImageRepository ImageRepository { get; private set; }
+
+
+        public UnitOfWork(StoreContext context)
+        {
+            _context = context;
+            CategoryRepository = new CategoryRepository(_context);
+            ProductRepository = new ProductRepository(_context);
+            SizeRepository = new SizeRepository(_context);
+            ColorRepository = new ColorRepository(_context);
+            VariantRepository = new VariantRepository(_context);
+            CartItemsRepository = new CartItemsRepository(_context);
+            ShoppingCartRepository = new ShoppingCartRepository(_context);
+            MessageRepository = new MessageRepository(_context);
+            ReviewRepository = new ReviewRepository(_context);
+            ShippingMethodRepository = new ShippingMethodRepository(_context);
+            PaymentsRepository = new PaymentsRepository(_context);
+            OrderRepository = new OrderRepository(_context);
+            VoucherRepository = new VoucherRepository(_context);
+            OrderItemsRepository = new OrderItemsRepository(_context);
+            ImageRepository = new ImageRepository(_context);
+        }
 
         public async Task<bool> Complete()
         {

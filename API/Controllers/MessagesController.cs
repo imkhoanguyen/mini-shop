@@ -17,8 +17,8 @@ namespace API.Controllers
         private readonly IMessageRepository _message;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHubContext<ChatHub> _hub;
-        private readonly IImageService _fileService;
-        public MessagesController(IMessageRepository message, IUnitOfWork unitOfWork, IHubContext<ChatHub> hub, IImageService fileService)
+        private readonly ICloudinaryService _fileService;
+        public MessagesController(IMessageRepository message, IUnitOfWork unitOfWork, IHubContext<ChatHub> hub, ICloudinaryService fileService)
         {
             _message = message;
             _unitOfWork = unitOfWork;

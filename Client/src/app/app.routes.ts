@@ -14,8 +14,10 @@ import { ResetPasswordComponent } from './component/reset-password/reset-passwor
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 import {VoucherComponent} from './component/admin/voucher/voucher.component';
 import { AddVoucherComponent } from './component/admin/voucher/add-voucher/add-voucher.component';
+import { HomeComponent } from './component/home/home.component';
+
 export const routes: Routes = [
-  { path: '', component: HeaderComponent },
+  { path: '', component: HomeComponent },
   {
     path: 'admin',
     component: AdminComponent,
@@ -39,4 +41,5 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotpasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'home', component: HomeComponent },
 ];
