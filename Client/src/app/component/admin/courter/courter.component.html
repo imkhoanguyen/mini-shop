@@ -1,1 +1,22 @@
-<p>courter works!</p>
+<h1 class="mb-4">Mua hàng</h1>
+<div class="row align-items-center mb-3">
+    <div class="col">
+        <input
+          type="text"
+          [(ngModel)]="searchString"
+          (input)="onSearch()"
+          pInputText
+          placeholder="Tìm kiếm..."
+          class="w-100"
+        />
+      </div>
+</div>
+<div class="row">
+  <div class="mb-3 col-3">
+    <p-card header="Simple Card">
+      <p class="m-0">
+          Lorem ipsum dolor sit amet...
+      </p>
+    </p-card>
+  </div>
+</div>

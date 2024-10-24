@@ -32,8 +32,8 @@ export const routes: Routes = [
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
       { path: 'order',component: OrderComponent},
-      { path: 'courter',component:CourterComponent}
-      { path: 'role/permission/:id', component: RolePermissionComponent },
+      { path: 'courter',component:CourterComponent},
+      { path: 'role/permission/:id', component: RolePermissionComponent }
     ],
   },
   { path: 'login', component: LoginComponent },
