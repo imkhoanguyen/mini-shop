@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using System.Security.Cryptography;
+using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -24,10 +25,15 @@ namespace API.Data
         public DbSet<ShippingMethod> ShippingMethods {get;set;}
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Payments> Payments{get;set;}
+        public DbSet<Order> Orders{get;set;}
+        public DbSet<OrderItems> OrderItems{get;set;}
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
                 .HasKey(pc => new { pc.ProductId, pc.CategoryId });
+            builder.Entity<OrderItems>()
+                .HasKey(oi => new{ oi.ProductId, oi.OrderId});
 
             builder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
@@ -43,7 +49,20 @@ namespace API.Data
                 .HasOne(ci=>ci.ShoppingCart)
                 .WithMany(sc =>sc.CartItems)
                 .HasForeignKey(ci=>ci.ShoppingCartId);
+            builder.Entity<OrderItems>()
+                .HasOne(oi=>oi.Product)
+                .WithMany(p=>p.OrderItems)
+                .HasForeignKey(p=>p.ProductId);
 
+            builder.Entity<OrderItems>()
+                .HasOne(oi=>oi.Order)
+                .WithMany(o=>o.OrderItems)
+                .HasForeignKey(o=>o.OrderId);
+            
+            
+            // builder.Entity<CartItems>()
+            //     .HasOne(ci=>ci.Variants)
+            //     .WithMany(p=>p.CartItems)
 
             builder.Entity<Message>()
                 .HasOne(m => m.Sender)
@@ -78,6 +97,7 @@ namespace API.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(builder);
+            
 
 
         }

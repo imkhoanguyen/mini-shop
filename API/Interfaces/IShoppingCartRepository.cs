@@ -6,6 +6,6 @@ namespace API.Interfaces
         void UpdateShopingCart(ShoppingCart shoppingCart);
         void DeleteShoppingCart(ShoppingCart shoppingCart);
         
-        
+        Task<ShoppingCart?> GetShoppingCartByIdAsync(int id);
     }
 }

@@ -14,6 +14,11 @@ namespace API.Interfaces
         IImageRepository ImageRepository { get; }
         IImageService ImageService { get; }
         IMessageRepository MessageRepository { get; }
+        IShippingMethodRepository ShippingMethodRepository{get;}
+        IPaymentsRepository PaymentsRepository{get;}
+        IOrderRepository OrderRepository{get;}
+        IOrderItemsRepository OrderItemsRepository{get;}
+        
         IReviewRepository ReviewRepository { get; }
         IUserRepository UserRepository { get; }
 

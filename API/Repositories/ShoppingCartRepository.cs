@@ -28,6 +28,14 @@ namespace API.Repositories
         {
             
         }
+        public async Task<ShoppingCart?> GetShoppingCartByIdAsync(int id)
+        {
+            var shoppingCartDb= await _context.ShoppingCarts
+                .Include(sc=> sc.CartItems)
+                .FirstOrDefaultAsync(sc=>sc.Id == id );
+
+            return shoppingCartDb;
+        }
     }
     
 }

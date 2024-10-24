@@ -57,6 +57,11 @@ namespace API.Extensions
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ICartItemsRepository, CartItemsRepository>();
+            services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
+            services.AddScoped<IPaymentsRepository,PaymentsRepository>();
+            services.AddScoped<IOrderRepository,OrderRepository>();
+            services.AddScoped<IOrderItemsRepository,OrderItemsRepository>();
+            services.AddScoped<IShippingMethodRepository,ShippingMethodRepository>();
             services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
