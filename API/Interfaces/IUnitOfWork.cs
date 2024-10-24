@@ -1,5 +1,7 @@
 using CloudinaryDotNet.Actions;
 
+using CloudinaryDotNet.Actions;
+
 namespace API.Interfaces
 {
     public interface IUnitOfWork
@@ -11,7 +13,10 @@ namespace API.Interfaces
         IVariantRepository VariantRepository { get; }
         ICartItemsRepository CartItemsRepository {get;}
         IShoppingCartRepository ShoppingCartRepository{get;}
+        ICartItemsRepository CartItemsRepository {get;}
+        IShoppingCartRepository ShoppingCartRepository{get;}
         IImageRepository ImageRepository { get; }
+        IImageService ImageService { get; }
         IImageService ImageService { get; }
         IMessageRepository MessageRepository { get; }
         IReviewRepository ReviewRepository { get; }
@@ -22,6 +27,16 @@ namespace API.Interfaces
         
         IReviewRepository ReviewRepository { get; }
         IUserRepository UserRepository { get; }
+        IVoucherRepository VoucherRepository { get; }
+        IReviewRepository ReviewRepository { get; }
+        IShippingMethodRepository ShippingMethodRepository{get;}
+        IPaymentsRepository PaymentsRepository{get;}
+        IOrderRepository OrderRepository{get;}
+        IOrderItemsRepository OrderItemsRepository{get;}
+        
+        IReviewRepository ReviewRepository { get; }
+        IUserRepository UserRepository { get; }
+        IVoucherRepository VoucherRepository { get; }
         IVoucherRepository VoucherRepository { get; }
 
         Task<bool> Complete();

@@ -2,6 +2,8 @@
 using API.Interfaces;
 using API.Services;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using API.Services;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace API.Repositories
 {
@@ -27,6 +29,21 @@ namespace API.Repositories
         private readonly IOrderItemsRepository _orderItemsRepository;
         private readonly IReviewRepository _reviewRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IVariantRepository _variantRepository;
+        private readonly IVoucherRepository _voucherRepository;
+        private readonly IImageService _imageService;
+        private readonly IVariantRepository _variantRepository; 
+        private readonly ICartItemsRepository _cartItemsRepository;
+        private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IReviewRepository _reviewRepository;
+        private readonly IShippingMethodRepository _shippingMethodRepository;
+        private readonly IPaymentsRepository _paymentsRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderItemsRepository _orderItemsRepository;
+        private readonly IReviewRepository _reviewRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IVariantRepository _variantRepository;
+        private readonly IVoucherRepository _voucherRepository;
 
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
@@ -44,6 +61,21 @@ namespace API.Repositories
              IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
              IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository,
              IUserRepository userRepository)
+             IImageRepository imageRepository, IVariantRepository variantRepository,
+             IVoucherRepository voucherRepository)
+             IImageRepository imageRepository, IVariantRepository variantRepository,
+             ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
+             IImageRepository imageRepository, IImageService imageService,
+             IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
+             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository,
+             IShippingMethodRepository shippingMethodRepository,IPaymentsRepository paymentsRepository,
+             IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository)
+             IImageRepository imageRepository, IImageService imageService,
+             IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
+             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository,
+             IUserRepository userRepository)
+             IImageRepository imageRepository, IVariantRepository variantRepository,
+             IVoucherRepository voucherRepository)
         {
             _context = context;
             _categoryRepository = categoryRepository;
@@ -53,7 +85,18 @@ namespace API.Repositories
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
             _imageService=imageService;
+            _imageService=imageService;
             _variantRepository = variantRepository;
+            _voucherRepository=voucherRepository;
+            _cartItemsRepository=cartItemsRepository;
+            _shoppingCartRepository=shoppingCartRepository;
+            _reviewRepository = reviewRepository;
+            _shippingMethodRepository=shippingMethodRepository;
+            _paymentsRepository=paymentsRepository;
+            _orderRepository=orderRepository;
+            _orderItemsRepository=orderItemsRepository;
+            _reviewRepository = reviewRepository;
+            _userRepository = userRepository;
             _voucherRepository=voucherRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
@@ -82,7 +125,27 @@ namespace API.Repositories
         public IOrderRepository OrderRepository => _orderRepository;
         public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
 
+
+        public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
+        public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
+
+        public IImageService ImageService => _imageService;
+        public IReviewRepository ReviewRepository => _reviewRepository;
+        public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
+        public IPaymentsRepository PaymentsRepository => _paymentsRepository;
+        public IOrderRepository OrderRepository => _orderRepository;
+        public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
+
         public IVariantRepository VariantRepository => _variantRepository;
+
+        public IVoucherRepository VoucherRepository => _voucherRepository;
+
+        //public IImageService ImageService => _imageService
+        public IUserRepository UserRepository => _userRepository;
+        public IImageService ImageService => _imageService;
+        public IReviewRepository ReviewRepository => _reviewRepository;
+
+        public IVoucherRepository VoucherRepository => _voucherRepository;
 
         public IVoucherRepository VoucherRepository => _voucherRepository;
 

@@ -1,4 +1,5 @@
 ﻿using API.Configurations;
+using API.Configurations;
 using API.Data;
 using API.Errors;
 using API.Helpers;
@@ -7,8 +8,10 @@ using API.Repositories;
 using API.Services;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace API.Extensions
@@ -37,8 +40,18 @@ namespace API.Extensions
                 .AddGoogle(option =>
                 {
                     IConfigurationSection googleAuthNSection = config.GetSection("Authentication:Google");
+                    IConfigurationSection googleAuthNSection = config.GetSection("Authentication:Google");
                     option.ClientId = googleAuthNSection["ClientId"]!;
                     option.ClientSecret = googleAuthNSection["ClientSecret"]!;
+                })
+                .AddFacebook(option =>
+                {
+                    IConfigurationSection facebookAuthNSection = config.GetSection("Authentication:Facebook");
+                    option.AppId = facebookAuthNSection["AppId"]!;
+                    option.AppSecret = facebookAuthNSection["AppSecret"]!;
+                }
+            );
+
                 })
                 .AddFacebook(option =>
                 {
@@ -57,6 +70,15 @@ namespace API.Extensions
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ICartItemsRepository, CartItemsRepository>();
+            services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
+            services.AddScoped<IPaymentsRepository,PaymentsRepository>();
+            services.AddScoped<IOrderRepository,OrderRepository>();
+            services.AddScoped<IOrderItemsRepository,OrderItemsRepository>();
+            services.AddScoped<IShippingMethodRepository,ShippingMethodRepository>();
+            services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ICartItemsRepository, CartItemsRepository>();
             services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
             services.AddScoped<IPaymentsRepository,PaymentsRepository>();
@@ -88,6 +110,13 @@ namespace API.Extensions
                 };
             });
 
+            services.Configure<EmailConfig>(config.GetSection("MailSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+            // setting thời gian hết hạn của token do asp.net identity tạo ra
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromSeconds(60 * 5); // 5p
+            });
             services.Configure<EmailConfig>(config.GetSection("MailSettings"));
             services.AddScoped<IEmailService, EmailService>();
             // setting thời gian hết hạn của token do asp.net identity tạo ra
