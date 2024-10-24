@@ -1,0 +1,77 @@
+<div class="chat-container">
+  <div class="chat-button" *ngIf="!showChatWindow" (click)="toggleChatWindow()">
+    <i class="bi bi-chat-dots"></i> Chat
+  </div>
+
+  <div class="chat-window" *ngIf="showChatWindow">
+    <div class="chat-header">
+      <div class="row" style="width: 100%;">
+        <div class="col-11">
+          <div class="d-flex align-items-center sidebar">
+            <img src="http://localhost:5000/avatar/{{adminUsers[0].avatar}}" />
+            <div class="chat-header-info">
+              <div class="chat-header-name">
+                {{adminUsers[0].fullname}}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-1">
+          <span (click)="toggleChatWindow()"> <i class="bi bi-x-lg"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-body" #messagesContainer (scroll)="onScroll()">
+      <div class="messages" *ngFor="let message of messages">
+        <!-- Tin nhắn bên trái (recipient) -->
+        <div *ngIf="message.recipientId === user.id" class="message left-message">
+          <img class="avatar" height="40" src="http://localhost:5000/avatar/{{ adminUsers[0].avatar }}" width="40" />
+          <div class="message-content">
+            <div class="text">{{ message.content }}</div>
+            <div class="file-content">
+              <img *ngIf="isImage(message.fileType)" [src]="message.fileUrl" class="message-media" />
+              <video *ngIf="isVideo(message.fileType)" [src]="message.fileUrl" controls class="message-media"></video>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tin nhắn bên phải (sender) -->
+        <div *ngIf="message.senderId === user.id" class="message right-message">
+          <div class="message-content">
+            <div class="text" *ngIf="message.content">{{ message.content }}</div>
+            <div class="file-content">
+              <img *ngIf="isImage(message.fileType)" [src]="message.fileUrl" class="message-media" />
+              <video *ngIf="isVideo(message.fileType)" [src]="message.fileUrl" controls class="message-media"></video>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="image-container" *ngIf="selectedFiles.length >0">
+      <div *ngFor="let image of selectedFiles; let i = index" class="image-preview">
+        <img [src]="image.src" alt="Image Preview" style="max-width: 100px; margin-bottom: 10px;">
+        <button class="close-button" (click)="removeImage(i)">X</button>
+      </div>
+      <div class="plus">
+        <label for="fileInputPlus" style="width: 100%; height: 100%; cursor: pointer; display: flex; justify-content: center; align-items: center;">
+          <i class="bi bi-plus" style="font-size: 24px;"></i>
+          <input type="file" id="fileInputPlus" (change)="onFileSelected($event)" multiple style="display: none;" />
+        </label>
+      </div>
+    </div>
+    <div class="chat-input">
+      <label for="fileInput">
+        <i class="bi bi-image-fill"></i>
+        <input type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
+      </label>
+      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" (keyup.enter)="sendMessage()"/>
+      <button (click)="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+        Send
+      </button>
+    </div>
+  </div>
+</div>

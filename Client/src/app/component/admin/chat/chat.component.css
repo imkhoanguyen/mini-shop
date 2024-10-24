@@ -1,0 +1,313 @@
+/* General container */
+.container {
+  display: flex;
+  height: 80vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+  background-color: #e9ecef; /* Màu nền nhạt hơn */
+  height: 90vh;
+  width: 60vh;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Thêm bóng cho sidebar */
+}
+
+.search-bar {
+  background-color: #f4f4f4; /* Màu nền sáng hơn */
+  border: none;
+  color: #555;
+  padding: 10px;
+  border-radius: 25px; /* Corner rounded */
+  width: 100%;
+  margin-bottom: 15px; /* Khoảng cách dưới thanh tìm kiếm */
+  transition: background 0.3s;
+}
+
+.search-bar:focus {
+  background-color: #e0e0e0; /* Đổi màu khi focus */
+}
+
+.chat-list h5 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.chat-item img{
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+}
+.chat-item:hover {
+  background-color: #d1e7dd; /* Màu hover nhẹ nhàng */
+}
+
+.chat-info {
+  margin-left: 10px;
+}
+
+.chat-name {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+.chat-message {
+  font-size: 14px;
+  color: #777; /* Màu nhạt hơn cho thông điệp */
+}
+
+/* Chat window styles */
+.chat-window {
+  width: 100%;
+  height: 90vh; /* Chiều cao đầy đủ */
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f8f9fa; /* Màu nền nhạt cho header */
+  display: flex;
+  align-items: center;
+}
+
+.chat-header img {
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+}
+
+.chat-header-info {
+  margin-left: 10px;
+}
+
+.chat-header-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.chat-header-role {
+  font-size: 14px;
+  color: #666;
+}
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  flex-grow: 1;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+/* Tin nhắn bên trái (recipient) */
+.left-message {
+  justify-content: flex-start;
+}
+
+/* Tin nhắn bên phải (sender) */
+.right-message {
+  justify-content: flex-end;
+}
+
+.avatar {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+}
+
+.message-content {
+  display: flex;
+  flex-direction: column; /* Đặt nội dung theo chiều dọc */
+  max-width: 70%;
+}
+
+.text {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 15px;
+  background-color: #f1f1f1;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.right-message .text {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Định dạng ảnh và video */
+.file-content {
+  display: block; /* Đảm bảo ảnh và video không nằm cùng hàng với text */
+}
+
+.message-media {
+  max-width: 200px; /* Kích thước lớn hơn cho ảnh và video */
+  margin-bottom: 10px;
+}
+
+/* Tin nhắn có hiệu ứng bóng */
+.text:after {
+  content: '';
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  z-index: -1;
+}
+
+/* Vùng nhập tin nhắn */
+.chat-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  outline: none;
+  margin-right: 10px;
+  transition: border-color 0.3s;
+}
+
+.chat-input input:focus {
+  border-color: #007bff; /* Đổi màu viền khi focus */
+}
+
+.chat-input button {
+  background-color: #007bff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 20px; /* Corner rounded */
+  cursor: pointer;
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.chat-input button:hover {
+  background-color: #0056b3; /* Màu tối hơn khi hover */
+}
+.image-container {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px;
+  gap: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.image-preview img {
+  display: block;
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-preview img:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.close-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(255, 0, 0, 0.85);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 0, 0, 1);
+  transform: scale(1.1);
+}
+
+.image-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plus {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 110px;
+  border: 2px dashed #007bff;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.plus:hover {
+  border-color: #cc0a0a;
+  background-color: rgba(255, 235, 235, 0.5);
+}
+
+label {
+  display: flex;
+  padding: 10px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+}
+

@@ -1,0 +1,52 @@
+<p-toast />
+<div class="container px-0 d-flex justify-content-center">
+  <div class="info col-md-6 col-sm-12 d-flex flex-column justify-content-center align-items-center p-5 text-center">
+    <h2 class="mb-4">Đăng nhập tài khoản</h2>
+    <p class="mb-4">Đăng nhập để truy cập đầy đủ các tính năng của ứng dụng.</p>
+    <div class="justify-content-center text-center align-items-center">
+      <button class="btn btn-primary" [routerLink]="['/login']" routerLinkActive="router-link-active">Đăng nhập</button>
+    </div>
+  </div>
+  <div class="form col-md-6 col-sm-12 p-5 border-end rounded shadow">
+    <h2 class="mb-4">ĐĂNG KÝ</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <input type="text" class="form-control" formControlName="fullname" placeholder="Full Name" required>
+        <small class="text-danger"
+          *ngIf="registerForm.get('fullname')?.invalid && registerForm.get('fullname')?.touched">
+          Họ và tên là bắt buộc.
+        </small>
+      </div>
+      <div class="mb-3">
+        <input type="email" class="form-control" formControlName="email" placeholder="Email" required>
+        <small class="text-danger" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          Vui lòng nhập email hợp lệ.
+        </small>
+      </div>
+      <div class="mb-3">
+        <input type="text" class="form-control" formControlName="username" placeholder="User Name" required>
+        <small class="text-danger"
+          *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+          Tên đăng nhập là bắt buộc.
+        </small>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <input type="password" class="form-control" formControlName="password" placeholder="Password">
+          <small class="text-danger"
+            *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+            Mật khẩu là bắt buộc.
+          </small>
+        </div>
+        <div class="col-md-6">
+          <input type="password" class="form-control" formControlName="confirmPassword" placeholder="Confirm Password">
+          <small class="text-danger" *ngIf="registerForm.errors?.['passwordMismatch']">
+            Mật khẩu không khớp.
+          </small>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Register</button>
+    </form>
+  </div>
+</div>

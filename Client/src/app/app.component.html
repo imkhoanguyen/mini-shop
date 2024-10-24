@@ -1,6 +1,4 @@
-<div class="d-flex">
-  <div class="container m-5" *ngIf="!isAdminPage()">
-    <router-outlet></router-outlet>
-  </div>
+<div *ngIf="!isAdminPage()">
+  <router-outlet></router-outlet>
 </div>
 <router-outlet *ngIf="isAdminPage()"></router-outlet>

@@ -1,0 +1,15 @@
+.nav-link:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+  border-radius: 0.25rem;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+.img-rounded {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+}
+

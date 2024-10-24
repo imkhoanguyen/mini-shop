@@ -1,10 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RoleService } from '../../../_services/role.service';
-import { Role } from '../../../_models/role.model';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { Table, TableModule } from 'primeng/table';
 import {
   FormBuilder,
   FormControl,
@@ -14,18 +14,24 @@ import {
   Validators,
 } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { Role } from '../../../_models/role';
+import { Pagination } from '../../../_models/pagination';
+import { PaginatorModule } from 'primeng/paginator';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../_services/auth.service';
 
 @Component({
   selector: 'app-role',
   standalone: true,
   imports: [
-    ToastModule,
     DialogModule,
     ToastModule,
     FormsModule,
     ReactiveFormsModule,
     DatePipe,
     ConfirmPopupModule,
+    PaginatorModule,
+    TableModule,
   ],
   templateUrl: './role.component.html',
   styleUrl: './role.component.css',
@@ -35,14 +41,20 @@ export class RoleComponent implements OnInit {
   private roleServices = inject(RoleService);
   roles: Role[] = [];
   private fb = inject(FormBuilder);
+  private router = inject(Router);
   frm: FormGroup = new FormGroup({});
   visible: boolean = false;
   edit = false;
+  pagination: Pagination | undefined;
+  pageNumber = 1;
+  pageSize = 5;
+  search: string = '';
   private roleId?: string;
 
   constructor(
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    public authServices: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -57,11 +69,29 @@ export class RoleComponent implements OnInit {
     });
   }
 
+  onPageChange(event: any) {
+    this.pageNumber = event.page + 1;
+    this.pageSize = event.rows;
+    this.loadRoles();
+  }
+
+  onSearch() {
+    // reset pageNumber
+    this.pageNumber = 1;
+    this.loadRoles();
+  }
+
   loadRoles() {
-    this.roleServices.getRoles().subscribe({
-      next: (response) => (this.roles = response),
-      error: (error) => this.showError(error.error),
-    });
+    this.roleServices
+      .getRoles(this.pageNumber, this.pageSize, this.search)
+      .subscribe({
+        next: (response) => {
+          if (response.items && response.pagination) {
+            this.roles = response.items;
+            this.pagination = response.pagination;
+          }
+        },
+      });
   }
 
   onSubmit() {
@@ -91,7 +121,7 @@ export class RoleComponent implements OnInit {
       this.roleServices.addRole(role).subscribe({
         next: (response) => {
           this.roles.unshift(response);
-          this.showSuccess('Thêm role thành công');
+          this.showSuccess('Thêm quyền thành công');
           this.closeDialog();
         },
         error: (error) => this.showError(error.error),
@@ -166,5 +196,8 @@ export class RoleComponent implements OnInit {
       detail: detail,
       life: 3000,
     });
+  }
+  onGoRolePermission(roleId: string) {
+    this.router.navigate(['/admin/role/permission', roleId]);
   }
 }

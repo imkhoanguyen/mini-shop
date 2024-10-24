@@ -1,40 +1,36 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
-using API.Data.Enum;
-using API.DTOs;
 
 namespace API.Entities
 {
     public class OrderItems : BaseEntity
     {
-       
-        public int? order_id { get; set; }
-        [ForeignKey("order_id")]
-        public Order? Order { get; set; }
-        public int? product_id { get; set; }
-        [ForeignKey("product_id")]
-        public Product? Product { get; set; }
-        public int? quantity { get; set; }
-        public decimal? price { get; set; }
-        public decimal? subtotal { get; set; }
-        public string? product_name { get; set; }
-        public string? size_name { get; set; }
-        public string? color_name { get; set; }
-        
-        public static OrderItemsDto toOrderItemsDto(OrderItems OrderItems)
-        {
-            return new OrderItemsDto
-            {   
-                order_id=OrderItems.order_id,
-                product_id=OrderItems.product_id,
-                quantity=OrderItems.quantity,
-                price=OrderItems.price,
-                subtotal=OrderItems.subtotal,
-                product_name=OrderItems.product_name,
-                size_name=OrderItems.size_name,
-                color_name=OrderItems.color_name,
-
-            };
-        }
+        public int OrderId{get;set;}
+        public int ProductId { get; set; }
+        public int Quantity{get;set;}
+        public decimal Price{get;set;}
+        public decimal Subtotal { get; set; }
+        public string ProductName{get;set;}
+        public string SizeName { get; set; }
+        public string ColorName { get; set; }
+        [ForeignKey("OrderId")]
+        public Order? Order{get;set;}
+        [ForeignKey("ProductId")]
+        public Product? Product{get;set;}
+        public int ShippingMethodId { get; set; }
+        [ForeignKey("ShippingMethodId")]
+        public ShippingMethod? ShippingMethod { get; set; }
+        public int orderId{get;set;}
+        public int productId { get; set; }
+        public int quantity{get;set;}
+        public decimal price{get;set;}
+        public decimal subtotal { get; set; }
+        public string productName{get;set;}
+        public string sizeName { get; set; }
+        public string colorName { get; set; }
+        [ForeignKey("orderId")]
+        public Order? order{get;set;}
+        [ForeignKey("productId")]
+        public Product? product{get;set;}
     }
 }

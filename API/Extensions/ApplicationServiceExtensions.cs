@@ -1,3 +1,4 @@
+﻿using API.Configurations;
 using API.Data;
 using API.Errors;
 using API.Helpers;
@@ -5,8 +6,10 @@ using API.Interfaces;
 using API.Repositories;
 using API.Services;
 using CloudinaryDotNet;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace API.Extensions
 {
@@ -33,11 +36,18 @@ namespace API.Extensions
             services.AddAuthentication()
                 .AddGoogle(option =>
                 {
-                    IConfigurationSection googleAuthNSection =
-                        config.GetSection("Authentication:Google");
+                    IConfigurationSection googleAuthNSection = config.GetSection("Authentication:Google");
                     option.ClientId = googleAuthNSection["ClientId"]!;
                     option.ClientSecret = googleAuthNSection["ClientSecret"]!;
-                });
+                })
+                .AddFacebook(option =>
+                {
+                    IConfigurationSection facebookAuthNSection = config.GetSection("Authentication:Facebook");
+                    option.AppId = facebookAuthNSection["AppId"]!;
+                    option.AppSecret = facebookAuthNSection["AppSecret"]!;
+                }
+            );
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISizeRepository, SizeRepository>();
@@ -47,7 +57,19 @@ namespace API.Extensions
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ICartItemsRepository, CartItemsRepository>();
+            services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
+            services.AddScoped<IPaymentsRepository,PaymentsRepository>();
+            services.AddScoped<IOrderRepository,OrderRepository>();
+            services.AddScoped<IOrderItemsRepository,OrderItemsRepository>();
+            services.AddScoped<IShippingMethodRepository,ShippingMethodRepository>();
+            services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IVoucherRepository, VoucherRepository>();
+
 
             services.AddScoped<IVoucherRepository, VoucherRepository>();
 
@@ -69,14 +91,13 @@ namespace API.Extensions
                 };
             });
 
-            //services.AddCors(opt =>
-            //{
-            //    opt.AddPolicy("CorsPolicy", policy => 
-            //    {
-            //        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
-            //    });
-            //});
-
+            services.Configure<EmailConfig>(config.GetSection("MailSettings"));
+            services.AddScoped<IEmailService, EmailService>();
+            // setting thời gian hết hạn của token do asp.net identity tạo ra
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromSeconds(60 * 5); // 5p
+            });
             return services;
         }
     }

@@ -10,11 +10,8 @@ namespace API.DTOs
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        [Required]
-        public int SizeId { get; set; }
-
-        [Required]
-        public int ColorId { get; set; }
+        public int? SizeId { get; set; }
+        public int? ColorId { get; set; }
         public static Variant toVariant(VariantDto variantDto)
         {
             return new Variant
@@ -25,9 +22,11 @@ namespace API.DTOs
                 Quantity = variantDto.Quantity,
                 SizeId = variantDto.SizeId,
                 ColorId = variantDto.ColorId
+                
             };
         }
     }
+
     public class VariantAddDto
     {
         [Required]
@@ -35,15 +34,12 @@ namespace API.DTOs
         public decimal Price { get; set; }
         public decimal PriceSell { get; set; }
         public int Quantity { get; set; }
-        
-        [Required]
-        public int SizeId { get; set; }
+        public int? SizeId { get; set; }
+        public int? ColorId { get; set; }
 
-        [Required]
-        public int ColorId { get; set; }
         public static Variant toVariant(VariantAddDto variantAddDto)
         {
-            return new Variant
+            var variant = new Variant
             {
                 ProductId = variantAddDto.ProductId,
                 Price = variantAddDto.Price,
@@ -51,6 +47,32 @@ namespace API.DTOs
                 Quantity = variantAddDto.Quantity,
                 SizeId = variantAddDto.SizeId,
                 ColorId = variantAddDto.ColorId
+            };
+            return variant;
+        }
+    }
+    public class VariantGetDto{
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public decimal PriceSell { get; set; }
+        public int Quantity { get; set; }
+        public int? SizeId { get; set; }
+        public int? ColorId { get; set; }
+        public List<ImageGetDto> ImageUrls { get; set; } = new List<ImageGetDto>();
+    }
+    public class GetVariantById 
+    {
+        public int Id { get; set; }
+        public static Variant toVariant(VariantDto variantDto)
+        {
+            return new Variant
+            {
+                Id = variantDto.Id,
+                Price = variantDto.Price,
+                PriceSell = variantDto.PriceSell,
+                Quantity = variantDto.Quantity,
+                SizeId = variantDto.SizeId,
+                ColorId = variantDto.ColorId
             };
         }
     }

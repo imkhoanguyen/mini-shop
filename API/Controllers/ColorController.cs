@@ -60,14 +60,14 @@ namespace API.Controllers
                 return BadRequest(ModelState);
             if (await _unitOfWork.ColorRepository.colorExistsAsync(colorAddDto.Name!))
             {
-                return BadRequest("color với tên này đã tồn tại.");
+                return BadRequest(new {message ="color với tên này đã tồn tại."});
             }
             var color = ColorAddDto.toColor(colorAddDto);
             _unitOfWork.ColorRepository.AddColor(color);
 
             if (await _unitOfWork.Complete())
-                return Ok("Add color successfully.");
-            return BadRequest("Add color failed.");
+                return Ok(new {message ="Thêm màu sắc thành công"});
+            return BadRequest(new {message ="Thêm màu sắc thất bại"});
         }
 
         // PUT api/color/Update

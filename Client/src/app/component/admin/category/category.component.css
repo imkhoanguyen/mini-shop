@@ -1,7 +1,0 @@
-::ng-deep .p-table tbody tr:nth-child(even) {
-  background-color: #f9f9f9; /* Màu nền cho hàng chẵn */
-}
-
-::ng-deep .p-table tbody tr:nth-child(odd) {
-  background-color: #fff; /* Màu nền cho hàng lẻ */
-}

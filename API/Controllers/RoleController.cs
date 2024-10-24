@@ -1,10 +1,15 @@
-﻿using API.Data;
+﻿using API.Constains;
+using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Extensions;
 using API.Helper;
+using API.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -52,9 +57,9 @@ namespace API.Controllers
                 Created = r.Created,
             });
 
-            
-
             var roleDtos = await PagedList<RoleDto>.CreateAsync(roleDtosQuery, roleParams.PageNumber, roleParams.PageSize);
+
+            Response.AddPaginationHeader(roleDtos);
 
             return Ok(roleDtos);
         }
@@ -72,6 +77,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = ClaimStore.Role_Create)]
         public async Task<ActionResult<RoleDto>> CreateRole(RoleCreateDto roleCreateDto)
         {
             if (!ModelState.IsValid)
@@ -140,6 +146,59 @@ namespace API.Controllers
             return BadRequest("Đã xảy ra lỗi khi xóa role");
         }
 
+        [HttpGet("permissions")]
+        public ActionResult<List<PermissionGroupDto>> GetAllPermission()
+        {
+            return ClaimStore.AllPermissionGroups;
+        }
+
+        [HttpGet("claims/{roleId}")]
+        public async Task<ActionResult<List<string>>> GetRoleClaims(string roleId)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null) return NotFound("Không tìm thấy quyền");
+
+            var claims = await _roleManager.GetClaimsAsync(role);
+
+            return Ok(claims.Select(c => c.Value).ToList());
+        }
+
+        [HttpPut("update-claims/{roleId}")]
+        public async Task<IActionResult> UpdateRoleClaims(string roleId, [FromBody] List<string> newRoleClaims)
+        {
+            var role = await _roleManager.FindByIdAsync(roleId);
+            if (role == null) return NotFound("Không tìm thấy quyền");
+
+            var currentClaims = await _roleManager.GetClaimsAsync(role);
+            var currentClaimValues = currentClaims.Select(c => c.Value).ToList();
+
+          
+            var claimsToAdd = newRoleClaims.Except(currentClaimValues).ToList();
+
+            var claimsToRemove = currentClaimValues.Except(newRoleClaims).ToList();
+
+            // Xóa các claim không còn trong danh sách mới
+            foreach (var claimValue in claimsToRemove)
+            {
+                var claim = currentClaims.FirstOrDefault(c => c.Value == claimValue);
+                if (claim != null)
+                {
+                    var result = await _roleManager.RemoveClaimAsync(role, claim);
+                    if (!result.Succeeded) return BadRequest($"Không thể xóa claim: {claimValue}");
+                }
+            }
+
+            // Thêm các claim mới
+            foreach (var claimValue in claimsToAdd)
+            {
+                var result = await _roleManager.AddClaimAsync(role, new Claim("permission", claimValue));
+                if (!result.Succeeded) return BadRequest($"Không thể thêm claim: {claimValue}");
+            }
+
+            return Ok(new { message = "Cập nhật chức năng của quyền thành công" });
+        }
+
+
         private async Task<bool> RoleIdExists(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -162,5 +221,7 @@ namespace API.Controllers
             if (role != null) return true;
             return false;
         }
+
+        
     }
 }

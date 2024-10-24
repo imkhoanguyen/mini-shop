@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@angular/forms": "^18.2.4",
-    "@angular/router": "^18.2.4"
+    "@angular/router": "^18.2.4",
+    "ngx-toastr": "^19.0.0"
   }
 }

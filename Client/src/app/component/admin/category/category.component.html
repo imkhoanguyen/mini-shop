@@ -1,70 +1,104 @@
-<div class="card">
-  <div class="row align-items-center mb-3">
-    <div class="col">
-      <input type="text" pInputText placeholder="Tìm kiếm..." class="w-100" />
-    </div>
-    <div class="col-auto">
-      <p-dropdown
-        [options]="pageSize"
-        optionLabel="name"
-        placeholder="Số lượng trang"
-      ></p-dropdown>
-    </div>
-    <div class="col-auto">
-      <p-button
-        label="Thêm Danh mục"
-        icon="pi pi-plus"
-        size="large"
-        severity="success"
-        class="ml-2"
-      ></p-button>
-    </div>
+<p-toast />
+<p-confirmDialog />
+<div class="row align-items-center mb-3">
+  <div class="col">
+    <input
+      type="text"
+      [(ngModel)]="searchString"
+      (input)="onSearch()"
+      pInputText
+      placeholder="Tìm kiếm..."
+      class="w-100"
+    />
   </div>
-
-  <p-table
-    [value]="category"
-    [(selection)]="selectedCategories"
-    dataKey="id"
-    [tableStyle]="{ 'min-width': '50rem' }"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width: 4rem">
-          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-        </th>
-        <th>Id</th>
-        <th>Name</th>
-        <th>ParentID</th>
-        <th>Action</th>
-      </tr>
-    </ng-template>
-
-    <ng-template pTemplate="body" let-category>
-      <tr>
-        <td>
-          <p-tableCheckbox [value]="category"></p-tableCheckbox>
-        </td>
-        <td>{{ category.id }}</td>
-        <td>{{ category.name }}</td>
-        <td>{{ category.parentId }}</td>
-        <td>
-          <p-button
-            icon="pi pi-file-edit"
-            label="Sửa"
-            [rounded]="true"
-            severity="info"
-            size="small"
-            class="mr-2"
-          ></p-button>
-          <p-button
-            icon="pi pi-trash"
-            label="Xóa"
-            [rounded]="true"
-            severity="danger"
-            size="small"
-          ></p-button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+  <div class="col-auto">
+    <p-dropdown
+      [options]="pageSizeOptions"
+      [(ngModel)]="pageSize"
+      optionLabel="label"
+      [placeholder]="'Số lượng trang'"
+      (onChange)="onPageSizeChange($event.value)"
+    ></p-dropdown>
+  </div>
+  <div class="col-auto">
+    <p-button
+      label="Thêm Danh mục"
+      icon="pi pi-plus"
+      severity="success"
+      (click)="showDialog()"
+    ></p-button>
+  </div>
 </div>
+
+<!-- Dialog Add/Update Category -->
+<p-dialog
+  [header]="headerText"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  [modal]="true"
+>
+  <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+    <div class="flex align-items-center gap-3 mb-3">
+      <label for="name" class="font-semibold w-6rem">Tên: </label>
+      <input
+        pInputText
+        id="name"
+        class="flex-auto"
+        autocomplete="off"
+        formControlName="name"
+      />
+      <div *ngIf="categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched">
+        <small class="text-danger">Tên không được để trống</small>
+      </div>
+    </div>
+    <div class="flex justify-content-end gap-2">
+      <p-button label="Cancel" severity="secondary" (click)="visible = false"></p-button>
+      <p-button label="{{ btnText }}" type="submit"></p-button>
+    </div>
+  </form>
+</p-dialog>
+
+<p-table
+  [value]="paginatedCategory"
+  [(selection)]="selectedCategories"
+  dataKey="id"
+  [tableStyle]="{ 'min-width': '50rem' }"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Ngày Tạo</th>
+      <th>Ngày Sửa</th>
+      <th>Action</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body" let-category>
+    <tr>
+      <td>{{ category.id }}</td>
+      <td>{{ category.name }}</td>
+      <td>{{ category.created | date: 'dd/MM/yyyy, hh:mm a' }}</td>
+      <td>{{ category.updated | date: 'dd/MM/yyyy, hh:mm a' }}</td>
+      <td>
+        <p-button
+          icon="pi pi-file-edit"
+          severity="info"
+          (click)="openUpdateDialog(category)"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          severity="danger"
+          (click)="confirmDelete(category, $event)"
+        ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-paginator
+  (onPageChange)="onPageChange($event)"
+  [first]="first"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords"
+></p-paginator>

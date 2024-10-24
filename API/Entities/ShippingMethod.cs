@@ -1,28 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using API.Data.Enum;
-using API.DTOs;
-
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Net.Http.Headers;
 namespace API.Entities
 {
     public class ShippingMethod : BaseEntity
     {
-       
-        public string? name { get; set; }
-        public decimal? cost { get; set; }
-        public DateTime? estimatedDeliveryTime { get; set; }
-        public DateTime? created_at { get; set; }
-        public DateTime? updated_at { get; set; }
+        public String Name {get;set;}=null!;
+        public decimal Cost{get;set;}
+        public DateTime EstimatedDeliveryTime{get;set;}
+        public DateTime Created{get;set;}=DateTime.UtcNow;
+        public DateTime Updated{get;set;}
         
-        public static ShippingMethodDto toShippingMethodDto(ShippingMethod ShippingMethod)
-        {
-            return new ShippingMethodDto
-            {
-                name=ShippingMethod.name,
-                cost=ShippingMethod.cost,
-                estimatedDeliveryTime=ShippingMethod.estimatedDeliveryTime,
-                created_at=ShippingMethod.created_at,
-                updated_at=ShippingMethod.updated_at
-            };
-        }
     }
+
+
 }

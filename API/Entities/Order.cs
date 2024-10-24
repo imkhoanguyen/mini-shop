@@ -1,42 +1,23 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
-using API.Data.Enum;
-using API.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Entities
-{
+ {
     public class Order : BaseEntity
     {
-       
-        public decimal? totalprice { get; set; }
-        public int? status { get; set; }
-        public DateTime? order_date { get; set; }
-        public string? receiver_name { get; set; }
-        public string? address { get; set; }
-        public string? phone { get; set; }
-        public string? user_id { get; set; }
-        [ForeignKey("user_id")]
-        public AppUser? AppUser { get; set; }
-        public DateTime? created_at { get; set; }
-        public DateTime? updated_at { get; set; }
-        public int? shipping_method_id { get; set; }
-        public decimal? shipping_fee { get; set; }
-        
-        public static OrderDto toOrderDto(Order Order)
-        {
-            return new OrderDto
-            {   
-                totalprice=Order.totalprice,
-                status=Order.status,
-                order_date=Order.order_date,
-                receiver_name=Order.receiver_name,
-                address=Order.address,
-                phone=Order.phone,
-                created_at=Order.created_at,
-                updated_at=Order.updated_at,
-                shipping_method_id=Order.shipping_method_id,
-                shipping_fee=Order.shipping_fee
-            };
-        }
+        public decimal Total_price{get;set;}
+        public DateTime Order_date{get;set;}
+        public int Status {get;set;}
+        public string Address{get;set;}
+        public string Phone{get;set;}
+        public decimal Shipping_fee{get;set;}
+        public string Reciever_name{get;set;}
+        public DateTime Created { get; set; }=DateTime.UtcNow;
+        public DateTime Updated { get; set; }
+        public int ShippingMethodId{get;set;}
+        [ForeignKey("ShippingMethodId")]
+        public ShippingMethod? ShippingMethod{get;set;}
+        public List<OrderItems> OrderItems{get;set;}=new List<OrderItems>();
     }
-}
+ }

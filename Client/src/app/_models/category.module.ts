@@ -2,5 +2,6 @@ export interface Category
 {
   id: number;
   name: string;
-  parentId: number;
+  created: Date;
+  updated: Date;
 }
