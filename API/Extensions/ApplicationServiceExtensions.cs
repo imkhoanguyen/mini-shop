@@ -21,6 +21,7 @@ namespace API.Extensions
             services.AddDbContext<StoreContext>(opt =>
             {
                 opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
             services.AddSingleton(c =>
                 {

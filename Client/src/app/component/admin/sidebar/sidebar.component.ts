@@ -40,6 +40,17 @@ export class SidebarComponent{
       routerLink: 'role',
       icon: 'pi pi-key',
       label: 'Quyền',
+    },
+    {
+      routerLink: 'courter', // Đúng: 'routerLink'
+      icon: 'pi pi-shopping-cart',
+      label: 'Bán hàng tại quầy'
+    },
+    
+    {
+      routerLink: 'order',
+      icon:'pi pi-check-square',
+      label: 'Quản lý đơn hàng'
     }
   ];
 

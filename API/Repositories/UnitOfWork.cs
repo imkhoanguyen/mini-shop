@@ -1,5 +1,6 @@
 ﻿using API.Data;
 using API.Interfaces;
+using API.Services;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace API.Repositories
@@ -17,6 +18,7 @@ namespace API.Repositories
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
         private readonly IShoppingCartRepository _shoppingCartRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IShippingMethodRepository _shippingMethodRepository;
         private readonly IPaymentsRepository _paymentsRepository;
         private readonly IOrderRepository _orderRepository;
@@ -29,6 +31,9 @@ namespace API.Repositories
              IColorRepository colorRepository, IMessageRepository messageRepository,
              IImageRepository imageRepository, IVariantRepository variantRepository,
              ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
+             IImageRepository imageRepository, IImageService imageService,
+             IVariantRepository variantRepository,ICartItemsRepository cartItemsRepository,
+             IShoppingCartRepository shoppingCartRepository, IReviewRepository reviewRepository,
              IShippingMethodRepository shippingMethodRepository,IPaymentsRepository paymentsRepository,
              IOrderRepository orderRepository,IOrderItemsRepository orderItemsRepository)
              IImageRepository imageRepository, IImageService imageService,
@@ -43,10 +48,11 @@ namespace API.Repositories
             _colorRepository = colorRepository;
             _messageRepository = messageRepository;
             _imageRepository = imageRepository;
-            _imageService = imageService;
+            _imageService=imageService;
             _variantRepository = variantRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
+            _reviewRepository = reviewRepository;
             _shippingMethodRepository=shippingMethodRepository;
             _paymentsRepository=paymentsRepository;
             _orderRepository=orderRepository;
@@ -60,13 +66,20 @@ namespace API.Repositories
         public IColorRepository ColorRepository => _colorRepository;
         public IMessageRepository MessageRepository => _messageRepository;
         public IImageRepository ImageRepository => _imageRepository;
-        public IVariantRepository VariantRepository => _variantRepository;
+
         public ICartItemsRepository CartItemsRepository =>_cartItemsRepository;
         public IShoppingCartRepository ShoppingCartRepository => _shoppingCartRepository;
+
+        public IImageService ImageService => _imageService;
+        public IReviewRepository ReviewRepository => _reviewRepository;
         public IShippingMethodRepository ShippingMethodRepository => _shippingMethodRepository;
         public IPaymentsRepository PaymentsRepository => _paymentsRepository;
         public IOrderRepository OrderRepository => _orderRepository;
         public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
+
+        public IVariantRepository VariantRepository => _variantRepository;
+
+        //public IImageService ImageService => _imageService
         public IUserRepository UserRepository => _userRepository;
         public IImageService ImageService => _imageService;
         public IReviewRepository ReviewRepository => _reviewRepository;

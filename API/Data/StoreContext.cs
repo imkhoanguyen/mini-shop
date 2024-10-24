@@ -28,6 +28,7 @@ namespace API.Data
         public DbSet<Payments> Payments{get;set;}
         public DbSet<Order> Orders{get;set;}
         public DbSet<OrderItems> OrderItems{get;set;}
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()

@@ -8,6 +8,8 @@ import { DashboardComponent } from './component/admin/dashboard/dashboard.compon
 import { ProductComponent } from './component/admin/product/product.component';
 import { LoginComponent } from './component/login/login.component';
 import { RegisterComponent } from './component/register/register.component';
+import { OrderComponent } from './component/admin/order/order.component';
+import { CourterComponent } from './component/admin/courter/courter.component';
 import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
 import { ForgotpasswordComponent } from './component/forgotpassword/forgotpassword.component';
 import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
@@ -28,7 +30,9 @@ export const routes: Routes = [
       { path: 'product/edit/:id', component: ProductFormComponent},
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
-      { path: 'role/permission/:id', component: RolePermissionComponent },
+      { path: 'order',component: OrderComponent},
+      { path: 'courter',component:CourterComponent},
+      { path: 'role/permission/:id', component: RolePermissionComponent }
     ],
   },
   { path: 'login', component: LoginComponent },
