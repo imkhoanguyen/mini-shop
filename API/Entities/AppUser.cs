@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using API.DTOs;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities
 {
@@ -13,5 +14,17 @@ namespace API.Entities
         public List<Image> Images { get; set; } = new();
         public List<Message> MessageSent { get; set; } = new();
         public List<Message> MessageReceived { get; set; } = new();
+
+        public static UserDto toUserDto(AppUser user)
+        {
+            return new UserDto
+            {
+                Id = user.Id,
+                Fullname = user.Fullname,
+                UserName = user.UserName,
+                Email = user.Email,
+                Avatar = user.Avatar,
+            };
+        }
     }
 }

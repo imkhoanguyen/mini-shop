@@ -1,0 +1,73 @@
+<h1 class="mb-4">Danh sách đơn hàng</h1>
+<div class="row align-items-center mb-3">
+    <div class="row">
+      <div class="mb-3 col-3">
+        <label>Từ ngày:</label>
+        <p-calendar
+          [(ngModel)]="startDate"
+          placeholder="dd/mm/yyyy"
+          dateFormat="dd/mm/yyyy"
+          showIcon="true"
+          readonlyInput="true"
+          class="form-control"
+        ></p-calendar>
+      </div>
+      <div class=" mb-3 col-3">
+        <label>Đến ngày:</label>
+        <p-calendar
+          [(ngModel)]="endDate"
+          placeholder="dd/mm/yyyy"
+          dateFormat="dd/mm/yyyy"
+          showIcon="true"
+          readonlyInput="true"
+          class="form-control"
+        ></p-calendar>
+      </div>
+    </div>
+</div>
+<p-table
+  dataKey=""
+
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 5rem;padding: 1rem;"></th>
+      <th pSortableColumn="fullname" class="px-3 py-2">Tên khách hàng</th>
+      <th pSortableColumn="address" class="px-3 py-2">Địa chỉ</th>
+      <th pSortableColumn="quantity" class="px-3 py-2">Số lượng sản phẩm</th>
+      <th pSortableColumn="price" class="px-3 py-2">Tổng giá</th>
+      <th pSortableColumn="created" class="px-3 py-2">Ngày đặt</th>
+      <th pSortableColumn="status" class="px-3 py-2">Trạng thái</th>
+      <th class="px-3 py-2">Action</th>
+
+    </tr>
+   
+  </ng-template>
+  <ng-template pTemplate="body">
+    <tr>
+      <td>
+        <p-button 
+          tyoe="button" 
+          pRipple [text]="true"
+          [rounded]="true"
+          [icon]="expanded ? 'pi pi-chevron-down' :'pi pi-chevron-right'"
+          ></p-button>
+      </td>
+      <td> Luan</td>
+      <td>127/18 p7,q5</td>
+      <td>7</td>
+      <td>1234000</td>
+      <td>10/10/2020</td>
+      <td>Not Accept</td>
+      <td>
+        <p-button
+        icon="pi pi-file-edit"
+        [rounded]="true"
+        severity="info"
+        class="mr-1 p-button-rounded"
+        ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+  
+</p-table>

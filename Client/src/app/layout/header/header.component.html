@@ -27,9 +27,21 @@
             <i class="fas fa-bell"></i>
           </a>
         </div>
-        <div *ngIf="accountService.currentUser()?.id" class="dropdown">
+        <div *ngIf="accountService.currentUser()" class="dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <img class="img-rounded" src="http://localhost:5000/avatar/{{accountService.currentUser()?.avatar}}" alt="User Avatar">
+            @if(accountService.currentUser()?.avatar == "user.jpg"){
+              <img
+              class="img-rounded"
+              src="http://localhost:5000/avatar/{{accountService.currentUser()?.avatar}}"
+              alt="User Avatar">
+            }
+            @else{
+              <img
+              class="img-rounded"
+              [src]="accountService.currentUser()?.avatar"
+              alt="User Avatar">
+            }
+
             <i class="fas fa-user"></i> {{ accountService.currentUser()?.fullname }}
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -43,3 +55,4 @@
     </div>
   </div>
 </nav>
+<app-chat></app-chat>

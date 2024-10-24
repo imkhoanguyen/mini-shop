@@ -1,4 +1,4 @@
-﻿using API.Configurations;
+﻿﻿using API.Configurations;
 using API.Data;
 using API.Errors;
 using API.Helpers;
@@ -20,7 +20,8 @@ namespace API.Extensions
         {
             services.AddDbContext<StoreContext>(opt =>
             {
-                opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
+                opt.UseNpgsql(config.GetConnectionString("DefaultConnection"));
             });
             services.AddSingleton(c =>
                 {
@@ -35,11 +36,18 @@ namespace API.Extensions
             services.AddAuthentication()
                 .AddGoogle(option =>
                 {
-                    IConfigurationSection googleAuthNSection =
-                        config.GetSection("Authentication:Google");
+                    IConfigurationSection googleAuthNSection = config.GetSection("Authentication:Google");
                     option.ClientId = googleAuthNSection["ClientId"]!;
                     option.ClientSecret = googleAuthNSection["ClientSecret"]!;
-                });
+                })
+                .AddFacebook(option =>
+                {
+                    IConfigurationSection facebookAuthNSection = config.GetSection("Authentication:Facebook");
+                    option.AppId = facebookAuthNSection["AppId"]!;
+                    option.AppSecret = facebookAuthNSection["AppSecret"]!;
+                }
+            );
+
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ISizeRepository, SizeRepository>();
@@ -51,8 +59,17 @@ namespace API.Extensions
             services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<ICartItemsRepository, CartItemsRepository>();
             services.AddScoped<IShoppingCartRepository,ShoppingCartRepository>();
+            services.AddScoped<IPaymentsRepository,PaymentsRepository>();
+            services.AddScoped<IOrderRepository,OrderRepository>();
+            services.AddScoped<IOrderItemsRepository,OrderItemsRepository>();
+            services.AddScoped<IShippingMethodRepository,ShippingMethodRepository>();
+            services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
             services.AddScoped<IReviewRepository, ReviewRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IVoucherRepository, VoucherRepository>();
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = actionContext =>
@@ -71,20 +88,12 @@ namespace API.Extensions
                 };
             });
 
-            //services.AddCors(opt =>
-            //{
-            //    opt.AddPolicy("CorsPolicy", policy => 
-            //    {
-            //        policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
-            //    });
-            //});
-
             services.Configure<EmailConfig>(config.GetSection("MailSettings"));
             services.AddScoped<IEmailService, EmailService>();
             // setting thời gian hết hạn của token do asp.net identity tạo ra
             services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
-                options.TokenLifespan = TimeSpan.FromSeconds(60*5); // 5p
+                options.TokenLifespan = TimeSpan.FromSeconds(60 * 5); // 5p
             });
 
             services.AddSignalR();

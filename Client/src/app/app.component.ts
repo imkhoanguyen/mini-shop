@@ -4,7 +4,6 @@ import { HeaderComponent } from "./layout/header/header.component";
 import { MainComponent } from './component/admin/main/main.component';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './component/admin/sidebar/sidebar.component';
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -12,7 +11,8 @@ import { SidebarComponent } from './component/admin/sidebar/sidebar.component';
     HeaderComponent,
     CommonModule,
     SidebarComponent,
-    MainComponent],
+    MainComponent,
+    ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

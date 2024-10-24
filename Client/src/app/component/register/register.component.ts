@@ -17,6 +17,7 @@ import { ToastModule } from 'primeng/toast';
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
+  registrationError: string | null = null;
   accountService = inject(AccountService);
   constructor(private router: Router, private messageService: MessageService){}
 
@@ -49,28 +50,28 @@ export class RegisterComponent implements OnInit {
       this.messageService.add({ severity, summary: 'Cảnh báo', detail, life });
     }
   }
-  onSubmit()
-  {
-    const data : Register = {
+  onSubmit() {
+    const data: Register = {
       fullname: this.registerForm.get('fullname')?.value,
       email: this.registerForm.get('email')?.value,
       username: this.registerForm.get('username')?.value,
       password: this.registerForm.get('password')?.value
+    };
+    if(this.registerForm.invalid){
+      this.showMessage('error', 'Vui lòng nhập đầy đủ thông tin');
+      return;
     }
-    console.log("register", data)
     this.accountService.register(data).subscribe(
       (res: any) => {
         console.log("Register success", res);
-        this.showMessage('success', 'Đăng ký thành công. Đang chuyển sang đăng nhập')
-        setTimeout(() =>{
+        this.showMessage('success', 'Đăng ký thành công. Đang chuyển sang đăng nhập');
+        setTimeout(() => {
           this.router.navigateByUrl('/login');
-        }, 1000);
-
+        }, 200);
       },
       (error) => {
-        this.showMessage('error', 'Đăng ký không thành công.');
-        console.log("Register failed", error);
+        this.showMessage('error', error);
       }
-    )
+    );
   }
 }

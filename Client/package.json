@@ -1,14 +1,4 @@
 {
-  "name": "client",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
-  "private": true,
   "dependencies": {
     "@abacritt/angularx-social-login": "^2.3.0",
     "@angular/animations": "^18.2.5",
@@ -45,5 +35,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.5.2"
+    "@angular/forms": "^18.2.4",
+    "@angular/router": "^18.2.4"
   }
 }

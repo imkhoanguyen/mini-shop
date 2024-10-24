@@ -15,7 +15,12 @@ namespace API.Interfaces
         ICloudinaryService ImageService { get; }
         IMessageRepository MessageRepository { get; }
         IReviewRepository ReviewRepository { get; }
-
+        IShippingMethodRepository ShippingMethodRepository{get;}
+        IPaymentsRepository PaymentsRepository{get;}
+        IOrderRepository OrderRepository{get;}
+        IOrderItemsRepository OrderItemsRepository{get;}
+        IUserRepository UserRepository { get; }
+        IVoucherRepository VoucherRepository { get; }
         Task<bool> Complete();
     }
 }

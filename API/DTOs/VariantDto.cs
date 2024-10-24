@@ -60,4 +60,20 @@ namespace API.DTOs
         public int? ColorId { get; set; }
         public List<ImageGetDto> ImageUrls { get; set; } = new List<ImageGetDto>();
     }
+    public class GetVariantById 
+    {
+        public int Id { get; set; }
+        public static Variant toVariant(VariantDto variantDto)
+        {
+            return new Variant
+            {
+                Id = variantDto.Id,
+                Price = variantDto.Price,
+                PriceSell = variantDto.PriceSell,
+                Quantity = variantDto.Quantity,
+                SizeId = variantDto.SizeId,
+                ColorId = variantDto.ColorId
+            };
+        }
+    }
 }

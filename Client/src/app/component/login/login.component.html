@@ -1,3 +1,4 @@
+<p-toast />
 <div class="container px-0 d-flex justify-content-center">
   <div class="form col-md-6 col-sm-12 p-5 border-end">
     <h2 class="mb-4">ĐĂNG NHẬP</h2>
@@ -12,24 +13,20 @@
         <a [routerLink]="['/forgot-password']"  routerLinkActive="router-link-active" style="text-decoration: none;">Forgot Password?</a>
       </div>
       <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
-
+    </form>
       <div class="social-login text-center mb-3">
         <span>-Or Login with-</span>
       </div>
 
-      <div class="row g-2">
-        <div class="col-6">
-          <div id="google-btn" ></div>
-
-
+        <div class="col-12">
+          <div style="width: 100%" id="google-btn"></div>
         </div>
-        <div class="col-6">
-          <button type="button" class="btn btn-primary w-100">
+        <div class="col-12">
+          <button style="width: 100%" type="button" (click)="loginWithFacebook()" class="btn btn-danger">
             <i class="bi bi-facebook"></i> Facebook
           </button>
         </div>
-      </div>
-    </form>
+
   </div>
 
   <!-- Registration Info -->
