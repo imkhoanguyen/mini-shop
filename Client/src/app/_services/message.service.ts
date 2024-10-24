@@ -20,7 +20,7 @@ export class MessageService {
       "&take="+take);
   }
   uploadFiles(files: FormData): Observable<{ fileUrl: string, fileType: string }[]> {
-    return this.http.post<{ fileUrl: string, fileType: string }[]>(this.apiUrl + "/Messages/UploadFile", files);
+    return this.http.post<{ fileUrl: string, fileType: string }[]>(this.apiUrl + "/Messages/UploadFiles", files);
   }
 
   sendMessage(data: Message): Observable<Message> {

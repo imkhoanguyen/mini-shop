@@ -7,7 +7,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from '../../_services/message.service';
 import { Message } from '../../_models/message.module';
 import { ChatService } from '../../_services/chat.service';
-import { ChangeDetectorRef, NgZone } from '@angular/core';
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -22,6 +21,7 @@ export class ChatComponent implements OnInit {
   user!: User;
   content: string = '';
   loadingOldMessages = false;
+  skip: number = 0;
   selectedFiles: { src: string; file: File; type: string }[] = [];
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
@@ -29,7 +29,7 @@ export class ChatComponent implements OnInit {
   private accountService = inject(AccountService);
   private userService = inject(UserService);
   private messageService = inject(MessageService);
-  constructor(private cd: ChangeDetectorRef, private zone: NgZone) {
+  constructor() {
     const userJson = localStorage.getItem('user');
     if (userJson) {
       this.user = JSON.parse(userJson) as User;
@@ -40,17 +40,25 @@ export class ChatComponent implements OnInit {
     this.loadUsersWithAdminRole();
     this.chatService.onMessageReceived((content) => {
       this.messages.push(content);
+
     });
-    this.scrollToBottom();
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 100);
   }
 
   toggleChatWindow() {
     this.showChatWindow = !this.showChatWindow;
+    if (this.showChatWindow) {
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 10);
+    }
   }
   loadUsersWithAdminRole() {
     this.userService.getUsersWithAdminRole().subscribe((users) => {
       this.adminUsers = users;
-      this.loadMessages();
+      this.loadOldMessages();
     });
   }
   onScroll() {
@@ -61,15 +69,16 @@ export class ChatComponent implements OnInit {
   }
   loadOldMessages() {
     this.loadingOldMessages = true;
-    const skip = this.messages.length;
+    const currentSkip = this.messages.length;
 
     this.messageService
-      .getMessages(this.user.id, this.adminUsers[0].id, skip, 20)
+      .getMessages(this.user.id, this.adminUsers[0].id, currentSkip, 10)
       .subscribe(
         (messages: Message[]) => {
           if (messages.length > 0) {
-            this.messages = [...messages, ...this.messages];
+            this.messages = [...messages.reverse(), ...this.messages];
           }
+          this.skip += messages.length;
           this.loadingOldMessages = false;
         },
         (error) => {
@@ -79,20 +88,6 @@ export class ChatComponent implements OnInit {
       );
   }
 
-  loadMessages() {
-    if (this.adminUsers.length > 0) {
-      this.messageService.getMessages(this.user.id, this.adminUsers[0]?.id,0,20).subscribe(
-        (messages: Message[]) => {
-          this.messages = messages;
-        },
-        (error) => {
-          console.error('Error occurred:', error);
-        }
-      );
-    } else {
-      console.warn('No admin users found, cannot load messages.');
-    }
-  }
   onFileSelected(event: any) {
     const files: FileList = event.target.files;
     const newFiles: { src: string; file: File; type: string }[] = [];
@@ -185,6 +180,8 @@ export class ChatComponent implements OnInit {
             fileType: response.files[i].fileType,
             sentAt: new Date().toISOString(),
           };
+          console.log("message", message);
+          this.sendMessageToServer(message);
         }
         this.resetMessageInput();
       });
@@ -198,15 +195,19 @@ export class ChatComponent implements OnInit {
         fileType: undefined,
         sentAt: new Date().toISOString(),
       };
+      console.log("message1", message);
       this.sendMessageToServer(message);
       this.resetMessageInput();
     }
   }
+
   sendMessageToServer(message: Message) {
+    console.log("message", message);
     this.messageService.sendMessage(message).subscribe(
       (response) => {
         console.log(response);
         this.chatService.sendMessage(message);
+
         this.scrollToBottom();
       },
       (error) => {
@@ -214,6 +215,7 @@ export class ChatComponent implements OnInit {
       }
     );
   }
+
   resetMessageInput() {
     this.content = '';
     this.selectedFiles = [];

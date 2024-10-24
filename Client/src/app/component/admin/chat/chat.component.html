@@ -74,7 +74,7 @@
         <i class="bi bi-image-fill"></i>
         <input type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
       </label>
-      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" />
+      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" (keyup.enter)="sendMessage()" />
       <button (click)="sendMessage()">
         <i class="fas fa-paper-plane"></i>
         Send

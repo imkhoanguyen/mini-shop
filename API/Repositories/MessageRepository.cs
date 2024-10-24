@@ -25,7 +25,7 @@ namespace API.Repositories
             var messages = await _context.Messages
                 .Where(m => (m.Sender!.Id == senderId && m.Recipient!.Id == recipientId) ||
                             (m.Sender.Id == recipientId && m.Recipient!.Id == senderId))
-                .OrderBy(m => m.SentAt)
+                .OrderByDescending(m => m.SentAt)
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();

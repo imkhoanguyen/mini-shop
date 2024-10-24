@@ -11,26 +11,19 @@ namespace API.DTOs
         [Required]
         public string RecipientId { get; set; } = null!;
         public string? Content { get; set; }
+        public string? FileUrl { get; set; }
+        public string? FileType { get; set; }
         public static async Task<Message> ToMessageAsync(MessageAddDto messageAddDto)
         {
-            // string? uploadedFileUrl = null;
-            // string? fileType = null;
 
-            // // Kiểm tra và tải file nếu nó tồn tại
-            // if (messageAddDto.FileUrl != null)
-            // {
-            //     var uploadedFile = await fileService.UploadFileAsync(messageAddDto.FileUrl);
-            //     uploadedFileUrl = uploadedFile.Url.ToString();
-            //     fileType = messageAddDto.FileUrl.ContentType;
-            // }
 
             return new Message
             {
                 SenderId = messageAddDto.SenderId,
                 RecipientId = messageAddDto.RecipientId,
                 Content = messageAddDto.Content,
-                FileUrl = "",
-                FileType = "",
+                FileUrl = messageAddDto.FileUrl,
+                FileType = messageAddDto.FileType,
                 SentAt = DateTime.UtcNow
             };
         }

@@ -30,6 +30,7 @@ export class ChatComponent implements OnInit {
   content: string = '';
   loadingOldMessages = false;
   lastMessage: string = '';
+  skip: number = 0;
   selectedFiles: { src: string; file: File; type: string }[] = [];
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
@@ -56,12 +57,12 @@ export class ChatComponent implements OnInit {
     this.userService.getUsersWithCustomerRole().subscribe((users) => {
       this.customers = users;
       this.customers.forEach((customer) => {
-        this.messageService
-          .getLastMessage(this.user.id, customer.id)
-          .subscribe((message) => {
-            customer.lastMessage = message.content || '';
-          });
-      });
+        this.messageService.getLastMessage(this.user.id, customer.id)
+        .subscribe((message) => {
+          customer.lastMessage = message?.content || '';
+
+        });
+      })
     });
   }
   onScroll() {
@@ -74,15 +75,16 @@ export class ChatComponent implements OnInit {
   loadOldMessages() {
     if (!this.selectedUser) return;
     this.loadingOldMessages = true;
-    const skip = this.messages.length;
+    const currentSkip = this.messages.length;
 
     this.messageService
-      .getMessages(this.user.id, this.selectedUser.id, skip, 20)
+      .getMessages(this.user.id, this.selectedUser.id, currentSkip, 10)
       .subscribe(
         (messages: Message[]) => {
           if (messages.length > 0) {
-            this.messages = [...messages, ...this.messages];
+            this.messages = [...messages.reverse(), ...this.messages];
           }
+          this.skip += messages.length;
           this.loadingOldMessages = false;
         },
         (error) => {
@@ -111,8 +113,8 @@ export class ChatComponent implements OnInit {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const fileType = file.type;
-      const reader = new FileReader();
 
+      const reader = new FileReader();
       reader.onload = (e: any) => {
         if (fileType.startsWith('image/')) {
           newFiles.push({
@@ -190,6 +192,7 @@ export class ChatComponent implements OnInit {
             fileType: response.files[i].fileType,
             sentAt: new Date().toISOString(),
           };
+          console.log("message", message);
           this.sendMessageToServer(message);
         }
         this.resetMessageInput();
@@ -204,10 +207,13 @@ export class ChatComponent implements OnInit {
         fileType: undefined,
         sentAt: new Date().toISOString(),
       };
+      console.log("message1", message);
       this.sendMessageToServer(message);
       this.resetMessageInput();
     }
   }
+
+
 
   sendMessageToServer(message: Message) {
     this.messageService.sendMessage(message).subscribe(
@@ -233,4 +239,4 @@ export class ChatComponent implements OnInit {
     this.content = '';
     this.selectedFiles = [];
   }
-} 
+}

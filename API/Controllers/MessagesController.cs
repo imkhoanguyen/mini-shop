@@ -25,10 +25,39 @@ namespace API.Controllers
             _hub = hub;
             _fileService = fileService;
         }
+        [HttpPost("UploadFiles")]
+        public async Task<IActionResult> UploadFiles([FromForm] IFormFileCollection files)
+        {
+            // Nếu không có tệp, trả về response trống
+            if (files == null || files.Count == 0)
+            {
+                return Ok(new { files = new List<object>() });
+            }
+
+            var uploadResults = new List<object>();
+
+            foreach (var file in files)
+            {
+                var uploadResult = await _fileService.UploadFileAsync(file);
+                if (uploadResult == null)
+                {
+                    return BadRequest(new { message = $"File '{file.FileName}' upload failed." });
+                }
+
+                uploadResults.Add(new
+                {
+                    fileUrl = uploadResult.Url.ToString(),
+                    fileType = file.ContentType
+                });
+            }
+
+            return Ok(new { files = uploadResults });
+        }
+
         [HttpPost("SendMessage")]
         public async Task<IActionResult> SendMessage([FromBody] MessageAddDto messageDto)
         {
-           
+
             var message = await MessageAddDto.ToMessageAsync(messageDto);
             _message.AddMessage(message);
             if (await _unitOfWork.Complete())
