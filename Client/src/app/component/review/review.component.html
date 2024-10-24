@@ -1,8 +1,14 @@
 <p-toast />
 <div class="container shadow-lg p-5">
-  <div class="row">
-    <h3 class="col-6 mb-3">Đánh giá sản phẩm</h3>
-    <div class="col-6 text-end">
+  <div class="row mb-3">
+    <h3 class="col-6">Đánh giá sản phẩm</h3>
+    <div
+      class="col-6 text-end d-flex gap-2 align-items-center justify-content-end"
+    >
+      <select class="form-select w-50" (change)="onOrderByChange($event)">
+        <option value="id_desc" selected>Sắp xếp: Mới nhất</option>
+        <option value="id" selected>Sắp xếp: Cũ nhất</option>
+      </select>
       <button class="btn btn-primary" (click)="openFormCreateReview()">
         Đánh giá
       </button>
@@ -15,21 +21,64 @@
   >
     <div class="start-box d-flex flex-column gap-3">
       <div class="fw-bold text-primary">
-        <span style="font-size: 30px">4.9</span>
+        <span style="font-size: 30px">{{ totalRating.toFixed(1) }}</span>
         <span style="font-size: 18px"> trên 5</span>
       </div>
       <p-rating [ngModel]="5" [readonly]="true" [cancel]="false" />
     </div>
     <div class="filter-box d-flex align-items-center gap-2">
-      <button class="btn btn-outline-primary active">Tất cả</button>
-      <button class="btn btn-outline-primary">5 sao</button>
-      <button class="btn btn-outline-primary">4 sao</button>
-      <button class="btn btn-outline-primary">3 sao</button>
-      <button class="btn btn-outline-primary">2 sao</button>
-      <button class="btn btn-outline-primary">1 sao</button>
-      <button class="btn btn-outline-primary">Có Hình Ảnh / Video</button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 0 }"
+        (click)="filterReviews(0)"
+      >
+        Tất cả
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 5 }"
+        (click)="filterReviews(5)"
+      >
+        5 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 4 }"
+        (click)="filterReviews(4)"
+      >
+        4 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 3 }"
+        (click)="filterReviews(3)"
+      >
+        3 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 2 }"
+        (click)="filterReviews(2)"
+      >
+        2 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 1 }"
+        (click)="filterReviews(1)"
+      >
+        1 sao
+      </button>
+      <button
+        class="btn btn-outline-primary"
+        [ngClass]="{ active: prm.rating === 6 }"
+        (click)="filterReviews(6)"
+      >
+        Có Hình Ảnh / Video
+      </button>
     </div>
   </div>
+  <!-- review list -->
   <div *ngIf="reviews.length > 0">
     <div *ngFor="let review of reviews">
       <div class="review">
@@ -216,6 +265,20 @@
       </div>
     </div>
   </div>
+
+  <!-- pagination -->
+  @if(pagination) {
+  <div class="card flex justify-content-center mt-3">
+    <p-paginator
+      [first]="(pagination.currentPage - 1) * pageSize || 0"
+      [rows]="pageSize"
+      [totalRecords]="pagination.totalItems || 0"
+      [rowsPerPageOptions]="[5, 10, 20]"
+      (onPageChange)="onPageChange($event)"
+    >
+    </p-paginator>
+  </div>
+  }
 </div>
 
 <!-- ****************************** Start form create review *********************************** -->
@@ -344,7 +407,7 @@
             <button
               type="button"
               class="btn btn-secondary"
-              (click)="closeFormCreateReview()"
+              (click)="closeFormEditReview()"
             >
               <i class="pi pi-times me-1"></i>
               <span>Đóng</span>

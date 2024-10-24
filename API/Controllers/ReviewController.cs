@@ -1,5 +1,8 @@
 ﻿using API.DTOs;
 using API.Entities;
+using API.Extensions;
+using API.Helper;
+using API.Helpers;
 using API.Interfaces;
 using API.SignalR;
 using Microsoft.AspNetCore.Identity;
@@ -26,11 +29,13 @@ namespace API.Controllers
         }
 
         [HttpGet("{productId:int}")]
-        public async Task<IActionResult> GetAllReviews(int productId)
+        public async Task<IActionResult> GetAllReviews(int productId, [FromQuery] ReviewParams prm)
         {
-            var reviews = await _unit.ReviewRepository.GetAllAsync(productId);
+            var reviews = await _unit.ReviewRepository.GetAllAsync(productId, prm);
 
             var reviewDtos = reviews.Select(ReviewDto.FromEntity).ToList();
+
+            Response.AddPaginationHeader(reviews);
 
             return Ok(reviewDtos);
         }

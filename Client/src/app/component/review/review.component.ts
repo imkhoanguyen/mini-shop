@@ -11,6 +11,7 @@ import {
   ReviewDto,
   ReviewEditDto,
   ReviewImage,
+  ReviewParams,
 } from '../../_models/review';
 import { ReviewService } from '../../_services/review.service';
 import { CommonModule } from '@angular/common';
@@ -31,6 +32,8 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { SignalrService } from '../../_services/signalr.service';
 import { Subject, Subscription } from 'rxjs'; // Correct import from RxJS
+import { Pagination } from '../../_models/pagination';
+import { PaginatorModule } from 'primeng/paginator';
 @Component({
   selector: 'app-review',
   standalone: true,
@@ -43,6 +46,7 @@ import { Subject, Subscription } from 'rxjs'; // Correct import from RxJS
     ReactiveFormsModule,
     FileUploadModule,
     TabViewModule,
+    PaginatorModule,
   ],
   templateUrl: './review.component.html',
   styleUrl: './review.component.css',
@@ -70,6 +74,13 @@ export class ReviewComponent implements OnInit, OnDestroy {
   constructor(private messageService: MessageService) {
     this.subscription = new Subscription();
   }
+
+  pagination: Pagination | undefined;
+  pageNumber = 1;
+  pageSize = 5;
+  prm: ReviewParams = new ReviewParams();
+  totalRating: number = 0;
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
@@ -144,14 +155,55 @@ export class ReviewComponent implements OnInit, OnDestroy {
   }
 
   loadReviews() {
-    this.reviewServices.getAllReviewByProductId(this.productId).subscribe({
-      next: (reviews) => {
-        this.reviews = reviews;
-      },
-      error: (error) => {
-        console.log('Error loading reviews:', error);
-      },
-    });
+    this.reviewServices
+      .getAllReviewByProductId(
+        this.productId,
+        this.prm,
+        this.pageNumber,
+        this.pageSize
+      )
+      .subscribe({
+        next: (response) => {
+          if (response.items && response.pagination) {
+            this.reviews = response.items;
+            this.pagination = response.pagination;
+          }
+          this.calculateTotalRating();
+        },
+        error: (error) => {
+          console.log('Error loading reviews:', error);
+        },
+      });
+  }
+
+  calculateTotalRating() {
+    const totalReviews = this.reviews.length;
+    if (totalReviews > 0) {
+      const sumRatings = this.reviews.reduce(
+        (sum, review) => sum + review.rating!,
+        0
+      );
+      this.totalRating = sumRatings / totalReviews;
+    } else {
+      this.totalRating = 0;
+    }
+  }
+
+  filterReviews(rating: number) {
+    this.prm.rating = rating;
+    this.loadReviews();
+  }
+
+  onOrderByChange(event: any): void {
+    this.prm.orderBy = event.target.value;
+
+    this.loadReviews();
+  }
+
+  onPageChange(event: any) {
+    this.pageNumber = event.page + 1;
+    this.pageSize = event.rows;
+    this.loadReviews();
   }
 
   toggleReplies(reviewId: number): void {

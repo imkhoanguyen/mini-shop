@@ -33,3 +33,8 @@ export interface ReplyCreateDto {
   userId: string;
   productId: number;
 }
+
+export class ReviewParams {
+  orderBy: string = 'id_desc';
+  rating: number = 0;
+}
