@@ -20,17 +20,6 @@ namespace API.Entities
         public int ShippingMethodId { get; set; }
         [ForeignKey("ShippingMethodId")]
         public ShippingMethod? ShippingMethod { get; set; }
-        public int orderId{get;set;}
-        public int productId { get; set; }
-        public int quantity{get;set;}
-        public decimal price{get;set;}
-        public decimal subtotal { get; set; }
-        public string productName{get;set;}
-        public string sizeName { get; set; }
-        public string colorName { get; set; }
-        [ForeignKey("orderId")]
-        public Order? order{get;set;}
-        [ForeignKey("productId")]
-        public Product? product{get;set;}
+
     }
 }

@@ -1,14 +1,10 @@
 using api.Data.Seed;
 using api.SignalR;
-using api.SignalR;
 using API.Data;
-using API.Data.Seed;
-using API.Entities;
 using API.Data.Seed;
 using API.Entities;
 using API.Extensions;
 using API.SignalR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,12 +31,6 @@ builder.Services.AddPolicy();
 var app = builder.Build();
 
 
-app.UseCors(x => x
-    .WithOrigins("http://localhost:4200", "https://localhost:4200")
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials()
-);
 app.UseCors(x => x
     .WithOrigins("http://localhost:4200", "https://localhost:4200")
     .AllowAnyMethod()
@@ -92,7 +82,6 @@ catch (Exception ex)
     Console.WriteLine(ex.ToString());
     throw;
 }
-app.MapHub<ChatHub>("/chatHub");
 app.MapHub<ChatHub>("/chatHub");
 app.Map("/", () => Results.Redirect("/swagger"));
 app.Run();

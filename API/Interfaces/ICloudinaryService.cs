@@ -8,6 +8,7 @@ namespace API.Interfaces
         Task<DeletionResult> DeleteImageAsync(string publicId);
         Task<ImageUploadResult> UploadImageAsync(IFormFile formFile);
         Task<VideoUploadResult> UploadVideoAsync(IFormFile formFile);
+        Task<UploadResult> UploadFileAsync(IFormFile formFile);
         
     }
 }

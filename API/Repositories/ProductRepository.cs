@@ -9,11 +9,9 @@ namespace API.Repositories
     public class ProductRepository : IProductRepository
     {
         private readonly StoreContext _context;
-        private readonly IVariantRepository _variantRepository;
-        public ProductRepository(StoreContext context, IVariantRepository variantRepository)
+        public ProductRepository(StoreContext context)
         {
             _context = context;
-            _variantRepository = variantRepository;
         }
         public void AddProduct(Product product)
         {

@@ -1,6 +1,6 @@
 namespace API.Interfaces
 {
-    public class IOrderItemsRepository
+    public interface IOrderItemsRepository
     {
         
     }

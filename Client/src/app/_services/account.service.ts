@@ -99,8 +99,6 @@ export class AccountService {
         );
     }
   }
-}
-  }
 
   getCurrentUser(): User | null {
     const userJson = localStorage.getItem('user');
@@ -116,3 +114,4 @@ export class AccountService {
     return null; // Trả về null nếu không có user trong localStorage
   }
 }
+  
