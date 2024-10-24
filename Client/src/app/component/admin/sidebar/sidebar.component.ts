@@ -32,6 +32,12 @@ export class SidebarComponent{
 
     },
     {
+      routerLink: 'voucher',
+      icon: 'pi pi-gift',
+      label: 'Voucher',
+
+    },
+    {
       routerLink: 'chat',
       icon: 'pi pi-comments',
       label: 'Chat',

@@ -28,7 +28,11 @@ namespace API.Data
         public DbSet<Payments> Payments{get;set;}
         public DbSet<Order> Orders{get;set;}
         public DbSet<OrderItems> OrderItems{get;set;}
-        public DbSet<Review> Reviews { get; set; }
+
+        public DbSet<Voucher> Vouchers{ get; set; }
+        public DbSet<Product_Voucher> Product_Vouchers{ get; set; }
+
+        //public DbSet<Address> Addresses { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<ProductCategory>()
@@ -36,6 +40,7 @@ namespace API.Data
             builder.Entity<OrderItems>()
                 .HasKey(oi => new{ oi.ProductId, oi.OrderId});
 
+            
             builder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
                 .WithMany(p => p.ProductCategories)
@@ -100,7 +105,8 @@ namespace API.Data
             base.OnModelCreating(builder);
             
 
-
+            builder.Entity<Product_Voucher>()
+                .HasKey(pc => new { pc.ProductId, pc.VoucherId });
         }
 
     }

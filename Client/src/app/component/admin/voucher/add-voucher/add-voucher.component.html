@@ -1,0 +1,60 @@
+<button [routerLink]="['/admin/voucher']" routerLinkActive="active" class="back-button" pButton icon="pi pi-arrow-left"></button>
+
+<div class="container">
+  
+  <h2 *ngIf="currentUrl === '/admin/voucher/new'; else editTemplate">Add Voucher</h2>
+  <ng-template #editTemplate>
+    <h2>Edit Voucher</h2>
+  </ng-template>
+  
+  <form [formGroup]="voucherForm" (ngSubmit)="onSubmit()">
+
+    <!-- Title Field -->
+    <div class="p-field">
+      <label for="title">Title:</label>
+      <input id="title" pInputText formControlName="title" required />
+    </div>
+
+    <!-- Description Field -->
+    <div class="p-field">
+      <label for="description">Description:</label>
+      <input id="description" pInputText formControlName="description" required />
+    </div>
+
+    <!-- Percentage and Is Active Fields -->
+    <div class="field-group">
+      <div class="left-fields">
+        <div class="p-field">
+          <label for="percentage">Percentage:</label>
+          <p-inputNumber id="percentage" formControlName="percentage" required [min]="0" [max]="100" aria-placeholder="0"></p-inputNumber>
+        </div>
+        
+        <div class="p-field-checkbox">
+          <p-checkbox 
+            inputId="is_active" 
+            formControlName="is_active" 
+            [binary]="true">
+          </p-checkbox>
+          <label for="is_active">Is Active</label>
+        </div>
+      </div>
+
+      <!-- Start Date and End Date Fields -->
+      <div class="right-fields">
+        <div class="p-field">
+          <label for="start_date">Start Date:</label>
+          <p-calendar id="start_date" formControlName="start_date" required (onSelect)="checkDateRange()"></p-calendar>
+        </div>
+        
+        <div class="p-field">
+          <label for="end_date">End Date:</label>
+          <p-calendar id="end_date" formControlName="end_date" required (onSelect)="checkDateRange()"></p-calendar>
+        </div>
+      </div>
+    </div>
+
+    <button pButton type="submit" label="Add Voucher"></button>
+  </form>
+</div>
+
+

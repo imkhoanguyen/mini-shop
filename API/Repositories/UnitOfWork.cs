@@ -14,6 +14,8 @@ namespace API.Repositories
         private readonly IColorRepository _colorRepository;
         private readonly IMessageRepository _messageRepository;
         private readonly IImageRepository _imageRepository;
+        private readonly IVariantRepository _variantRepository;
+        private readonly IVoucherRepository _voucherRepository;
         private readonly IImageService _imageService;
         private readonly IVariantRepository _variantRepository; 
         private readonly ICartItemsRepository _cartItemsRepository;
@@ -29,6 +31,8 @@ namespace API.Repositories
         public UnitOfWork(StoreContext context, ICategoryRepository categoryRepository,
              IProductRepository productRepository, ISizeRepository sizeRepository,
              IColorRepository colorRepository, IMessageRepository messageRepository,
+             IImageRepository imageRepository, IVariantRepository variantRepository,
+             IVoucherRepository voucherRepository)
              IImageRepository imageRepository, IVariantRepository variantRepository,
              ICartItemsRepository cartItemsRepository,IShoppingCartRepository shoppingCartRepository,
              IImageRepository imageRepository, IImageService imageService,
@@ -50,6 +54,7 @@ namespace API.Repositories
             _imageRepository = imageRepository;
             _imageService=imageService;
             _variantRepository = variantRepository;
+            _voucherRepository=voucherRepository;
             _cartItemsRepository=cartItemsRepository;
             _shoppingCartRepository=shoppingCartRepository;
             _reviewRepository = reviewRepository;
@@ -78,6 +83,8 @@ namespace API.Repositories
         public IOrderItemsRepository OrderItemsRepository => _orderItemsRepository;
 
         public IVariantRepository VariantRepository => _variantRepository;
+
+        public IVoucherRepository VoucherRepository => _voucherRepository;
 
         //public IImageService ImageService => _imageService
         public IUserRepository UserRepository => _userRepository;

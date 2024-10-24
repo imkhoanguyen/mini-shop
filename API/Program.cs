@@ -18,6 +18,8 @@ builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddAuthentication();
 builder.Services.AddPolicy();
 
+
+
 var app = builder.Build();
 
 
