@@ -58,14 +58,15 @@ namespace API.Controllers
         public async Task<IActionResult> SendMessage([FromBody] MessageAddDto messageDto)
         {
 
-            var message = await MessageAddDto.ToMessageAsync(messageDto);
-            _message.AddMessage(message);
+            var message = MessageAddDto.ToMessageAsync(messageDto);
+            await _message.SendMessage(message);
             if (await _unitOfWork.Complete())
             {
                 return Ok(new { message = "Message sent successfully" });
             }
             return BadRequest(new { message = "Message sent failed." });
         }
+        
 
         [HttpGet("GetMessageThread")]
         public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
@@ -83,6 +84,31 @@ namespace API.Controllers
             var message = await _message.GetLastMessage(senderId, recipientId);
             return Ok(message);
         }
+        [HttpPost("ReplyMessage")]
+        public async Task<IActionResult> ReplyMessage(int messageId, string repliedById)
+        {
 
+            if (await _message.ReplyMessage(messageId, repliedById))
+            {
+                if (await _unitOfWork.Complete())
+                {
+                    return Ok(new { message = "Message replied successfully" });
+                }
+                return BadRequest(new { message = "Message replied failed." });
+            }
+            return BadRequest(new { message = "Message replied failed." });
+        }
+        [HttpGet("GetMessagesForEmployee")]
+        public async Task<IActionResult> GetMessagesForEmployee(string employeeId)
+        {
+            var messages = await _message.GetMessagesForEmployee(employeeId);
+            return Ok(messages);
+        }
+        [HttpGet("GetMessageById")]
+        public async Task<IActionResult> GetMessageById(int messageId)
+        {
+            var message = await _message.GetMessageById(messageId);
+            return Ok(message);
+        }
     }
 }

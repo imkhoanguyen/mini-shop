@@ -36,6 +36,7 @@ import { Variant, VariantAdd } from '../../../../_models/variant.module';
 import { VariantService } from '../../../../_services/variant.service';
 import { ImageService } from '../../../../_services/image.service';
 import { Image } from '../../../../_models/image.module';
+import { AccordionModule } from 'primeng/accordion';
 @Component({
   selector: 'app-add-product',
   standalone: true,
@@ -63,6 +64,7 @@ import { Image } from '../../../../_models/image.module';
     MultiSelectModule,
     RadioButtonModule,
     ColorPickerModule,
+    AccordionModule
   ],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.css',
@@ -342,11 +344,14 @@ export class ProductFormComponent implements OnInit {
     imageUrls.controls.forEach((imageControl: any, i: number) => {
       imageControl.patchValue({ isMain: i === imageIndex });
     });
+    this.selectedImages[variantIndex].forEach((image: any, i: number) => {
+      image.isMain = (i === imageIndex);
+  });
   }
   isMainImage(variantIndex: number, imageIndex: number) {
     return (this.variantsForm.get('variants') as FormArray)
       .at(variantIndex)
-      .get('imageUrls')?.value[imageIndex].isMain;
+      .get('imageUrls')?.value[imageIndex].isMain === true;
   }
   removeImage(variantIndex: number, imageIndex: number) {
     this.selectedImages[variantIndex].splice(imageIndex, 1);
@@ -372,35 +377,74 @@ export class ProductFormComponent implements OnInit {
     const variantImages = variant.get('imageUrls') as FormArray;
 
     const hasMainImage = variantImages.controls.some(
-      (image: any) => image.get('isMain').value
+        (image: any) => image.get('isMain').value
     );
 
     if (!hasMainImage) {
-      this.showMessage('error', 'Vui lòng chọn một ảnh chính.');
-      return;
+        this.showMessage('error', 'Vui lòng chọn một ảnh chính.');
+        return;
     }
     variantImages.controls.forEach((image: any, index: number) => {
-      const file = image.value.file;
-      const isMain = this.isMainImage(variantIndex, index);
+        const file = image.value.file;
+        const isMain = this.isMainImage(variantIndex, index);
 
-      const formData = new FormData();
-      formData.append('url', file);
-      formData.append('isMain', isMain.toString());
-      formData.append('variantId', variantId.toString());
+        const formData = new FormData();
+        formData.append('url', file);
+        formData.append('isMain', isMain.toString());
+        formData.append('variantId', variantId.toString());
 
-      this.imageService.addImage(formData).subscribe(
-        (response: any) => {
-          this.showMessage('success', 'Ảnh được thêm thành công!');
-          setTimeout(() => {
-            this.router.navigate(['/admin/product']);
-          }, 2000);
-        },
-        (error) => {
-          this.showMessage('error', 'Lỗi khi thêm ảnh.');
-          console.error('Failed to upload image:', error);
-        }
-      );
+        this.imageService.addImage(formData).subscribe(
+            (response: any) => {
+                this.showMessage('success', 'Ảnh được thêm thành công!');
+            },
+            (error) => {
+                this.showMessage('error', 'Lỗi khi thêm ảnh.');
+                console.error('Failed to upload image:', error);
+            }
+        );
     });
+  }
+  updateImages(variantId: number, variantIndex: number) {
+    const variant = this.variants.at(variantIndex);
+    const variantImages = variant.get('imageUrls') as FormArray;
+
+    const hasMainImage = variantImages.controls.some(
+        (image: any) => image.get('isMain').value
+    );
+
+    if (!hasMainImage) {
+        this.showMessage('error', 'Vui lòng chọn một ảnh chính.');
+        return;
+    }
+    const uploadPromises = variantImages.controls.map((imageControl: any, index: number) => {
+        const file = imageControl.value.file;
+
+        if (!file) {
+            console.warn(`File không tồn tại cho hình ảnh ở chỉ số ${index}.`);
+            return Promise.resolve();  // Trả về promise đã hoàn thành nếu không có file
+        }
+
+        const formData = new FormData();
+        const isMain = this.isMainImage(variantIndex, index); // Lấy trạng thái isMain
+
+        // Thêm dữ liệu vào formData
+        formData.append('url', file);
+        formData.append('isMain', isMain.toString());
+        formData.append('variantId', variantId.toString());
+
+        // Trả về promise từ dịch vụ
+        return this.imageService.updateImage(formData).toPromise();
+    });
+
+    // Chạy tất cả các promise
+    Promise.all(uploadPromises)
+        .then(() => {
+            this.showMessage('success', 'Tất cả ảnh đã được cập nhật thành công!');
+        })
+        .catch((error) => {
+            this.showMessage('error', 'Một số lỗi xảy ra khi cập nhật ảnh.');
+            console.error('Failed to update some images:', error);
+        });
   }
   deleteImages(images: number){
     this.imageService.deleteImage(images).subscribe({
@@ -483,6 +527,16 @@ export class ProductFormComponent implements OnInit {
       );
     });
   }
+  private checkVariantChanges(variantGroup: FormGroup): boolean {
+    return (
+        !!variantGroup.dirty ||
+        !!variantGroup.get('price')?.dirty ||
+        !!variantGroup.get('priceSell')?.dirty ||
+        !!variantGroup.get('quantity')?.dirty ||
+        !!variantGroup.get('sizeId')?.dirty ||
+        !!variantGroup.get('colorId')?.dirty
+    );
+  }
   updateVariant(productId: number) {
     this.variants.controls.forEach((variantGroup, index) => {
       const variantId = variantGroup.value.id;
@@ -500,27 +554,29 @@ export class ProductFormComponent implements OnInit {
           imageUrls: variantGroup.value.imageUrls,
           productId: productId,
         };
-        console.log('variantUpdate', variantUpdate);
-        this.variantService.updateVariant(variantUpdate).subscribe(
-          (variantResponse: any) => {
-            if(this.selectedImages[index]){
-              this.addImages(variantUpdate.id, index);
-            }
-            const oldImages = variantGroup.value.imageUrls;
-            oldImages.forEach((image: any) => {
-              if (image.markedForDeletion) {
-                this.deleteImages(image.id);
-              }
-            });
-            this.showMessage(
-              'success',
-              'Biến thể đã được cập nhật thành công!'
-            );
-          },
-          (error) => this.showMessage('error', 'Lỗi khi cập nhật biến thể.')
-        );
+        const hasChanges = this.checkVariantChanges(variantGroup as FormGroup);
+        if (hasChanges) {
+          console.log('variantUpdate', variantUpdate);
+          this.variantService.updateVariant(variantUpdate).subscribe(
+              (variantResponse: any) => {
+                  if(this.selectedImages[index]){
+                      this.addImages(variantUpdate.id, index);
+                  }
+                  const oldImages = variantGroup.value.imageUrls;
+                  oldImages.forEach((image: any) => {
+                      if (image.markedForDeletion) {
+                          this.deleteImages(image.id);
+                      }
+                  });
+                  this.showMessage('success', 'Biến thể đã được cập nhật thành công!');
+              },
+              (error) => this.showMessage('error', 'Lỗi khi cập nhật biến thể.')
+          );
+      } else {
+          console.log(`Biến thể ${variantId} không bị thay đổi. Không cần cập nhật.`);
       }
-    });
+  }
+});
   }
   deleteVariant(variant: Variant) {
     this.variantService.deleteVariant(variant).subscribe({
@@ -543,7 +599,15 @@ export class ProductFormComponent implements OnInit {
       description: this.productForm.value.description,
       categoryIds: this.productForm.value.selectedCategories,
     };
+    const hasMainImage = this.variants.controls.every(variantGroup => {
+      const variantImages = variantGroup.get('imageUrls') as FormArray;
+      return variantImages.controls.some(image => image.get('isMain')?.value);
+    });
 
+    if (!hasMainImage) {
+        this.showMessage('error', 'Vui lòng chọn một ảnh chính cho tất cả các biến thể.');
+        return;
+    }
     if (this.isUpdate) {
       this.route.paramMap.subscribe((params) => {
         const productId = Number(params.get('id'));
@@ -560,6 +624,9 @@ export class ProductFormComponent implements OnInit {
 
             this.updateVariant(productId);
             this.showMessage('success', 'Cập nhật sản phẩm thành công.');
+            setTimeout(() => {
+              this.router.navigate(['/admin/product']);
+            }, 2000);
           },
           (error) => {
             this.showMessage('error', 'Lỗi khi cập nhật sản phẩm.');
@@ -572,6 +639,9 @@ export class ProductFormComponent implements OnInit {
           const productId = response.id;
           this.addVariants(productId);
           this.showMessage('success', 'Thêm sản phẩm thành công.');
+          setTimeout(() => {
+            this.router.navigate(['/admin/product']);
+          }, 2000);
         },
         (error) => {
           this.showMessage('error', 'Lỗi khi thêm sản phẩm.');

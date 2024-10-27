@@ -21,7 +21,7 @@ export class VariantService {
   }
 
   deleteVariant(data: Variant){
-    return this.http.delete(this.apiUrl + "/Variant/DeleteVariant/" + data);
+    return this.http.delete(this.apiUrl + "/Variant/DeleteVariant/", {body: data});
   }
 
 }

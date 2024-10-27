@@ -77,11 +77,13 @@ namespace api.Controllers
                 return BadRequest(new {message ="Sản phẩm với tên này đã tồn tại."});
             }
             var product = ProductAddDto.toProduct(productAddDto);
-            _unitOfWork.ProductRepository.AddProduct(product);
-
+            _unitOfWork.ProductRepository.AddProduct(product);  
+            
             if (await _unitOfWork.Complete()){
                 await _unitOfWork.ProductRepository.AddProductCategory(product);
+                
                 return Ok(new {id = product.Id, message ="Add Product successfully."});
+                
             }
             return BadRequest(new {message ="Add Product failed."});
         }

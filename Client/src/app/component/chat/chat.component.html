@@ -8,10 +8,10 @@
       <div class="row" style="width: 100%;">
         <div class="col-11">
           <div class="d-flex align-items-center sidebar">
-            <img src="http://localhost:5000/avatar/{{adminUsers[0].avatar}}" />
+            <img src="http://localhost:5000/avatar/user.jpg" />
             <div class="chat-header-info">
               <div class="chat-header-name">
-                {{adminUsers[0].fullname}}
+                admin
               </div>
             </div>
           </div>
@@ -25,8 +25,8 @@
     <div class="chat-body" #messagesContainer (scroll)="onScroll()">
       <div class="messages" *ngFor="let message of messages">
         <!-- Tin nhắn bên trái (recipient) -->
-        <div *ngIf="message.recipientId === user.id" class="message left-message">
-          <img class="avatar" height="40" src="http://localhost:5000/avatar/{{ adminUsers[0].avatar }}" width="40" />
+        <div *ngIf="message.repliedById === user.id" class="message left-message">
+          <img class="avatar" height="40" src="http://localhost:5000/avatar/user.jpg" width="40" />
           <div class="message-content">
             <div class="text">{{ message.content }}</div>
             <div class="file-content">

@@ -19,25 +19,31 @@ namespace API.Repositories
         }
         public async Task AddProductCategory(Product product)
         {
+            // Lấy danh sách các danh mục hiện có cho sản phẩm
             var existingCategories = await _context.ProductCategories
                 .Where(pc => pc.ProductId == product.Id)
                 .ToListAsync();
 
+            // Kiểm tra tồn tại
             if (existingCategories != null && existingCategories.Count > 0)
             {
                 _context.ProductCategories.RemoveRange(existingCategories);
             }
 
+            // Thêm danh mục mới
             if (product.ProductCategories != null && product.ProductCategories.Count > 0)
             {
+                var newCategories = new List<ProductCategory>();
                 foreach (var productCategory in product.ProductCategories)
                 {
-                    _context.ProductCategories.Add(new ProductCategory
+                    newCategories.Add(new ProductCategory
                     {
                         ProductId = product.Id,
                         CategoryId = productCategory.CategoryId
                     });
                 }
+
+                _context.ProductCategories.AddRange(newCategories);
             }
         }
 
@@ -53,20 +59,7 @@ namespace API.Repositories
                 productDb.Status = product.Status;
                 productDb.Updated = DateTime.UtcNow;
 
-                _context.ProductCategories.RemoveRange(productDb.ProductCategories);
-
-                if (product.ProductCategories != null && product.ProductCategories.Count > 0)
-                {
-                    foreach (var productCategory in product.ProductCategories)
-                    {
-                        var newProductCategory = new ProductCategory
-                        {
-                            ProductId = productDb.Id,
-                            CategoryId = productCategory.CategoryId
-                        };
-                        productDb.ProductCategories.Add(newProductCategory);
-                    }
-                }
+               
 
             }
 

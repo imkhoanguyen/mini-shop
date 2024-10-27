@@ -1,4 +1,5 @@
 <p-toast />
+<p-confirmDialog />
 <div class="row align-items-center mb-3">
   <div class="col">
     <input
@@ -93,7 +94,7 @@
           [rounded]="true"
           severity="danger"
           class="p-button-outlined"
-          (onClick)="deleteProduct(product)"
+          (onClick)="confirmDelete(product, $event)"
         ></p-button>
       </td>
     </tr>

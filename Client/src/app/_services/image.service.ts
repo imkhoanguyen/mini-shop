@@ -16,10 +16,10 @@ export class ImageService{
   addImage(data: FormData): Observable<any>{
     return this.http.post(this.apiUrl + "/Image/AddImage", data);
   }
-  updateImage(data: Image){
+  updateImage(data: FormData){
     return this.http.put(this.apiUrl + "/Image/UpdateImages", data);
   }
   deleteImage(data: number){
-    return this.http.delete(this.apiUrl + "/Image/RemoveImage/" + data);
+    return this.http.delete(this.apiUrl + "/Image/RemoveImage?id=" + data);
   }
 }

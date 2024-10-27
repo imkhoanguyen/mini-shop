@@ -97,15 +97,15 @@ namespace API.Data
             //     .WithMany(p=>p.CartItems)
 
             builder.Entity<Message>()
-                .HasOne(m => m.Sender)
-                .WithMany(u => u.MessageSent)
+                .HasOne(m => m.Sender) 
+                .WithMany(u => u.MessageSent) 
                 .HasForeignKey(m => m.SenderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); 
 
             builder.Entity<Message>()
-                .HasOne(m => m.Recipient)
-                .WithMany(u => u.MessageReceived)
-                .HasForeignKey(m => m.RecipientId)
+                .HasOne(m => m.RepliedBy) 
+                .WithMany()
+                .HasForeignKey(m => m.RepliedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Variant>()

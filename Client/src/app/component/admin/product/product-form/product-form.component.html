@@ -75,67 +75,73 @@
             <div class="flex flex-column p-4">
 
                 <div formArrayName="variants">
-                  <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="row g-4 mb-4 border p-3 rounded">
 
-                    <!-- Price and Quantity Section -->
-                    <div class="col-5">
-                      <div class="mb-2">
-                        <p-inputNumber placeholder="Giá tiền" mode="currency" currency="VND" locale="en-US" formControlName="price" [style]="{width: '100%'}" class="pInputText"/>
-                      </div>
-                      <div class="mb-2">
-                        <p-inputNumber placeholder="Giá tiền giảm (nếu có)" mode="currency" currency="VND" locale="en-US" formControlName="priceSell" [style]="{width: '100%'}" class="pInputText"/>
-                      </div>
-                      <div class="mb-2">
-                        <p-inputNumber placeholder="Số lượng" mode="decimal" [useGrouping]="false" formControlName="quantity" [style]="{width: '100%'}" class="pInputText"/>
-                      </div>
-                      <div class="mb-2">
-                        <p-dropdown  [style]="{width: '90%'}" [options]="sizes" formControlName="sizeId" placeholder="Chọn Kích thước" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" (onFilter)="onSizeFilter($event)">
-                          <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
-                          <ng-template pTemplate="empty">
-                            <div class="no-data">
-                              No data found.
-                              <button (click)="addSize()" class="btn btn-primary">Add Size</button>
+                    <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" >
+                      <p-accordion [multiple]="true" [activeIndex]="[0]">
+                        <p-accordionTab>
+                          <div class="row g-4 mb-4  p-3 rounded">
+                      <!-- Price and Quantity Section -->
+                          <div class="col-5">
+                            <div class="mb-2">
+                              <p-inputNumber placeholder="Giá tiền" mode="currency" currency="VND" locale="en-US" formControlName="price" [style]="{width: '100%'}" class="pInputText"/>
                             </div>
-                          </ng-template>
-                        </p-dropdown>
-                      </div>
-                      <div class="mb-2">
-                        <p-dropdown [style]="{width: '90%'}" [options]="colors" formControlName="colorId" placeholder="Chọn Màu Sắc" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" (onFilter)="onColorFilter($event)">
-                          <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
-                          <ng-template pTemplate="empty">
-                            <div class="no-data">
-                              No data found.
-                              <button (click)="showColorDialog()" class="btn btn-primary">Add Color</button>
+                            <div class="mb-2">
+                              <p-inputNumber placeholder="Giá tiền giảm (nếu có)" mode="currency" currency="VND" locale="en-US" formControlName="priceSell" [style]="{width: '100%'}" class="pInputText"/>
                             </div>
-                          </ng-template>
-                        </p-dropdown>
-                      </div>
-                    </div>
+                            <div class="mb-2">
+                              <p-inputNumber placeholder="Số lượng" mode="decimal" [useGrouping]="false" formControlName="quantity" [style]="{width: '100%'}" class="pInputText"/>
+                            </div>
+                            <div class="mb-2">
+                              <p-dropdown  [style]="{width: '90%'}" [options]="sizes" formControlName="sizeId" placeholder="Chọn Kích thước" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" (onFilter)="onSizeFilter($event)">
+                                <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                                <ng-template pTemplate="empty">
+                                  <div class="no-data">
+                                    No data found.
+                                    <button (click)="addSize()" class="btn btn-primary">Add Size</button>
+                                  </div>
+                                </ng-template>
+                              </p-dropdown>
+                            </div>
+                            <div class="mb-2">
+                              <p-dropdown [style]="{width: '90%'}" [options]="colors" formControlName="colorId" placeholder="Chọn Màu Sắc" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true" (onFilter)="onColorFilter($event)">
+                                <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                                <ng-template pTemplate="empty">
+                                  <div class="no-data">
+                                    No data found.
+                                    <button (click)="showColorDialog()" class="btn btn-primary">Add Color</button>
+                                  </div>
+                                </ng-template>
+                              </p-dropdown>
+                            </div>
+                          </div>
 
-                    <!-- Image Upload -->
-                    <div class="col-7" style="height: 100%">
-                      <label class="btn btn-primary btn-lg" [for]="'fileInput_' + i">
-                        <i class="bi bi-upload"></i> Chọn ảnh
-                      </label>
-                      <input type="file" [id]="'fileInput_' + i" (change)="onFileSelected($event, i)" multiple style="display: none;" />
+                          <!-- Image Upload -->
+                          <div class="col-5" style="height: 100%">
+                            <label class="btn btn-primary btn-lg" [for]="'fileInput_' + i">
+                              <i class="bi bi-upload"></i> Chọn ảnh
+                            </label>
+                            <input type="file" [id]="'fileInput_' + i" (change)="onFileSelected($event, i)" multiple style="display: none;" />
 
-                      <div class="image-container" *ngIf="selectedImages[i]?.length > 0">
-                        <div *ngFor="let image of selectedImages[i]; let j = index" class="image-preview">
-                          <img [src]="image.src" alt="Image Preview" style="max-width: 100px; margin-bottom: 10px;">
-                          <button class="close-button" (click)="removeImage(i, j)">X</button>
-                          <input type="radio" [id]="'radio_' + i + '_' + j" name="mainImage"
-                                 [value]="{variantIndex: i, imageIndex: j}" (change)="selectMainImage(i, j)" [checked]="isMainImage(i, j)">
-                          <label [for]="'radio_' + i + '_' + j" class="ml-2">Chọn ảnh chính</label>
+                            <div class="image-container" *ngIf="selectedImages[i]?.length > 0">
+                              <div *ngFor="let image of selectedImages[i]; let j = index" class="image-preview">
+                                <img [src]="image.src" alt="Image Preview" style="max-width: 100px; margin-bottom: 10px;">
+                                <button class="close-button" (click)="removeImage(i, j)">X</button>
+                                <input type="radio" [id]="'radio_' + i + '_' + j" name="mainImage"
+                                      [value]="{variantIndex: i, imageIndex: j}" (change)="selectMainImage(i, j)" [checked]="isMainImage(i, j)">
+                                <label [for]="'radio_' + i + '_' + j" class="ml-2">Chọn ảnh chính</label>
+                              </div>
+                            </div>
+                          </div>
                         </div>
+
+                      <!-- Remove Variant Button -->
+                      <div class="d-flex justify-content-end">
+                        <p-button icon="pi pi-times" (click)="removeVariant(i)" class="me-2" severity="danger" label="Remove"></p-button>
                       </div>
+                    </p-accordionTab>
+                  </p-accordion>
                     </div>
 
-
-                    <!-- Remove Variant Button -->
-                    <div class="d-flex justify-content-end">
-                      <p-button icon="pi pi-times" (click)="removeVariant(i)" class="me-2" severity="danger" label="Remove"></p-button>
-                    </div>
-                  </div>
                 </div>
 
             </div>

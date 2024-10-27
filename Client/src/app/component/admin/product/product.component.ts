@@ -159,7 +159,7 @@ export class ProductComponent {
       id: product.id,
       name: product.name,
       description: product.description,
-      categoryIds: [],
+      categoryIds: product.categoryIds,
       status: value ? 1 : 0,
     };
     console.log(productUpdate);
@@ -300,6 +300,19 @@ export class ProductComponent {
   editProduct(id: number) {
     this.productService.getProductById(id).subscribe(() => {
       this.router.navigateByUrl('/admin/product/edit/' + id);
+    });
+  }
+  confirmDelete(product: Product, event: Event): void {
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Bạn muốn xóa Sản phẩm này?',
+      header: 'Xác nhận Xóa',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: "p-button-danger p-button-text",
+      rejectButtonStyleClass: "p-button-text",
+      acceptIcon: "none",
+      rejectIcon: "none",
+      accept: () => this.deleteProduct(product),
     });
   }
 

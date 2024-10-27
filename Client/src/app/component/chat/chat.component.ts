@@ -150,6 +150,9 @@ export class ChatComponent implements OnInit {
   isVideo(fileType: string | undefined): boolean {
     return fileType ? fileType.startsWith('video/') : false;
   }
+  isRecipient(recipientIds: string[], userId: string): boolean {
+    return recipientIds.includes(userId);
+  }
   scrollToBottom() {
     const element = this.messagesContainer.nativeElement;
     setTimeout(() => {
@@ -161,40 +164,48 @@ export class ChatComponent implements OnInit {
     if (!this.content && this.selectedFiles.length === 0) {
       return;
     }
-
+    const recipientIds = this.adminUsers.map(admin => admin.id);
+    const currentAdminId = this.getAdminId();
     if (this.selectedFiles.length > 0) {
       const formData = new FormData();
       this.selectedFiles.forEach((file) => {
         formData.append('files', file.file);
       });
-
       this.messageService.uploadFiles(formData).subscribe((response: any) => {
         console.log(response);
         for (let i = 0; i < response.files.length; i++) {
-          const message: Message = {
-            id: 0,
-            senderId: this.user.id,
-            recipientId: this.adminUsers[0].id,
-            content: this.content || '',
-            fileUrl: response.files[i].fileUrl,
-            fileType: response.files[i].fileType,
-            sentAt: new Date().toISOString(),
-          };
+
+            const message: Message = {
+              id: 0,
+              senderId: this.user.id,
+              recipientIds: recipientIds,
+              content: this.content || '',
+              fileUrl: response.files[i].fileUrl,
+              fileType: response.files[i].fileType,
+              repliedById: null,
+              isReplied: false,
+              sentAt: new Date().toISOString(),
+            };
+
           console.log("message", message);
           this.sendMessageToServer(message);
         }
         this.resetMessageInput();
       });
     } else {
-      const message: Message = {
-        id: 0,
-        senderId: this.user.id,
-        recipientId: this.adminUsers[0].id,
-        content: this.content,
-        fileUrl: null,
-        fileType: undefined,
-        sentAt: new Date().toISOString(),
-      };
+       
+        const message: Message = {
+          id: 0,
+          senderId: this.user.id,
+          recipientIds: recipientIds,
+          content: this.content || '',
+          fileUrl: null,
+          fileType: undefined,
+          repliedById: currentAdminId || null,
+          isReplied: currentAdminId ? true : false,
+          sentAt: new Date().toISOString(),
+        };
+
       console.log("message1", message);
       this.sendMessageToServer(message);
       this.resetMessageInput();
@@ -207,7 +218,9 @@ export class ChatComponent implements OnInit {
       (response) => {
         console.log(response);
         this.chatService.sendMessage(message);
-
+        if(message.isReplied ==false && message.senderId !== this.user.id){
+          this.markMessageAsReplied(message.senderId);
+        }
         this.scrollToBottom();
       },
       (error) => {
@@ -220,7 +233,19 @@ export class ChatComponent implements OnInit {
     this.content = '';
     this.selectedFiles = [];
   }
+  getAdminId() {
+    const repliedMessage = this.messages.find(msg => msg.isReplied);
+    return repliedMessage ? repliedMessage.repliedById : null;
+  }
 
+  markMessageAsReplied(adminId: string){
+    this.messages.forEach(m => {
+      if (m.senderId === adminId) {
+        m.isReplied = true;
+        m.repliedById = adminId;
+      }
+    });
+  }
 
 
 }

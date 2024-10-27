@@ -33,7 +33,7 @@
     <div class="chat-body" #messagesContainer (scroll)="onScroll()">
       <div class="messages" *ngFor="let message of messages; track by message">
         <!-- Tin nhắn bên trái (recipient) -->
-        <div *ngIf="message.recipientId === user.id" class="message left-message">
+        <div *ngIf="isRecipient(message.recipientIds, user.id)" class="message left-message">
           <img class="avatar" height="40" src="http://localhost:5000/avatar/{{ selectedUser?.avatar }}" width="40" />
           <div class="message-content">
             <div class="text">{{ message.content }}</div>
@@ -74,8 +74,8 @@
         <i class="bi bi-image-fill"></i>
         <input type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
       </label>
-      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" (keyup.enter)="sendMessage()" />
-      <button (click)="sendMessage()">
+      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" (keyup.enter)="replyMessage()" />
+      <button (click)="replyMessage()">
         <i class="fas fa-paper-plane"></i>
         Send
       </button>

@@ -31,6 +31,7 @@ export class ChatComponent implements OnInit {
   loadingOldMessages = false;
   lastMessage: string = '';
   skip: number = 0;
+  messageId: number = 0;
   selectedFiles: { src: string; file: File; type: string }[] = [];
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
@@ -82,6 +83,7 @@ export class ChatComponent implements OnInit {
       .subscribe(
         (messages: Message[]) => {
           if (messages.length > 0) {
+            this.messageId = messages[0].id;
             this.messages = [...messages.reverse(), ...this.messages];
           }
           this.skip += messages.length;
@@ -168,49 +170,111 @@ export class ChatComponent implements OnInit {
   isVideo(fileType: string | undefined): boolean {
     return fileType ? fileType.startsWith('video/') : false;
   }
-  sendMessage() {
+  isRecipient(recipientIds: string[], userId: string): boolean {
+    return recipientIds.includes(userId);
+  }
 
+  replyMessage() {
     if (!this.content && this.selectedFiles.length === 0) {
       return;
     }
+    console.log("id", this.messageId);
+    console.log("user", this.user.id);
+    this.messageService.getMessageById(this.messageId).subscribe((replyMessage : Message)=> {
+      if(!replyMessage.isReplied && replyMessage.repliedById == null){
+        this.messageService.replyMessage(this.messageId, this.user.id).subscribe(()=>{
+          if (this.selectedFiles.length > 0) {
+            const formData = new FormData();
+            this.selectedFiles.forEach((file) => {
+              formData.append('files', file.file);
+            });
 
-    if (this.selectedFiles.length > 0) {
-      const formData = new FormData();
-      this.selectedFiles.forEach((file) => {
-        formData.append('files', file.file);
-      });
+            this.messageService.uploadFiles(formData).subscribe((response: any) => {
+              console.log(response);
+              for (let i = 0; i < response.files.length; i++) {
+                const message: Message = {
+                  id: 0,
+                  senderId: this.user.id,
+                  recipientIds: [this.selectedUser.id],
+                  content: this.content || '',
+                  fileUrl: response.files[i].fileUrl,
+                  fileType: response.files[i].fileType,
+                  repliedById: this.user.id,
+                  isReplied: true,
+                  sentAt: new Date().toISOString(),
+                };
+                console.log("message", message);
+                this.sendMessageToServer(message);
+              }
+              this.resetMessageInput();
+            });
+          } else {
+            const message: Message = {
+              id: 0,
+              senderId: this.user.id,
+              recipientIds: [this.selectedUser.id],
+              content: this.content || '',
+              fileUrl: null,
+              fileType: undefined,
+              repliedById: this.user.id,
+              isReplied: true,
+              sentAt: new Date().toISOString(),
+            };
+            console.log("message1", message);
+            this.sendMessageToServer(message);
+            this.resetMessageInput();
+          }
+        });
+      }
+      if (replyMessage.isReplied && replyMessage.repliedById === this.user.id) {
+        if (this.selectedFiles.length > 0) {
+          const formData = new FormData();
+          this.selectedFiles.forEach((file) => {
+            formData.append('files', file.file);
+          });
 
-      this.messageService.uploadFiles(formData).subscribe((response: any) => {
-        console.log(response);
-        for (let i = 0; i < response.files.length; i++) {
+          this.messageService.uploadFiles(formData).subscribe((response: any) => {
+            console.log(response);
+            for (let i = 0; i < response.files.length; i++) {
+              const message: Message = {
+                id: 0,
+                senderId: this.user.id,
+                recipientIds: [this.selectedUser.id],
+                content: this.content || '',
+                fileUrl: response.files[i].fileUrl,
+                fileType: response.files[i].fileType,
+                repliedById: this.user.id,
+                isReplied: true,
+                sentAt: new Date().toISOString(),
+              };
+              console.log("message", message);
+              this.sendMessageToServer(message);
+            }
+            this.resetMessageInput();
+          });
+        } else {
           const message: Message = {
             id: 0,
             senderId: this.user.id,
-            recipientId: this.selectedUser.id,
+            recipientIds: [this.selectedUser.id],
             content: this.content || '',
-            fileUrl: response.files[i].fileUrl,
-            fileType: response.files[i].fileType,
+            fileUrl: null,
+            fileType: undefined,
+            repliedById: this.user.id,
+            isReplied: true,
             sentAt: new Date().toISOString(),
           };
-          console.log("message", message);
+          console.log("message1", message);
           this.sendMessageToServer(message);
+          this.resetMessageInput();
         }
-        this.resetMessageInput();
-      });
-    } else {
-      const message: Message = {
-        id: 0,
-        senderId: this.user.id,
-        recipientId: this.selectedUser.id,
-        content: this.content,
-        fileUrl: null,
-        fileType: undefined,
-        sentAt: new Date().toISOString(),
-      };
-      console.log("message1", message);
-      this.sendMessageToServer(message);
-      this.resetMessageInput();
-    }
+      } else {
+        console.log("You cannot reply to this message.");
+        alert("tin nhắn đã được trả lời bởi nhân viên khác");
+      }
+    }, (error) => {
+      console.log(error);
+    });
   }
 
 

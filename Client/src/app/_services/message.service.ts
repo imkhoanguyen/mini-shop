@@ -29,4 +29,10 @@ export class MessageService {
   getLastMessage(senderId: string, recipientId: string): Observable<Message> {
     return this.http.get<Message>(this.apiUrl + "/Messages/GetLastMessage?senderId=" + senderId + "&recipientId=" + recipientId);
   }
+  replyMessage(messageId: number, repliedById: string) {
+    return this.http.post(this.apiUrl + "/Messages/ReplyMessage?messageId=" + messageId +"&repliedById="+ repliedById, {})
+  }
+  getMessageById(id: number): Observable<Message> {
+    return this.http.get<Message>(this.apiUrl + "/Messages/GetMessageById?messageId=" + id);
+  }
 }
