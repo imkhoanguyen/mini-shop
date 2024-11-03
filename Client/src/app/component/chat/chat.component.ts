@@ -189,7 +189,7 @@ export class ChatComponent implements OnInit {
       const message: Message = {
         id: 0,
         senderId: this.user.id,
-        recipientId: this.adminUsers[0].id,
+      recipientId: this.adminUsers[0].id,
         content: this.content,
         fileUrl: null,
         fileType: undefined,

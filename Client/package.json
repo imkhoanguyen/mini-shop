@@ -36,6 +36,6 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.5.2",
     "@angular/forms": "^18.2.4",
-    "@angular/router": "^18.2.4"
+  "@angular/router": "^18.2.4"
   }
 }

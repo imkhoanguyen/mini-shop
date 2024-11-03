@@ -2,6 +2,7 @@ using System.Security.Claims;
 using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Shop.Domain.Entities;
 
 namespace API.Extensions
 {

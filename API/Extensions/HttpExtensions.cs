@@ -1,5 +1,5 @@
-﻿using API.Helper;
-using API.Helpers;
+﻿using API.Modals;
+using Shop.Application.Ultilities;
 using System.Text.Json;
 
 namespace API.Extensions
