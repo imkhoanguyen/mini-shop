@@ -69,5 +69,25 @@ namespace Shop.Infrastructure.Repositories
                 colorDb.Name = color.Name;
             }
         }
+
+        public async Task AddColor(Color color)
+        {
+            await _context.Colors.AddAsync(color);
+        }
+
+        public async Task<Color?> GetColorsById(int id)
+        {
+            return await _context.Colors.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Color>> GetAllColorsAsync()
+        {
+            return await _context.Colors.Where(c => !c.IsDelete).ToListAsync();
+        }
+
+        public async Task<bool> colorExistsAsync(string name)
+        {
+            return await _context.Colors.AnyAsync(c => c.Name == name);
+        }
     }
 }

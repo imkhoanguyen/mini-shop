@@ -1,26 +1,26 @@
-using API.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using API.Helpers;
-using Shop.Application.Repositories;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 
-namespace API.Interfaces
+namespace Shop.Application.Services.Abstracts
 {
-    public interface ISizeRepository : IRepository<Size>
+    public interface ISizeService
     {
         Task<IEnumerable<Size>> GetAllSizesAsync(bool tracked);
         Task<PagedList<Size>> GetAllSizesAsync(SizeParams sizeParams, bool tracked = false);
 
-        Task UpdateAsync(Size size);
-        Task DeleteAsync(Size size);
-
-        Task<IEnumerable<Size>> GetAllSizesAsync();
-
         Task<Size?> GetSizesById(int id);
-
+        Task DeleteAsync(Size size);
+        Task UpdateAsync(Size size);
+        Task<IEnumerable<Size>> GetAllSizesAsync();
         Task<bool> SizeExistsAsync(string name);
 
         Task AddSize(Size size);
 
+        Task<bool> CompleteAsync();
     }
 }
