@@ -8,7 +8,7 @@ namespace Shop.Application.DTOs.Reviews
         public int? Rating { get; set; }
         public IFormFile? VideoFile { get; set; } = null;
         public required string UserId { get; set; }
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
         public List<IFormFile> ImageFile { get; set; } = [];
         public int? ParentReviewId { get; set; }
     }

@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Shop.Application.Repositories;
 using Shop.Infrastructure.Repositories;
+using Shop.Application.Services.Implementations;
 
 namespace Shop.Infrastructure.Configurations
 {
@@ -34,6 +35,7 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IReviewService, ReviewService>();
             services.AddSignalR();
         }
 
@@ -52,15 +54,10 @@ namespace Shop.Infrastructure.Configurations
 
         public static void AuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure IdentityCore for API setup
-            services.AddIdentityCore<AppUser>(options =>
-            {
-                options.Password.RequireNonAlphanumeric = false;
-            })
-            .AddRoles<AppRole>()
-            .AddRoleManager<RoleManager<AppRole>>()
-            .AddEntityFrameworkStores<StoreContext>()
-            .AddDefaultTokenProviders();
+            services.AddAuthorization();
+            services.AddIdentityApiEndpoints<AppUser>()
+                .AddRoles<AppRole>()
+                .AddEntityFrameworkStores<StoreContext>();
 
             // JWT Authentication setup
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -30,5 +30,6 @@ namespace Shop.Application.Mappers
                 ImgUrl = entity.ImgUrl
             };
         }
+        
     }
 }

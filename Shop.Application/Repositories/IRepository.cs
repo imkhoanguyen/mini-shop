@@ -11,5 +11,6 @@ namespace Shop.Application.Repositories
         void Update(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         void DeleteRange(IEnumerable<T> entities);
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
     }
 }

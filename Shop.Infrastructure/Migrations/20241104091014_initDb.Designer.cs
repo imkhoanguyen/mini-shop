@@ -12,7 +12,7 @@ using Shop.Infrastructure.DataAccess;
 namespace Shop.Infrastructure.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20241103023302_initDb")]
+    [Migration("20241104091014_initDb")]
     partial class initDb
     {
         /// <inheritdoc />
