@@ -5,6 +5,7 @@ using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
 using Shop.Infrastructure.Ultilities;
+using System.Linq.Expressions;
 
 namespace Shop.Infrastructure.Repositories
 {
@@ -32,6 +33,17 @@ namespace Shop.Infrastructure.Repositories
             return await _context.Categories.Where(c => !c.IsDelete).ToListAsync();
         }
 
+        public override async Task<Category?> GetAsync(Expression<Func<Category, bool>> expression, bool tracked = false)
+        {
+            var query = _context.Categories.Where(c => !c.IsDelete).AsQueryable();
+
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(expression);
+        }
 
         public async Task<PagedList<Category>> GetAllCategoriesAsync(CategoryParams categoryParams, bool tracked = false)
         {

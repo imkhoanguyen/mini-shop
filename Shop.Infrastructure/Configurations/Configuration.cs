@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Shop.Application.Repositories;
 using Shop.Infrastructure.Repositories;
+using Shop.Application.Services.Implementations;
 
 namespace Shop.Infrastructure.Configurations
 {
@@ -33,6 +34,7 @@ namespace Shop.Infrastructure.Configurations
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddSignalR();
         }
