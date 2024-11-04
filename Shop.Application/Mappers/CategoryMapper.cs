@@ -24,7 +24,6 @@ namespace Shop.Application.Mappers
             {
                 Id = category.Id,
                 Name = category.Name,
-                Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow,
             };
         }

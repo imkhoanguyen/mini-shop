@@ -14,7 +14,7 @@ namespace Shop.Infrastructure.DataAccess.Seed
             {
                 new AppUser
                 {
-                    Fullname = "Admin",
+                    FullName = "Admin",
                     UserName = "admin",
                     Email = "itk21sgu@gmail.com",
                     PhoneNumber = "0123456789",
@@ -22,7 +22,7 @@ namespace Shop.Infrastructure.DataAccess.Seed
                 },
                 new AppUser
                 {
-                    Fullname = "Customer",
+                    FullName = "Customer",
                     UserName = "customer",
                     Email = "khoasgu01@gmail.com",
                     PhoneNumber = "0987654321",

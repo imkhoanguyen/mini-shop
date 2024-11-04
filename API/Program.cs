@@ -52,6 +52,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseStaticFiles();
+
 app.UseDefaultFiles();
 
 app.MapControllers();

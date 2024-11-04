@@ -12,8 +12,8 @@ using Shop.Infrastructure.DataAccess;
 namespace Shop.Infrastructure.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20241103023302_initDb")]
-    partial class initDb
+    [Migration("20241104124642_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,7 +224,7 @@ namespace Shop.Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Fullname")
+                    b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -367,9 +367,6 @@ namespace Shop.Infrastructure.Migrations
                     b.Property<string>("AppUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsMain")
                         .HasColumnType("bit");
 
@@ -380,14 +377,9 @@ namespace Shop.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("VariantId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
-
-                    b.HasIndex("VariantId");
 
                     b.ToTable("Images");
                 });
@@ -756,6 +748,30 @@ namespace Shop.Infrastructure.Migrations
                     b.ToTable("Variants");
                 });
 
+            modelBuilder.Entity("Shop.Domain.Entities.VariantImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImgUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VariantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VariantId");
+
+                    b.ToTable("VariantImage");
+                });
+
             modelBuilder.Entity("Shop.Domain.Entities.Voucher", b =>
                 {
                     b.Property<int>("Id")
@@ -872,15 +888,7 @@ namespace Shop.Infrastructure.Migrations
                         .WithMany("Images")
                         .HasForeignKey("AppUserId");
 
-                    b.HasOne("Shop.Domain.Entities.Variant", "Variant")
-                        .WithMany("Images")
-                        .HasForeignKey("VariantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("AppUser");
-
-                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("Shop.Domain.Entities.Message", b =>
@@ -1040,6 +1048,17 @@ namespace Shop.Infrastructure.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("Shop.Domain.Entities.VariantImage", b =>
+                {
+                    b.HasOne("Shop.Domain.Entities.Variant", "Variant")
+                        .WithMany("Images")
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variant");
                 });
 
             modelBuilder.Entity("Shop.Domain.Entities.AppUser", b =>

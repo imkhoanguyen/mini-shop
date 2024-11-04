@@ -1,4 +1,4 @@
-namespace API.DTOs
+namespace Shop.Application.DTOs
 {
     public class TokenRequest
     {

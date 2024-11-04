@@ -42,7 +42,6 @@ namespace Shop.Infrastructure.Configurations
         public static void AppConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
-
             services.Configure<EmailConfig>(configuration.GetSection("MailSettings"));
             services.AddScoped<IEmailService, EmailService>();
             // setting thời gian hết hạn của token do asp.net identity tạo ra (cái này khác với token do bear tạo ra)
@@ -54,6 +53,7 @@ namespace Shop.Infrastructure.Configurations
 
         public static void AuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddAuthorization();
             // Configure IdentityCore for API setup
             services.AddIdentityCore<AppUser>(options =>
             {
@@ -63,6 +63,11 @@ namespace Shop.Infrastructure.Configurations
             .AddRoleManager<RoleManager<AppRole>>()
             .AddEntityFrameworkStores<StoreContext>()
             .AddDefaultTokenProviders();
+
+            services.AddAuthorization();
+            services.AddIdentityApiEndpoints<AppUser>()
+                .AddRoles<AppRole>()
+                .AddEntityFrameworkStores<StoreContext>();
 
             // JWT Authentication setup
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

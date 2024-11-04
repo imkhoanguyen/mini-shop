@@ -46,7 +46,7 @@ namespace API.Middleware
                 context.Response.StatusCode = (int)status;
 
                 var response = _env.IsDevelopment()
-                ? new ApiException(context.Response.StatusCode, message, ex.StackTrace)
+                ? new ApiException(context.Response.StatusCode, message, ex.Message.ToString())
                 : new ApiException(context.Response.StatusCode, message, "Internal server error");
 
                 var options = new JsonSerializerOptions

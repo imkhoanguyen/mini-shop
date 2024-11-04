@@ -5,49 +5,56 @@ namespace Shop.Application.Mappers
 {
     public class VariantMapper
     {
-        public static Variant VariantDtoToEntity(VariantDto variantDto)
+        public static Variant VariantAddDtoToEntity(VariantAdd variantDto)
         {
             return new Variant
             {
-                Id = variantDto.Id,
+                ProductId = variantDto.ProductId,
                 Price = variantDto.Price,
                 PriceSell = variantDto.PriceSell,
                 Quantity = variantDto.Quantity,
                 SizeId = variantDto.SizeId,
-                ColorId = variantDto.ColorId
+                ColorId = variantDto.ColorId,
+                Status = variantDto.Status,
             };
         }
 
-        public static Variant VariantAddDtoToEntity(VariantAddDto variantAddDto)
+        public static Variant VariantUpdateDtoToEntity(VariantUpdate variantDto)
         {
-            var variant = new Variant
+            return new Variant
             {
-                ProductId = variantAddDto.ProductId,
-                Price = variantAddDto.Price,
-                PriceSell = variantAddDto.PriceSell,
-                Quantity = variantAddDto.Quantity,
-                SizeId = variantAddDto.SizeId,
-                ColorId = variantAddDto.ColorId
+                Id = variantDto.Id,
+                ProductId = variantDto.ProductId,
+                Price = variantDto.Price,
+                PriceSell = variantDto.PriceSell,
+                Quantity = variantDto.Quantity,
+                SizeId = variantDto.SizeId,
+                ColorId = variantDto.ColorId,
+                Status = variantDto.Status,
             };
-            return variant;
         }
 
-        public static VariantGetDto EntityToVariantGetDto(Variant variant)
+        public static VariantDto EntityToVariantDto(Variant variant)
         {
-            return new VariantGetDto
+            return new VariantDto
             {
                 Id = variant.Id,
+                ProductId = variant.ProductId,
                 Price = variant.Price,
                 PriceSell = variant.PriceSell,
                 Quantity = variant.Quantity,
                 SizeId = variant.SizeId,
                 ColorId = variant.ColorId,
-                //ImageUrls = variant.Images.Select(i => new ImageGetDto
-                //{
-                //    Id = i.Id,
-                //    Url = i.Url,
-                //    IsMain = i.IsMain
-                //}).ToList()
+                Status = variant.Status,
+                Images = variant.Images.Select(VariantImageToImageVariantDto).ToList()
+            };
+        }
+        public static ImageVariantDto VariantImageToImageVariantDto(VariantImage entity)
+        {
+            return new ImageVariantDto
+            {
+                Id = entity.Id,
+                ImgUrl = entity.ImgUrl ?? string.Empty
             };
         }
     }
