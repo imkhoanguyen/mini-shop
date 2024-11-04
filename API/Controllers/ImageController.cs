@@ -1,4 +1,3 @@
-using API.DTOs;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Repositories;

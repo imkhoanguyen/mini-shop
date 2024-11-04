@@ -15,7 +15,7 @@ namespace Shop.Application.Mappers
                 Created = entity.Created,
                 ParentReviewId = entity.ParentReviewId,
                 VideoUrl = entity.VideoUrl,
-                UserReview = new UserReview { Id = entity.UserId, FullName = entity.AppUser.Fullname },
+                UserReview = new UserReview { Id = entity.UserId, FullName = entity.AppUser.FullName },
                 ProductId = entity.ProductId,
                 Replies = entity.Replies.Select(EntityToReviewDto).ToList(),
                 Images = entity.Images.Select(ReviewImageToImageReviewDto).ToList(),

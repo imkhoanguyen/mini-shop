@@ -34,6 +34,7 @@ namespace Shop.Infrastructure.Configurations
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddSignalR();
@@ -42,7 +43,6 @@ namespace Shop.Infrastructure.Configurations
         public static void AppConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
-
             services.Configure<EmailConfig>(configuration.GetSection("MailSettings"));
             services.AddScoped<IEmailService, EmailService>();
             // setting thời gian hết hạn của token do asp.net identity tạo ra (cái này khác với token do bear tạo ra)

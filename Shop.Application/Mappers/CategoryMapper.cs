@@ -6,17 +6,29 @@ namespace Shop.Application.Mappers
 {
     public class CategoryMapper
     {
-        public static Category CategoryDtoToEntity(CategoryDto categoryDto)
+        //Add Category
+        public static Category CategoryAddDtoToEntity(CategoryAdd category)
         {
             return new Category
             {
-                Id = categoryDto.Id,
-                Name = categoryDto.Name,
+                Name = category.Name,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow,
             };
         }
 
+        //Update Category   
+        public static Category CategoryUpdateDtoToEntity(CategoryUpdate category)
+        {
+            return new Category
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Updated = DateTime.UtcNow,
+            };
+        }
+
+        //Get Category
         public static CategoryDto EntityToCategoryDto(Category category)
         {
             return new CategoryDto

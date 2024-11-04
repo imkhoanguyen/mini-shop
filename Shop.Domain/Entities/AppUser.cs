@@ -4,7 +4,7 @@ namespace Shop.Domain.Entities
 {
     public class AppUser : IdentityUser
     {
-        public string? Fullname { get; set; }
+        public string? FullName { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; } = DateTime.UtcNow;

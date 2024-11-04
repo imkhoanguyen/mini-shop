@@ -1,16 +1,15 @@
 
-using API.DTOs;
+using Shop.Application.DTOs.Variants;
+using Shop.Domain.Enum;
 
 namespace Shop.Application.DTOs.Products
 {
-    public class ProductDto
+    public class ProductDto : ProductBase
     {
         public int Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string? Description { get; set; }
-        public List<int> CategoryIds { get; set; } = new List<int>();
-        public int Status { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
+        public List<VariantDto> Variants { get; set; } = new List<VariantDto>();
 
-        
     }
 }

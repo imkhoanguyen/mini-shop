@@ -1,13 +1,24 @@
 ﻿using Shop.Application.DTOs.Products;
-using Shop.Application.DTOs.Variants;
 using Shop.Domain.Entities;
-using Shop.Domain.Enum;
 
 namespace Shop.Application.Mappers
 {
     public class ProductMapper
     {
-        public static Product ProductDtoToEntity(ProductDto productDto)
+        public static Product ProductAddDtoToEntity(ProductAdd productDto)
+        {
+            return new Product
+            {
+                Name = productDto.Name,
+                Description = productDto.Description,
+                ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
+                Status = productDto.Status,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow,
+            };
+        }
+
+        public static Product ProductUpdateDtoToEntity(ProductUpdate productDto)
         {
             return new Product
             {
@@ -15,47 +26,24 @@ namespace Shop.Application.Mappers
                 Name = productDto.Name,
                 Description = productDto.Description,
                 ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
-                Status = (ProductStatus)productDto.Status
+                Status = productDto.Status,
+                Updated = DateTime.UtcNow,
             };
         }
-
-        public static Product ProductAddDtoToEntity(ProductAddDto productAddDto)
+        public static ProductDto EntityToProductDto(Product product)
         {
-            return new Product
-            {
-                Name = productAddDto.Name,
-                Description = productAddDto.Description,
-                ProductCategories = productAddDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
-            };
-        }
-
-        public static ProductGetDto toProductGetDto(Product product)
-        {
-            return new ProductGetDto
+            return new ProductDto
             {
                 Id = product.Id,
                 Name = product.Name,
                 Description = product.Description,
                 Created = product.Created,
                 Updated = product.Updated,
+                Status = product.Status,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
-                Variants = product.Variants.Select(v => new VariantGetDto
-                {
-                    Id = v.Id,
-                    Price = v.Price,
-                    PriceSell = v.PriceSell,
-                    Quantity = v.Quantity,
-                    SizeId = v.SizeId ?? 0,
-                    ColorId = v.ColorId ?? 0,
-                    //ImageUrls = v.Images.Select(i => new ImageGetDto
-                    //{
-                    //    Id = i.Id,
-                    //    Url = i.Url,
-                    //    IsMain = i.IsMain
-                    //}).ToList()
-                }).ToList(),
-                Status = (int)product.Status
+                Variants = product.Variants.Select(VariantMapper.EntityToVariantDto).ToList()
             };
         }
+
     }
 }
