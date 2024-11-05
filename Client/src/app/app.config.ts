@@ -6,6 +6,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { jwtInterceptorInterceptor } from './_interceptors/jwt-interceptor.interceptor';
 import { OAuthModule, OAuthService } from 'angular-oauth2-oidc';
 import { importProvidersFrom } from '@angular/core';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,5 +15,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([jwtInterceptorInterceptor])),
     provideAnimationsAsync(),
     importProvidersFrom(OAuthModule.forRoot()),
+    MessageService,
   ],
 };
