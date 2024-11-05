@@ -31,9 +31,10 @@ import { TabViewModule } from 'primeng/tabview';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { SignalrService } from '../../_services/signalr.service';
-import { Subject, Subscription } from 'rxjs'; // Correct import from RxJS
+import { Subscription } from 'rxjs';
 import { Pagination } from '../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
+import { ToastrService } from '../../_services/toastr.service';
 @Component({
   selector: 'app-review',
   standalone: true,
@@ -54,8 +55,8 @@ import { PaginatorModule } from 'primeng/paginator';
 })
 export class ReviewComponent implements OnInit, OnDestroy {
   @Input() productId: number = 0;
-
   reviews: ReviewDto[] = [];
+  validationErrors: string[] = [];
   showReplies: { [key: number]: boolean } = {};
   showDropdown: { [key: number]: boolean } = {};
   showReplyDropdown: { [reviewId: number]: { [replyId: number]: boolean } } =
@@ -71,7 +72,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
   private reviewServices = inject(ReviewService);
   private signalRService = inject(SignalrService);
   private subscription: Subscription;
-  constructor(private messageService: MessageService) {
+  constructor(private toastrService: ToastrService) {
     this.subscription = new Subscription();
   }
 
@@ -170,9 +171,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
           }
           this.calculateTotalRating();
         },
-        error: (error) => {
-          console.log('Error loading reviews:', error);
-        },
       });
   }
 
@@ -226,30 +224,8 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.reviewServices.deleteReview(reviewId).subscribe({
       next: (_) => {
         this.loadReviews();
-        this.showSuccess('Xóa đánh giá thành công');
+        this.toastrService.success('Xóa đánh giá thành công');
       },
-      error: (er) => {
-        console.log(er);
-        this.showError(er);
-      },
-    });
-  }
-
-  showError(detail: string, summary?: string) {
-    this.messageService.add({
-      severity: 'error',
-      summary: summary || 'Error',
-      detail: detail,
-      life: 3000,
-    });
-  }
-
-  showSuccess(detail: string) {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: detail,
-      life: 3000,
     });
   }
 
@@ -280,6 +256,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.videoUrl = '';
     this.imageFileUpload.clear();
     this.videoFileUpload.clear();
+    this.validationErrors = [];
   }
 
   onSelectImgFile(event: any) {
@@ -299,9 +276,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
       imageFile: this.imgFiles,
     });
     this.frmCreateReview.get('files')?.updateValueAndValidity();
-
-    console.log(this.imgFiles);
-    console.log('current form value: ', this.frmCreateReview.value);
   }
 
   onRemoveImgFile(event: any) {
@@ -313,7 +287,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
       imageFile: this.imgFiles,
     });
     this.frmCreateReview.get('imageFile')?.updateValueAndValidity();
-    console.log('Current form value:', this.frmCreateReview.value);
   }
 
   onClearAllImageFiles(event: any) {
@@ -323,11 +296,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
       imageFile: this.imgFiles,
     });
     this.frmCreateReview.get('imageFile')?.updateValueAndValidity();
-
-    console.log(
-      'Current form value after clearing files:',
-      this.frmCreateReview.value
-    );
   }
 
   onSelectVideoFile(event: any) {
@@ -344,10 +312,8 @@ export class ReviewComponent implements OnInit, OnDestroy {
       };
       fileReader.readAsDataURL(file); // Đọc tệp để tạo URL hiển thị trước
     } else {
-      console.log('Invalid file format. Please select a valid video file.');
       this.onRemoveVideoFile();
     }
-    console.log('Current form value:', this.frmCreateReview.value);
   }
 
   onRemoveVideoFile() {
@@ -355,7 +321,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.frmCreateReview.patchValue({
       videoFile: '',
     });
-    console.log('Current form value:', this.frmCreateReview.value);
   }
 
   onSubmitFrmCreateReview() {
@@ -386,12 +351,13 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
     this.reviewServices.addReview(formData).subscribe({
       next: (response) => {
-        this.loadReviews();
-        this.showSuccess('Thêm đánh giá thành công');
+        this.reviews.unshift(response);
+        this.toastrService.success('Thêm dánh giá thành công');
         this.closeFormCreateReview();
       },
       error: (er) => {
         console.log(er);
+        this.validationErrors = er;
       },
     });
   }
@@ -442,9 +408,14 @@ export class ReviewComponent implements OnInit, OnDestroy {
     };
 
     this.reviewServices.updateReview(reviewEditDto).subscribe({
-      next: (_) => {
-        this.showSuccess('Cập nhật đánh giá thành công');
-        this.loadReviews();
+      next: (response) => {
+        this.toastrService.success('Cập nhật đánh giá thành công');
+        const index = this.reviews.findIndex((r) => r.id == response.id);
+        this.reviews[index] = response;
+      },
+      error: (er) => {
+        console.log(er);
+        this.validationErrors = er;
       },
     });
   }
@@ -462,6 +433,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.imageFileUploadEdit.clear();
     if (this.videoUrlForEdit !== '') this.videoFileUploadEdit.clear();
     this.visibleFrmEditView = false;
+    this.validationErrors = [];
   }
 
   onSelectImgFileEdit(event: any) {
@@ -476,8 +448,6 @@ export class ReviewComponent implements OnInit, OnDestroy {
         this.listImgRequest.push(file);
       }
     });
-
-    console.log(this.listImgRequest);
   }
 
   onRemoveImgFileEdit(event: any) {
@@ -486,13 +456,10 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.listImgRequest = this.listImgRequest.filter(
       (file) => file !== fileToRemove
     );
-
-    console.log('Current img list request after remove:', this.listImgRequest);
   }
 
   onClearAllImageFilesEdit(event: any) {
     this.listImgRequest = [];
-    console.log('Current img list request after clear:', this.listImgRequest);
   }
 
   onUploadImgEdit() {
@@ -502,18 +469,17 @@ export class ReviewComponent implements OnInit, OnDestroy {
         frmData.append('imageFiles', this.listImgRequest[i]);
       }
     }
-    console.log(frmData);
     this.reviewServices
       .addImages(this.frmEditReview.value.id, frmData)
       .subscribe({
-        next: (_) => {
-          this.showSuccess('Thêm ảnh đánh giá sản phẩm thành công');
-          this.loadReviews();
-          this.closeFormEditReview();
+        next: (response) => {
+          this.toastrService.success('Thêm ảnh đánh giá sản phẩm thành công');
+          const index = this.reviews.findIndex((r) => r.id == response.id);
+          this.reviews[index] = response;
         },
         error: (er) => {
           console.log(er);
-          this.showError('Thêm ảnh đánh giá sản phẩm thất bại');
+          this.validationErrors = er;
         },
       });
   }
@@ -523,13 +489,9 @@ export class ReviewComponent implements OnInit, OnDestroy {
       .removeImage(this.frmEditReview.value.id, imgId)
       .subscribe({
         next: (_) => {
-          this.showSuccess('Xóa hình ảnh thành công');
+          this.toastrService.success('Xóa hình ảnh thành công');
           this.loadReviews();
           this.closeFormEditReview();
-        },
-        error: (er) => {
-          console.log(er);
-          this.showError('Xóa hình ảnh thất bại');
         },
       });
   }
@@ -547,20 +509,13 @@ export class ReviewComponent implements OnInit, OnDestroy {
       };
       fileReader.readAsDataURL(file); // Đọc tệp để tạo URL hiển thị trước
     } else {
-      console.log('Invalid file format. Please select a valid video file.');
       this.onRemoveVideoFileEdit();
     }
-    console.log('Current form value:', this.frmCreateReview.value);
   }
 
   onRemoveVideoFileEdit() {
     this.videoRequest = null;
     this.videoUrlForEdit = '';
-    console.log(
-      'current videoUrl after remove',
-      this.videoRequest,
-      this.videoUrlForEdit
-    );
   }
 
   onUploadVideoEdit() {
@@ -570,27 +525,28 @@ export class ReviewComponent implements OnInit, OnDestroy {
       this.reviewServices
         .addVideo(this.frmEditReview.value.id, formData)
         .subscribe({
-          next: (_) => {
-            this.showSuccess('Thêm video thành công');
-            this.loadReviews();
+          next: (response) => {
+            this.toastrService.success('Thêm video thành công');
+            const index = this.reviews.findIndex((r) => r.id == response.id);
+            this.reviews[index] = response;
             this.closeFormEditReview();
+          },
+          error: (er) => {
+            console.log(er);
+            this.validationErrors = er;
           },
         });
     } else {
-      this.showError('Chưa có video');
+      this.toastrService.error('Chưa có video');
     }
   }
 
   removeVideo() {
     this.reviewServices.removeVideo(this.frmEditReview.value.id).subscribe({
       next: (_) => {
-        this.showSuccess('Xóa video thành công');
+        this.toastrService.success('Xóa video thành công');
         this.closeFormEditReview();
         this.loadReviews();
-      },
-      error: (er) => {
-        console.log(er);
-        this.showError(er);
       },
     });
   }
@@ -614,6 +570,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.parentId = 0;
     this.editReply = false;
     this.reviewIdForEditReply = 0;
+    this.validationErrors = [];
   }
 
   openFormCreateReply(reviewId: number, reviewText?: string) {
@@ -630,7 +587,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
   onSubmitFrmCreateReply() {
     if (!this.currentUser) {
-      this.showError('Bạn chưa đăng nhập');
+      this.toastrService.success('Bạn chưa đăng nhập');
       return;
     }
 
@@ -643,12 +600,13 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
       this.reviewServices.updateReview(reply).subscribe({
         next: (_) => {
-          this.showSuccess('Cập nhật phản hồi thành công');
+          this.toastrService.success('Cập nhật phản hồi thành công');
           this.loadReviews();
           this.closeFormCreateReply();
         },
         error: (er) => {
-          console.log(er), this.showError('Cập nhật phản hồi thất bại');
+          console.log(er);
+          this.validationErrors = er;
         },
       });
     } else {
@@ -661,13 +619,13 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
       this.reviewServices.addReply(reply).subscribe({
         next: (_) => {
-          this.showSuccess('Thêm phản hồi thành công');
+          this.toastrService.success('Thêm phản hồi thành công');
           this.loadReviews();
           this.closeFormCreateReply();
         },
         error: (er) => {
           console.log(er);
-          this.showError(er);
+          this.validationErrors = er;
         },
       });
     }

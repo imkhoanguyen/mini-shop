@@ -39,6 +39,7 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<IVariantService, VariantService>();
 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IReviewService, ReviewService>();
             services.AddSignalR();
         }
 
@@ -56,17 +57,6 @@ namespace Shop.Infrastructure.Configurations
 
         public static void AuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthorization();
-            // Configure IdentityCore for API setup
-            services.AddIdentityCore<AppUser>(options =>
-            {
-                options.Password.RequireNonAlphanumeric = false;
-            })
-            .AddRoles<AppRole>()
-            .AddRoleManager<RoleManager<AppRole>>()
-            .AddEntityFrameworkStores<StoreContext>()
-            .AddDefaultTokenProviders();
-
             services.AddAuthorization();
             services.AddIdentityApiEndpoints<AppUser>()
                 .AddRoles<AppRole>()

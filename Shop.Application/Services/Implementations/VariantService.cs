@@ -20,40 +20,29 @@ namespace Shop.Application.Services.Implementations
         public async Task<VariantDto> AddAsync(VariantAdd variantAdd)
         {
             var variant = VariantMapper.VariantAddDtoToEntity(variantAdd);
-
-            try
+            if (variantAdd.ImageFile?.Count > 0)
             {
-                if (variantAdd.ImageFile?.Count > 0)
+                foreach (var file in variantAdd.ImageFile)
                 {
-                    foreach (var file in variantAdd.ImageFile)
+                    var uploadResult = await _cloudinaryService.UploadImageAsync(file);
+                    if (uploadResult.Error != null)
                     {
-                        var uploadResult = await _cloudinaryService.UploadImageAsync(file);
-                        if (uploadResult.Error != null)
-                        {
-                            throw new BadRequestException("Lỗi khi thêm ảnh");
-                        }
-                        var image = new VariantImage
-                        {
-                            ImgUrl = uploadResult.Url.ToString(),
-                            PublicId = uploadResult.PublicId,
-                        };
-                        variant.Images.Add(image);
+                        throw new BadRequestException("Lỗi khi thêm ảnh");
                     }
+                    var image = new VariantImage
+                    {
+                        ImgUrl = uploadResult.Url,
+                        PublicId = uploadResult.PublicId,
+                    };
+                    variant.Images.Add(image);
                 }
-
-                await _unit.VariantRepository.AddAsync(variant);
-
-                return await _unit.CompleteAsync()
-                    ? VariantMapper.EntityToVariantDto(variant)
-                    : throw new BadRequestException("Thêm biến thể thất bại");
             }
-            catch (Exception ex)
-            {
-                // Ghi log lỗi nếu cần
-                throw new Exception("Đã xảy ra lỗi khi thêm biến thể", ex);
-            }
+            await _unit.VariantRepository.AddAsync(variant);
+
+            return await _unit.CompleteAsync()
+                ? VariantMapper.EntityToVariantDto(variant)
+                : throw new BadRequestException("Thêm biến thể thất bại");
         }
-
 
         public async Task DeleteAsync(Expression<Func<Variant, bool>> expression)
         {

@@ -1,4 +1,3 @@
-<p-toast />
 <div class="container shadow-lg p-5">
   <div class="row mb-3">
     <h3 class="col-12 col-md-6">Đánh giá sản phẩm</h3>
@@ -310,6 +309,15 @@
     (ngSubmit)="onSubmitFrmCreateReview()"
     enctype="multipart/form-data"
   >
+    @if (validationErrors.length > 0) {
+    <div class="row mt-5">
+      <ul class="text-danger">
+        @for (error of validationErrors; track $index) {
+        <li>{{ error }}</li>
+        }
+      </ul>
+    </div>
+    }
     <div class="mb-3 d-flex gap-5 align-items-center">
       <span class="form-label">Đánh giá sản phẩm: </span>
       <p-rating formControlName="rating" [cancel]="false" />
@@ -399,6 +407,15 @@
   <div class="card">
     <p-tabView>
       <p-tabPanel header="Thông tin">
+        @if (validationErrors.length > 0) {
+        <div class="row mt-5">
+          <ul class="text-danger">
+            @for (error of validationErrors; track $index) {
+            <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+        }
         <form
           [formGroup]="frmEditReview"
           (ngSubmit)="onSubmitFrmEditReview()"
@@ -440,6 +457,15 @@
         </form>
       </p-tabPanel>
       <p-tabPanel header="Hình ảnh">
+        @if (validationErrors.length > 0) {
+        <div class="row mt-5">
+          <ul class="text-danger">
+            @for (error of validationErrors; track $index) {
+            <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+        }
         <div class="mb-3 d-flex">
           <div class="fw-bold">Thêm ảnh mới</div>
           <button
@@ -480,6 +506,15 @@
         </div>
       </p-tabPanel>
       <p-tabPanel header="Video">
+        @if (validationErrors.length > 0) {
+        <div class="row mt-5">
+          <ul class="text-danger">
+            @for (error of validationErrors; track $index) {
+            <li>{{ error }}</li>
+            }
+          </ul>
+        </div>
+        }
         <div class="mb-3 d-flex">
           <div *ngIf="showAddVideoBox == true" class="fw-bold">
             Thêm video mới
@@ -550,6 +585,15 @@
   [style]="{ width: '50rem' }"
   (onHide)="closeFormCreateReply()"
 >
+  @if (validationErrors.length > 0) {
+  <div class="row mt-5">
+    <ul class="text-danger">
+      @for (error of validationErrors; track $index) {
+      <li>{{ error }}</li>
+      }
+    </ul>
+  </div>
+  }
   <form [formGroup]="frmCreateReply" (ngSubmit)="onSubmitFrmCreateReply()">
     <div class="mb-3">
       <label for="reviewText" class="form-label">Nội dung phản hồi</label>
