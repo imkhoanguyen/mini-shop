@@ -12,8 +12,8 @@ using Shop.Infrastructure.DataAccess;
 namespace Shop.Infrastructure.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20241104124642_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241105003201_Create")]
+    partial class Create
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

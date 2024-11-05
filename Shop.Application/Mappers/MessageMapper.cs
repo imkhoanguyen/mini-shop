@@ -19,7 +19,7 @@ namespace Shop.Application.Mappers
             };
         }
 
-        public static Message MessageAddDtoToEntity(MessageAddDto messageAddDto)
+        public static Message MessageAddDtoToEntity(MessageAdd messageAddDto)
         {
             return new Message
             {

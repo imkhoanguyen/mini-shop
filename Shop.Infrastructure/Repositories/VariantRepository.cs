@@ -21,6 +21,15 @@ namespace Shop.Infrastructure.Repositories
                 variantDb.IsDelete = true;
             }
         }
+
+        public async Task<IEnumerable<Variant>> GetByProductIdAsync(int productId)
+        {
+            return await _context.Variants
+                .Include(v => v.Images)
+                .Where(v => v.ProductId == productId && !v.IsDelete)
+                .ToListAsync();
+        }
+
         public async Task UpdateVariantAsync(Variant variant)
         {
             var variantDb = await _context.Variants.FirstOrDefaultAsync(v => v.Id == variant.Id);

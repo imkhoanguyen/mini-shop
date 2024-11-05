@@ -32,6 +32,7 @@ namespace Shop.Application.Mappers
         }
         public static ProductDto EntityToProductDto(Product product)
         {
+
             return new ProductDto
             {
                 Id = product.Id,

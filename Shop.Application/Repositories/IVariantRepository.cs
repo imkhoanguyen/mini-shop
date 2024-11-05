@@ -8,6 +8,7 @@ namespace API.Interfaces
     {
         Task UpdateVariantAsync(Variant variant);
         Task DeleteVariantAsync(Variant variant);
-      
+        Task<IEnumerable<Variant>> GetByProductIdAsync(int productId);
+
     }
 }

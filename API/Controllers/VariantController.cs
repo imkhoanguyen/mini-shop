@@ -1,59 +1,65 @@
-using API.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Shop.Application.DTOs.Variants;
+using Shop.Application.Mappers;
+using Shop.Application.Services.Abstracts;
+using Shop.Domain.Entities;
 
 namespace API.Controllers
 {
     public class VariantController : BaseApiController
     {
-        //private readonly IUnitOfWork _unitOfWork;
-        //public VariantController(IUnitOfWork unitOfWork)
-        //{
-        //    _unitOfWork = unitOfWork;
-        //}
-        //[HttpPost("AddVariant")]
-        //public async Task<IActionResult> AddVariant([FromBody] VariantAddDto variantAddDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(new {message ="Dữ liệu không hợp lệ."});
-        //    }
-        //    var variant = VariantAddDto.toVariant(variantAddDto);
-        //    _unitOfWork.VariantRepository.AddVariant(variant);
-        //    if (await _unitOfWork.Complete())
-        //    {
-        //        return Ok(new {id = variant.Id, message ="Add variant successfully."});
-        //    }
-        //    return BadRequest(new {message ="Add variant failed."});
-        //}
-        //[HttpPut("UpdateVariant")]
-        //public async Task<IActionResult> UpdateVariant([FromBody] VariantDto variantDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest("Dữ liệu không hợp lệ.");
-        //    }
-        //    var variant = VariantDto.toVariant(variantDto);
-        //    _unitOfWork.VariantRepository.UpdateVariant(variant);
-        //    if (await _unitOfWork.Complete())
-        //    {
-        //        return Ok(new {id =  variant.Id, message ="Update variant successfully."});
-        //    }
-        //    return BadRequest(new {message ="Update variant failed."});
-        //}
-        //[HttpDelete("DeleteVariant")]
-        //public async Task<IActionResult> DeleteVariant(VariantDto variantDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest("Dữ liệu không hợp lệ.");
-        //    }
-        //    var variant = VariantDto.toVariant(variantDto);
-        //    _unitOfWork.VariantRepository.DeleteVariant(variant);
-        //    if (await _unitOfWork.Complete())
-        //    {
-        //        return Ok(new {message ="Delete variant successfully."});
-        //    }
-        //    return BadRequest(new {message ="Delete variant failed."});
-        //}
+        private readonly IVariantService _variantService;
+        private readonly IProductService _productService;
+        private readonly ICloudinaryService _cloudinaryService;
+
+        public VariantController(IVariantService variantService, ICloudinaryService cloudinaryService, IProductService productService)
+        {
+            _variantService = variantService;
+            _cloudinaryService = cloudinaryService;
+            _productService = productService;
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<VariantDto>> GetVariantById(int id)
+        {
+            var variant = await _variantService.GetAsync(c => c.Id == id);
+            return Ok(variant);
+        }
+        [HttpGet("GetByProductId")]
+        public async Task<ActionResult<IEnumerable<VariantDto>>> GetByProductId(int productId)
+        {
+            var variants = await _variantService.GetByProductId(productId);
+            return Ok(variants);
+        }
+
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddVariant([FromForm] VariantAdd variantAdd)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var product = await _productService.GetAsync(c => c.Id == variantAdd.ProductId);
+            if (product == null) return NotFound("Sản phẩm không tồn tại");
+
+            await _variantService.AddAsync(variantAdd);
+            return Ok(variantAdd);
+        }
+
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateVariant(VariantUpdate variantDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var variant = await _variantService.UpdateAsync(variantDto);
+            return Ok(variant);
+        }
+
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteVariant(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            await _variantService.DeleteAsync(c => c.Id == id);
+            return NoContent();
+        }
     }
 }

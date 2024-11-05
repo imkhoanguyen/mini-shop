@@ -1,6 +1,4 @@
-﻿using Shop.Domain.Entities;
-
-namespace Shop.Application.DTOs.Reviews
+﻿namespace Shop.Application.DTOs.Reviews
 {
     public class ImgReviewDto
     {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Shop.Domain.Enum;
+﻿using Shop.Domain.Enum;
 
 namespace Shop.Application.DTOs.Variants
 {
@@ -12,6 +11,6 @@ namespace Shop.Application.DTOs.Variants
         public int? SizeId { get; set; }
         public int? ColorId { get; set; }
         public VariantStatus Status { get; set; }
-        public List<IFormFile> ImageFile { get; set; } = new List<IFormFile>();
+       
     }
 }

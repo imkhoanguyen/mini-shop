@@ -10,7 +10,7 @@ namespace Shop.Infrastructure.Configurations.EntityConfig
         public void Configure(EntityTypeBuilder<Variant> builder)
         {
             builder
-                .HasMany(p => p.Images)
+                .HasMany(v => v.Images)
                 .WithOne(i => i.Variant)
                 .HasForeignKey(i => i.VariantId)
                 .OnDelete(DeleteBehavior.Cascade);
