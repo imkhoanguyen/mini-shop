@@ -7,12 +7,15 @@ import { jwtInterceptorInterceptor } from './_interceptors/jwt-interceptor.inter
 import { OAuthModule, OAuthService } from 'angular-oauth2-oidc';
 import { importProvidersFrom } from '@angular/core';
 import { MessageService } from 'primeng/api';
+import { errorInterceptor } from './_interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([jwtInterceptorInterceptor])),
+    provideHttpClient(
+      withInterceptors([errorInterceptor, jwtInterceptorInterceptor])
+    ),
     provideAnimationsAsync(),
     importProvidersFrom(OAuthModule.forRoot()),
     MessageService,
