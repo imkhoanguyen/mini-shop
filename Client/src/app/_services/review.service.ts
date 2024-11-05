@@ -64,14 +64,14 @@ export class ReviewService {
   }
 
   updateReview(reviewEditDto: ReviewEditDto) {
-    return this.http.put(
+    return this.http.put<ReviewDto>(
       this.apiUrl + `/review/${reviewEditDto.id}`,
       reviewEditDto
     );
   }
 
   addImages(reviewID: number, frmData: FormData) {
-    return this.http.post(
+    return this.http.post<ReviewDto>(
       `${this.apiUrl}/review/add-images/${reviewID}`,
       frmData
     );
@@ -84,7 +84,7 @@ export class ReviewService {
   }
 
   addVideo(reviewId: number, frmData: FormData) {
-    return this.http.post(
+    return this.http.post<ReviewDto>(
       `${this.apiUrl}/review/add-video/${reviewId}`,
       frmData
     );
