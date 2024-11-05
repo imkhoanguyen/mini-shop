@@ -43,7 +43,7 @@ namespace API.Controllers
                 return BadRequest(ModelState);
 
             var review = await _reviewService.AddAsync(reviewCreateDto);
-
+            await _hub.Clients.All.SendAsync("add-review", review);
             return CreatedAtAction(nameof(GetReviews), new {productId = review.ProductId}, review);
         }
 
@@ -55,6 +55,7 @@ namespace API.Controllers
                 return BadRequest(ModelState);
 
             var review = await _reviewService.UpdateAsync(dto);
+            await _hub.Clients.All.SendAsync("edit-review", review);
             return Ok(review);
         }
 
@@ -62,6 +63,7 @@ namespace API.Controllers
         public async Task<IActionResult> AddImagesReview([FromRoute] int reviewId, [FromForm] List<IFormFile> imageFiles)
         {
             var review = await _reviewService.AddImageAsync(reviewId, imageFiles);
+            await _hub.Clients.All.SendAsync("edit-review", review);
             return Ok(review);
         }
 
@@ -69,6 +71,8 @@ namespace API.Controllers
         public async Task<IActionResult> RemoveImagesReview([FromRoute] int reviewId, int imageId)
         {
             await _reviewService.RemoveImageAsync(reviewId, imageId);
+            var review = await _reviewService.GetAsync(r => r.Id == reviewId);
+            await _hub.Clients.All.SendAsync("edit-review", review);
             return NoContent();
         }
 
@@ -76,6 +80,7 @@ namespace API.Controllers
         public async Task<IActionResult> AddVideoReview([FromRoute] int reviewId, [FromForm] IFormFile videoFile)
         {
             var review = await _reviewService.AddVideoAsync(reviewId, videoFile);
+            await _hub.Clients.All.SendAsync("edit-review", review);
             return Ok(review);
         }
 
@@ -83,6 +88,8 @@ namespace API.Controllers
         public async Task<IActionResult> RemoveVideoReview([FromRoute] int reviewId)
         {
             await _reviewService.RemoveVideoAsync(reviewId);
+            var review = await _reviewService.GetAsync(r => r.Id == reviewId);
+            await _hub.Clients.All.SendAsync("edit-review", review);
             return NoContent();
         }
 
@@ -93,7 +100,7 @@ namespace API.Controllers
                 return BadRequest(ModelState);
 
            var reply = await _reviewService.AddReplyAsync(dto);
-
+            await _hub.Clients.All.SendAsync("add-reply", reply);
             return Ok(reply);
 
         }
@@ -102,6 +109,7 @@ namespace API.Controllers
         public async Task<IActionResult> RemoveReview([FromRoute] int reviewId)
         {
             await _reviewService.RemoveReview(reviewId);
+            await _hub.Clients.All.SendAsync("delete-review", reviewId);
             return NoContent();
         }
     }

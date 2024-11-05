@@ -8,6 +8,7 @@ using Shop.Application.Services.Abstracts;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using Shop.Domain.Exceptions;
+using System.Linq.Expressions;
 
 namespace Shop.Application.Services.Implementations
 {
@@ -191,9 +192,15 @@ namespace Shop.Application.Services.Implementations
             return new PagedList<ReviewDto>(reviewDtos, pagedList.TotalCount, pagedList.CurrentPage, pagedList.PageSize);
         }
 
+        public async Task<ReviewDto> GetAsync(Expression<Func<Review, bool>> expression)
+        {
+            var review = await _unit.ReviewRepository.GetAsync(expression, false);
+            return ReviewMapper.EntityToReviewDto(review);
+        }
+
         public async Task RemoveImageAsync(int reviewId, int imageId)
         {
-            var review = await _unit.ReviewRepository.GetAsync(r => r.Id == reviewId);
+            var review = await _unit.ReviewRepository.GetAsync(r => r.Id == reviewId, true);
             if (review == null)
                 throw new NotFoundException("review not fond");
 
@@ -292,7 +299,7 @@ namespace Shop.Application.Services.Implementations
 
             review.ReviewText = dto.ReviewText;
             if (review.Rating != null)
-                review.Rating = review.Rating;
+                review.Rating = dto.Rating;
 
 
             if (await _unit.CompleteAsync())
