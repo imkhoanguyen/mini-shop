@@ -12,16 +12,14 @@ namespace API.Controllers
 {
     public class ReviewController : BaseApiController
     {
-        private readonly UserManager<AppUser> _userManager;
         private readonly ICloudinaryService _cloudinaryService;
         private readonly IHubContext<ReviewHub> _hub;
         private readonly IReviewService _reviewService;
 
-        public ReviewController(IReviewService reviewService, UserManager<AppUser> userManager,
+        public ReviewController(IReviewService reviewService,
             ICloudinaryService cloudinaryService, IHubContext<ReviewHub> hub)
         {
             _reviewService = reviewService;
-            _userManager = userManager;
             _cloudinaryService = cloudinaryService;
             _hub = hub;
         }
@@ -39,12 +37,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateReview([FromForm] ReviewCreateDto reviewCreateDto)
         {
-            if(!ModelState.IsValid) 
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var review = await _reviewService.AddAsync(reviewCreateDto);
             await _hub.Clients.All.SendAsync("add-review", review);
-            return CreatedAtAction(nameof(GetReviews), new {productId = review.ProductId}, review);
+            return CreatedAtAction(nameof(GetReviews), new { productId = review.ProductId }, review);
         }
 
         // update review & reply
@@ -96,10 +94,10 @@ namespace API.Controllers
         [HttpPost("add-reply")]
         public async Task<IActionResult> CreateReply([FromBody] ReplyCreateDto dto)
         {
-           if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-           var reply = await _reviewService.AddReplyAsync(dto);
+            var reply = await _reviewService.AddReplyAsync(dto);
             await _hub.Clients.All.SendAsync("add-reply", reply);
             return Ok(reply);
 
