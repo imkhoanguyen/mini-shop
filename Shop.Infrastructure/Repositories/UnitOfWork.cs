@@ -34,6 +34,7 @@ namespace Shop.Infrastructure.Repositories
 
         public IImageRepository ImageRepository { get; private set; }
 
+        public IBlogRepository BlogRepository { get; private set; }
 
         public UnitOfWork(StoreContext context)
         {
@@ -50,6 +51,7 @@ namespace Shop.Infrastructure.Repositories
             VoucherRepository = new VoucherRepository(_context);
             OrderItemsRepository = new OrderItemsRepository(_context);
             ImageRepository = new ImageRepository(_context);
+            BlogRepository = new BlogRepository(_context);
         }
 
         public async Task<bool> CompleteAsync()

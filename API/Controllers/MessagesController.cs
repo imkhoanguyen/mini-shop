@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using API.DTOs;
-using API.Entities;
 using API.Interfaces;
 using API.SignalR;
 using Microsoft.AspNetCore.Mvc;

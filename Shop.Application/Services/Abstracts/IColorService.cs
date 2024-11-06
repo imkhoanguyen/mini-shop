@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Helpers;
+using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
@@ -21,7 +22,5 @@ namespace Shop.Application.Services.Abstracts
         Task<bool> ColorExistsAsync(string name);
 
         Task AddColor(Color Color);
-
-        Task<bool> CompleteAsync();
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Helpers;
+using Shop.Application.Parameters;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Ultilities;
@@ -37,11 +38,6 @@ namespace Shop.Application.Services.Implementations
                 throw new ArgumentException("Color name cannot be null or empty.", nameof(name));
 
             return await _unitOfWork.ColorRepository.colorExistsAsync(name);
-        }
-
-        public async Task<bool> CompleteAsync()
-        {
-            return await _unitOfWork.CompleteAsync();
         }
 
         public async Task DeleteAsync(Color Color)

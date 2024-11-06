@@ -80,11 +80,6 @@ namespace Shop.Application.Services.Implementations
             return size;
         }
 
-        public async Task<bool> CompleteAsync()
-        {
-            return await _unitOfWork.CompleteAsync();
-        }
-
         public async Task<bool> SizeExistsAsync(string name)
         {
             if (string.IsNullOrWhiteSpace(name))

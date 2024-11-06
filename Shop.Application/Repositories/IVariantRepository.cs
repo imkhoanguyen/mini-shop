@@ -1,4 +1,4 @@
-using API.Entities;
+
 using Shop.Application.Repositories;
 using Shop.Domain.Entities;
 
@@ -8,6 +8,6 @@ namespace API.Interfaces
     {
         Task UpdateVariantAsync(Variant variant);
         Task DeleteVariantAsync(Variant variant);
-      
+
     }
 }

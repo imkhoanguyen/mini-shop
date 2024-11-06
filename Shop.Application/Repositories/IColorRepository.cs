@@ -1,4 +1,5 @@
 using API.Helpers;
+using Shop.Application.Parameters;
 using Shop.Application.Repositories;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;

@@ -1,4 +1,4 @@
-using API.Entities;
+
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Application.Parameters;
@@ -12,7 +12,7 @@ namespace API.Repositories
     public class VoucherRepository : Repository<Voucher>, IVoucherRepository
     {
         private readonly StoreContext _context;
-        public VoucherRepository(StoreContext context) : base(context) 
+        public VoucherRepository(StoreContext context) : base(context)
         {
             _context = context;
         }
@@ -37,20 +37,20 @@ namespace API.Repositories
             var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Id == voucherId);
             if (voucher != null)
             {
-                voucher.is_active = false; 
+                voucher.is_active = false;
             }
         }
-        
+
         public async Task RestoreVoucherAsync(int voucherId)
         {
             var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Id == voucherId);
             if (voucher != null)
             {
-                voucher.is_active = true; 
+                voucher.is_active = true;
             }
         }
 
-        
+
         public async Task<IEnumerable<Voucher>> GetAllVouchers(bool tracked = false)
         {
             if (tracked)
@@ -67,5 +67,4 @@ namespace API.Repositories
 
 
 
-        
-        
+

@@ -1,6 +1,7 @@
 using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Shop.Application.Parameters;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;

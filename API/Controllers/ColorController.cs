@@ -1,19 +1,20 @@
 using API.DTOs;
-using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Colors;
 using Shop.Application.Mappers;
+using Shop.Application.Parameters;
+using Shop.Application.Services.Abstracts;
 using Shop.Application.Services.Implementations;
 
 namespace API.Controllers
 {
     public class ColorController : BaseApiController
     {
-        private readonly ColorService _colorService;
+        private readonly IColorService _colorService;
 
-        public ColorController(ColorService colorService)
+        public ColorController(IColorService colorService)
         {
             _colorService = colorService;
         }
@@ -55,7 +56,7 @@ namespace API.Controllers
             var color = ColorMapper.ColorAddDtoToEntity(colorAddDto);
             await _colorService.AddColor(color);
 
-            return BadRequest(new { message = "Thêm màu sắc thất bại" });
+            return Ok(new { message = "Thêm màu thanh cong" });
         }
 
         // PUT api/color/Update
@@ -65,9 +66,7 @@ namespace API.Controllers
             var color = ColorMapper.ColorDtoToEntity(colorDto);
             await _colorService.UpdateAsync(color);
 
-            if (await _colorService.CompleteAsync())
-                return Ok("Update color successfully.");
-            return BadRequest("Update color failed.");
+            return Ok("Update color success.");
         }
 
         // DELETE api/color/Delete
@@ -77,9 +76,7 @@ namespace API.Controllers
             var color = ColorMapper.ColorDtoToEntity(colorDto);
             await _colorService.DeleteAsync(color);
 
-            if (await _colorService.CompleteAsync())
-                return Ok("Delete color successfully.");
-            return BadRequest("Delete color failed.");
+            return Ok("Delete color success.");
 
         }
     }

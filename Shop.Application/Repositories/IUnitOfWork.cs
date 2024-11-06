@@ -16,6 +16,7 @@ namespace Shop.Application.Repositories
         IOrderRepository OrderRepository { get; }
         IOrderItemsRepository OrderItemsRepository { get; }
         IVoucherRepository VoucherRepository { get; }
+        IBlogRepository BlogRepository { get; }
         Task<bool> CompleteAsync();
     }
 }

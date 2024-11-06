@@ -11,5 +11,6 @@ namespace Shop.Infrastructure.Repositories
         {
             _context = context;
         }
+
     }
 }

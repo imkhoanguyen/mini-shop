@@ -1,6 +1,5 @@
 using API.Controllers;
 using API.DTOs;
-using API.Entities;
 using API.Helpers;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +45,7 @@ namespace api.Controllers
         //    var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
         //    return Ok(productDto);
         //}
-        
+
         //[HttpGet("GetAllPaging")]
         //public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
         //{
@@ -96,9 +95,9 @@ namespace api.Controllers
         //    var product = ProductDto.toProduct(productDto);
         //    await _unitOfWork.ProductRepository.AddProductCategory(product);
         //    await _unitOfWork.ProductRepository.UpdateProduct(product);
-            
+
         //    if (await _unitOfWork.Complete()){
-                
+
         //        return Ok(new {message = "Update Product successfully."});
         //    }
         //    return BadRequest(new {message = "Update Product failed."});
@@ -116,8 +115,8 @@ namespace api.Controllers
         //    if (await _unitOfWork.Complete())
         //        return Ok(new {message = "Delete Product successfully."});
         //    return BadRequest(new {message = "Delete Product failed."});
-            
+
         //}
-        
+
     }
 }

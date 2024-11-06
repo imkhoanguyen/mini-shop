@@ -20,7 +20,5 @@ namespace Shop.Application.Services.Abstracts
         Task<bool> SizeExistsAsync(string name);
 
         Task AddSize(Size size);
-
-        Task<bool> CompleteAsync();
     }
 }

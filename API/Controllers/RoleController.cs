@@ -1,4 +1,4 @@
-﻿using API.Entities;
+﻿
 using API.Extensions;
 using API.Helper;
 using API.Helpers;
@@ -172,7 +172,7 @@ namespace API.Controllers
         //    var currentClaims = await _roleManager.GetClaimsAsync(role);
         //    var currentClaimValues = currentClaims.Select(c => c.Value).ToList();
 
-          
+
         //    var claimsToAdd = newRoleClaims.Except(currentClaimValues).ToList();
 
         //    var claimsToRemove = currentClaimValues.Except(newRoleClaims).ToList();
@@ -222,6 +222,6 @@ namespace API.Controllers
         //    return false;
         //}
 
-        
+
     }
 }

@@ -1,20 +1,20 @@
 using API.DTOs;
-using API.Entities;
 using API.Helpers;
 using API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Size;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
+using Shop.Application.Services.Abstracts;
 using Shop.Application.Services.Implementations;
 
 namespace API.Controllers
 {
     public class SizeController : BaseApiController
     {
-        private readonly SizeService _sizeService;
+        private readonly ISizeService _sizeService;
 
-        public SizeController(SizeService sizeService)
+        public SizeController(ISizeService sizeService)
         {
             _sizeService = sizeService;
         }
@@ -51,9 +51,7 @@ namespace API.Controllers
             var size = SizeMapper.SizeAddDtoToEntity(sizeAddDto);
             await _sizeService.AddSize(size);
 
-            if (await _sizeService.CompleteAsync())
-                return Ok(new { message = "Thêm kích thước thành công" });
-            return BadRequest(new { message = "Thêm kích thước thất bại" });
+            return Ok(new { message = "Thêm kích thước thành công" });
 
         }
 
@@ -64,9 +62,7 @@ namespace API.Controllers
             var size = SizeMapper.SizeDtoToEntity(sizeDto);
             await _sizeService.UpdateAsync(size);
 
-            if (await _sizeService.CompleteAsync())
-                return Ok(new { message = "Cập nhật kích thước thành công." });
-            return BadRequest(new { message = "Cập nhật kích thước thất bại." });
+            return Ok(new { message = "Cập nhật kích thước hành công." });
 
         }
 
@@ -77,9 +73,7 @@ namespace API.Controllers
             var size = SizeMapper.SizeDtoToEntity(sizeDto);
             await _sizeService.DeleteAsync(size);
 
-            if (await _sizeService.CompleteAsync())
-                return Ok("Delete size successfully.");
-            return BadRequest("Delete size failed.");
+            return BadRequest("Delete size success.");
 
         }
     }
