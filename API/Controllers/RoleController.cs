@@ -9,6 +9,7 @@ using Shop.Application.DTOs.Roles;
 using Shop.Application.Mappers;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
+using Shop.Domain.Exceptions;
 using Shop.Infrastructure.Ultilities;
 using System.Security.Claims;
 
@@ -78,7 +79,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = ClaimStore.Role_Create)]
+        //[Authorize(Policy = ClaimStore.Role_Create)]
         public async Task<ActionResult<RoleDto>> CreateRole(RoleCreateDto roleCreateDto)
         {
             if (!ModelState.IsValid)
@@ -86,7 +87,7 @@ namespace API.Controllers
 
 
             if (await RoleNameExists(roleCreateDto.Name))
-                return BadRequest("Tên quyền đã tồn tại");
+                throw new BadRequestException("Tên quyền đã tồn tại");
 
             var appRole = new AppRole
             {
@@ -102,7 +103,7 @@ namespace API.Controllers
                 return CreatedAtAction("GetRole", new { id = appRole.Id }, roleDto);
             }
 
-            return BadRequest("Đã xảy ra lỗi khi thêm quyền");
+            throw new BadRequestException("Đã xảy ra lỗi khi thêm quyền");
         }
 
         [HttpPut("{id}")]
@@ -112,10 +113,10 @@ namespace API.Controllers
                 return BadRequest(ModelState);
 
             if (roleDto.Id != id)
-                return BadRequest("Không thể cập nhật quyền");
+                throw new BadRequestException("Không thể cập nhật quyền");
 
             if (await CheckEdit(roleDto.Name, id))
-                return BadRequest("Tên quyền đã tồn tại");
+                throw new BadRequestException("Tên quyền đã tồn tại");
 
             var roleFromDb = await _roleManager.FindByIdAsync(id);
 
@@ -131,23 +132,23 @@ namespace API.Controllers
                 return Ok(RoleMapper.EntityToRoleDto(roleFromDb));
             }
 
-            return BadRequest("Đã xảy ra lỗi khi cập nhật quyền");
+            throw new BadRequestException("Đã xảy ra lỗi khi cập nhật quyền");
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRole(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
-            if (role == null) return NotFound("Không tìm thấy role");
+            if (role == null) throw new NotFoundException("Không tìm thấy role");
 
             var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
             if (usersInRole.Any())
-                return BadRequest("Không thể xóa quyền vì nó đang được gán cho người dùng");
+                throw new BadRequestException("Không thể xóa quyền vì nó đang được gán cho người dùng");
 
             var result = await _roleManager.DeleteAsync(role);
             if (result.Succeeded)
                 return NoContent();
-            return BadRequest("Đã xảy ra lỗi khi xóa role");
+            throw new BadRequestException("Đã xảy ra lỗi khi xóa role");
         }
 
         [HttpGet("permissions")]
@@ -160,7 +161,7 @@ namespace API.Controllers
         public async Task<ActionResult<List<string>>> GetRoleClaims(string roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
-            if (role == null) return NotFound("Không tìm thấy quyền");
+            if (role == null) throw new NotFoundException("Không tìm thấy quyền");
 
             var claims = await _roleManager.GetClaimsAsync(role);
 
@@ -171,7 +172,7 @@ namespace API.Controllers
         public async Task<IActionResult> UpdateRoleClaims(string roleId, [FromBody] List<string> newRoleClaims)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
-            if (role == null) return NotFound("Không tìm thấy quyền");
+            if (role == null) throw new NotFoundException("Không tìm thấy quyền");
 
             var currentClaims = await _roleManager.GetClaimsAsync(role);
             var currentClaimValues = currentClaims.Select(c => c.Value).ToList();
@@ -188,7 +189,7 @@ namespace API.Controllers
                 if (claim != null)
                 {
                     var result = await _roleManager.RemoveClaimAsync(role, claim);
-                    if (!result.Succeeded) return BadRequest($"Không thể xóa claim: {claimValue}");
+                    if (!result.Succeeded) throw new BadRequestException($"Không thể xóa claim: {claimValue}");
                 }
             }
 
@@ -196,7 +197,7 @@ namespace API.Controllers
             foreach (var claimValue in claimsToAdd)
             {
                 var result = await _roleManager.AddClaimAsync(role, new Claim("Permission", claimValue));
-                if (!result.Succeeded) return BadRequest($"Không thể thêm claim: {claimValue}");
+                if (!result.Succeeded) throw new BadRequestException($"Không thể thêm claim: {claimValue}");
             }
 
             return NoContent();
@@ -218,7 +219,5 @@ namespace API.Controllers
             if (role != null) return true;
             return false;
         }
-
-
     }
 }
