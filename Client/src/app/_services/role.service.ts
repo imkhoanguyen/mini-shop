@@ -46,7 +46,7 @@ export class RoleService {
   }
 
   updateRole(roleId: string, role: Role) {
-    return this.http.put(`${this.baseUrl}/role/${roleId}`, role);
+    return this.http.put<Role>(`${this.baseUrl}/role/${roleId}`, role);
   }
 
   deleteRole(roleId: string) {
