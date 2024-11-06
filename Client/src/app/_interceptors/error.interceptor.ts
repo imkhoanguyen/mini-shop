@@ -28,7 +28,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             }
             break;
           case 401:
-            toastr.error(error.statusCode + '-' + 'Unauthorised');
+            toastr.error('401' + ' - ' + 'Unauthorised');
             break;
           case 404:
             router.navigateByUrl('/not-found');
