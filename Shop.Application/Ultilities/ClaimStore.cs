@@ -53,6 +53,9 @@ namespace Shop.Application.Ultilities
         public const string Role_Delete = "Role.Delete";
         public const string Role_View = "Role.View";
 
+        // message management
+        public const string Message_Reply = "Message.Reply";
+
 
 
 
@@ -111,6 +114,8 @@ namespace Shop.Application.Ultilities
             new IdentityRoleClaim<string> {ClaimType="Permission", ClaimValue=Role_Delete},
             new IdentityRoleClaim<string> {ClaimType="Permission", ClaimValue=Role_View},
 
+            // message management
+            new IdentityRoleClaim<string> {ClaimType="Permission", ClaimValue= Message_Reply}
 
         };
 
@@ -206,6 +211,15 @@ namespace Shop.Application.Ultilities
                     new PermissionItemDto {Name = "Tạo phương thức vận chuyển", ClaimValue = Shipping_Create},
                     new PermissionItemDto {Name = "Sửa phương thức vận chuyển", ClaimValue = Shipping_Edit},
                     new PermissionItemDto {Name = "Xóa phương thức vận chuyển", ClaimValue = Shipping_Delete},
+                }
+            },
+
+            new PermissionGroupDto
+            {
+                GroupName = "Quản lý tin nhắn",
+                Permissions = new List<PermissionItemDto>
+                {
+                    new PermissionItemDto {Name = "Phản hồi tin nhắn từ khách hàng", ClaimValue = Message_Reply},
                 }
             },
         };
