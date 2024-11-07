@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { User } from '../../_models/user.module';
 import { AccountService } from '../../_services/account.service';
-import { UserService } from '../../_services/user.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from '../../_services/message.service';
 import { Message } from '../../_models/message.module';
@@ -27,7 +26,6 @@ export class ChatComponent implements OnInit {
 
   private chatService = inject(ChatService);
   private accountService = inject(AccountService);
-  private userService = inject(UserService);
   private messageService = inject(MessageService);
   constructor() {
     const userJson = localStorage.getItem('user');
@@ -37,7 +35,7 @@ export class ChatComponent implements OnInit {
     }
   }
   ngOnInit() {
-    this.loadUsersWithAdminRole();
+    // this.loadUsersWithAdminRole();
     this.chatService.onMessageReceived((content) => {
       this.messages.push(content);
 
@@ -55,12 +53,12 @@ export class ChatComponent implements OnInit {
       }, 10);
     }
   }
-  loadUsersWithAdminRole() {
-    this.userService.getUsersWithAdminRole().subscribe((users) => {
-      this.adminUsers = users;
-      this.loadOldMessages();
-    });
-  }
+  // loadUsersWithAdminRole() {
+  //   this.userService.getUsersWithAdminRole().subscribe((users) => {
+  //     this.adminUsers = users;
+  //     this.loadOldMessages();
+  //   });
+  // }
   onScroll() {
     const element = this.messagesContainer.nativeElement;
     if (element.scrollTop === 0 && !this.loadingOldMessages) {

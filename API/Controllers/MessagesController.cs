@@ -8,23 +8,18 @@ using API.Interfaces;
 using API.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Shop.Application.DTOs.Messages;
 using Shop.Application.Services.Abstracts;
 
 namespace API.Controllers
 {
     public class MessagesController : BaseApiController
     {
-        //private readonly IMessageRepository _message;
-        //private readonly IUnitOfWork _unitOfWork;
-        //private readonly IHubContext<ChatHub> _hub;
-        //private readonly ICloudinaryService _fileService;
-        //public MessagesController(IMessageRepository message, IUnitOfWork unitOfWork, IHubContext<ChatHub> hub, ICloudinaryService fileService)
-        //{
-        //    _message = message;
-        //    _unitOfWork = unitOfWork;
-        //    _hub = hub;
-        //    _fileService = fileService;
-        //}
+        private readonly IMessageService _messageService;
+        public MessagesController(IMessageService messageService)
+        {
+            _messageService = messageService;
+        }
         //[HttpPost("UploadFiles")]
         //public async Task<IActionResult> UploadFiles([FromForm] IFormFileCollection files)
         //{
@@ -54,35 +49,28 @@ namespace API.Controllers
         //    return Ok(new { files = uploadResults });
         //}
 
-        //[HttpPost("SendMessage")]
-        //public async Task<IActionResult> SendMessage([FromBody] MessageAddDto messageDto)
-        //{
-
-        //    var message = await MessageAddDto.ToMessageAsync(messageDto);
-        //    _message.AddMessage(message);
-        //    if (await _unitOfWork.Complete())
-        //    {
-        //        return Ok(new { message = "Message sent successfully" });
-        //    }
-        //    return BadRequest(new { message = "Message sent failed." });
-        //}
-
-        //[HttpGet("GetMessageThread")]
-        //public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
-        //{
-        //    if (skip < 0 || take <= 0)
-        //    {
-        //        return BadRequest("Invalid skip or take parameters.");
-        //    }
-        //    var messages = await _message.GetMessageThread(senderId, recipientId, skip, take);
-        //    return Ok(messages);
-        //}
-        //[HttpGet("GetLastMessage")]
-        //public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
-        //{
-        //    var message = await _message.GetLastMessage(senderId, recipientId);
-        //    return Ok(message);
-        //}
+        [HttpPost("AddMessage")]
+        public async Task<IActionResult> AddMessage(MessageAdd messageAdd)
+        {
+            var message = await _messageService.AddMessageAsync(messageAdd);
+            return Ok(message);
+        }
+        [HttpGet("GetMessageThread")]
+        public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        {
+            if (skip < 0 || take <= 0)
+            {
+                return BadRequest("Tham số không hợp lệ.");
+            }
+            var messages = await _messageService.GetMessageThread(senderId, recipientId, skip, take);
+            return Ok(messages);
+        }
+        [HttpGet("GetLastMessage")]
+        public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
+        {
+            var message = await _messageService.GetLastMessage(senderId, recipientId);
+            return Ok(message);
+        }
 
     }
 }

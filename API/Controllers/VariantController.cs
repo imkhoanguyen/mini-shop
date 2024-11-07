@@ -45,12 +45,15 @@ namespace API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateVariant(VariantUpdate variantDto)
+        public async Task<IActionResult> UpdateVariant(VariantUpdate variantUpdate)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var variant = await _variantService.UpdateAsync(variantDto);
-            return Ok(variant);
+            var product = await _productService.GetAsync(c => c.Id == variantUpdate.ProductId);
+            if (product == null) return NotFound("Sản phẩm không tồn tại");
+
+            await _variantService.UpdateAsync(variantUpdate);
+            return Ok(variantUpdate);
         }
 
         [HttpDelete("Delete")]

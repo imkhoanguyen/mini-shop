@@ -1,23 +1,11 @@
 ﻿using Shop.Application.DTOs.Messages;
+using Shop.Application.DTOs.Variants;
 using Shop.Domain.Entities;
 
 namespace Shop.Application.Mappers
 {
     public class MessageMapper
     {
-        public static Message MessageDtoToEntity(MessageDto messageDto)
-        {
-            return new Message
-            {
-                Id = messageDto.Id,
-                SenderId = messageDto.SenderId,
-                RecipientId = messageDto.RecipientId,
-                Content = messageDto.Content,
-                FileUrl = messageDto.FileUrl,
-                FileType = messageDto.FileType,
-                SentAt = messageDto.SentAt,
-            };
-        }
 
         public static Message MessageAddDtoToEntity(MessageAdd messageAddDto)
         {
@@ -26,8 +14,6 @@ namespace Shop.Application.Mappers
                 SenderId = messageAddDto.SenderId,
                 RecipientId = messageAddDto.RecipientId,
                 Content = messageAddDto.Content,
-                FileUrl = messageAddDto.FileUrl,
-                FileType = messageAddDto.FileType,
                 SentAt = DateTime.UtcNow
             };
         }
@@ -40,9 +26,17 @@ namespace Shop.Application.Mappers
                 SenderId = message.SenderId,
                 RecipientId = message.RecipientId,
                 Content = message.Content,
-                FileUrl = message.FileUrl,
-                FileType = message.FileType,
                 SentAt = message.SentAt,
+                Files = message.Files.Select(MessageFileToFileMessageDto).ToList()
+            };
+        }
+        public static FileMessageDto MessageFileToFileMessageDto(MessageFile entity)
+        {
+            return new FileMessageDto
+            {
+                Id = entity.Id,
+                FileUrl = entity.FileUrl ?? string.Empty,
+                FileType = entity.FileType ?? string.Empty
             };
         }
     }

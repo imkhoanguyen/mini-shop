@@ -14,7 +14,7 @@ namespace Shop.Domain.Entities
         public AppUser? Sender { get; set; }
         [ForeignKey("RecipientId")]
         public AppUser? Recipient { get; set; }
-       
 
+        public ICollection<MessageFile> Files { get; set; } = new List<MessageFile>();
     }
 }

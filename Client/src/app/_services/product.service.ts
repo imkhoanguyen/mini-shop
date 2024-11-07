@@ -1,55 +1,57 @@
 import { Injectable, signal } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { Product, ProductAdd, ProductUpdate } from "../_models/product.module";
-import { Observable } from "rxjs";
-import { Pagination } from "../_models/pagination.module";
+import { map, Observable } from "rxjs";
+import { PaginatedResult } from "../_models/pagination";
+import { HttpResponse } from "@angular/common/http";
+import { ProductAdd, ProductDto, ProductUpdate } from "../_models/product.module";
 
-@Injectable(
-{
+@Injectable({
   providedIn: 'root'
 })
-
 export class ProductService {
   constructor(private http: HttpClient){}
+
   apiUrl = environment.apiUrl;
 
-  productList = signal<Product[]>([]);
-  productItems = signal<Product>({
-    id: 0,
-  name: "",
-  description: "",
-  created: new Date(),
-  updated: new Date(),
-  variants: [],
-  categoryIds: [],
-  status: 0,
-  });
-  addProduct(data: ProductAdd): Observable<any>{
-    return this.http.post(this.apiUrl + "/Product/Add", data);
-  }
-  updateProduct(data: ProductUpdate): Observable<any>{
-    return this.http.put(this.apiUrl + "/Product/Update", data);
-  }
-  deleteProduct(data: Product): Observable<any>{
-    return this.http.delete(this.apiUrl + "/Product/Delete/", { body: data });
-  }
-  getProductById(id: number){
-    return this.http.get<Product>(this.apiUrl + "/Product/GetProductById" + id);
-  }
-  getAllProduct(){
-    return this.http.get<Product[]>(this.apiUrl + "/Product/GetAll");
-  }
-  getProductAllPaging(pageNumber: number, pageSize: number, searchString?: string): Observable<Pagination<Product>>{
-    let param = new HttpParams()
-      .set("pageNumber", pageNumber.toString())
-      .set("pageSize", pageSize.toString());
+  getProductsPagedList(params: any): Observable<PaginatedResult<ProductDto[]>> {
+    let httpParams = new HttpParams();
+    if (params.pageNumber) httpParams = httpParams.set('pageNumber', params.pageNumber.toString());
+    if (params.pageSize) httpParams = httpParams.set('pageSize', params.pageSize.toString());
+    if (params.orderBy) httpParams = httpParams.set('orderBy', params.orderBy);
+    if (params.search) httpParams = httpParams.set('search', params.search);
 
-    if(searchString){
-      param = param.set("searchString", searchString);
-    }
+    return this.http.get<ProductDto[]>(this.apiUrl + "/Product", {
+      params: httpParams,
+      observe: 'response'
+    }).pipe(
+      map((response: HttpResponse<ProductDto[]>) => {
+        const paginatedResult = new PaginatedResult<ProductDto[]>();
+        paginatedResult.items = response.body || [];
 
-    return this.http.get<Pagination<Product>>(this.apiUrl + "/Product/GetAllPaging", { params: param });
+        const paginationHeader = response.headers.get('Pagination');
+        if (paginationHeader) {
+          paginatedResult.pagination = JSON.parse(paginationHeader);
+        }
+
+        return paginatedResult;
+      })
+    );
+  }
+  getAllCProducts () {
+    return this.http.get<ProductDto[]>(`${this.apiUrl}/Product/all`);
+  }
+  getProductById(id: number): Observable<ProductDto> {
+    return this.http.get<ProductDto>(`${this.apiUrl}/Product/${id}`);
+  }
+  addProduct(Product: ProductAdd): Observable<ProductDto> {
+    return this.http.post<ProductDto>(this.apiUrl+"/Product/Add", Product);
+  }
+  updateProduct(Product: ProductUpdate): Observable<ProductDto> {
+    return this.http.put<ProductDto>(`${this.apiUrl}/Product/Update`, Product);
+  }
+
+  deleteProduct(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/Product/Delete?id=${id}`);
   }
 }
-

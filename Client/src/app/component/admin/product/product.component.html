@@ -30,7 +30,7 @@
 </div>
 
 <p-table
-  [value]="paginatedProduct"
+  [value] ="selectedProducts"
   dataKey="id"
   [tableStyle]="{ 'min-width': '60rem' }"
   [expandedRowKeys]="expandedRows"
@@ -40,13 +40,12 @@
   <ng-template pTemplate="header">
     <tr>
       <th style="width: 5rem; padding: 1rem;"></th>
-      <th pSortableColumn="name" class="px-3 py-2">Tên sản phẩm</th>
-      <th pSortableColumn="description" class="px-3 py-2">Mô tả</th>
-      <th pSortableColumn="created" class="px-3 py-2">Ngày tạo</th>
-      <th pSortableColumn="updated" class="px-3 py-2">Ngày sửa</th>
+      <th pSortableColumn="name" class="px-3 py-2">Sản phẩm</th>
+      <!-- <th pSortableColumn="created" class="px-3 py-2">Ngày tạo</th>
+      <th pSortableColumn="updated" class="px-3 py-2">Ngày sửa</th> -->
       <th pSortableColumn="category" class="px-3 py-2">Danh mục</th>
       <th pSortableColumn="inventoryStatus" class="px-3 py-2">Status</th>
-      <th class="px-3 py-2">Action</th>
+      <th class="px-3 py-2">Chi tiết</th>
     </tr>
   </ng-template>
 
@@ -64,10 +63,21 @@
           class="p-button-sm p-button-rounded"
         ></p-button>
       </td>
-      <td>{{ product.name }}</td>
-      <td>{{ product.description }}</td>
-      <td>{{ product.created | date: 'dd/MM/yyyy' }}</td>
-      <td>{{ product.updated | date: 'dd/MM/yyyy' }}</td>
+      <td class="sorting_1">
+        <div class="d-flex justify-content-start align-items-center product-name">
+          <div class="avatar-wrapper">
+            <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
+              <img src="https://res.cloudinary.com/dlhwuvhhp/image/upload/v1730802018/mini-upload/xbjiitjshod0frrdydyb.png" alt="Product-13" class="rounded" height="50px">
+            </div>
+          </div>
+          <div class="d-flex flex-column">
+            <h6 class="text-nowrap mb-0"><strong>{{ product.name }}</strong></h6>
+            <small class="text-truncate d-none d-sm-block">hahahahahahahahahhaahahhahaha</small>
+          </div>
+        </div>
+      </td>
+      <!-- <td>{{ product.created | date: 'dd/MM/yyyy' }}</td>
+      <td>{{ product.updated | date: 'dd/MM/yyyy' }}</td> -->
       <td>
         <ng-container *ngFor="let categoryId of product.categoryIds">
           <p-tag severity="success" value="{{ getCategoryNameById(categoryId) }}"></p-tag>
@@ -81,7 +91,7 @@
           (onChange)="setStatus(product, $event.checked)" />
       </td>
       <td>
-        <p-button
+        <!-- <p-button
           icon="pi pi-file-edit"
           [rounded]="true"
           severity="info"
@@ -93,7 +103,15 @@
           [rounded]="true"
           severity="danger"
           class="p-button-outlined"
-          (onClick)="deleteProduct(product)"
+          (onClick)="confirmDelete(product)"
+        ></p-button> -->
+
+        <p-button
+          icon="pi pi-eye"
+          [rounded]="true"
+          severity="info"
+          class="p-button-outlined"
+          (onClick)="showDialog()"
         ></p-button>
       </td>
     </tr>
@@ -157,7 +175,18 @@
       </tr>
     </ng-template>
   </p-table>
-
+  <p-dialog
+  header="Chi tiết sản phẩm "
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [maximizable]="false">
+      <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </p>
+  </p-dialog>
   <p-paginator
     (onPageChange)="onPageChange($event)"
     [first]="first"

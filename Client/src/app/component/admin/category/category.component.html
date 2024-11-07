@@ -1,5 +1,7 @@
-<p-toast />
-<p-confirmDialog />
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Search and Pagination Controls -->
 <div class="row align-items-center mb-3">
   <div class="col">
     <input
@@ -16,8 +18,9 @@
       [options]="pageSizeOptions"
       [(ngModel)]="pageSize"
       optionLabel="label"
-      [placeholder]="'Số lượng trang'"
-      (onChange)="onPageSizeChange($event.value)"
+      optionValue="value"
+      [placeholder]="pageSize.toString()"
+      (onChange)="onPageSizeChange($event)"
     ></p-dropdown>
   </div>
   <div class="col-auto">
@@ -25,7 +28,7 @@
       label="Thêm Danh mục"
       icon="pi pi-plus"
       severity="success"
-      (click)="showDialog()"
+      (click)="openDialog()"
     ></p-button>
   </div>
 </div>
@@ -52,25 +55,27 @@
       </div>
     </div>
     <div class="flex justify-content-end gap-2">
-      <p-button label="Cancel" severity="secondary" (click)="visible = false"></p-button>
+      <p-button label="Hủy" severity="secondary" (click)="visible = false"></p-button>
       <p-button label="{{ btnText }}" type="submit"></p-button>
     </div>
   </form>
 </p-dialog>
 
+<!-- Categories Table -->
 <p-table
-  [value]="paginatedCategory"
+  [value]="selectedCategories"
   [(selection)]="selectedCategories"
   dataKey="id"
   [tableStyle]="{ 'min-width': '50rem' }"
+
 >
   <ng-template pTemplate="header">
     <tr>
       <th>Id</th>
-      <th>Name</th>
+      <th>Tên</th>
       <th>Ngày Tạo</th>
       <th>Ngày Sửa</th>
-      <th>Action</th>
+      <th>Hành Động</th>
     </tr>
   </ng-template>
 
@@ -84,21 +89,28 @@
         <p-button
           icon="pi pi-file-edit"
           severity="info"
-          (click)="openUpdateDialog(category)"
+          (click)="openDialog(category)"
+          tooltip="Chỉnh sửa"
+          tooltipPosition="top"
         ></p-button>
         <p-button
           icon="pi pi-trash"
           severity="danger"
-          (click)="confirmDelete(category, $event)"
+          (click)="confirmDelete(category)"
+          tooltip="Xóa"
+          tooltipPosition="top"
         ></p-button>
       </td>
     </tr>
   </ng-template>
 </p-table>
 
+<!-- Paginator -->
 <p-paginator
   (onPageChange)="onPageChange($event)"
   [first]="first"
   [rows]="pageSize"
   [totalRecords]="totalRecords"
 ></p-paginator>
+
+

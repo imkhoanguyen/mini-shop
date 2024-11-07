@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Category } from '../../../_models/category.module';
 import { CategoryService } from '../../../_services/category.service';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
@@ -9,11 +8,16 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
 import { Subscription } from 'rxjs';
+import { CategoryDto } from '../../../_models/category.module';
+import { ToastrService } from '../../../_services/toastr.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { PaginatedResult, Pagination } from '../../../_models/pagination';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-categorylist',
@@ -30,17 +34,18 @@ import { Subscription } from 'rxjs';
     ReactiveFormsModule,
     PaginatorModule,
     ConfirmDialogModule,
+    ProgressSpinnerModule
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   templateUrl: './category.component.html',
   styleUrls: ['./category.component.css'],
 })
 export class CategoryComponent implements OnInit, OnDestroy {
-  selectedCategories: Category[] = [];
+  selectedCategories!: CategoryDto[];
   visible: boolean = false;
   btnText: string = 'Thêm';
   headerText: string = 'Thêm Danh Mục';
-  categoryForm: any;
+  categoryForm!: FormGroup;
 
   pageSizeOptions = [
     { label: '5', value: 5 },
@@ -48,8 +53,9 @@ export class CategoryComponent implements OnInit, OnDestroy {
     { label: '20', value: 20 },
     { label: '50', value: 50 },
   ];
+
   first: number = 0;
-  paginatedCategory: any;
+  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
   totalRecords: number = 0;
   pageSize: number = 5;
   pageNumber: number = 1;
@@ -59,13 +65,14 @@ export class CategoryComponent implements OnInit, OnDestroy {
 
   constructor(
     private builder: FormBuilder,
-    public categoryService: CategoryService,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
-  ) {}
+    private categoryService: CategoryService,
+    private confirmationService: ConfirmationService,
+    private toastService: ToastrService,
+  ) {
+    this.categoryForm = this.initializeForm();
+  }
 
   ngOnInit(): void {
-    this.initializeForm();
     this.loadCategories();
   }
 
@@ -73,19 +80,25 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private showMessage(severity: string, summary: string, detail: string, life: number = 3000): void {
-    this.messageService.add({ severity, summary, detail, life });
-  }
-
-  private handleError(error: any, action: string): void {
-    const errorMessage = error.error?.message || `${action} thất bại`;
-    this.showMessage('error', 'Thất Bại', errorMessage);
-  }
-
-  initializeForm(): void {
-    this.categoryForm = this.builder.group({
+  initializeForm(): FormGroup {
+    return this.builder.group({
       id: [0],
       name: ['', Validators.required],
+    });
+  }
+
+  loadCategories(): void {
+    const params = {
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      search: this.searchString
+    };
+    this.categoryService.getCategoriesPagedList(params).subscribe((result) => {
+      this.selectedCategories = result.items || [];
+      this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+
+      this.totalRecords = this.pagination.totalItems;
+      this.first = (this.pageNumber - 1) * this.pageSize;
     });
   }
 
@@ -93,6 +106,8 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.first = event.first;
     this.pageNumber = event.page + 1;
     this.pageSize = event.rows;
+
+
     this.loadCategories();
   }
 
@@ -104,103 +119,82 @@ export class CategoryComponent implements OnInit, OnDestroy {
 
   onSearch(): void {
     this.pageNumber = 1;
+    console.log("search", this.searchString)
     this.loadCategories();
   }
 
-  loadCategories(): void {
-    const categorySub = this.categoryService.getCategoriesAllPaging(this.pageNumber, this.pageSize, this.searchString)
-    .subscribe(
-      (pagination) => {
-        this.paginatedCategory = pagination.items;
-        this.totalRecords = pagination.totalCount;
-        console.log('danh mục:', this.paginatedCategory);
-        console.log('Tổng số danh mục:', this.totalRecords);
-      },
-      (error) => this.handleError(error, 'Lấy danh mục')
-    );
-  this.subscriptions.add(categorySub);
-  }
-
-  showDialog(): void {
+  openDialog(category?: CategoryDto): void {
     this.visible = true;
-    this.categoryForm.reset();
-    this.btnText = 'Thêm';
-    this.headerText = 'Thêm Danh Mục';
-  }
-
-  openUpdateDialog(category: Category): void {
-    this.categoryForm.setValue({
-      id: category.id,
-      name: category.name,
-    });
-    this.btnText = 'Cập Nhật';
-    this.headerText = 'Cập Nhật Danh Mục';
-    this.visible = true;
-  }
-
-  confirmDelete(category: Category, event: Event): void {
-    this.confirmationService.confirm({
-      target: event.target as EventTarget,
-      message: 'Bạn muốn xóa Danh mục này?',
-      header: 'Xác nhận Xóa',
-      icon: 'pi pi-info-circle',
-      acceptButtonStyleClass: "p-button-danger p-button-text",
-      rejectButtonStyleClass: "p-button-text",
-      acceptIcon: "none",
-      rejectIcon: "none",
-      accept: () => this.deleteCategory(category),
-    });
-  }
-
-  private deleteCategory(category: Category): void {
-    const deleteSub = this.categoryService.deleteCategory(category).subscribe(
-      (res) => {
-        this.showMessage('success', 'Thành Công', 'Xóa danh mục thành công');
-        this.loadCategories();
-      },
-      (error) => this.handleError(error, 'Xóa danh mục')
-    );
-    this.subscriptions.add(deleteSub);
-  }
-
-  onSubmit(): void {
-    const data: Category = this.categoryForm.value;
-    if (!data.id) {
-      this.addCategory(data);
+    if (category) {
+      this.categoryForm.patchValue(category);
+      this.btnText = 'Cập nhật';
+      this.headerText = 'Cập nhật Danh Mục';
     } else {
-      this.updateCategory(data);
+      this.categoryForm.reset();
+      this.btnText = 'Thêm';
+      this.headerText = 'Thêm Danh Mục';
     }
   }
 
-  public addCategory(data: Category): void {
-    const addSub = this.categoryService.addCategory(data).subscribe(
-      (res) => {
-        this.showMessage('success', 'Thành Công', 'Thêm danh mục thành công');
-        this.loadCategories();
-        this.closeDialog();
-      },
-      (error) => this.handleError(error, 'Thêm danh mục')
-    );
-    this.subscriptions.add(addSub);
-  }
+  onSubmit(): void {
+    if (this.categoryForm.invalid) {
+      this.toastService.error('Vui lòng điền đầy đủ thông tin.');
+      return;
+    }
 
-  private updateCategory(data: Category): void {
-    const updateSub = this.categoryService.updateCategory(data).subscribe(
-      (res) => {
-        this.showMessage('success', 'Thành Công', 'Cập nhật danh mục thành công');
-        this.loadCategories();
-        this.closeDialog();
-      },
-      (error) => this.handleError(error, 'Cập nhật danh mục')
-    );
-    this.subscriptions.add(updateSub);
-  }
+    const categoryData = { ...this.categoryForm.value, id: this.categoryForm.value.id || 0 };
 
-  private closeDialog(): void {
-    this.visible = false;
-  }
+    const subscription = categoryData.id === 0
+      ? this.categoryService.addCategory(categoryData).pipe(
+          switchMap(() => this.categoryService.getCategoriesPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
+        ).subscribe({
+          next: (result) => {
+            this.selectedCategories = result.items || [];
+            this.toastService.success('Danh mục đã được thêm thành công.');
+            this.visible = false;
+          },
+          error: (err) => {
+            this.toastService.error('Có lỗi xảy ra khi thêm danh mục.');
+            console.error(err);
+          }
+        })
+      : this.categoryService.updateCategory(categoryData).pipe(
+          switchMap(() => this.categoryService.getCategoriesPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
+        ).subscribe({
+          next: (result) => {
+            this.selectedCategories = Array.isArray(result.items) ? result.items : [];
+            this.toastService.success('Danh mục đã được cập nhật thành công.');
+            this.visible = false;
+          },
+          error: (err) => {
+            this.toastService.error('Có lỗi xảy ra khi cập nhật danh mục.');
+            console.error(err);
+          }
+        });
 
-  onSelectCategory(event: any): void {
-    this.selectedCategories = event.value;
+    this.subscriptions.add(subscription);
+ }
+
+
+  confirmDelete(category: CategoryDto): void {
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn xóa danh mục này?',
+      accept: () => {
+        const subscription = this.categoryService.deleteCategory(category.id).pipe(
+          switchMap(() => this.categoryService.getCategoriesPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
+        ).subscribe({
+          next: (result) => {
+            this.selectedCategories = Array.isArray(result.items) ? result.items : [];
+            this.toastService.success('Danh mục đã được xóa thành công.');
+          },
+          error: (err) => {
+            this.toastService.error('Có lỗi xảy ra khi xóa danh mục.');
+            console.error(err);
+          }
+        });
+
+        this.subscriptions.add(subscription);
+      }
+    });
   }
 }

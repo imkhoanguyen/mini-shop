@@ -4,6 +4,7 @@ using API.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Products;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 
 namespace api.Controllers
 {
@@ -17,7 +18,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllCategories([FromQuery] ProductParams productParams)
+        public async Task<ActionResult<PagedList<ProductDto>>> GetAllCategories([FromQuery] ProductParams productParams)
         {
             var pagedList = await _productService.GetAllAsync(productParams, false);
 

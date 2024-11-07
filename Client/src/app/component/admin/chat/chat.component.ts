@@ -11,7 +11,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Message } from '../../../_models/message.module';
 import { User } from '../../../_models/user.module';
 import { AccountService } from '../../../_services/account.service';
-import { UserService } from '../../../_services/user.service';
 import { MessageService } from '../../../_services/message.service';
 import { ChatService } from '../../../_services/chat.service';
 
@@ -36,7 +35,6 @@ export class ChatComponent implements OnInit {
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
   private chatService = inject(ChatService);
   private accountService = inject(AccountService);
-  private userService = inject(UserService);
   private messageService = inject(MessageService);
   constructor() {
     const userJson = localStorage.getItem('user');
@@ -54,16 +52,16 @@ export class ChatComponent implements OnInit {
     });
   }
   loadUsersWithCustomerRole() {
-    this.userService.getUsersWithCustomerRole().subscribe((users) => {
-      this.customers = users;
-      this.customers.forEach((customer) => {
-        this.messageService.getLastMessage(this.user.id, customer.id)
-        .subscribe((message) => {
-          customer.lastMessage = message?.content || '';
+    // this.userService.getUsersWithCustomerRole().subscribe((users) => {
+    //   this.customers = users;
+    //   this.customers.forEach((customer) => {
+    //     this.messageService.getLastMessage(this.user.id, customer.id)
+    //     .subscribe((message) => {
+    //       customer.lastMessage = message?.content || '';
 
-        });
-      })
-    });
+    //     });
+    //   })
+    // });
   }
   onScroll() {
     const element = this.messagesContainer.nativeElement;
