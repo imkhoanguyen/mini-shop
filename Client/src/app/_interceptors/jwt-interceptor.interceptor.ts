@@ -1,7 +1,17 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
-export const jwtInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = localStorage.getItem('token');
+export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
+  const userString = localStorage.getItem('user');
+  let token = null;
+
+  if (userString) {
+    try {
+      const user = JSON.parse(userString);
+      token = user.token;
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }
 
   if (token) {
     req = req.clone({
