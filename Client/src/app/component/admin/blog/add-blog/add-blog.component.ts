@@ -13,6 +13,7 @@ import { CalendarModule } from 'primeng/calendar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { Blog } from '../../../../_models/types';
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 @Component({
   selector: 'app-add-blog',
@@ -26,6 +27,7 @@ import { Blog } from '../../../../_models/types';
     CalendarModule,
     RouterModule,
     NgIf,
+    EditorModule,
   ],
 })
 export class AddBlogComponent implements OnInit {
@@ -81,13 +83,12 @@ export class AddBlogComponent implements OnInit {
 
   onSubmit(): void {
     this.blog = this.blogForm.value;
-    console.log(this.blog);
     if (this.blogForm.valid) {
       if (this.currentUrl === '/admin/blog/new') {
         this.blogService.addBlog(this.blog).subscribe({
           next: (response) => {
             console.log('Blog added successfully:', response);
-            this.blogForm.reset();
+            this.router.navigate(['/admin/blog']);
           },
           error: (err) => {
             console.error('Failed to add blog:', err);

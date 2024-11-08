@@ -29,14 +29,16 @@ export class BlogService {
     });
   }
 
-  updateBlog(id: number, data: Blog): Observable<any> {
-    return this.http.put(this.apiUrl + '/Blog/Update', data);
+  updateBlog(id: Number, data: Blog): Observable<any> {
+    return this.http.put(this.apiUrl + '/Blog/Update/' + id, data, {
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   deleteBlog(data: Blog): Observable<any> {
     return this.http.delete(this.apiUrl + '/Blog/Delete/', { body: data });
   }
-  getBlogById(id: number) {
+  getBlogById(id: Number) {
     return this.http.get<Blog>(this.apiUrl + '/Blog/GetById/' + id);
   }
 

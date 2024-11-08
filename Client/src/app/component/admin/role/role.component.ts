@@ -197,6 +197,7 @@ export class RoleComponent implements OnInit {
       life: 3000,
     });
   }
+
   onGoRolePermission(roleId: string) {
     this.router.navigate(['/admin/role/permission', roleId]);
   }

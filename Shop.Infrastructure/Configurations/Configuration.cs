@@ -40,6 +40,7 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<IOrderItemsService, OrderItemsService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IBlogService, BlogService>();
+            services.AddScoped<IShippingMethodService, ShippingMethodService>();
             services.AddSignalR();
         }
 

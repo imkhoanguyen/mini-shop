@@ -18,12 +18,12 @@ namespace API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult> Addsize(OrderAddDto dto)
+        public async Task<ActionResult> Add(OrderAddDto dto)
         {
             var order = OrderMapper.FromAddDtoToEntity(dto);
             await _orderService.AddAsync(order);
 
-            return Ok(new { message = "add order success" });
+            return Ok(order.Id);
 
         }
     }

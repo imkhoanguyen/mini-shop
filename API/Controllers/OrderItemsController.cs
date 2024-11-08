@@ -18,7 +18,7 @@ namespace API.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<ActionResult> Addsize(OrderItemsAddDto dto)
+        public async Task<ActionResult> Add(OrderItemsAddDto dto)
         {
             var orderItems = OrderItemsMapper.FromAddDtoToEntity(dto);
             await _orderItemsService.AddAsync(orderItems);

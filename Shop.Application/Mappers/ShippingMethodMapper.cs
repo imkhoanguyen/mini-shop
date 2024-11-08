@@ -17,5 +17,18 @@ namespace Shop.Application.Mappers
                 Updated = shippingMethodDto.Updated
             };
         }
+
+        public static ShippingMethodDto ShippingMethodEntityToDto(ShippingMethod shippingMethod)
+        {
+            return new ShippingMethodDto
+            {
+                Id = shippingMethod.Id,
+                Name = shippingMethod.Name,
+                Cost = shippingMethod.Cost,
+                EstimatedDeliveryTime = shippingMethod.EstimatedDeliveryTime,
+                Created = shippingMethod.Created,
+                Updated = shippingMethod.Updated
+            };
+        }
     }
 }

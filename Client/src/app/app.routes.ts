@@ -20,6 +20,7 @@ import { ProductListComponent } from './component/client/productList/productList
 import { BlogComponent } from './component/admin/blog/blog.component';
 import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
+import { CheckOutComponent } from './component/check-out/check-out.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -50,5 +51,6 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotpasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'blog', component: BlogUserComponent },
+  { path: 'blog/:id', component: BlogUserComponent },
+  { path: 'checkout', component: CheckOutComponent },
 ];

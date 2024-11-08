@@ -47,9 +47,9 @@ namespace Shop.Application.Services.Implementations
             return await _unitOfWork.BlogRepository.getById(id);
         }
 
-        public Task UpdateAsync(Blog blog)
+        public async Task UpdateAsync(Blog blog)
         {
-            throw new NotImplementedException();
+            _unitOfWork.BlogRepository.Update(blog);
         }
     }
 }

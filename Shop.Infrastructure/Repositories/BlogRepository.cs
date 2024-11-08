@@ -37,5 +37,6 @@ namespace Shop.Infrastructure.Repositories
         {
             return await _context.Blogs.FindAsync(id);
         }
+
     }
 }
