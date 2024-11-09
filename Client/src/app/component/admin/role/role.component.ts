@@ -67,8 +67,8 @@ export class RoleComponent implements OnInit {
 
   initForm() {
     this.frm = this.fb.group({
-      name: new FormControl<string>('', [Validators.required]),
-      description: new FormControl<string>('', [Validators.required]),
+      name: new FormControl<string>(''),
+      description: new FormControl<string>(''),
     });
   }
 
