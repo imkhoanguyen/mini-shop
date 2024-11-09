@@ -14,6 +14,5 @@ namespace Shop.Application.Services.Abstracts
         Task<PagedList<CategoryDto>> GetAllAsync(CategoryParams categoryParams, bool tracked);
         Task<IEnumerable<CategoryDto>> GetAllAsync(bool tracked);
         Task<CategoryDto?> GetAsync(Expression<Func<Category, bool>> expression);
-
     }
 }

@@ -18,7 +18,7 @@ namespace Shop.Application.Services.Implementations
         {
             _unit = unit;
         }
-        public async Task<CategoryDto> AddAsync(CategoryAdd categoryAdd)
+        public async Task<BlogDto> AddAsync(CategoryAdd categoryAdd)
         {
             if(await _unit.CategoryRepository.ExistsAsync(c => c.Name.ToLower() == categoryAdd.Name.ToLower()))
             {
@@ -47,21 +47,21 @@ namespace Shop.Application.Services.Implementations
             }
         }
 
-        public async Task<PagedList<CategoryDto>> GetAllAsync(CategoryParams categoryParams, bool tracked)
+        public async Task<PagedList<BlogDto>> GetAllAsync(CategoryParams categoryParams, bool tracked)
         {
             var category = await _unit.CategoryRepository.GetAllCategoriesAsync(categoryParams, tracked);
             
             var categoryDto = category.Select(CategoryMapper.EntityToCategoryDto);
-            return new PagedList<CategoryDto>(categoryDto, category.TotalCount, categoryParams.PageNumber, categoryParams.PageSize);
+            return new PagedList<BlogDto>(categoryDto, category.TotalCount, categoryParams.PageNumber, categoryParams.PageSize);
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAllAsync(bool tracked)
+        public async Task<IEnumerable<BlogDto>> GetAllAsync(bool tracked)
         {
             var categorys = await _unit.CategoryRepository.GetAllCategoriesAsync(tracked);
             return categorys.Select(CategoryMapper.EntityToCategoryDto);
         }
 
-        public async Task<CategoryDto?> GetAsync(Expression<Func<Category, bool>> expression)
+        public async Task<BlogDto?> GetAsync(Expression<Func<Category, bool>> expression)
         {
             var category = await _unit.CategoryRepository.GetAsync(expression);
             if(category is null) throw new NotFoundException("Danh mục không tồn tại");
@@ -69,7 +69,7 @@ namespace Shop.Application.Services.Implementations
             return CategoryMapper.EntityToCategoryDto(category);
         }
 
-        public async Task<CategoryDto> UpdateAsync(CategoryUpdate categoryUpdate)
+        public async Task<BlogDto> UpdateAsync(BlogUpdate categoryUpdate)
         {
             if(!await _unit.CategoryRepository.ExistsAsync(c => c.Id == categoryUpdate.Id))
                 throw new NotFoundException("Danh mục không tồn tại");
