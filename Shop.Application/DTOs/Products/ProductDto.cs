@@ -1,6 +1,4 @@
-
 using Shop.Application.DTOs.Variants;
-using Shop.Domain.Enum;
 
 namespace Shop.Application.DTOs.Products
 {
@@ -9,6 +7,7 @@ namespace Shop.Application.DTOs.Products
         public int Id { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
+        public ImageProductDto Image { get; set; } = null!;
         public List<VariantDto> Variants { get; set; } = new List<VariantDto>();
 
     }

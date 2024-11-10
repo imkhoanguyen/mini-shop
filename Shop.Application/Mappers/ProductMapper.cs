@@ -7,32 +7,38 @@ namespace Shop.Application.Mappers
     {
         public static Product ProductAddDtoToEntity(ProductAdd productDto)
         {
-            return new Product
-            {
-                Name = productDto.Name,
-                Description = productDto.Description,
-                ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
-                Status = productDto.Status,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-            };
+            var product = BaseProductDtoToEntity(productDto);
+            product.Created = DateTime.UtcNow.AddHours(7);
+            product.Updated = DateTime.UtcNow.AddHours(7);
+            return product;
         }
 
         public static Product ProductUpdateDtoToEntity(ProductUpdate productDto)
         {
+            var product = BaseProductDtoToEntity(productDto);
+            product.Id = productDto.Id;
+            product.Updated = DateTime.UtcNow.AddHours(7);
+            return product;
+        }
+
+        private static Product BaseProductDtoToEntity(ProductBase productDto)
+        {
             return new Product
             {
-                Id = productDto.Id,
                 Name = productDto.Name,
                 Description = productDto.Description,
-                ProductCategories = productDto.CategoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList(),
                 Status = productDto.Status,
-                Updated = DateTime.UtcNow,
+                ProductCategories = MapProductCategories(productDto.CategoryIds)
             };
         }
+
+        private static List<ProductCategory> MapProductCategories(List<int> categoryIds)
+        {
+            return categoryIds.Select(c => new ProductCategory { CategoryId = c }).ToList();
+        }
+
         public static ProductDto EntityToProductDto(Product product)
         {
-
             return new ProductDto
             {
                 Id = product.Id,
@@ -42,9 +48,18 @@ namespace Shop.Application.Mappers
                 Updated = product.Updated,
                 Status = product.Status,
                 CategoryIds = product.ProductCategories.Select(pc => pc.CategoryId).ToList(),
+                Image = ProductImageToImageProductDto(product.Image),
                 Variants = product.Variants.Select(VariantMapper.EntityToVariantDto).ToList()
             };
         }
 
+        public static ImageProductDto ProductImageToImageProductDto(ProductImage entity)
+        {
+            return new ImageProductDto
+            {
+                Id = entity?.Id ?? 0,
+                ImgUrl = entity?.ImgUrl ?? string.Empty
+            };
+        }
     }
 }

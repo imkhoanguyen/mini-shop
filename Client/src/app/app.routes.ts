@@ -19,6 +19,7 @@ import { ProductListComponent } from './component/client/productList/productList
 // import { NotFoundComponent } from './component/errors/not-found/not-found.component';
 import { ServerErrorComponent } from './component/errors/server-error/server-error.component';
 import { CategoryComponent } from './component/admin/category/category.component';
+import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -30,8 +31,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'category', component: CategoryComponent },
       { path: 'product', component: ProductComponent },
-      { path: 'product/add', component: ProductComponent },
-      { path: 'product/edit/:id', component: ProductComponent },
+      { path: 'product/add', component: ProductFormComponent },
+      { path: 'product/edit/:id', component: ProductFormComponent },
       { path: 'product', component: ProductComponent },
       { path: 'voucher', component: VoucherComponent },
       { path: 'voucher/new', component: AddVoucherComponent },

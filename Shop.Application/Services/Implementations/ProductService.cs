@@ -1,5 +1,7 @@
 ﻿using API.Helpers;
+using Microsoft.AspNetCore.Http;
 using Shop.Application.DTOs.Products;
+using Shop.Application.DTOs.Variants;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
@@ -13,9 +15,11 @@ namespace Shop.Application.Services.Implementations
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _unit;
-        public ProductService(IUnitOfWork unit)
+        private readonly ICloudinaryService _cloudinaryService;
+        public ProductService(IUnitOfWork unit, ICloudinaryService cloudinaryService)
         {
             _unit = unit;
+            _cloudinaryService = cloudinaryService;
         }
         public async Task<ProductDto> AddAsync(ProductAdd productAdd)
         {
@@ -24,11 +28,56 @@ namespace Shop.Application.Services.Implementations
                 throw new BadRequestException("Sản phẩm đã tồn tại");
             }
             var product = ProductMapper.ProductAddDtoToEntity(productAdd);
+            if (productAdd.ImageFile != null)
+            {
+                var uploadResult = await _cloudinaryService.UploadImageAsync(productAdd.ImageFile);
+                if (uploadResult.Error != null)
+                {
+                    throw new BadRequestException("Lỗi khi thêm ảnh");
+                }
+                var image = new ProductImage
+                {
+                    ImgUrl = uploadResult.Url,
+                    PublicId = uploadResult.PublicId,
+                };
+                product.Image = image;
+
+            }
             await _unit.ProductRepository.AddAsync(product);
 
             return await _unit.CompleteAsync()
                 ? ProductMapper.EntityToProductDto(product)
                 : throw new BadRequestException("Thêm sản phẩm thất bại");
+        }
+
+        public async Task<ProductDto> AddImageAsync(int productId, IFormFile file)
+        {
+            var product = await _unit.ProductRepository.GetAsync(r => r.Id == productId, true);
+            if (product == null)
+                throw new NotFoundException("product not found");
+
+            if (file == null)
+                throw new BadRequestException(" image is empty");
+
+            var uploadResult = await _cloudinaryService.UploadImageAsync(file);
+            if (uploadResult.Error != null)
+            {
+                throw new BadRequestException("Lỗi khi thêm ảnh");
+            }
+            var image = new ProductImage
+            {
+                ImgUrl = uploadResult.Url,
+                PublicId = uploadResult.PublicId,
+            };
+            product.Image = image;
+        
+
+            if (await _unit.CompleteAsync())
+            {
+                return ProductMapper.EntityToProductDto(product);
+            }
+
+            throw new BadRequestException("Problem with add image of product");
         }
 
         public async Task DeleteAsync(Expression<Func<Product, bool>> expression)
@@ -65,6 +114,34 @@ namespace Shop.Application.Services.Implementations
             if (product is null) throw new NotFoundException("Sản phẩm không tồn tại");
 
             return ProductMapper.EntityToProductDto(product);
+        }
+
+        public async Task RemoveImageAsync(int productId, int imageId)
+        {
+            var product = await _unit.ProductRepository.GetAsync(r => r.Id == productId, true);
+            if (product == null)
+                throw new NotFoundException("product not found");
+
+            var img = product.Image;
+            if (img == null || img.Id != imageId)
+                throw new NotFoundException("Image not found");
+            // remove image on cloudinary
+            if (img.PublicId != null)
+            {
+                var result = await _cloudinaryService.DeleteImageAsync(img.PublicId);
+                if (result.Error != null)
+                {
+                    throw new BadRequestException(result.Error);
+                }
+            }
+
+            //remove image on db
+            product.Image = null!;
+
+            if (!await _unit.CompleteAsync())
+            {
+                throw new BadRequestException("Problem remove image product");
+            }
         }
 
         public async Task<ProductDto> UpdateAsync(ProductUpdate productUpdate)

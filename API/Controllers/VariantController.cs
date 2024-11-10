@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Variants;
 using Shop.Application.Mappers;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Services.Implementations;
 using Shop.Domain.Entities;
 
 namespace API.Controllers
@@ -62,6 +64,20 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             await _variantService.DeleteAsync(c => c.Id == id);
+            return NoContent();
+        }
+        [HttpPost("add-images/{variantId:int}")]
+        public async Task<IActionResult> AddImagesVariant([FromRoute] int variantId, [FromForm] List<IFormFile> imageFiles)
+        {
+            var variant = await _variantService.AddImageAsync(variantId, imageFiles);
+            return Ok(variant);
+        }
+
+        [HttpDelete("remove-image/{variantId:int}")]
+        public async Task<IActionResult> RemoveImagesVariant([FromRoute] int variantId, int imageId)
+        {
+            await _variantService.RemoveImageAsync(variantId, imageId);
+            var variant = await _variantService.GetAsync(r => r.Id == variantId);
             return NoContent();
         }
     }

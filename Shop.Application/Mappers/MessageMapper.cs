@@ -1,5 +1,4 @@
 ﻿using Shop.Application.DTOs.Messages;
-using Shop.Application.DTOs.Variants;
 using Shop.Domain.Entities;
 
 namespace Shop.Application.Mappers
@@ -12,9 +11,9 @@ namespace Shop.Application.Mappers
             return new Message
             {
                 SenderId = messageAddDto.SenderId,
-                RecipientId = messageAddDto.RecipientId,
+                RecipientIds = messageAddDto.RecipientIds,
                 Content = messageAddDto.Content,
-                SentAt = DateTime.UtcNow
+                SentAt = DateTime.UtcNow.AddHours(7)
             };
         }
 
@@ -24,7 +23,7 @@ namespace Shop.Application.Mappers
             {
                 Id = message.Id,
                 SenderId = message.SenderId,
-                RecipientId = message.RecipientId,
+                RecipientIds = message.RecipientIds,
                 Content = message.Content,
                 SentAt = message.SentAt,
                 Files = message.Files.Select(MessageFileToFileMessageDto).ToList()

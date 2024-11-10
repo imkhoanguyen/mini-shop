@@ -44,14 +44,26 @@ export class ProductService {
   getProductById(id: number): Observable<ProductDto> {
     return this.http.get<ProductDto>(`${this.apiUrl}/Product/${id}`);
   }
-  addProduct(Product: ProductAdd): Observable<ProductDto> {
+  addProduct(Product: FormData): Observable<ProductDto> {
     return this.http.post<ProductDto>(this.apiUrl+"/Product/Add", Product);
   }
-  updateProduct(Product: ProductUpdate): Observable<ProductDto> {
+  updateProduct(Product: FormData): Observable<ProductDto> {
     return this.http.put<ProductDto>(`${this.apiUrl}/Product/Update`, Product);
   }
 
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/Product/Delete?id=${id}`);
   }
+  addImage(productId: number, frmData: FormData) {
+    return this.http.post<ProductDto>(
+      `${this.apiUrl}/product/add-images/${productId}`,
+      frmData
+    );
+  }
+  removeImage(productId: number, imageId: number) {
+    return this.http.delete(
+      `${this.apiUrl}/product/remove-image/${productId}?imageId=${imageId}`
+    );
+  }
+
 }

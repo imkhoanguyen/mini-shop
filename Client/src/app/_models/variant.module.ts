@@ -12,12 +12,12 @@ export interface VariantBase {
 }
 
 export interface VariantAdd extends VariantBase {
-  imageFile: File[];
+  imageFiles: File[];
 }
 
 export interface VariantUpdate extends VariantBase {
   id: number;
-  imageFile: File[];
+  imageFiles: File[];
 }
 
 export interface VariantDto extends VariantBase {

@@ -11,7 +11,7 @@ namespace Shop.Domain.Entities
         public string? FileType { get; set; }
         public DateTime SentAt { get; set; }
         public bool IsReplied { get; set; } = false;
-        public string? RepliedByUserId { get; set; }
+        public string? RepliedById { get; set; }
 
         [ForeignKey("SenderId")]
         public AppUser? Sender { get; set; }

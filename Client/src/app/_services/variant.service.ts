@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
-import { Variant, VariantAdd } from "../_models/variant.module";
+import {  VariantAdd, VariantDto, VariantUpdate } from "../_models/variant.module";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
@@ -13,15 +13,15 @@ export class VariantService {
 
   constructor(private http: HttpClient){}
 
-  addVariant(data: VariantAdd): Observable<any>{
-    return this.http.post(this.apiUrl + "/Variant/AddVariant", data);
+  addVariant(data: FormData): Observable<VariantDto>{
+    return this.http.post<VariantDto>(this.apiUrl + "/Variant/Add", data);
   }
-  updateVariant(data: Variant){
-    return this.http.put(this.apiUrl + "/Variant/UpdateVariant", data);
+  updateVariant(data: FormData): Observable<VariantDto>{
+    return this.http.put<VariantDto>(this.apiUrl + "/Variant/Update", data);
   }
 
-  deleteVariant(data: Variant){
-    return this.http.delete(this.apiUrl + "/Variant/DeleteVariant/" + data);
+  deleteVariant(variantId : number){
+    return this.http.delete(this.apiUrl + "/Variant/Delete/?id=" + variantId);
   }
 
 }

@@ -21,6 +21,7 @@ namespace Shop.Infrastructure.Repositories
         {
             var productDb = await _context.Products
                 .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
                 .FirstOrDefaultAsync(c => c.Id == product.Id);
             if (productDb is null) return;
             
@@ -44,6 +45,7 @@ namespace Shop.Infrastructure.Repositories
         {
             return await _context.Products
                 .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
                 .Include(p => p.Variants)
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete).ToListAsync();
@@ -53,6 +55,7 @@ namespace Shop.Infrastructure.Repositories
         {
             var query = _context.Products
                 .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
                 .Include(p => p.Variants)
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete).AsQueryable();
@@ -69,11 +72,13 @@ namespace Shop.Infrastructure.Repositories
         {
             var query = tracked ? _context.Products
                 .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
                 .Include(p => p.Variants)
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete)
             : _context.Products.AsNoTracking().AsQueryable()
                 .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
                 .Include(p => p.Variants)
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete);
@@ -104,6 +109,7 @@ namespace Shop.Infrastructure.Repositories
             if (tracked)
                 return await _context.Products
                     .Include(p => p.ProductCategories)
+                    .Include(p => p.Image)
                     .Include(p => p.Variants)
                     .ThenInclude(v => v.Images)
                     .Where(c => !c.IsDelete).ToListAsync();

@@ -10,7 +10,13 @@ export class AuthService {
   }
 
   hasClaim(claim: string): boolean {
-    const token = localStorage.getItem('token');
+    const userString = localStorage.getItem('user');
+    let token = null;
+
+    if (userString) {
+      const user = JSON.parse(userString);
+      token = user.token;
+    }
     if (!token) return false;
     const decodedToken = this.decodeToken(token);
     console.log(decodedToken);
@@ -23,7 +29,13 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    const token = localStorage.getItem('token');
+    const userString = localStorage.getItem('user');
+    let token = null;
+
+    if (userString) {
+      const user = JSON.parse(userString);
+      token = user.token;
+    }
     if (!token) return false;
 
     const decodedToken = this.decodeToken(token);

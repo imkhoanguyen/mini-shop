@@ -49,28 +49,28 @@ namespace API.Controllers
         //    return Ok(new { files = uploadResults });
         //}
 
-        [HttpPost("AddMessage")]
-        public async Task<IActionResult> AddMessage(MessageAdd messageAdd)
-        {
-            var message = await _messageService.AddMessageAsync(messageAdd);
-            return Ok(message);
-        }
-        [HttpGet("GetMessageThread")]
-        public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
-        {
-            if (skip < 0 || take <= 0)
-            {
-                return BadRequest("Tham số không hợp lệ.");
-            }
-            var messages = await _messageService.GetMessageThread(senderId, recipientId, skip, take);
-            return Ok(messages);
-        }
-        [HttpGet("GetLastMessage")]
-        public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
-        {
-            var message = await _messageService.GetLastMessage(senderId, recipientId);
-            return Ok(message);
-        }
+        //[HttpPost("AddMessage")]
+        //public async Task<IActionResult> AddMessage(MessageAdd messageAdd)
+        //{
+        //    var message = await _messageService.AddMessageAsync(messageAdd);
+        //    return Ok(message);
+        //}
+        //[HttpGet("GetMessageThread")]
+        //public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        //{
+        //    if (skip < 0 || take <= 0)
+        //    {
+        //        return BadRequest("Tham số không hợp lệ.");
+        //    }
+        //    var messages = await _messageService.GetMessageThread(senderId, recipientId, skip, take);
+        //    return Ok(messages);
+        //}
+        //[HttpGet("GetLastMessage")]
+        //public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
+        //{
+        //    var message = await _messageService.GetLastMessage(senderId, recipientId);
+        //    return Ok(message);
+        //}
 
     }
 }

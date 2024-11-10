@@ -13,12 +13,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Role } from '../../../_models/role';
 import { Pagination } from '../../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../_services/auth.service';
+import { ToastrService } from '../../../_services/toastr.service';
 
 @Component({
   selector: 'app-role',
@@ -32,10 +33,11 @@ import { AuthService } from '../../../_services/auth.service';
     ConfirmPopupModule,
     PaginatorModule,
     TableModule,
+    CommonModule,
   ],
   templateUrl: './role.component.html',
   styleUrl: './role.component.css',
-  providers: [MessageService, ConfirmationService],
+  providers: [ConfirmationService],
 })
 export class RoleComponent implements OnInit {
   private roleServices = inject(RoleService);
@@ -50,9 +52,10 @@ export class RoleComponent implements OnInit {
   pageSize = 5;
   search: string = '';
   private roleId?: string;
+  private toasrt = inject(ToastrService);
+  validationErrors?: string[];
 
   constructor(
-    private messageService: MessageService,
     private confirmationService: ConfirmationService,
     public authServices: AuthService
   ) {}
@@ -64,8 +67,8 @@ export class RoleComponent implements OnInit {
 
   initForm() {
     this.frm = this.fb.group({
-      name: new FormControl<string>('', [Validators.required]),
-      description: new FormControl<string>('', [Validators.required]),
+      name: new FormControl<string>(''),
+      description: new FormControl<string>(''),
     });
   }
 
@@ -103,14 +106,15 @@ export class RoleComponent implements OnInit {
         description: this.frm.value.description,
       };
       this.roleServices.updateRole(role.id || '', role).subscribe({
-        next: (_) => {
+        next: (response) => {
           const index: number = this.roles.findIndex((r) => r.id === role.id);
-          this.roles[index].name = role.name;
-          this.roles[index].description = role.description;
-          this.showSuccess('Cập nhật quyền thành công');
+          this.roles[index] = response;
+          this.toasrt.success('Cập nhật quyền thành công');
           this.closeDialog();
         },
-        error: (error) => this.showError(error.error),
+        error: (er) => {
+          this.validationErrors = er;
+        },
       });
     } else {
       // add
@@ -121,10 +125,12 @@ export class RoleComponent implements OnInit {
       this.roleServices.addRole(role).subscribe({
         next: (response) => {
           this.roles.unshift(response);
-          this.showSuccess('Thêm quyền thành công');
+          this.toasrt.success('Thêm quyền thành công');
           this.closeDialog();
         },
-        error: (error) => this.showError(error.error),
+        error: (er) => {
+          this.validationErrors = er;
+        },
       });
     }
   }
@@ -137,7 +143,7 @@ export class RoleComponent implements OnInit {
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
         if (!roleId) {
-          this.showError('Không tìm thấy roleId');
+          this.toasrt.error('Không tìm thấy roleId');
           return;
         }
 
@@ -145,13 +151,13 @@ export class RoleComponent implements OnInit {
           next: (_) => {
             const index: number = this.roles.findIndex((r) => r.id === roleId);
             this.roles.splice(index, 1);
-            this.showSuccess('Xóa thành công');
+            this.toasrt.success('Xóa thành công');
           },
-          error: (error) => this.showError(error.error),
+          error: (error) => console.log(error),
         });
       },
       reject: () => {
-        this.showError('Bạn đã hủy xóa', 'Rejected');
+        this.toasrt.info('Bạn đã hủy xóa');
       },
     });
   }
@@ -178,25 +184,9 @@ export class RoleComponent implements OnInit {
     this.frm.reset();
     this.visible = false;
     this.edit = false;
+    this.validationErrors = [];
   }
 
-  showError(detail: string, summary?: string) {
-    this.messageService.add({
-      severity: 'error',
-      summary: summary || 'Error',
-      detail: detail,
-      life: 3000,
-    });
-  }
-
-  showSuccess(detail: string) {
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: detail,
-      life: 3000,
-    });
-  }
   onGoRolePermission(roleId: string) {
     this.router.navigate(['/admin/role/permission', roleId]);
   }

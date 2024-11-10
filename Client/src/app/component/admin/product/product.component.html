@@ -1,83 +1,79 @@
 <p-toast />
+<p-confirmDialog />
 <div class="row align-items-center mb-3">
   <div class="col">
     <input
       type="text"
       [(ngModel)]="searchString"
       (input)="onSearch()"
-      pInputText
+      class="form-control"
       placeholder="Tìm kiếm..."
-      class="w-100"
     />
   </div>
   <div class="col-auto">
-    <p-dropdown
-      [options]="pageSizeOptions"
+    <select
+      class="form-select"
       [(ngModel)]="pageSize"
-      optionLabel="label"
-      [placeholder]="'Số lượng trang'"
-      (onChange)="onPageSizeChange($event.value)"
-    ></p-dropdown>
+      (change)="onPageSizeChange($event)"
+    >
+      <option *ngFor="let option of pageSizeOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
   </div>
   <div class="col-auto">
-    <p-button
-      label="Thêm Sản phẩm"
-      icon="pi pi-plus"
-      severity="success"
+    <button
+      class="btn btn-success"
       (click)="addProduct()"
-    ></p-button>
+    >
+      <i class="pi pi-plus"></i> Thêm Sản phẩm
+    </button>
   </div>
 </div>
-
-<p-table
-  [value] ="selectedProducts"
-  dataKey="id"
-  [tableStyle]="{ 'min-width': '60rem' }"
-  [expandedRowKeys]="expandedRows"
-  (onRowExpand)="onRowExpand($event)"
-  (onRowCollapse)="onRowCollapse($event)"
->
+<div class="table-responsive">
+  <p-table
+    [value] ="selectedProducts"
+    dataKey="id"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    [expandedRowKeys]="expandedRows"
+    (onRowExpand)="onRowExpand($event)"
+    (onRowCollapse)="onRowCollapse($event)"
+  >
   <ng-template pTemplate="header">
     <tr>
-      <th style="width: 5rem; padding: 1rem;"></th>
-      <th pSortableColumn="name" class="px-3 py-2">Sản phẩm</th>
-      <!-- <th pSortableColumn="created" class="px-3 py-2">Ngày tạo</th>
-      <th pSortableColumn="updated" class="px-3 py-2">Ngày sửa</th> -->
-      <th pSortableColumn="category" class="px-3 py-2">Danh mục</th>
-      <th pSortableColumn="inventoryStatus" class="px-3 py-2">Status</th>
-      <th class="px-3 py-2">Chi tiết</th>
+      <th style="width: 5rem;"></th>
+      <th pSortableColumn="name" class="px-3">Sản phẩm</th>
+      <th pSortableColumn="category" class="px-3">Danh mục</th>
+      <th pSortableColumn="status" class="px-3">Trạng thái</th>
+      <th class="px-3">Chi tiết</th>
     </tr>
   </ng-template>
 
   <ng-template pTemplate="body" let-product let-expanded="expanded">
     <tr>
       <td>
-        <p-button
-          type="button"
-          pRipple
-          [pRowToggler]="product"
-          [text]="true"
-          [rounded]="true"
-          [plain]="true"
-          [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
-          class="p-button-sm p-button-rounded"
-        ></p-button>
+        <button
+            type="button"
+            pRipple
+            [pRowToggler]="product"
+            [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+            class="btn btn-link"
+          ></button>
       </td>
       <td class="sorting_1">
-        <div class="d-flex justify-content-start align-items-center product-name">
-          <div class="avatar-wrapper">
-            <div class="avatar avatar me-4 rounded-2 bg-label-secondary">
-              <img src="https://res.cloudinary.com/dlhwuvhhp/image/upload/v1730802018/mini-upload/xbjiitjshod0frrdydyb.png" alt="Product-13" class="rounded" height="50px">
-            </div>
-          </div>
-          <div class="d-flex flex-column">
-            <h6 class="text-nowrap mb-0"><strong>{{ product.name }}</strong></h6>
-            <small class="text-truncate d-none d-sm-block">hahahahahahahahahhaahahhahaha</small>
+        <div class="d-flex align-items-center">
+          <img
+            src="{{ product.image.imgUrl }}"
+            alt="Product"
+            class="rounded me-2"
+            style="height: 50px; width: 50px;"
+          />
+          <div>
+            <h6 class="mb-0"><strong>{{ product.name }}</strong></h6>
+            <small class="text-muted">{{ truncateDescription(product.description) }}</small>
           </div>
         </div>
       </td>
-      <!-- <td>{{ product.created | date: 'dd/MM/yyyy' }}</td>
-      <td>{{ product.updated | date: 'dd/MM/yyyy' }}</td> -->
       <td>
         <ng-container *ngFor="let categoryId of product.categoryIds">
           <p-tag severity="success" value="{{ getCategoryNameById(categoryId) }}"></p-tag>
@@ -88,108 +84,147 @@
           [pTooltip]="product.status === 1 ? 'Published' : 'Draft'"
           tooltipPosition="bottom"
           [ngModel]="getStatus(product.status)"
-          (onChange)="setStatus(product, $event.checked)" />
+          (onChange)="setStatus(product, $event.checked)"
+        ></p-inputSwitch>
       </td>
       <td>
-        <!-- <p-button
-          icon="pi pi-file-edit"
-          [rounded]="true"
-          severity="info"
-          class="mr-1 p-button-rounded"
-          (onClick)="editProduct(product.id)"
-        ></p-button>
-        <p-button
-          icon="pi pi-trash"
-          [rounded]="true"
-          severity="danger"
-          class="p-button-outlined"
-          (onClick)="confirmDelete(product)"
-        ></p-button> -->
-
-        <p-button
-          icon="pi pi-eye"
-          [rounded]="true"
-          severity="info"
-          class="p-button-outlined"
-          (onClick)="showDialog()"
-        ></p-button>
+        <button
+          class="btn btn-info btn-sm"
+          (click)="showDialog(product)"
+          title="Xem chi tiết"
+        >
+          <i class="pi pi-eye"></i>
+        </button>
       </td>
     </tr>
   </ng-template>
+  <ng-template pTemplate="rowexpansion" let-product>
+    <tr>
+      <td colspan="5">
+        <div class="p-3">
+          <p-table [value]="product.variants" dataKey="id">
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="id">ID<p-sortIcon field="id"></p-sortIcon></th>
+                <th>Hình ảnh</th>
+                <th pSortableColumn="price">Giá<p-sortIcon field="price"></p-sortIcon></th>
+                <th pSortableColumn="priceSell">Giá giảm<p-sortIcon field="priceSell"></p-sortIcon></th>
+                <th pSortableColumn="quantity">Số lượng<p-sortIcon field="quantity"></p-sortIcon></th>
+                <th pSortableColumn="sizeId">Kích thước<p-sortIcon field="sizeId"></p-sortIcon></th>
+                <th pSortableColumn="colorId">Màu sắc<p-sortIcon field="colorId"></p-sortIcon></th>
+                <th style="width: 4rem;"></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-variant>
+              <tr>
+                <td>{{ variant.id }}</td>
+                <td>
+                  <ng-container *ngFor="let image of variant.images">
+                    <img
+                      [src]="image.imgUrl"
+                      alt="Hình ảnh sản phẩm"
+                      class="rounded img-thumbnail"
+                      style="width: 50px; height: 50px; margin-right: 5px;"
+                    />
+                  </ng-container>
+                </td>
+                <td>{{ variant.price | currency: 'VND' }}</td>
+                <td>{{ variant.priceSell | currency: 'VND' }}</td>
+                <td>{{ variant.quantity }}</td>
+                <td>{{ getSizeNameById(variant.sizeId) }}</td>
+                <td>
+                  <button class="btn btn-lg" [style.backgroundColor]="getColorCodeById(variant.colorId)"></button>
+                </td>
+                <td>
+                  <p-button
+                    type="button"
+                    icon="pi pi-search"
+                    class="p-button-sm"
+                  ></p-button>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="7">Không có biến thể nào.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+</div>
 
-    <ng-template pTemplate="rowexpansion" let-product>
-      <tr>
-        <td colspan="8">
-          <div class="p-3">
-            <p-table [value]="product.variants" dataKey="id">
-              <ng-template pTemplate="header">
-                <tr>
-                  <th pSortableColumn="id">ID<p-sortIcon field="id" /></th>
-                  <th>Hình ảnh</th>
-                  <th pSortableColumn="price">Giá <p-sortIcon field="price" /></th>
-                  <th pSortableColumn="priceSell">Giá giảm <p-sortIcon field="priceSell" /></th>
-                  <th pSortableColumn="quantity">Số lượng <p-sortIcon field="quantity" /></th>
-                  <th pSortableColumn="sizeId">Kích thước <p-sortIcon field="sizeId" /></th>
-                  <th pSortableColumn="colorId">Màu sắc <p-sortIcon field="colorId" /></th>
-                  <th style="width: 4rem"></th>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="body" let-variant>
-                <tr>
-                  <td>{{ variant.id }}</td>
-                  <td>
-                    <ng-container *ngFor="let imageUrl of variant.imageUrls">
-                      <img
-                        [src]="imageUrl.url"
-                        alt="Hình ảnh sản phẩm"
-                        class="rounded img-thumbnail"
-                        style="width: 50px; height: 50px; margin-right: 5px;"
-                      />
-                    </ng-container>
-                  </td>
-                  <td>{{ variant.price | currency: 'VND' }}</td>
-                  <td>{{ variant.priceSell | currency: 'VND' }}</td>
-                  <td>{{ variant.quantity }}</td>
-                  <td>{{ getSizeNameById(variant.sizeId) }}</td>
-                  <td>
-                    <button class="btn btn-lg" [style.backgroundColor]="getColorCodeById(variant.colorId)"></button>
-                  </td>
-
-                  <td>
-                    <p-button
-                      type="button"
-                      icon="pi pi-search"
-                      class="p-button-sm"
-                    ></p-button>
-                  </td>
-                </tr>
-              </ng-template>
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td colspan="7">Không có biến thể nào.</td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-  <p-dialog
-  header="Chi tiết sản phẩm "
+<p-dialog
+  header="Chi tiết sản phẩm"
   [modal]="true"
   [(visible)]="visible"
   [style]="{ width: '50rem' }"
   [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
-  [maximizable]="false">
-      <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
-  </p-dialog>
+  [maximizable]="false"
+>
+  <!-- Nội dung dialog -->
+  <div class="row mb-3">
+    <!-- Tên sản phẩm -->
+    <div class="col-12">
+      <label for="productName" class="form-label">Tên sản phẩm</label>
+      <input id="productName" type="text" class="form-control" [value]="selectedProduct?.name" disabled />
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <!-- Mô tả sản phẩm -->
+    <div class="col-12">
+      <label for="productDescription" class="form-label">Mô tả</label>
+      <textarea id="productDescription" class="form-control" rows="4" [value]="selectedProduct?.description" disabled></textarea>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <!-- Category sản phẩm -->
+    <div class="col-12">
+      <label for="productCategory" class="form-label">Danh mục</label>
+      <ng-container *ngIf="selectedProduct?.categoryIds?.length">
+        <div *ngFor="let categoryId of selectedProduct.categoryIds">
+          <input id="productCategory" type="text" class="form-control" [value]="getCategoryNameById(categoryId)" disabled />
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <!-- Ngày tạo -->
+    <div class="col-6">
+      <label for="productCreatedDate" class="form-label">Ngày tạo</label>
+      <input id="productCreatedDate" type="text" class="form-control" [value]="selectedProduct?.created | date:'dd/MM/yyyy hh:mm'" disabled />
+    </div>
+    <!-- Ngày sửa -->
+    <div class="col-6">
+      <label for="productUpdatedDate" class="form-label">Ngày sửa</label>
+      <input id="productUpdatedDate" type="text" class="form-control" [value]="selectedProduct?.updated | date:'dd/MM/yyyy hh:mm'" disabled />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-6 d-flex justify-content-start">
+      <!-- Nút Cập nhật -->
+      <button class="btn btn-primary" (click)="updateProduct(selectedProduct.id)">Cập nhật</button>
+    </div>
+    <div class="col-6 d-flex justify-content-end">
+      <!-- Nút Xóa -->
+      <button class="btn btn-danger" (click)="confirmDelete(selectedProduct)" >Xóa</button>
+    </div>
+  </div>
+</p-dialog>
+
+
+<!-- Paginator -->
   <p-paginator
-    (onPageChange)="onPageChange($event)"
-    [first]="first"
-    [rows]="pageSize"
-    [totalRecords]="totalRecords"
+  (onPageChange)="onPageChange($event)"
+  [first]="first"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords"
   ></p-paginator>

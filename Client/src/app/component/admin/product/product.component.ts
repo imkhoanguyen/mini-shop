@@ -63,6 +63,7 @@ import { PaginatedResult, Pagination } from '../../../_models/pagination';
 })
 export class ProductComponent {
   selectedProducts!: ProductDto[];
+  selectedProduct: any;
   productForm!: FormGroup;
   categoryNames: { [key: number]: string } = {};
   sizeNames: { [key: number]: string } = {};
@@ -107,8 +108,9 @@ export class ProductComponent {
     this.fetchSizeNames();
     this.fetchColorCodes();
   }
-  showDialog() {
+  showDialog(product: any) {
     this.visible = true;
+    this.selectedProduct = product;
   }
 
   initializeForm(): FormGroup {
@@ -172,14 +174,19 @@ export class ProductComponent {
       status: value ? ProductStatus.Publish : ProductStatus.Draft,
     };
     console.log(productUpdate);
-    this.productService.updateProduct(productUpdate).subscribe({
-      next: () => {
-        this.toastService.success('Cập nhật trạng thái thành công');
-        this.loadProducts();
-      },
-    });
+    // this.productService.updateProduct(productUpdate).subscribe({
+    //   next: () => {
+    //     this.toastService.success('Cập nhật trạng thái thành công');
+    //     this.loadProducts();
+    //   },
+    // });
   }
-
+  truncateDescription(description: string, maxLength: number = 30): string {
+    if (description.length > maxLength) {
+      return description.substring(0, maxLength) + '...'; // Cắt và thêm dấu ba chấm
+    }
+    return description;
+  }
   expandAll() {
     this.expandedRows = this.selectedProducts.reduce(
       (acc: { [key: number]: boolean }, p: ProductDto) => {
@@ -272,19 +279,21 @@ export class ProductComponent {
   addProduct() {
     this.router.navigate(['/admin/product/add']);
   }
-  editProduct(id: number) {
+  updateProduct(id: number) {
     this.productService.getProductById(id).subscribe(() => {
       this.router.navigateByUrl('/admin/product/edit/' + id);
     });
   }
 
   confirmDelete(product: ProductDto): void {
+    console.log("hiiiiiiii");
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
       accept: () => {
         const subscription = this.productService.deleteProduct(product.id).subscribe({
           next: () => {
             this.toastService.success('Sản phẩm đã được xóa thành công.');
+            this.visible = false;
             this.loadProducts();
           },
           error: (err) => {

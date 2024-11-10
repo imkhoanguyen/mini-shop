@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Shop.Application.DTOs.Categories;
 using Shop.Application.DTOs.Messages;
+using Shop.Application.DTOs.Users;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
@@ -13,14 +15,29 @@ namespace Shop.Application.Services.Implementations
     {
         private readonly IUnitOfWork _unit;
         private readonly RoleManager<AppRole> _role;
-        public MessageService(IUnitOfWork unit, RoleManager<AppRole> role)
+        private readonly UserManager<AppUser> _user;
+        public MessageService(IUnitOfWork unit, RoleManager<AppRole> role, UserManager<AppUser> user)
         {
             _unit = unit;
             _role = role;
+            _user = user;
         }
-        public async Task<IEnumerable<AppUser>> GetReplyUserId()
+        public async Task<List<UserDto>> GetUsersByClaimValueAsync(string claimValue)
         {
+            var rolesWithClaim = await _unit.MessageRepository.GetRoleWithClaim(claimValue);
 
+            var userList = new List<AppUser>();
+
+            foreach (var roleId in rolesWithClaim)
+            {
+                var role = await _role.FindByIdAsync(roleId.ToString());
+                if (role != null)
+                {
+                    var usersInRole = await _user.GetUsersInRoleAsync(role.Name);
+                    userList.AddRange(usersInRole);
+                }
+            }
+            return userList.Select(UserMapper.EntityToUserDto).ToList();
         }
         public async Task<MessageDto> AddMessageAsync(MessageAdd messageAdd)
         {
@@ -31,21 +48,30 @@ namespace Shop.Application.Services.Implementations
                 ? MessageMapper.EntityToMessageDto(message)
                 : throw new BadRequestException("Thêm tin nhắn thất bại");
         }
-
-        public async Task<MessageDto> GetLastMessage(string senderId, string recipientId)
+        public async Task<MessageDto> ReplyMessageAsync(MessageAdd messageAdd)
         {
-            var message = await _unit.MessageRepository.GetLastMessage(senderId, recipientId);
-            return MessageMapper.EntityToMessageDto(message);
+            var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
+            await _unit.MessageRepository.AddAsync(message);
+
+            return await _unit.CompleteAsync()
+                ? MessageMapper.EntityToMessageDto(message)
+                : throw new BadRequestException("Thêm tin nhắn thất bại");
+        }
+        public Task AddFileAsync(IFormFileCollection files)
+        {
+            throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<MessageDto>> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        public Task<MessageDto> GetLastMessage(string senderId, string recipientId)
         {
-            var messages = await _unit.MessageRepository.GetMessageThread(senderId, recipientId, skip, take);
-            return messages.Select(MessageMapper.EntityToMessageDto!);
+            throw new NotImplementedException();
         }
-        public async Task AddFileAsync(IFormFileCollection files)
-        {
 
+        public Task<IEnumerable<MessageDto>> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        {
+            throw new NotImplementedException();
         }
+
+        
     }
 }
