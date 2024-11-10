@@ -18,7 +18,7 @@ namespace Shop.Application.Mappers
         }
 
         //Update Category   
-        public static Category CategoryUpdateDtoToEntity(BlogUpdate category)
+        public static Category CategoryUpdateDtoToEntity(CategoryUpdate category)
         {
             return new Category
             {
@@ -29,9 +29,9 @@ namespace Shop.Application.Mappers
         }
 
         //Get Category
-        public static BlogDto EntityToCategoryDto(Category category)
+        public static CategoryDto EntityToCategoryDto(Category category)
         {
-            return new BlogDto
+            return new CategoryDto
             {
                 Id = category.Id,
                 Name = category.Name,
