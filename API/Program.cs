@@ -1,5 +1,6 @@
 using API.Middleware;
 using API.SignalR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
@@ -33,7 +34,7 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors(x => x
-    .WithOrigins("http://localhost:4200", "https://localhost:4200")
+    .WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:5000")
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials()
@@ -47,6 +48,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();

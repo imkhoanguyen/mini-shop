@@ -5,30 +5,15 @@ namespace Shop.Application.Mappers
 {
     public class MessageMapper
     {
-        public static Message MessageDtoToEntity(MessageDto messageDto)
-        {
-            return new Message
-            {
-                Id = messageDto.Id,
-                SenderId = messageDto.SenderId,
-                RecipientId = messageDto.RecipientId,
-                Content = messageDto.Content,
-                FileUrl = messageDto.FileUrl,
-                FileType = messageDto.FileType,
-                SentAt = messageDto.SentAt,
-            };
-        }
 
-        public static Message MessageAddDtoToEntity(MessageAddDto messageAddDto)
+        public static Message MessageAddDtoToEntity(MessageAdd messageAddDto)
         {
             return new Message
             {
                 SenderId = messageAddDto.SenderId,
-                RecipientId = messageAddDto.RecipientId,
+                RecipientIds = messageAddDto.RecipientIds,
                 Content = messageAddDto.Content,
-                FileUrl = messageAddDto.FileUrl,
-                FileType = messageAddDto.FileType,
-                SentAt = DateTime.UtcNow
+                SentAt = DateTime.UtcNow.AddHours(7)
             };
         }
 
@@ -38,11 +23,19 @@ namespace Shop.Application.Mappers
             {
                 Id = message.Id,
                 SenderId = message.SenderId,
-                RecipientId = message.RecipientId,
+                RecipientIds = message.RecipientIds,
                 Content = message.Content,
-                FileUrl = message.FileUrl,
-                FileType = message.FileType,
                 SentAt = message.SentAt,
+                Files = message.Files.Select(MessageFileToFileMessageDto).ToList()
+            };
+        }
+        public static FileMessageDto MessageFileToFileMessageDto(MessageFile entity)
+        {
+            return new FileMessageDto
+            {
+                Id = entity.Id,
+                FileUrl = entity.FileUrl ?? string.Empty,
+                FileType = entity.FileType ?? string.Empty
             };
         }
     }

@@ -12,8 +12,8 @@ namespace Shop.Application.Mappers
             return new Category
             {
                 Name = category.Name,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
+                Created = DateTime.UtcNow.AddHours(7),
+                Updated = DateTime.UtcNow.AddHours(7),
             };
         }
 
@@ -24,7 +24,7 @@ namespace Shop.Application.Mappers
             {
                 Id = category.Id,
                 Name = category.Name,
-                Updated = DateTime.UtcNow,
+                Updated = DateTime.UtcNow.AddHours(7),
             };
         }
 

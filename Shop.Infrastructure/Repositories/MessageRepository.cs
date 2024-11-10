@@ -1,4 +1,5 @@
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Shop.Application.DTOs.Messages;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
@@ -14,45 +15,17 @@ namespace Shop.Infrastructure.Repositories
 
         }
 
-        public Task<MessageDto?> GetLastMessage(string senderId, string recipientId)
+        public async Task<List<string>> GetRoleWithClaim(string claimValue)
         {
-            throw new NotImplementedException();
+            var rolesWithClaim = await _context.RoleClaims
+               .Where(rc => rc.ClaimType == "Permission" && rc.ClaimValue == claimValue)
+               .Select(rc => rc.RoleId)
+               .Distinct()
+               .ToListAsync();
+
+            return rolesWithClaim;
         }
 
-        public Task<IEnumerable<MessageDto?>> GetMessageThread(string senderId, string recipientId, int skip, int take)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> GetUserRoleById(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public async Task<IEnumerable<MessageDto?>> GetMessageThread(string senderId, string recipientId, int skip, int take)
-        //{
-        //    var messages = await _context.Messages
-        //        .Where(m => (m.Sender!.Id == senderId && m.Recipient!.Id == recipientId) ||
-        //                    (m.Sender.Id == recipientId && m.Recipient!.Id == senderId))
-        //        .OrderByDescending(m => m.SentAt)
-        //        .Skip(skip)
-        //        .Take(take)
-        //        .ToListAsync();
-
-        //    return messages.Select(m => Message.toMessageDto(m));
-        //}
-        //public async Task<string> GetUserRoleById(string userId)
-        //{
-        //    var roleName = await _context.UserRoles
-        //        .Where(u => u.UserId == userId)
-        //        .Select(u => u.RoleId)
-        //        .Join(_context.Roles,
-        //                roleId => roleId,
-        //                role => role.Id,
-        //                (roleId, role) => role.Name)
-        //        .FirstOrDefaultAsync();
-        //    return roleName ?? "No role assigned";
-        //}
         //public async Task<Message?> GetLastMessage(string senderId, string recipientId)
         //{
         //    return await _context.Messages
@@ -61,5 +34,19 @@ namespace Shop.Infrastructure.Repositories
         //        .OrderByDescending(m => m.SentAt)
         //        .FirstOrDefaultAsync();
         //}
+
+        //public async Task<IEnumerable<Message?>> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        //{
+        //var messages = await _context.Messages
+        //    .Where(m => (m.SenderId == senderId && m.RecipientIds == recipientId) ||
+        //                (m.SenderId == recipientId && m.RecipientId == senderId))
+        //    .OrderByDescending(m => m.SentAt)
+        //    .Skip(skip)
+        //    .Take(take)
+        //    .ToListAsync();
+
+        //return messages;
+        //}
+
     }
 }

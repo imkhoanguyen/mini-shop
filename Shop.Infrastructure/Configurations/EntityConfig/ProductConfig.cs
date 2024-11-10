@@ -18,7 +18,7 @@ namespace Shop.Infrastructure.Configurations.EntityConfig
             builder.Property(x => x.Status).HasConversion(
                 o => o.ToString(),
                 o => (ProductStatus)Enum.Parse(typeof(ProductStatus), o)
-        );
+            );
         }
     }
 }

@@ -1,20 +1,30 @@
-import { Image} from "./image.module";
-export interface Variant{
-  id: number;
-  price: number;
-  priceSell: number;
-  quantity: number;
-  sizeId: number;
-  colorId: number;
-  imageUrls: Image[];
-  productId: number;
+export interface VariantStatus {
+  draft: 0;
+  publish: 1;
 }
-export interface VariantAdd{
+export interface VariantBase {
+  productId: number;
   price: number;
   priceSell: number;
   quantity: number;
   sizeId: number;
   colorId: number;
-  productId: number;
 }
 
+export interface VariantAdd extends VariantBase {
+  imageFiles: File[];
+}
+
+export interface VariantUpdate extends VariantBase {
+  id: number;
+  imageFiles: File[];
+}
+
+export interface VariantDto extends VariantBase {
+  id: number;
+  images: ImageVariantDto[];
+}
+export interface ImageVariantDto {
+  id: number;
+  imgUrl: string;
+}

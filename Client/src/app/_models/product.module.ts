@@ -1,27 +1,34 @@
-import { Variant } from "./variant.module";
-import { Category } from "./category.module";
+import { VariantDto } from "./variant.module";
 
-export interface Product
-{
-  id: number;
+export enum ProductStatus {
+  Draft = 0,
+  Publish = 1,
+}
+
+export interface ProductBase {
   name: string;
   description: string;
+  status: ProductStatus;
+  categoryIds: number[];
+}
+
+export interface ProductAdd extends ProductBase {
+  imageFile?: File;
+}
+
+export interface ProductUpdate extends ProductBase {
+  id: number;
+  imageFile?: File;
+}
+
+export interface ProductDto extends ProductBase {
+  id: number;
   created: Date;
   updated: Date;
-  variants: Variant[];
-  categoryIds: Category[];
-  status: number;
+  image: ImageProductDto;
+  variants: VariantDto[];
 }
-
-export interface ProductAdd{
-  name: string;
-  description: string;
-  categoryIds: Category[];
-}
-export interface ProductUpdate{
+export interface ImageProductDto {
   id: number;
-  name: string;
-  description: string;
-  categoryIds: Category[];
-  status: number;
+  imgUrl: string;
 }

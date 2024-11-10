@@ -35,6 +35,9 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IVariantService, VariantService>();
+
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddSignalR();

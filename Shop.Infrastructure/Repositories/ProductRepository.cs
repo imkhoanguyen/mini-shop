@@ -1,8 +1,11 @@
 using API.Helpers;
 using API.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
+using Shop.Infrastructure.Ultilities;
+using System.Linq.Expressions;
 
 namespace Shop.Infrastructure.Repositories
 {
@@ -14,134 +17,112 @@ namespace Shop.Infrastructure.Repositories
             _context = context;
         }
 
-        public void DeleteProduct(Product product)
+        public async Task UpdateProductAsync(Product product)
         {
-            throw new NotImplementedException();
+            var productDb = await _context.Products
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .FirstOrDefaultAsync(c => c.Id == product.Id);
+            if (productDb is null) return;
+            
+            productDb.Name = product.Name;
+            productDb.Description = product.Description;
+            productDb.Status = product.Status;
+            productDb.Updated = DateTime.UtcNow;
+
+            _context.ProductCategories.RemoveRange(productDb.ProductCategories);
+            
+            var newProductCategories = product.ProductCategories.Select(categoryId => new ProductCategory
+            {
+                ProductId = product.Id,
+                CategoryId = categoryId.CategoryId
+            }).ToList();
+
+            await _context.ProductCategories.AddRangeAsync(newProductCategories);
         }
 
-        public Task<PagedList<Product>> GetAllProductsAsync(ProductParams categoryParams)
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Products
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete).ToListAsync();
         }
 
-        public Task UpdateProduct(Product product)
+        public override async Task<Product?> GetAsync(Expression<Func<Product, bool>> expression, bool tracked = false)
         {
-            throw new NotImplementedException();
+            var query = _context.Products
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete).AsQueryable();
+
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(expression);
         }
-        //public async Task AddProductCategory(Product product)
-        //{
-        //    var existingCategories = await _context.ProductCategories
-        //        .Where(pc => pc.ProductId == product.Id)
-        //        .ToListAsync();
 
-        //    if (existingCategories != null && existingCategories.Count > 0)
-        //    {
-        //        _context.ProductCategories.RemoveRange(existingCategories);
-        //    }
+        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked = false)
+        {
+            var query = tracked ? _context.Products
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete)
+            : _context.Products.AsNoTracking().AsQueryable()
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants)
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete);
 
-        //    if (product.ProductCategories != null && product.ProductCategories.Count > 0)
-        //    {
-        //        foreach (var productCategory in product.ProductCategories)
-        //        {
-        //            _context.ProductCategories.Add(new ProductCategory
-        //            {
-        //                ProductId = product.Id,
-        //                CategoryId = productCategory.CategoryId
-        //            });
-        //        }
-        //    }
-        //}
+            if (!string.IsNullOrEmpty(ProductParams.Search))
+            {
+                query = query.Where(c => c.Name.ToLower().Contains(ProductParams.Search.ToLower())
+                    || c.Id.ToString() == ProductParams.Search);
+            }
 
-        //public async Task UpdateProduct(Product product)
-        //{
-        //    var productDb = await _context.Products
-        //        .FirstOrDefaultAsync(p => p.Id == product.Id);
+            if (!string.IsNullOrEmpty(ProductParams.OrderBy))
+            {
+                query = ProductParams.OrderBy switch
+                {
+                    "id" => query.OrderBy(c => c.Id),
+                    "id_desc" => query.OrderByDescending(c => c.Id),
+                    "name" => query.OrderBy(c => c.Name.ToLower()),
+                    "name_desc" => query.OrderByDescending(c => c.Name.ToLower()),
+                    _ => query.OrderByDescending(c => c.Id)
+                };
+            }
 
-        //    if (productDb is not null)
-        //    {
-        //        productDb.Name = product.Name;
-        //        productDb.Description = product.Description;
-        //        productDb.Status = product.Status;
-        //        productDb.Updated = DateTime.UtcNow;
+            return await query.ApplyPaginationAsync(ProductParams.PageNumber, ProductParams.PageSize);
+        }
 
-        //        _context.ProductCategories.RemoveRange(productDb.ProductCategories);
+        public async Task<IEnumerable<Product>> GetAllProductsAsync(bool tracked = false)
+        {
+            if (tracked)
+                return await _context.Products
+                    .Include(p => p.ProductCategories)
+                    .Include(p => p.Image)
+                    .Include(p => p.Variants)
+                    .ThenInclude(v => v.Images)
+                    .Where(c => !c.IsDelete).ToListAsync();
+            return await _context.Products.AsNoTracking().Include(p => p.ProductCategories).Include(p => p.Variants).Where(c => !c.IsDelete).ToListAsync();
+        }
+        public async Task DeleteProductAsync(Product product)
+        {
+            var productDb = await _context.Products.FirstOrDefaultAsync(c => c.Id == product.Id);
+            if (productDb is not null)
+            {
+                productDb.IsDelete = true;
+            }
+        }
 
-        //        if (product.ProductCategories != null && product.ProductCategories.Count > 0)
-        //        {
-        //            foreach (var productCategory in product.ProductCategories)
-        //            {
-        //                var newProductCategory = new ProductCategory
-        //                {
-        //                    ProductId = productDb.Id,
-        //                    CategoryId = productCategory.CategoryId
-        //                };
-        //                productDb.ProductCategories.Add(newProductCategory);
-        //            }
-        //        }
-
-        //    }
-
-        //}
-        //public void DeleteProduct(Product product)
-        //{
-        //    var productDb = _context.Products
-        //    .FirstOrDefault(p => p.Id == product.Id);
-        //    if (productDb is not null)
-        //    {
-        //        productDb.IsDelete = true;
-
-        //    }
-        //}
-
-        //public async Task<Product?> GetProductByIdAsync(int id)
-        //{
-        //    var productDb = await _context.Products
-        //        .Include(p => p.Variants.Where(v => !v.IsDelete))
-        //        .ThenInclude(v => v.Images)
-        //        .Include(p => p.ProductCategories)
-        //        .FirstOrDefaultAsync(p => p.Id == id && !p.IsDelete);
-
-
-        //    return productDb;
-        //}
-
-        //public async Task<Product?> GetProductByName(string name)
-        //{
-        //    var productDb = await _context.Products
-        //        .Include(p => p.Variants)
-        //        .Include(p => p.ProductCategories)
-        //        .FirstOrDefaultAsync(p => p.Name.ToLower() == name.ToLower() && !p.IsDelete);
-        //    return productDb;
-        //}
-
-
-        //public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams productParams)
-        //{
-        //    var query = _context.Products
-        //        .Include(p => p.Variants.Where(v => !v.IsDelete))
-        //        .ThenInclude(v => v.Images)
-        //        .Include(p => p.ProductCategories)
-        //        .Where(p => !p.IsDelete)
-        //        .OrderBy(p => p.Id)
-        //        .AsQueryable();
-        //    if (!string.IsNullOrEmpty(productParams.SearchString))
-        //    {
-        //        query = query.Where(p => p.Name.ToLower().Contains(productParams.SearchString.ToLower())
-        //            || p.Id.ToString() == productParams.SearchString);
-        //    }
-        //    var count = await query.CountAsync();
-        //    var productIds = await query.Skip((productParams.PageNumber - 1) * productParams.PageSize)
-        //                                .Take(productParams.PageSize)
-        //                                .Select(p => p.Id)
-        //                                .ToListAsync();
-        //    var products = await _context.Products
-        //        .Where(p => productIds.Contains(p.Id))
-        //        .Include(p => p.Variants.Where(v => !v.IsDelete))
-        //        .ThenInclude(v => v.Images)
-        //        .Include(p => p.ProductCategories)
-        //        .ToListAsync();
-
-        //    return new PageList<Product>(products, count, productParams.PageNumber, productParams.PageSize);
-        //}
     }
 }

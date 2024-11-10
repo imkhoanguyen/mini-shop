@@ -14,11 +14,7 @@ namespace Shop.Infrastructure.Configurations.EntityConfig
                 .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder
-                .HasOne(m => m.Recipient)
-                .WithMany(u => u.MessageReceived)
-                .HasForeignKey(m => m.RecipientId)
-                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

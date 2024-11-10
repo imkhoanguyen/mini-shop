@@ -1,4 +1,3 @@
-using API.Entities;
 using API.Helpers;
 using Shop.Application.Repositories;
 using Shop.Application.Ultilities;
@@ -8,9 +7,11 @@ namespace API.Interfaces
 {
     public interface IProductRepository : IRepository<Product>
     {
-        Task UpdateProduct(Product product);
-        void DeleteProduct(Product product);
-        Task<PagedList<Product>> GetAllProductsAsync(ProductParams categoryParams);
+        Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked = false);
+        Task<IEnumerable<Product>> GetAllProductsAsync(bool tracked = false);
+        Task DeleteProductAsync(Product Product);
+
+        Task UpdateProductAsync(Product Product);
 
     }
 }

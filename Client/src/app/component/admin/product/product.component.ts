@@ -13,6 +13,7 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import {
   FormBuilder,
+  FormGroup,
   FormsModule,
   ReactiveFormsModule,
   Validators,
@@ -21,8 +22,6 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
 import { Subscription } from 'rxjs';
-import { Product, ProductUpdate } from '../../../_models/product.module';
-import { Image } from '../../../_models/image.module';
 import { ProductService } from '../../../_services/product.service';
 import { Router, RouterModule } from '@angular/router';
 import { CategoryService } from '../../../_services/category.service';
@@ -33,6 +32,9 @@ import { ColorPickerModule } from 'primeng/colorpicker';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { TooltipModule } from 'primeng/tooltip';
 import { TagModule } from 'primeng/tag';
+import { ToastrService } from '../../../_services/toastr.service';
+import { ProductDto, ProductStatus, ProductUpdate } from '../../../_models/product.module';
+import { PaginatedResult, Pagination } from '../../../_models/pagination';
 @Component({
   selector: 'app-product',
   standalone: true,
@@ -55,34 +57,37 @@ import { TagModule } from 'primeng/tag';
     TooltipModule,
     TagModule,
   ],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
 })
 export class ProductComponent {
-  products!: Product[];
-  productForm: any;
+  selectedProducts!: ProductDto[];
+  selectedProduct: any;
+  productForm!: FormGroup;
   categoryNames: { [key: number]: string } = {};
   sizeNames: { [key: number]: string } = {};
   colorCodes: { [key: number]: string } = {};
-  selectedColorCode: string = '';
   expandedRows: { [key: number]: boolean } = {};
+
+  first: number = 0;
+  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+  totalRecords: number = 0;
+  pageSize: number = 5;
+  pageNumber: number = 1;
+  searchString: string = "";
+  visible: boolean = false;
+
+
+
   pageSizeOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
     { label: '20', value: 20 },
     { label: '50', value: 50 },
   ];
-  checked: boolean = false;
-  first: number = 0;
-  paginatedProduct: any;
-  totalRecords: number = 0;
-  pageSize: number = 5;
-  pageNumber: number = 1;
-  searchString: string = '';
 
   private subscriptions: Subscription = new Subscription();
-  uploadedFiles!: Image[];
 
   constructor(
     private builder: FormBuilder,
@@ -90,10 +95,11 @@ export class ProductComponent {
     private productService: ProductService,
     private sizeService: SizeService,
     private colorService: ColorService,
-    private messageService: MessageService,
+    private toastService: ToastrService,
     private confirmationService: ConfirmationService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit() {
     this.initializeForm();
@@ -102,8 +108,13 @@ export class ProductComponent {
     this.fetchSizeNames();
     this.fetchColorCodes();
   }
-  initializeForm(): void {
-    this.productForm = this.builder.group({
+  showDialog(product: any) {
+    this.visible = true;
+    this.selectedProduct = product;
+  }
+
+  initializeForm(): FormGroup {
+    return this.builder.group({
       id: [0],
       name: ['', Validators.required],
       description: ['', Validators.required],
@@ -154,30 +165,31 @@ export class ProductComponent {
     }
     return false;
   }
-  setStatus(product: Product, value: boolean) {
+  setStatus(product: ProductDto, value: boolean) {
     const productUpdate: ProductUpdate = {
       id: product.id,
       name: product.name,
       description: product.description,
       categoryIds: [],
-      status: value ? 1 : 0,
+      status: value ? ProductStatus.Publish : ProductStatus.Draft,
     };
     console.log(productUpdate);
-    this.productService.updateProduct(productUpdate).subscribe({
-      next: () => {
-        this.showMessage(
-          'success',
-          'Thành Công',
-          'Cập nhật trạng thái thành công'
-        );
-        this.loadProducts();
-      },
-    });
+    // this.productService.updateProduct(productUpdate).subscribe({
+    //   next: () => {
+    //     this.toastService.success('Cập nhật trạng thái thành công');
+    //     this.loadProducts();
+    //   },
+    // });
   }
-
+  truncateDescription(description: string, maxLength: number = 30): string {
+    if (description.length > maxLength) {
+      return description.substring(0, maxLength) + '...'; // Cắt và thêm dấu ba chấm
+    }
+    return description;
+  }
   expandAll() {
-    this.expandedRows = this.products.reduce(
-      (acc: { [key: number]: boolean }, p: Product) => {
+    this.expandedRows = this.selectedProducts.reduce(
+      (acc: { [key: number]: boolean }, p: ProductDto) => {
         acc[p.id] = true;
         return acc;
       },
@@ -191,19 +203,6 @@ export class ProductComponent {
     this.subscriptions.unsubscribe();
   }
 
-  private showMessage(
-    severity: string,
-    summary: string,
-    detail: string,
-    life: number = 3000
-  ): void {
-    this.messageService.add({ severity, summary, detail, life });
-  }
-
-  private handleError(error: any, action: string): void {
-    const errorMessage = error.error?.message || `${action} thất bại`;
-    this.showMessage('error', 'Thất Bại', errorMessage);
-  }
   onSearch(): void {
     this.pageNumber = 1;
     this.loadProducts();
@@ -221,29 +220,21 @@ export class ProductComponent {
     this.loadProducts();
   }
 
-  loadProducts() {
-    const productSub = this.productService
-      .getProductAllPaging(this.pageNumber, this.pageSize, this.searchString)
-      .subscribe(
-        (pagination) => {
-          this.paginatedProduct = pagination.items;
-          console.log(this.paginatedProduct);
-          this.totalRecords = pagination.totalCount;
-        },
-        (error) => this.handleError(error, 'Lấy sản phẩm')
-      );
-    this.subscriptions.add(productSub);
+  loadProducts(): void {
+    const params = {
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      search: this.searchString
+    };
+    this.productService.getProductsPagedList(params).subscribe((result) => {
+      this.selectedProducts = result.items || [];
+      this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+
+      this.totalRecords = this.pagination.totalItems;
+      this.first = (this.pageNumber - 1) * this.pageSize;
+    });
   }
-  getSeverity(
-    status: string
-  ):
-    | 'success'
-    | 'secondary'
-    | 'info'
-    | 'warning'
-    | 'danger'
-    | 'contrast'
-    | undefined {
+  getSeverity(status: string): 'success' | 'secondary' | 'info' | 'warning' | 'danger' | 'contrast' | undefined {
     switch (status) {
       case 'INSTOCK':
         return 'success';
@@ -255,16 +246,7 @@ export class ProductComponent {
         return 'secondary';
     }
   }
-  getStatusSeverity(
-    status: string
-  ):
-    | 'success'
-    | 'secondary'
-    | 'info'
-    | 'warning'
-    | 'danger'
-    | 'contrast'
-    | undefined {
+  getStatusSeverity(status: string): 'success' | 'secondary' | 'info' | 'warning' | 'danger' | 'contrast' | undefined {
     switch (status) {
       case 'success':
         return 'success';
@@ -297,20 +279,31 @@ export class ProductComponent {
   addProduct() {
     this.router.navigate(['/admin/product/add']);
   }
-  editProduct(id: number) {
+  updateProduct(id: number) {
     this.productService.getProductById(id).subscribe(() => {
       this.router.navigateByUrl('/admin/product/edit/' + id);
     });
   }
 
-  deleteProduct(product: Product) {
-    this.productService.deleteProduct(product).subscribe({
-      next: () => {
-        console.log('Xóa sản phẩm thành công');
-        this.showMessage('success', 'Thành Công', 'Xóa sản phẩm thành công');
-        this.loadProducts();
-      },
-      error: (error) => this.handleError(error, 'Xóa sản phẩm'),
+  confirmDelete(product: ProductDto): void {
+    console.log("hiiiiiiii");
+    this.confirmationService.confirm({
+      message: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+      accept: () => {
+        const subscription = this.productService.deleteProduct(product.id).subscribe({
+          next: () => {
+            this.toastService.success('Sản phẩm đã được xóa thành công.');
+            this.visible = false;
+            this.loadProducts();
+          },
+          error: (err) => {
+            this.toastService.error('Có lỗi xảy ra khi xóa sản phẩm.');
+            console.error(err);
+          }
+        });
+
+        this.subscriptions.add(subscription);
+      }
     });
   }
 }

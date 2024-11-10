@@ -1,10 +1,8 @@
-﻿namespace Shop.Application.DTOs.Reviews
+﻿namespace Shop.Application.DTOs.Products
 {
-    public class ImgReviewDto
+    public class ImageProductDto
     {
         public int Id { get; set; }
         public required string ImgUrl { get; set; }
-
-       
     }
 }

@@ -3,7 +3,7 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { jwtInterceptorInterceptor } from './_interceptors/jwt-interceptor.interceptor';
+import { jwtInterceptor } from './_interceptors/jwt-interceptor.interceptor';
 import { OAuthModule, OAuthService } from 'angular-oauth2-oidc';
 import { importProvidersFrom } from '@angular/core';
 import { MessageService } from 'primeng/api';
@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([errorInterceptor, jwtInterceptorInterceptor])
+      withInterceptors([errorInterceptor, jwtInterceptor])
     ),
     provideAnimationsAsync(),
     importProvidersFrom(OAuthModule.forRoot()),

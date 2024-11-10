@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { HeaderComponent } from './layout/header/header.component';
-import { CategoryComponent } from './component/admin/category/category.component';
 import { ChatComponent } from './component/admin/chat/chat.component';
 import { RoleComponent } from './component/admin/role/role.component';
 import { AdminComponent } from './component/admin/admin.component';
@@ -11,14 +10,16 @@ import { RegisterComponent } from './component/register/register.component';
 import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
 import { ForgotpasswordComponent } from './component/forgotpassword/forgotpassword.component';
 import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
-import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
+
 import { VoucherComponent } from './component/admin/voucher/voucher.component';
 import { AddVoucherComponent } from './component/admin/voucher/add-voucher/add-voucher.component';
 import { HomeComponent } from './component/home/home.component';
 import { ProductUserComponent } from './component/client/product/product.component';
 import { ProductListComponent } from './component/client/productList/productList.component';
-import { NotFoundComponent } from './component/errors/not-found/not-found.component';
+// import { NotFoundComponent } from './component/errors/not-found/not-found.component';
 import { ServerErrorComponent } from './component/errors/server-error/server-error.component';
+import { CategoryComponent } from './component/admin/category/category.component';
+import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -46,6 +47,6 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotpasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'not-found', component: NotFoundComponent },
+  // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
 ];

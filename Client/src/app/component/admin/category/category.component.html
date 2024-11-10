@@ -1,32 +1,38 @@
-<p-toast />
-<p-confirmDialog />
+<!-- Toast and Confirm Dialog -->
+<div class="toast-container">
+  <p-toast></p-toast>
+</div>
+<p-confirmDialog></p-confirmDialog>
+
+<!-- Search and Pagination Controls -->
 <div class="row align-items-center mb-3">
   <div class="col">
     <input
       type="text"
       [(ngModel)]="searchString"
       (input)="onSearch()"
-      pInputText
+      class="form-control"
       placeholder="Tìm kiếm..."
-      class="w-100"
     />
   </div>
   <div class="col-auto">
-    <p-dropdown
-      [options]="pageSizeOptions"
+    <select
+      class="form-select"
       [(ngModel)]="pageSize"
-      optionLabel="label"
-      [placeholder]="'Số lượng trang'"
-      (onChange)="onPageSizeChange($event.value)"
-    ></p-dropdown>
+      (change)="onPageSizeChange($event)"
+    >
+      <option *ngFor="let option of pageSizeOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
   </div>
   <div class="col-auto">
-    <p-button
-      label="Thêm Danh mục"
-      icon="pi pi-plus"
-      severity="success"
-      (click)="showDialog()"
-    ></p-button>
+    <button
+      class="btn btn-success"
+      (click)="openDialog()"
+    >
+      <i class="pi pi-plus"></i> Thêm Danh mục
+    </button>
   </div>
 </div>
 
@@ -38,12 +44,12 @@
   [modal]="true"
 >
   <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
-    <div class="flex align-items-center gap-3 mb-3">
-      <label for="name" class="font-semibold w-6rem">Tên: </label>
+    <div class="mb-3">
+      <label for="name" class="form-label">Tên:</label>
       <input
         pInputText
         id="name"
-        class="flex-auto"
+        class="form-control"
         autocomplete="off"
         formControlName="name"
       />
@@ -51,51 +57,61 @@
         <small class="text-danger">Tên không được để trống</small>
       </div>
     </div>
-    <div class="flex justify-content-end gap-2">
-      <p-button label="Cancel" severity="secondary" (click)="visible = false"></p-button>
-      <p-button label="{{ btnText }}" type="submit"></p-button>
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-secondary me-2" (click)="visible = false">Hủy</button>
+      <button class="btn btn-primary" type="submit">{{ btnText }}</button>
     </div>
   </form>
 </p-dialog>
 
-<p-table
-  [value]="paginatedCategory"
-  [(selection)]="selectedCategories"
-  dataKey="id"
-  [tableStyle]="{ 'min-width': '50rem' }"
->
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Id</th>
-      <th>Name</th>
-      <th>Ngày Tạo</th>
-      <th>Ngày Sửa</th>
-      <th>Action</th>
-    </tr>
-  </ng-template>
+<!-- Categories Table -->
+<div class="table-responsive">
+  <p-table
+    [value]="selectedCategories"
+    [(selection)]="selectedCategories"
+    dataKey="id"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Id</th>
+        <th>Tên</th>
+        <th>Ngày Tạo</th>
+        <th>Ngày Sửa</th>
+        <th>Hành Động</th>
+      </tr>
+    </ng-template>
 
-  <ng-template pTemplate="body" let-category>
-    <tr>
-      <td>{{ category.id }}</td>
-      <td>{{ category.name }}</td>
-      <td>{{ category.created | date: 'dd/MM/yyyy, hh:mm a' }}</td>
-      <td>{{ category.updated | date: 'dd/MM/yyyy, hh:mm a' }}</td>
-      <td>
-        <p-button
-          icon="pi pi-file-edit"
-          severity="info"
-          (click)="openUpdateDialog(category)"
-        ></p-button>
-        <p-button
-          icon="pi pi-trash"
-          severity="danger"
-          (click)="confirmDelete(category, $event)"
-        ></p-button>
-      </td>
-    </tr>
-  </ng-template>
-</p-table>
+    <ng-template pTemplate="body" let-category>
+      <tr>
+        <td>{{ category.id }}</td>
+        <td>{{ category.name }}</td>
+        <td>{{ category.created | date: 'dd/MM/yyyy, hh:mm a' }}</td>
+        <td>{{ category.updated | date: 'dd/MM/yyyy, hh:mm a' }}</td>
+        <td>
+          <button
+            class="btn btn-info"
+            (click)="openDialog(category)"
+            tooltip="Chỉnh sửa"
+            tooltipPosition="top"
+          >
+            <i class="pi pi-file-edit"></i>
+          </button>
+          <button
+            class="btn btn-danger"
+            (click)="confirmDelete(category)"
+            tooltip="Xóa"
+            tooltipPosition="top"
+          >
+            <i class="pi pi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
 
+<!-- Paginator -->
 <p-paginator
   (onPageChange)="onPageChange($event)"
   [first]="first"

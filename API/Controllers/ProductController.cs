@@ -1,122 +1,86 @@
 using API.Controllers;
-using API.Entities;
+using API.Extensions;
 using API.Helpers;
-using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Shop.Application.DTOs.Products;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Services.Implementations;
+using Shop.Application.Ultilities;
 
 namespace api.Controllers
 {
     public class ProductController : BaseApiController
     {
-        //private readonly IUnitOfWork _unitOfWork;
-        //private readonly ICloudinaryService _imageService;
+        private readonly IProductService _productService;
 
-        //public ProductController(IUnitOfWork unitOfWork, ICloudinaryService imageService)
-        //{
-        //    _unitOfWork = unitOfWork;
-        //    _imageService = imageService;
-        //}
+        public ProductController(IProductService productService)
+        {
+            _productService = productService;
+        }
 
-        //[HttpGet("GetProductById{id}")]
-        //public async Task<IActionResult> GetProductByIdAsync(int id)
-        //{
-        //    var product = await _unitOfWork.ProductRepository.GetProductByIdAsync(id);
-        //    if (product == null) return NotFound("Không tìm thấy sản phẩm nào.");
-        //    var productDto = Product.toProductGetDto(product);
-        //    return Ok(productDto);
-        //}
-        //[HttpGet("GetByName")]
-        //public async Task<IActionResult> GetProductByName(string name)
-        //{
-        //    var product = await _unitOfWork.ProductRepository.GetProductByName(name);
-        //    if (product == null) return NotFound("không tìm thấy sản phẩm với tên = " + name);
-        //    var productDto = Product.toProductGetDto(product);
-        //    return Ok(productDto);
-        //}
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAllProductsAsync()
-        //{
-        //    var product = await _unitOfWork.ProductRepository.GetAllProductsAsync();
-        //    if (product == null)
-        //    {
-        //        return NotFound("Không tìm thấy sản phẩm nào.");
-        //    }
-        //    var productDto = product.Select(p => Product.toProductGetDto(p)).ToList();
-        //    return Ok(productDto);
-        //}
-        
-        //[HttpGet("GetAllPaging")]
-        //public async Task<ActionResult<IEnumerable<CategoryDto>>> GetAllProductsAsync([FromQuery] ProductParams productParams)
-        //{
-        //    var pageList = await _unitOfWork.ProductRepository.GetAllProductsAsync(productParams);
-        //    if (pageList == null)
-        //    {
-        //        return NotFound("Không tìm thấy sản phẩm nào.");
-        //    }
-        //     var pageListDto = new PageListDto<ProductGetDto>
-        //    {
-        //        PageIndex = pageList.PageIndex,
-        //        PageSize = pageList.PageSize,
-        //        TotalCount = pageList.TotalCount,
-        //        TotalPages = pageList.TotalPages,
-        //        Items = pageList.Select(c => Product.toProductGetDto(c)).ToList()
-        //    };
-        //    return Ok(pageListDto);
-        //}
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts([FromQuery] ProductParams productParams)
+        {
+            var pagedList = await _productService.GetAllAsync(productParams, false);
 
-        //// POST api/Product/Add
-        //[HttpPost("Add")]
-        //public async Task<IActionResult> AddProduct([FromBody] ProductAddDto productAddDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
+            Response.AddPaginationHeader(pagedList);
+            return Ok(pagedList);
+        }
 
-        //    if (await _unitOfWork.ProductRepository.ProductExistsAsync(productAddDto.Name!))
-        //    {
-        //        return BadRequest(new {message ="Sản phẩm với tên này đã tồn tại."});
-        //    }
-        //    var product = ProductAddDto.toProduct(productAddDto);
-        //    _unitOfWork.ProductRepository.AddProduct(product);
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
+        {
+            var categories = await _productService.GetAllAsync(false);
+            return Ok(categories);
+        }
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ProductDto>> GetProductById(int id)
+        {
+            var product = await _productService.GetAsync(c => c.Id == id);
+            return Ok(product);
+        }
 
-        //    if (await _unitOfWork.Complete()){
-        //        await _unitOfWork.ProductRepository.AddProductCategory(product);
-        //        return Ok(new {id = product.Id, message ="Add Product successfully."});
-        //    }
-        //    return BadRequest(new {message ="Add Product failed."});
-        //}
+        [HttpPost("Add")]
+        public async Task<IActionResult> AddProduct([FromForm] ProductAdd productAdd)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        //// PUT api/Product/Update
-        //[HttpPut("Update")]
-        //public async Task<IActionResult> UpdateProduct([FromBody] ProductDto productDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-        //    var product = ProductDto.toProduct(productDto);
-        //    await _unitOfWork.ProductRepository.AddProductCategory(product);
-        //    await _unitOfWork.ProductRepository.UpdateProduct(product);
-            
-        //    if (await _unitOfWork.Complete()){
-                
-        //        return Ok(new {message = "Update Product successfully."});
-        //    }
-        //    return BadRequest(new {message = "Update Product failed."});
-        //}
+            var product = await _productService.AddAsync(productAdd);
+            return CreatedAtAction(nameof(GetAllProducts), new { id = product.Id }, product);
+        }
 
-        //// DELETE api/Product/Delete
-        //[HttpDelete("Delete")]
-        //public async Task<IActionResult> DeleteProduct([FromBody]ProductDto productDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-        //    var product = ProductDto.toProduct(productDto);
-        //    _unitOfWork.ProductRepository.DeleteProduct(product);
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateProduct([FromForm] ProductUpdate productDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var product = await _productService.UpdateAsync(productDto);
+            return Ok(product);
+        }
 
-        //    if (await _unitOfWork.Complete())
-        //        return Ok(new {message = "Delete Product successfully."});
-        //    return BadRequest(new {message = "Delete Product failed."});
-            
-        //}
-        
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            await _productService.DeleteAsync(c => c.Id == id);
+            return NoContent();
+        }
+        [HttpPost("add-images/{productId:int}")]
+        public async Task<IActionResult> AddImagesProduct([FromRoute] int productId, [FromForm] IFormFile imageFile)
+        {
+            var product = await _productService.AddImageAsync(productId, imageFile);
+            return Ok(product);
+        }
+
+        [HttpDelete("remove-image/{productId:int}")]
+        public async Task<IActionResult> RemoveImagesProduct([FromRoute] int productId, int imageId)
+        {
+            await _productService.RemoveImageAsync(productId, imageId);
+            var product = await _productService.GetAsync(r => r.Id == productId);
+            return NoContent();
+        }
+
     }
 }
