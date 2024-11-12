@@ -43,19 +43,16 @@
 
       <div class="mb-4">
         <label class="form-label font-weight-bold">Tải lên hình ảnh</label>
-        <p-fileUpload
-          name="images"
-          url="https://www.primefaces.org/cdn/api/upload.php"
-          [multiple]="false"
-          accept="image/*"
-          maxFileSize="1000000"
-          (onSelect)="onSelectedFiles($event)"
-          [style]="{ width: '100%' }">
+        <p-fileUpload name="images" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="false"
+          accept="image/*" maxFileSize="1000000" (onSelect)="onSelectedFiles($event)" [style]="{ width: '100%' }">
 
-          <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback">
+          <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
+            let-clearCallback="clearCallback">
             <div class="d-flex justify-content-between align-items-center">
-              <p-button (click)="choose($event, chooseCallback)" icon="pi pi-images" class="p-button-rounded p-button-outlined" />
-              <p-button (click)="clearCallback()" icon="pi pi-times" class="p-button-rounded p-button-danger" [disabled]="!files || files.length === 0" />
+              <p-button (click)="choose($event, chooseCallback)" icon="pi pi-images"
+                class="p-button-rounded p-button-outlined" />
+              <p-button (click)="clearCallback()" icon="pi pi-times" class="p-button-rounded p-button-danger"
+                [disabled]="!files || files.length === 0" />
             </div>
           </ng-template>
 
@@ -73,55 +70,31 @@
 
     <div class="card mt-5 p-4 shadow-sm">
       <h3 class="mb-4">Biến Thể</h3>
-      <div [formGroup]="variantsForm">
-        <!-- <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="row mb-4"> -->
+      <form [formGroup]="variantsForm">
+      <div formArrayName="variants">
+        <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i"  class="mb-4">
           <p-accordion [activeIndex]="0">
-            <p-accordionTab header="Biến thể ">
+            <p-accordionTab header="Biến thể {{i + 1}}">
               <div class="row mb-3">
                 <div class="col-md-4 mb-3">
-                  <p-inputNumber
-                    placeholder="Giá tiền"
-                    mode="currency"
-                    currency="VND"
-                    locale="en-US"
-                    formControlName="price"
-                    class="pInputText"
-                  />
+                  <p-inputNumber placeholder="Giá tiền" mode="currency" currency="VND" locale="en-US"
+                    formControlName="price" class="pInputText" />
                 </div>
                 <div class="col-md-4 mb-3">
-                  <p-inputNumber
-                    placeholder="Giá tiền giảm (nếu có)"
-                    mode="currency"
-                    currency="VND"
-                    locale="en-US"
-                    formControlName="priceSell"
-                    class="pInputText"
-                  />
+                  <p-inputNumber placeholder="Giá tiền giảm (nếu có)" mode="currency" currency="VND" locale="en-US"
+                    formControlName="priceSell" class="pInputText" />
                 </div>
                 <div class="col-md-4 mb-3">
-                  <p-inputNumber
-                    placeholder="Số lượng"
-                    mode="decimal"
-                    [useGrouping]="false"
-                    formControlName="quantity"
-                    class="pInputText"
-                  />
+                  <p-inputNumber placeholder="Số lượng" mode="decimal" [useGrouping]="false" formControlName="quantity"
+                    class="pInputText" />
                 </div>
               </div>
 
               <div class="row mb-3">
                 <div class="col-md-6 mb-3">
-                  <p-dropdown
-                    [style]="{width: '100%'}"
-                    [options]="colors"
-                    formControlName="colorId"
-                    placeholder="Chọn Màu Sắc"
-                    optionLabel="name"
-                    optionValue="id"
-                    [showClear]="true"
-                    [filter]="true"
-                    (onFilter)="onColorFilter($event)"
-                  >
+                  <p-dropdown [style]="{width: '100%'}" [options]="colors" formControlName="colorId"
+                    placeholder="Chọn Màu Sắc" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true"
+                    (onFilter)="onColorFilter($event)">
                     <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
                     <ng-template pTemplate="empty">
                       <div class="no-data">
@@ -133,17 +106,9 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                  <p-dropdown
-                    [style]="{width: '100%'}"
-                    [options]="sizes"
-                    formControlName="sizeId"
-                    placeholder="Chọn Kích thước"
-                    optionLabel="name"
-                    optionValue="id"
-                    [showClear]="true"
-                    [filter]="true"
-                    (onFilter)="onSizeFilter($event)"
-                  >
+                  <p-dropdown [style]="{width: '100%'}" [options]="sizes" formControlName="sizeId"
+                    placeholder="Chọn Kích thước" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true"
+                    (onFilter)="onSizeFilter($event)">
                     <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
                     <ng-template pTemplate="empty">
                       <div class="no-data">
@@ -159,36 +124,18 @@
                 <div class="col-12">
                   <label for="imageUpload" class="form-label">Tải lên hình ảnh</label>
                   <div class="card-body">
-                    <p-fileUpload
-                      name="myfile[]"
-                      url="https://www.primefaces.org/cdn/api/upload.php"
-                      [multiple]="true"
-                      accept="image/*"
-                      maxFileSize="1000000"
-                      (onSelect)="onSelectedVariantFiles($event)"
-                    >
+                    <p-fileUpload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="true"
+                      accept="image/*" maxFileSize="1000000" (onSelect)="onSelectedVariantFiles($event,i)">
                       <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
                         let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
                         <div class="d-flex justify-content-between align-items-center">
                           <div class="d-flex gap-2">
-                            <p-button
-                              (onClick)="choose($event, chooseCallback)"
-                              icon="pi pi-images"
-                              [rounded]="true"
-                              [outlined]="true"
-                            />
-                            <p-button
-                              (onClick)="clearCallback()"
-                              icon="pi pi-times"
-                              [rounded]="true"
-                              [outlined]="true"
-                              severity="danger"
-                              [disabled]="!files || files.length === 0"
-                            />
+                            <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true"
+                              [outlined]="true" />
+                            <p-button (onClick)="clearCallback()" icon="pi pi-times" [rounded]="true" [outlined]="true"
+                              severity="danger" [disabled]="!files || files.length === 0" />
                           </div>
-                          <p-progressBar
-                            [value]="totalSizePercent"
-                            [showValue]="false"
+                          <p-progressBar [value]="totalSizePercent" [showValue]="false"
                             styleClass="md:w-20rem h-1rem w-full"
                             [ngClass]="{ 'exceeded-progress-bar': totalSizePercent > 100 }">
                             <span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span>
@@ -206,25 +153,28 @@
                   </div>
                 </div>
               </div>
+              <div class="col-12 mt-2">
+                <p-button label="Xóa Biến Thể" icon="pi pi-trash" class="p-button-danger"
+                  (click)="removeVariant(i)"></p-button>
+              </div>
 
-              <!-- <div class="col-12 mt-2">
-                <p-button label="Xóa Biến Thể" icon="pi pi-trash" class="p-button-danger" (click)="removeVariant(i)"></p-button>
-              </div> -->
             </p-accordionTab>
           </p-accordion>
-        <!-- </div> -->
-          <!-- <div class="d-flex justify-content-end mt-4">
-            <p-button label="Thêm Biến Thể" icon="pi pi-plus" (click)="addVariant()"></p-button>
-          </div> -->
 
-        <div class="d-flex justify-content-between mt-4">
-          <p-button label="{{ isUpdate ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm' }}"
-            icon="{{ isUpdate ? 'pi pi-pencil' : 'pi pi-plus' }}" (click)="onSubmit()"
-            [disabled]="!productForm.valid && !variantsForm.valid">
-          </p-button>
         </div>
       </div>
+    </form>
     </div>
+    <div class="d-flex justify-content-end mt-4">
+      <p-button label="Thêm Biến Thể" icon="pi pi-plus" (click)="addVariant()"></p-button>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <p-button label="{{ isUpdate ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm' }}"
+        icon="{{ isUpdate ? 'pi pi-pencil' : 'pi pi-plus' }}" (click)="onSubmit()">
+      </p-button>
+    </div>
+
   </form>
 </div>
 

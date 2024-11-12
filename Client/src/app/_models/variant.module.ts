@@ -1,7 +1,8 @@
-export interface VariantStatus {
-  draft: 0;
-  publish: 1;
+export enum VariantStatus {
+  Draft = 0,
+  Publish = 1,
 }
+
 export interface VariantBase {
   productId: number;
   price: number;

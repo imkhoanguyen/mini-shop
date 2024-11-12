@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CategoryService } from '../../../../_services/category.service';
 import { MessageService, PrimeNGConfig } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { ProductService } from '../../../../_services/product.service';
-import { VariantAdd, VariantDto } from '../../../../_models/variant.module';
+import { VariantAdd, VariantDto, VariantStatus } from '../../../../_models/variant.module';
 import { VariantService } from '../../../../_services/variant.service';
 import { CategoryAdd, CategoryDto } from '../../../../_models/category.module';
 import { ToastrService } from '../../../../_services/toastr.service';
@@ -75,16 +75,20 @@ export class ProductFormComponent implements OnInit {
   name: string = '';
   code: string = '';
 
-  files: { src: string; file: File }[] = [];
+  files: any[] = [];
   selectedFiles: any[] = [];
   totalSize: number = 0;
   totalSizePercent: number = 0;
 
   selectedStatus!: ProductStatus;
 
-  status: { name: string; key: ProductStatus }[] = [
+  productStatus: { name: string; key: ProductStatus }[] = [
     { name: 'Draft', key: ProductStatus.Draft },
     { name: 'Publish', key: ProductStatus.Publish },
+  ];
+  variantStatus: { name: string; key: VariantStatus }[] = [
+    { name: 'Draft', key: VariantStatus.Draft },
+    { name: 'Publish', key: VariantStatus.Publish },
   ];
 
   constructor(
@@ -103,7 +107,7 @@ export class ProductFormComponent implements OnInit {
     this.loadCategories();
     // this.loadColors();
     // this.loadSizes();
-    //this.addVariant();
+    this.addVariant();
     this.route.paramMap.subscribe((params) => {
       const id = Number(params.get('id'));
       if (id) {
@@ -121,51 +125,36 @@ export class ProductFormComponent implements OnInit {
       description: ['', Validators.required],
       status: [ProductStatus.Draft, Validators.required],
       imageFile: this.fb.array([]),
-    });
+      });
 
-    this.variantsForm = this.fb.group({
-      id: [null],
-      price: [null, Validators.required],
-      priceSell: [null],
-      quantity: [null, Validators.required],
-      colorId: [0],
-      sizeId: [0],
+      this.variantsForm = this.fb.group({
+        variants: this.fb.array([]),
+      });
+      this.productForm.addControl('variants', this.variantsForm);
+  }
+  removeVariant(index: number): void {
+    const variant = this.variants.at(index).value;
+    if(variant.id){
+      //this.deleteVariant(variant);
+    }
+    this.variants.removeAt(index);
+  }
+
+  get variants() {
+    return this.variantsForm.get('variants') as FormArray;
+  }
+  addVariant() {
+    const variantGroup = this.fb.group({
+      price: this.fb.control(null, Validators.required),
+      priceSell: this.fb.control(null),
+      quantity: this.fb.control(null, Validators.required),
+      colorId: this.fb.control(null),
+      sizeId: this.fb.control(null),
+      status: this.fb.control(VariantStatus.Draft),
       imageFiles: this.fb.array([]),
     });
+    this.variants.push(variantGroup);
   }
-  // removeVariant(index: number) {
-  //   this.variants.removeAt(index);
-  // }
-
-  // get variants() {
-  //   return this.variantsForm.get('variants') as FormArray;
-  // }
-  // addVariant() {
-  //   const variantGroup = this.fb.group({
-  //     id: [null],
-  //     price: [null, Validators.required],
-  //     priceSell: [null],
-  //     quantity: [null, Validators.required],
-  //     colorId: [0],
-  //     sizeId: [0],
-  //     imageFiles: [[]]
-  //   });
-  //   this.variants.push(variantGroup);
-  // }
-  // setVariants(variants: any[]) {
-  //   const variantFGs = variants.map(variant => this.fb.group({
-  //     id: [variant.id || null],
-  //     price: [variant.price || null, Validators.required],
-  //     priceSell: [variant.priceSell || null],
-  //     quantity: [variant.quantity || null, Validators.required],
-  //     colorId: [variant.colorId || 0],
-  //     sizeId: [variant.sizeId || 0],
-  //     imageFiles: [variant.imageFiles || []]
-  //   }));
-
-  //   const variantFormArray = this.fb.array(variantFGs);
-  //   this.variantsForm.setControl('variants', variantFormArray);
-  // }
 
   getProductToUpdate(id: number) {
     this.productService.getProductById(id).subscribe(
@@ -239,37 +228,31 @@ export class ProductFormComponent implements OnInit {
   }
 
   onSelectedFiles(event: any) {
-    const totalFiles = event.files.length;
-    let filesRead = 0;
+    const imageFormArray = this.productForm.get('imageFile') as FormArray;
 
-    if (Array.isArray(event.files) || event.files instanceof FileList) {
+    if(Array.isArray(event.files) || event.files instanceof FileList) {
       (Array.from(event.files) as File[]).forEach((file: File) => {
         if (file instanceof File) {
           const reader = new FileReader();
 
           reader.onload = (e: any) => {
-            const imageFormArray = this.productForm.get('imageFile') as FormArray;
             imageFormArray.push(this.fb.control(file));
-            filesRead++;
-            if (filesRead === totalFiles) {
-              this.files = imageFormArray.controls.map(control => ({
-                src: e.target.result,
-                file: control.value
-              }));
-              console.log('All selected files:', this.files);
-            }
+            this.selectedFiles.push({
+              src: e.target.result,
+              file: file
+            });
+            this.totalSize += file.size;
+            this.totalSizePercent = this.totalSize / 10;
           };
           reader.readAsDataURL(file);
         }
       });
-    } else {
-      console.error('error', event.files);
     }
   }
 
-  onSelectedVariantFiles(event: any) {
-    const totalFiles = event.files.length;
-    let filesRead = 0;
+  onSelectedVariantFiles(event: any, index: number) {
+    const variantGroup = this.variants.at(index) as FormGroup;
+    const imagesFormArray = variantGroup.get('imageFiles') as FormArray;  // Truy cập FormArray của imageFiles
 
     if (Array.isArray(event.files) || event.files instanceof FileList) {
       (Array.from(event.files) as File[]).forEach((file: File) => {
@@ -277,26 +260,20 @@ export class ProductFormComponent implements OnInit {
           const reader = new FileReader();
 
           reader.onload = (e: any) => {
-            const imagesFormArray = this.variantsForm.get('imageFiles') as FormArray;
-
             imagesFormArray.push(this.fb.control(file));
-            filesRead++;
-            if (filesRead === totalFiles) {
-              this.files = imagesFormArray.controls.map(control => ({
-                src: e.target.result,
-                file: control.value
-              }));
-
-              console.log('All selected variant files:', this.files);
-            }
+            this.selectedFiles.push({
+              src: e.target.result,
+              file: file
+            });
+            this.totalSize += file.size;
+            this.totalSizePercent = this.totalSize / 10;
           };
           reader.readAsDataURL(file);
         }
       });
-    } else {
-      console.error('error', event.files);
     }
   }
+
 
   // Xóa một file đã chọn
   onRemoveTemplatingFile(event: any, file: { size: any }, removeFileCallback: (arg0: any, arg1: any) => void, index: any) {
@@ -318,7 +295,7 @@ export class ProductFormComponent implements OnInit {
     //if (this.productForm.valid && this.variantsForm.valid) {
       console.log('productForm', this.productForm.value);
       console.log('variantsForm', this.variantsForm.value);
-      console.log('selectedCategories', this.productForm.value.selectedCategories);
+
       this.addOrUpdateProduct();
     //} else {
       //this.toastService.error('Vui lòng điền đầy đủ thông tin.');
@@ -326,35 +303,64 @@ export class ProductFormComponent implements OnInit {
   }
 
   addVariants(productId: number) {
-      const variantAdd: FormData = this.createFormDataForAdd(productId);
-
-      this.variantService.addVariant(variantAdd).subscribe({
+    console.log('productId', productId);
+    const variantAdd: FormData = this.createFormDataForAdd(productId);
+    console.log('variantAdd', variantAdd);
+    this.variantService.addVariant(variantAdd).subscribe({
         next: () => this.toastService.success('Thêm biến thể thành công.'),
-        error: (error) => this.toastService.error('Lỗi khi thêm biến thể: ' + error),
-      });
-
+        error: (error) => {
+          console.error('Chi tiết lỗi từ API:', error);
+          const errorMessage = error?.error?.message || error?.message || 'Lỗi không xác định';
+          this.toastService.error('Lỗi khi thêm biến thể: ' + errorMessage);
+        },
+    });
   }
 
-  private createFormDataForAdd(productId: number): FormData {
+private createFormDataForAdd(productId: number): FormData {
     const formData = new FormData();
-    formData.append('productId', productId.toString());
-    formData.append('price', this.variantsForm.value.price);
-    formData.append('priceSell', this.variantsForm.value.priceSell);
-    formData.append('quantity', this.variantsForm.value.quantity);
 
-    const imagesFormArray = this.variantsForm.get('imageFiles') as FormArray;
-    imagesFormArray.controls.forEach((control: any) => {
-      const file = control.value;
-      if (file instanceof File) {
-        formData.append('imageFiles', file);
-      } else {
-        console.error('Dự kiến là một file, nhưng nhận được:', file);
+    this.variants.value.forEach((variant: any, index: number) => {
+      formData.append('productId', productId.toString());
+      formData.append('price', variant.price.toString());
+      formData.append('priceSell', variant.priceSell.toString());
+      formData.append('quantity', variant.quantity.toString());
+      formData.append('status', variant.status.toString());
+      // formData.append('colorId', variant.colorId);
+      // formData.append('sizeId', variant.sizeId);
+
+      const variantGroup = this.variants.at(index) as FormGroup;
+      const imagesFormArray = variantGroup.get('imageFiles') as FormArray;
+      if (imagesFormArray) {
+        imagesFormArray.controls.forEach((control: any) => {
+          const file = control.value;
+          if (file instanceof File) {
+              formData.append('imageFiles', file);
+          }
+        });
       }
     });
 
 
     return formData;
   }
+
+private async addProduct(formData: FormData) {
+    try {
+        const response = await this.productService.addProduct(formData).toPromise();
+        if (response && response.id) {
+            const productId = response.id;
+            this.variantsForm.patchValue({
+              productId: productId
+            });
+            this.addVariants(productId);
+            this.toastService.success('Thêm sản phẩm thành công.');
+        } else {
+            this.toastService.error('Lỗi khi thêm sản phẩm: Không nhận được ID sản phẩm.');
+        }
+    } catch (error) {
+        this.toastService.error('Lỗi khi thêm sản phẩm: ' + error);
+    }
+}
 
   addOrUpdateProduct() {
     const formData = this.createProductFormData();
@@ -392,23 +398,6 @@ export class ProductFormComponent implements OnInit {
     return formData;
   }
 
-  private async addProduct(formData: FormData) {
-    try {
-      const response = await this.productService.addProduct(formData).toPromise();
-      if (response && response.id) {
-        const productId = response.id;
-        this.variantsForm.patchValue({
-          productId: productId
-        });
-        this.addVariants(productId);
-        this.toastService.success('Thêm sản phẩm thành công.');
-      } else {
-        this.toastService.error('Lỗi khi thêm sản phẩm: Không nhận được ID sản phẩm.');
-      }
-    } catch (error) {
-      this.toastService.error('Lỗi khi thêm sản phẩm: ' + error);
-    }
-  }
 
    //----------------- Size -----------------
  loadSizes(): void {
