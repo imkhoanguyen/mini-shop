@@ -1,0 +1,129 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i");
+@import url("https://fonts.googleapis.com/css?family=Kaushan+Script");
+
+body {
+  margin: auto;
+  padding: 0;
+  max-width: 950px;
+  font-family: "Roboto Condensed", sans-serif;
+}
+
+.header-menu-position {
+  display: flex;
+  flex-direction: row;
+  height: 50px;
+  align-items: center;
+}
+
+nav.left-menu {
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+}
+
+.main-title h1 {
+  font-family: "Kaushan Script", cursive;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 3.5em;
+  color: #333e55;
+  margin: 30px 0 0 0;
+}
+
+.main-title h2 {
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: lighter;
+  letter-spacing: 1px;
+  font-size: 1.1em;
+  margin: 0 0 20px 0;
+  color: #383737;
+}
+
+.main-articles {
+  display: flex;
+  flex-direction: row;
+  margin-top: 50px;
+}
+
+.article-image-round {
+  flex: 1;
+  margin: 0 10px;
+}
+
+.article-image-round img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.article-image-round h3 {
+  text-align: center;
+  color: #383737;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.article-aside-flex {
+  display: flex;
+}
+
+.article-column {
+  flex-direction: column;
+  flex: 3;
+  margin-right: 10px;
+}
+
+article h2 {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 300;
+  color: #383737;
+  margin-bottom: 0;
+}
+
+p.article-date {
+  text-align: center;
+  font-size: 12px;
+  font-weight: lighter;
+  color: #807d7d;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.article-content img {
+  width: 100%;
+}
+
+p.article-text {
+  color: #3d3b3b;
+  letter-spacing: 2px;
+  line-height: 25px;
+}
+
+hr {
+  border-color: #c7c4c4;
+  opacity: 0.2;
+}
+
+@media screen and (max-width: 576px) {
+  nav.left-menu {
+    display: none;
+  }
+
+  .main-articles {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .article-image-round {
+    margin: 0 15px;
+  }
+
+  .article-aside-flex {
+    flex-direction: column;
+  }
+
+  .article-column {
+    margin: 0 15px;
+  }
+}

@@ -1,4 +1,4 @@
-﻿using API.Entities;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace Shop.Application.DTOs.Reviews
@@ -16,6 +16,6 @@ namespace Shop.Application.DTOs.Reviews
         public List<ReviewDto> Replies { get; set; } = [];
         public List<ImgReviewDto> Images { get; set; } = [];
 
-        
+
     }
 }

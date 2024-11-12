@@ -1,6 +1,4 @@
-using Shop.Application.Parameters;
-
-namespace API.Helpers
+namespace Shop.Application.Parameters
 {
     public class ColorParams : BaseParams
     {

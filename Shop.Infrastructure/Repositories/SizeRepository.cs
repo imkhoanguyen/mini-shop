@@ -1,4 +1,4 @@
-using API.Entities;
+
 using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +40,7 @@ namespace API.Repositories
         {
             var query = tracked ? _context.Sizes.AsQueryable().Where(c => !c.IsDelete)
                : _context.Sizes.AsNoTracking().AsQueryable().Where(c => !c.IsDelete);
-           
+
             if (!string.IsNullOrEmpty(sizeParams.SearchString))
             {
                 query = query.Where(c => c.Name.ToLower().Contains(sizeParams.SearchString.ToLower())
@@ -71,5 +71,26 @@ namespace API.Repositories
                 sizeDb.Name = size.Name;
             }
         }
+
+        public async Task<IEnumerable<Size>> GetAllSizesAsync()
+        {
+            return await _context.Sizes.Where(c => !c.IsDelete).ToListAsync();
+        }
+
+        public async Task<Size?> GetSizesById(int id)
+        {
+            return await _context.Sizes.FindAsync(id);
+        }
+
+        public async Task<bool> SizeExistsAsync(string name)
+        {
+            return await _context.Sizes.AnyAsync(c => c.Name == name);
+        }
+
+        public async Task AddSize(Size size)
+        {
+            await _context.Sizes.AddAsync(size);
+        }
+
     }
 }

@@ -68,6 +68,7 @@ export class ProductComponent {
   categoryNames: { [key: number]: string } = {};
   sizeNames: { [key: number]: string } = {};
   colorCodes: { [key: number]: string } = {};
+  colorCode: string = "";
   expandedRows: { [key: number]: boolean } = {};
 
   first: number = 0;
@@ -78,7 +79,10 @@ export class ProductComponent {
   searchString: string = "";
   visible: boolean = false;
 
-
+  productStatus: { name: string; key: ProductStatus }[] = [
+    { name: 'Draft', key: ProductStatus.Draft },
+    { name: 'Publish', key: ProductStatus.Publish },
+  ];
 
   pageSizeOptions = [
     { label: '5', value: 5 },

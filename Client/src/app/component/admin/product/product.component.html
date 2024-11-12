@@ -133,7 +133,8 @@
                 <td>{{ variant.quantity }}</td>
                 <td>{{ getSizeNameById(variant.sizeId) }}</td>
                 <td>
-                  <button class="btn btn-lg" [style.backgroundColor]="getColorCodeById(variant.colorId)"></button>
+                  <button class="btn btn-lg color-btn" [style.backgroundColor]="getColorCodeById(variant.colorId)"></button>
+
                 </td>
                 <td>
                   <p-button

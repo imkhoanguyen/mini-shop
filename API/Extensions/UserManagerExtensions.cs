@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using API.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
@@ -9,7 +8,7 @@ namespace API.Extensions
     public static class UserManagerExtensions
     {
         // Finds a user by ClaimsPrincipal and includes their address in the query
-        public static async Task<AppUser> FindUserByClaimsPrincipleWithAddress(this UserManager<AppUser> userManager, 
+        public static async Task<AppUser> FindUserByClaimsPrincipleWithAddress(this UserManager<AppUser> userManager,
             ClaimsPrincipal user)
         {
             var email = user.FindFirstValue(ClaimTypes.Email);
@@ -18,11 +17,11 @@ namespace API.Extensions
                 throw new InvalidOperationException("Email claim not found.");
 
             return await userManager.Users.Include(x => x.Address)
-                .SingleOrDefaultAsync(x => x.Email == email) 
+                .SingleOrDefaultAsync(x => x.Email == email)
                 ?? throw new InvalidOperationException("User not found");
         }
 
-        public static async Task<AppUser?> FindByEmailFromClaimsPrincipal(this UserManager<AppUser> userManager, 
+        public static async Task<AppUser?> FindByEmailFromClaimsPrincipal(this UserManager<AppUser> userManager,
             ClaimsPrincipal user)
         {
             var email = user.FindFirstValue(ClaimTypes.Email);
@@ -35,7 +34,7 @@ namespace API.Extensions
 
         public static string GetUsername(this ClaimsPrincipal user)
         {
-            return user.FindFirst(ClaimTypes.Name)?.Value 
+            return user.FindFirst(ClaimTypes.Name)?.Value
                    ?? throw new InvalidOperationException("Username claim not found.");
         }
 

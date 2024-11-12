@@ -1,0 +1,62 @@
+.container {
+  margin: 20px;
+}
+
+h2 {
+  text-align: center;
+}
+
+button {
+  margin: 0 5px;
+}
+
+table {
+  width: 100%;
+}
+
+.even-row {
+  background-color: #f2f2f2;
+}
+
+.odd-row {
+  background-color: #ffffff;
+}
+
+tr:hover {
+  background-color: #d1e7dd;
+}
+
+th {
+  background-color: chocolate;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+th:hover {
+  background-color: #0056b3;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.search-icon {
+  margin-right: 8px;
+  color: #666;
+}
+
+input[type="text"] {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 8px;
+}
+
+input[type="text"]:focus {
+  background-color: #e8f5e9;
+}

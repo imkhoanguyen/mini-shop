@@ -1,0 +1,160 @@
+<div class="container">
+  <div class="window">
+    <div class="order-info">
+      <div class="order-info-content">
+        <h2>Order Summary</h2>
+        <div class="line"></div>
+        <table class="order-table">
+          <tbody>
+            <tr>
+              <td>
+                <img
+                  src="https://dl.dropboxusercontent.com/s/sim84r2xfedj99n/%24_32.JPG"
+                  class="full-width"
+                />
+              </td>
+              <td>
+                <br />
+                <span class="thin">Nike</span> <br />
+                Free Run 3.0 Women<br />
+                <span class="thin small">
+                  Color: Grey/Orange, Size: 10.5<br /><br
+                /></span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="price">$99.95</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="line"></div>
+        <table class="order-table">
+          <tbody>
+            <tr>
+              <td>
+                <img
+                  src="https://dl.dropboxusercontent.com/s/qbj9tsbvthqq72c/Vintage-20L-Backpack-by-Fj%C3%A4llr%C3%A4ven.jpg"
+                  class="full-width"
+                />
+              </td>
+              <td>
+                <br />
+                <span class="thin">Fjällräven</span>
+                <br />Vintage Backpack<br />
+                <span class="thin small"> Color: Olive, Size: 20L</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="price">$235.95</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="line"></div>
+        <table class="order-table">
+          <tbody>
+            <tr>
+              <td>
+                <img
+                  src="https://dl.dropboxusercontent.com/s/nbr4koso8dpoggs/6136C1p5FjL._SL1500_.jpg"
+                  class="full-width"
+                />
+              </td>
+              <td>
+                <br />
+                <span class="thin">Monobento</span> <br />Double Lunchbox<br />
+                <span class="thin small"> Color: Pink, Size: Medium</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="price">$25.95</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="line"></div>
+        <table class="order-table">
+          <tbody>
+            <tr>
+              <td>
+                <img
+                  src="https://dl.dropboxusercontent.com/s/nbr4koso8dpoggs/6136C1p5FjL._SL1500_.jpg"
+                  class="full-width"
+                />
+              </td>
+              <td>
+                <br />
+                <span class="thin">Monobento</span> <br />Double Lunchbox<br />
+                <span class="thin small"> Color: Pink, Size: Medium</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="price">$25.95</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="line"></div>
+        <table class="order-table">
+          <tbody>
+            <tr>
+              <td>
+                <img
+                  src="https://dl.dropboxusercontent.com/s/nbr4koso8dpoggs/6136C1p5FjL._SL1500_.jpg"
+                  class="full-width"
+                />
+              </td>
+              <td>
+                <br />
+                <span class="thin">Monobento</span> <br />Double Lunchbox<br />
+                <span class="thin small"> Color: Pink, Size: Medium</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="price">$25.95</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="line"></div>
+        <div class="total">
+          <span style="float: left">
+            <div class="thin dense">VAT 19%</div>
+            <div class="thin dense">Delivery</div>
+            <div class="large dense">TOTAL</div>
+          </span>
+          <span style="float: right; text-align: right">
+            <div class="thin dense">$68.75</div>
+            <div class="thin dense">$4.95</div>
+            <div class="large dense">$435.55</div>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="credit-info">
+      <div class="credit-info-content">
+        <table class="half-input-table">
+          <p-dropdown
+            [options]="sms"
+            [(ngModel)]="shippingMethodId"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select Shipping Method"
+            [filter]="true"
+            filterBy="name"
+            [style]="{ width: '100%' }"
+          ></p-dropdown>
+        </table>
+
+        <table class="half-input-table"></table>
+        <button (click)="onSubmit()" class="pay-btn">Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>

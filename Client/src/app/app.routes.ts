@@ -20,6 +20,10 @@ import { ProductListComponent } from './component/client/productList/productList
 import { ServerErrorComponent } from './component/errors/server-error/server-error.component';
 import { CategoryComponent } from './component/admin/category/category.component';
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
+import { BlogComponent } from './component/admin/blog/blog.component';
+import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
+import { BlogUserComponent } from './component/blog-user/blog-user.component';
+import { CheckOutComponent } from './component/check-out/check-out.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -40,6 +44,9 @@ export const routes: Routes = [
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
+      { path: 'blog', component: BlogComponent },
+      { path: 'blog/new', component: AddBlogComponent },
+      { path: 'blog/edit/:id', component: AddBlogComponent },
     ],
   },
   { path: 'login', component: LoginComponent },
@@ -47,6 +54,8 @@ export const routes: Routes = [
   { path: 'forgot-password', component: ForgotpasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
+  { path: 'blog/:id', component: BlogUserComponent },
+  { path: 'checkout', component: CheckOutComponent },
   // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
 ];

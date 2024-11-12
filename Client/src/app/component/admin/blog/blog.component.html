@@ -1,0 +1,69 @@
+<div class="container">
+  <h2>Danh sách Blog</h2>
+
+  <!-- Nút thêm mới Blog -->
+  <button
+    pButton
+    label="Thêm mới"
+    icon="pi pi-plus"
+    class="p-button-success mb-2"
+    [routerLink]="['new']"
+    routerLinkActive="active"
+  ></button>
+
+  <!-- Tìm kiếm -->
+  <div class="mb-2 search-container">
+    <i class="pi pi-search search-icon"></i>
+    <input
+      type="text"
+      pInputText
+      [(ngModel)]="searchQuery"
+      placeholder="search title"
+    />
+  </div>
+
+  <!-- Bảng hiển thị danh sách Blog -->
+  <p-table
+    [value]="filteredBlogs"
+    [paginator]="true"
+    [rows]="5"
+    responsiveLayout="scroll"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="Id">
+          ID <p-sortIcon [field]="'Id'"></p-sortIcon>
+        </th>
+        <th pSortableColumn="Title">
+          Title <p-sortIcon [field]="'Title'"></p-sortIcon>
+        </th>
+        <th pSortableColumn="UserId">
+          UserId <p-sortIcon [field]="'UserId'"></p-sortIcon>
+        </th>
+        <th pSortableColumn="Category">
+          Category <p-sortIcon [field]="'Category'"></p-sortIcon>
+        </th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-blog let-i="index">
+      <tr [ngClass]="{ 'even-row': i % 2 === 0, 'odd-row': i % 2 !== 0 }">
+        <td>
+          <b>{{ blog.id }}</b>
+        </td>
+        <td>{{ blog.title }}</td>
+        <td>{{ blog.userId }}</td>
+        <td>{{ blog.category }}</td>
+        <td>
+          <button
+            pButton
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-info mr-2"
+            [routerLink]="['/admin/blog/edit', blog.id]"
+            routerLinkActive="active"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

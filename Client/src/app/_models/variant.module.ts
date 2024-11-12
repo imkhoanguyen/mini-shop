@@ -10,6 +10,7 @@ export interface VariantBase {
   quantity: number;
   sizeId: number;
   colorId: number;
+  status: VariantStatus;
 }
 
 export interface VariantAdd extends VariantBase {

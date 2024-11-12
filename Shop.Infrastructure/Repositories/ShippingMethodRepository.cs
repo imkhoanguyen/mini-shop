@@ -22,10 +22,17 @@ namespace Shop.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<ShippingMethod>> GetAllShippingMethodsAsync(bool tracked = false)
+        {
+            if (tracked)
+                return await _context.ShippingMethods.Where(c => !c.IsDelete).ToListAsync();
+            return await _context.ShippingMethods.AsNoTracking().Where(c => !c.IsDelete).ToListAsync();
+        }
+
         public Task UpdateShippingMethodAsync(ShippingMethod shippingMethod)
         {
             throw new NotImplementedException();
         }
-        
+
     }
 }
