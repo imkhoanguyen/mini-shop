@@ -56,7 +56,7 @@ namespace api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var product = await _productService.UpdateAsync(productDto);
-            return Ok(product);
+            return CreatedAtAction(nameof(GetAllProducts), new { id = product.Id }, product);
         }
 
         [HttpDelete("Delete")]

@@ -4,8 +4,8 @@ import { User } from '../../_models/user.module';
 import { AccountService } from '../../_services/account.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from '../../_services/message.service';
-import { Message } from '../../_models/message.module';
 import { ChatService } from '../../_services/chat.service';
+import { MessageDto } from '../../_models/message.module';
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -15,8 +15,7 @@ import { ChatService } from '../../_services/chat.service';
 })
 export class ChatComponent implements OnInit {
   showChatWindow = false;
-  adminUsers: User[] = [];
-  messages: Message[] = [];
+  messages: MessageDto[] = [];
   user!: User;
   content: string = '';
   loadingOldMessages = false;
@@ -35,7 +34,6 @@ export class ChatComponent implements OnInit {
     }
   }
   ngOnInit() {
-    // this.loadUsersWithAdminRole();
     this.chatService.onMessageReceived((content) => {
       this.messages.push(content);
 
@@ -70,20 +68,20 @@ export class ChatComponent implements OnInit {
     const currentSkip = this.messages.length;
 
     this.messageService
-      .getMessages(this.user.id, this.adminUsers[0].id, currentSkip, 10)
-      .subscribe(
-        (messages: Message[]) => {
-          if (messages.length > 0) {
-            this.messages = [...messages.reverse(), ...this.messages];
-          }
-          this.skip += messages.length;
-          this.loadingOldMessages = false;
-        },
-        (error) => {
-          console.error('Error occurred:', error);
-          this.loadingOldMessages = false;
-        }
-      );
+      // .getMessages(this.user.id, currentSkip, 10)
+      // .subscribe(
+      //   (messages: MessageDto[]) => {
+      //     if (messages.length > 0) {
+      //       this.messages = [...messages.reverse(), ...this.messages];
+      //     }
+      //     this.skip += messages.length;
+      //     this.loadingOldMessages = false;
+      //   },
+      //   (error) => {
+      //     console.error('Error occurred:', error);
+      //     this.loadingOldMessages = false;
+      //   }
+      // );
   }
 
   onFileSelected(event: any) {
@@ -156,62 +154,62 @@ export class ChatComponent implements OnInit {
   }
   sendMessage() {
 
-    if (!this.content && this.selectedFiles.length === 0) {
-      return;
-    }
+    // if (!this.content && this.selectedFiles.length === 0) {
+    //   return;
+    // }
 
-    if (this.selectedFiles.length > 0) {
-      const formData = new FormData();
-      this.selectedFiles.forEach((file) => {
-        formData.append('files', file.file);
-      });
+    // if (this.selectedFiles.length > 0) {
+    //   const formData = new FormData();
+    //   this.selectedFiles.forEach((file) => {
+    //     formData.append('files', file.file);
+    //   });
 
-      this.messageService.uploadFiles(formData).subscribe((response: any) => {
-        console.log(response);
-        for (let i = 0; i < response.files.length; i++) {
-          const message: Message = {
-            id: 0,
-            senderId: this.user.id,
-            recipientId: this.adminUsers[0].id,
-            content: this.content || '',
-            fileUrl: response.files[i].fileUrl,
-            fileType: response.files[i].fileType,
-            sentAt: new Date().toISOString(),
-          };
-          console.log("message", message);
-          this.sendMessageToServer(message);
-        }
-        this.resetMessageInput();
-      });
-    } else {
-      const message: Message = {
-        id: 0,
-        senderId: this.user.id,
-      recipientId: this.adminUsers[0].id,
-        content: this.content,
-        fileUrl: null,
-        fileType: undefined,
-        sentAt: new Date().toISOString(),
-      };
-      console.log("message1", message);
-      this.sendMessageToServer(message);
-      this.resetMessageInput();
-    }
+    //   this.messageService.uploadFiles(formData).subscribe((response: any) => {
+    //     console.log(response);
+    //     for (let i = 0; i < response.files.length; i++) {
+    //       const message: MessageDto = {
+    //         id: 0,
+    //         senderId: this.user.id,
+    //         recipientIds: this.adminUsers[0].id,
+    //         content: this.content || '',
+    //         fileUrl: response.files[i].fileUrl,
+    //         fileType: response.files[i].fileType,
+    //         sentAt: new Date().toISOString(),
+    //       };
+    //       console.log("message", message);
+    //       this.sendMessageToServer(message);
+    //     }
+    //     this.resetMessageInput();
+    //   });
+    // } else {
+    //   const message: MessageDto = {
+    //     id: 0,
+    //     senderId: this.user.id,
+    //   recipientId: this.adminUsers[0].id,
+    //     content: this.content,
+    //     fileUrl: null,
+    //     fileType: undefined,
+    //     sentAt: new Date().toISOString(),
+    //   };
+    //   console.log("message1", message);
+    //   this.sendMessageToServer(message);
+    //   this.resetMessageInput();
+    // }
   }
 
-  sendMessageToServer(message: Message) {
-    console.log("message", message);
-    this.messageService.sendMessage(message).subscribe(
-      (response) => {
-        console.log(response);
-        this.chatService.sendMessage(message);
+  sendMessageToServer(message: MessageDto) {
+    // console.log("message", message);
+    // this.messageService.sendMessage(message).subscribe(
+    //   (response) => {
+    //     console.log(response);
+    //     this.chatService.sendMessage(message);
 
-        this.scrollToBottom();
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+    //     this.scrollToBottom();
+    //   },
+    //   (error) => {
+    //     console.log(error);
+    //   }
+    // );
   }
 
   resetMessageInput() {

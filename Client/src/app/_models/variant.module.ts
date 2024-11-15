@@ -19,7 +19,6 @@ export interface VariantAdd extends VariantBase {
 
 export interface VariantUpdate extends VariantBase {
   id: number;
-  imageFiles: File[];
 }
 
 export interface VariantDto extends VariantBase {

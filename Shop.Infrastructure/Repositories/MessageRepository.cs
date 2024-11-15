@@ -26,27 +26,28 @@ namespace Shop.Infrastructure.Repositories
             return rolesWithClaim;
         }
 
-        //public async Task<Message?> GetLastMessage(string senderId, string recipientId)
-        //{
-        //    return await _context.Messages
-        //        .Where(m => (m.Sender!.Id == senderId && m.Recipient!.Id == recipientId) ||
-        //                    (m.Sender.Id == recipientId && m.Recipient!.Id == senderId))
-        //        .OrderByDescending(m => m.SentAt)
-        //        .FirstOrDefaultAsync();
-        //}
+        public async Task<Message?> GetLastMessageAsync(string senderId, string recipientId)
+        {
+            return await _context.Messages
+                .Where(m => (m.SenderId == senderId  && m.RecipientIds!.Contains(recipientId)) ||
+                            (m.SenderId == recipientId  && m.RecipientIds!.Contains(senderId)))
+                .OrderByDescending(m => m.SentAt)
+                .FirstOrDefaultAsync();
+        }
 
-        //public async Task<IEnumerable<Message?>> GetMessageThread(string senderId, string recipientId, int skip, int take)
-        //{
-        //var messages = await _context.Messages
-        //    .Where(m => (m.SenderId == senderId && m.RecipientIds == recipientId) ||
-        //                (m.SenderId == recipientId && m.RecipientId == senderId))
-        //    .OrderByDescending(m => m.SentAt)
-        //    .Skip(skip)
-        //    .Take(take)
-        //    .ToListAsync();
 
-        //return messages;
-        //}
+        public async Task<IEnumerable<Message?>> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        {
+            var messages = await _context.Messages
+                .Where(m => (m.SenderId == senderId && m.RecipientIds!.Contains(recipientId)) ||
+                            (m.SenderId == recipientId && m.RecipientIds!.Contains(senderId)))
+                .OrderByDescending(m => m.SentAt)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+
+            return messages;
+        }
 
     }
 }

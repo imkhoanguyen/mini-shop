@@ -110,7 +110,7 @@ namespace Shop.Application.Services.Implementations
 
         public async Task RemoveImageAsync(int variantId, int imageId)
         {
-            var variant = await _unit.VariantRepository.GetAsync(r => r.Id == variantId, true);
+            var variant = await _unit.VariantRepository.GetAsync(v => v.Id == variantId, true);
             if (variant == null)
                 throw new NotFoundException("variant not found");
 
@@ -142,23 +142,6 @@ namespace Shop.Application.Services.Implementations
                 throw new NotFoundException("Biến thể không tồn tại");
 
             var variant = VariantMapper.VariantUpdateDtoToEntity(variantUpdate);
-            if (variantUpdate.ImageFiles?.Count > 0)
-            {
-                foreach (var file in variantUpdate.ImageFiles)
-                {
-                    var uploadResult = await _cloudinaryService.UploadImageAsync(file);
-                    if (uploadResult.Error != null)
-                    {
-                        throw new BadRequestException("Lỗi khi thêm ảnh");
-                    }
-                    var image = new VariantImage
-                    {
-                        ImgUrl = uploadResult.Url,
-                        PublicId = uploadResult.PublicId,
-                    };
-                    variant.Images.Add(image);
-                }
-            }
             await _unit.VariantRepository.UpdateVariantAsync(variant);
 
             return await _unit.CompleteAsync()

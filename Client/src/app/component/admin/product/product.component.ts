@@ -174,17 +174,31 @@ export class ProductComponent {
       id: product.id,
       name: product.name,
       description: product.description,
-      categoryIds: [],
+      categoryIds: product.categoryIds,
       status: value ? ProductStatus.Publish : ProductStatus.Draft,
     };
+
+    const formData = new FormData();
+    formData.append('id', productUpdate.id.toString());
+    formData.append('name', productUpdate.name);
+    formData.append('description', productUpdate.description);
+    productUpdate.categoryIds.forEach((categoryId: number) => {
+      formData.append('categoryIds', categoryId.toString());
+    });
+    formData.append('status', productUpdate.status.toString());
+
     console.log(productUpdate);
-    // this.productService.updateProduct(productUpdate).subscribe({
-    //   next: () => {
-    //     this.toastService.success('Cập nhật trạng thái thành công');
-    //     this.loadProducts();
-    //   },
-    // });
-  }
+    this.productService.updateProduct(formData).subscribe({
+      next: () => {
+        this.toastService.success('Cập nhật trạng thái thành công');
+        this.loadProducts();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error('Có lỗi xảy ra khi cập nhật trạng thái.');
+      }
+    });
+}
   truncateDescription(description: string, maxLength: number = 30): string {
     if (description.length > maxLength) {
       return description.substring(0, maxLength) + '...'; // Cắt và thêm dấu ba chấm

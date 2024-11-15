@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from '../../environments/environment';
-import { Message } from '../_models/message.module';
+import { MessageDto } from '../_models/message.module';
 
 @Injectable({
   providedIn: 'root',
@@ -23,12 +23,12 @@ export class ChatService {
       .catch(err => console.log('Error while starting connection: ' + err));
   }
 
-  public sendMessage(message: Message) {
+  public sendMessage(message: MessageDto) {
     this.hubConnection.invoke('SendMessage', message);
   }
 
-  public onMessageReceived(callback: (message: Message) => void) {
-    this.hubConnection.on('ReceiveMessage', (message: Message) => {
+  public onMessageReceived(callback: (message: MessageDto) => void) {
+    this.hubConnection.on('ReceiveMessage', (message: MessageDto) => {
       callback(message);
     });
   }

@@ -47,7 +47,7 @@ namespace API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<IActionResult> UpdateVariant(VariantUpdate variantUpdate)
+        public async Task<IActionResult> UpdateVariant([FromBody] VariantUpdate variantUpdate)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

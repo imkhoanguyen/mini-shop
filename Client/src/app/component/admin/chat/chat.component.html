@@ -33,7 +33,7 @@
     <div class="chat-body" #messagesContainer (scroll)="onScroll()">
       <div class="messages" *ngFor="let message of messages; track by message">
         <!-- Tin nhắn bên trái (recipient) -->
-        <div *ngIf="message.recipientId === user.id" class="message left-message">
+        <!-- <div *ngIf="message.recipientId === user.id" class="message left-message">
           <img class="avatar" height="40" src="http://localhost:5000/avatar/{{ selectedUser?.avatar }}" width="40" />
           <div class="message-content">
             <div class="text">{{ message.content }}</div>
@@ -42,16 +42,16 @@
               <video *ngIf="isVideo(message.fileType)" [src]="message.fileUrl" controls class="message-media"></video>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Tin nhắn bên phải (sender) -->
         <div *ngIf="message.senderId === user.id" class="message right-message">
           <div class="message-content">
             <div class="text" *ngIf="message.content">{{ message.content }}</div>
-            <div class="file-content">
+            <!-- <div class="file-content">
               <img *ngIf="isImage(message.fileType)" [src]="message.fileUrl" class="message-media" />
               <video *ngIf="isVideo(message.fileType)" [src]="message.fileUrl" controls class="message-media"></video>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>

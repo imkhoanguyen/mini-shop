@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Messages;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 
 namespace API.Controllers
 {
@@ -48,28 +49,40 @@ namespace API.Controllers
         //    return Ok(new { files = uploadResults });
         //}
 
-        //[HttpPost("AddMessage")]
-        //public async Task<IActionResult> AddMessage(MessageAdd messageAdd)
-        //{
-        //    var message = await _messageService.AddMessageAsync(messageAdd);
-        //    return Ok(message);
-        //}
-        //[HttpGet("GetMessageThread")]
-        //public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
-        //{
-        //    if (skip < 0 || take <= 0)
-        //    {
-        //        return BadRequest("Tham số không hợp lệ.");
-        //    }
-        //    var messages = await _messageService.GetMessageThread(senderId, recipientId, skip, take);
-        //    return Ok(messages);
-        //}
-        //[HttpGet("GetLastMessage")]
-        //public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
-        //{
-        //    var message = await _messageService.GetLastMessage(senderId, recipientId);
-        //    return Ok(message);
-        //}
+        [HttpPost("AddMessage")]
+        public async Task<IActionResult> AddMessage(MessageAdd messageAdd)
+        {
+            var usersWithClaim = await _messageService.GetUsersByClaimValueAsync(ClaimStore.Message_Reply);
+            if (!usersWithClaim.Contains(messageAdd.SenderId!))
+            {
+                messageAdd.RecipientIds = usersWithClaim;
+                var message = await _messageService.AddMessageAsync(messageAdd);
+                return Ok(message);
+            }
+            else if (usersWithClaim.Contains(messageAdd.SenderId!))
+            {
+                var message = await _messageService.ReplyMessageAsync(messageAdd);
+                return Ok(message);
+            }
+
+            return BadRequest("Người dùng không có quyền thực hiện hành động này.");
+        }
+        [HttpGet("GetMessageThread")]
+        public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        {
+            if (skip < 0 || take <= 0)
+            {
+                return BadRequest("Tham số không hợp lệ.");
+            }
+            var messages = await _messageService.GetMessageThread(senderId, recipientId, skip, take);
+            return Ok(messages);
+        }
+        [HttpGet("GetLastMessage")]
+        public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
+        {
+            var message = await _messageService.GetLastMessageAsync(senderId, recipientId);
+            return Ok(message);
+        }
 
     }
 }

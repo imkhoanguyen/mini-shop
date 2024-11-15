@@ -28,7 +28,11 @@ namespace Shop.Infrastructure.Repositories
             productDb.Name = product.Name;
             productDb.Description = product.Description;
             productDb.Status = product.Status;
-            productDb.Updated = DateTime.UtcNow;
+            productDb.Updated = DateTime.UtcNow.AddHours(7);
+            if (product.Image != null)
+            {
+                productDb.Image = product.Image;
+            }
 
             _context.ProductCategories.RemoveRange(productDb.ProductCategories);
             
@@ -46,7 +50,7 @@ namespace Shop.Infrastructure.Repositories
             return await _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete).ToListAsync();
         }
@@ -56,7 +60,7 @@ namespace Shop.Infrastructure.Repositories
             var query = _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete).AsQueryable();
 
@@ -73,13 +77,13 @@ namespace Shop.Infrastructure.Repositories
             var query = tracked ? _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete)
             : _context.Products.AsNoTracking().AsQueryable()
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
-                .Include(p => p.Variants)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete);
 
@@ -110,7 +114,7 @@ namespace Shop.Infrastructure.Repositories
                 return await _context.Products
                     .Include(p => p.ProductCategories)
                     .Include(p => p.Image)
-                    .Include(p => p.Variants)
+                    .Include(p => p.Variants.Where(v => !v.IsDelete))
                     .ThenInclude(v => v.Images)
                     .Where(c => !c.IsDelete).ToListAsync();
             return await _context.Products.AsNoTracking().Include(p => p.ProductCategories).Include(p => p.Variants).Where(c => !c.IsDelete).ToListAsync();
