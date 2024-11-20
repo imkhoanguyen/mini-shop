@@ -9,15 +9,14 @@
             </div>
             <div class="col-12">
                 <div class="row mt-3">
-                    <div class="col-lg-3 col-md-6 " *ngFor="let product of productArray">
+                    <div class="col-lg-3 col-md-6 " *ngFor="let item of productArray">
                         <div class="box-shadow">
                             <div class="card mt-2">
-                                <img   [src]="product.productImageUrl"
-                                    class="card-img-top img-fluid" alt="...">
+                                <img [src]="item.image.imgUrl" alt="product-item" class="img-fluid" >
                                 <div class="card-body">
-                                    <h5 class="card-title">{{product.productShortName}}</h5>
+                                    <h5 class="card-title">{{ item.name }}</h5>
                                     <p class="card-text"><span
-                                            class="text-danger fw-semibold me-2">${{product.productPrice}}</span> 
+                                            class="text-danger fw-semibold me-2">${{ item.variants && item.variants.length > 0 ? item.variants[0].price : 'No price available' }}</span> 
 
                                     </p>
                                     <div class="row">
@@ -26,7 +25,7 @@
                                             <span><i class="fa-solid fa-star  m-0" style="color: #f1f50f;"></i></span>
                                             <span><i class="fa-solid fa-star-half-stroke  m-0"
                                                     style="color: #f1f50f;"></i></span>
-                                            <span class="text-muted">(25)</span>
+                                           
                                         </div>
                                         <div class="col-6">
                                             <!-- <p class="text-end pb-0 mb-0"><button (click)="addtocart(product.productId)"

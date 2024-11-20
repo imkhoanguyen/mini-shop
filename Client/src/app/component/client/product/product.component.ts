@@ -33,12 +33,13 @@ export class ProductUserComponent implements OnInit {
   getAllProductByCategory(categoryId: number) {
     this.productSrv
       .getAllProductByCategory(categoryId)
-      .subscribe((Res: any) => {
-        this.productArray = Res.data;
-      });
+      .subscribe((products)=>
+      {
+        this.productArray = products
+      }
+    );
   }
   productList() {
-    console.log("Product Array Smartphone before navigating:", this.productArraySmartPhone);
   
     this.router.navigate(['/product/productList'], {
       state: { productArray: this.productArraySmartPhone },
@@ -54,9 +55,7 @@ loadProduct() {
         this.productArray = products; 
 
         this.productArray.forEach(product => {
-          // Kiểm tra nếu variants có dữ liệu
           if (product.variants && product.variants.length > 0) {
-            // Lấy giá từ variant đầu tiên (nếu có)
             const price = product.variants[0].price;
             console.log(`Price for product ${product.id}: ${price}`);
           } else {

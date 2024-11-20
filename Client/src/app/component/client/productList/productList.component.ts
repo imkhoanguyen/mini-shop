@@ -6,6 +6,7 @@ import { HeaderComponent } from '../../../layout/headerClient/header.component';
 import { FooterClientComponent } from '../../../layout/footerClient/footerClient.component';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -17,26 +18,22 @@ export class ProductListComponent implements OnInit {
     productId?: string; // Ma
     productArray: any[] = [];
     constructor(private route: ActivatedRoute, private productSrv: productUserService) {}
-
-
-  ngOnInit(): void {
+    ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
         this.productId = params.get('id') || '';
         console.log('Received Product ID:', this.productId);
-        // Gọi hàm lấy sản phẩm theo ID
         if (this.productId) {
-          this.getAllProductByCategory(+this.productId); // Chuyển đổi sang số
+          this.getAllProductByCategory(+this.productId); 
         }
       });
-
   }
-
-
-  
   getAllProductByCategory(categoryId: number) {
-    this.productSrv.getAllProductByCategory(categoryId).subscribe((Res: any) => {
-      this.productArray = Res.data;
-      console.log('Products:', this.productArray); // Kiểm tra dữ liệu sản phẩm
-    });
+    this.productSrv.getAllProductByCategory(categoryId).subscribe(
+     
+      (products) => {
+        this.productArray = products; 
+      },
+
+    );
   }
 }
