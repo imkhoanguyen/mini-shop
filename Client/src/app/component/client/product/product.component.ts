@@ -48,10 +48,29 @@ export class ProductUserComponent implements OnInit {
       console.error('Navigation error:', err);
     });
   }
+loadProduct() {
+    this.productSrv.getAllProduct().subscribe(
+      (products) => {
+        this.productArray = products; 
 
-  loadProduct() {
-   
-   this.productArray = this.productSrv.getAllProduct();
-   
+        this.productArray.forEach(product => {
+          // Kiểm tra nếu variants có dữ liệu
+          if (product.variants && product.variants.length > 0) {
+            // Lấy giá từ variant đầu tiên (nếu có)
+            const price = product.variants[0].price;
+            console.log(`Price for product ${product.id}: ${price}`);
+          } else {
+            console.log(`No variants for product ${product.id}`);
+          }
+        });
+  
+        this.productArraySmartPhone = products.filter(product => product.categoryIds.includes(1));
+         this.productArrayLaptop = products.filter(product => product.categoryIds.includes(2));
+      },
+     
+      (error) => {
+        console.error('Error loading products:', error);
+      }
+    );
   }
 }
