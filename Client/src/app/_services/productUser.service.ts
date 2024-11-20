@@ -9,7 +9,7 @@ import { Observable } from "rxjs";
 export  class   productUserService {
 constructor (private http : HttpClient){}
 
-getAllProduct ( ) : Observable<any[]>{
+getAllProduct ( ) : Observable<any[]>{  
     return this.http.get<any[]>("http://localhost:3000/products/GetAllProducts");
 }
 
