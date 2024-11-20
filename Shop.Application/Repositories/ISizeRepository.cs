@@ -1,4 +1,4 @@
-using API.Entities;
+
 using API.Helpers;
 using Shop.Application.Repositories;
 using Shop.Application.Ultilities;
@@ -13,5 +13,14 @@ namespace API.Interfaces
 
         Task UpdateAsync(Size size);
         Task DeleteAsync(Size size);
+
+        Task<IEnumerable<Size>> GetAllSizesAsync();
+
+        Task<Size?> GetSizesById(int id);
+
+        Task<bool> SizeExistsAsync(string name);
+
+        Task AddSize(Size size);
+
     }
 }

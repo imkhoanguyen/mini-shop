@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Shop.Application.DTOs.Categories;
 using Shop.Application.DTOs.Messages;
-using Shop.Application.DTOs.Users;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
@@ -22,25 +20,31 @@ namespace Shop.Application.Services.Implementations
             _role = role;
             _user = user;
         }
-        public async Task<List<UserDto>> GetUsersByClaimValueAsync(string claimValue)
+        public async Task<List<string>> GetUsersByClaimValueAsync(string claimValue)
         {
             var rolesWithClaim = await _unit.MessageRepository.GetRoleWithClaim(claimValue);
 
-            var userList = new List<AppUser>();
+            var userIds = new List<string>();
 
             foreach (var roleId in rolesWithClaim)
             {
                 var role = await _role.FindByIdAsync(roleId.ToString());
                 if (role != null)
                 {
-                    var usersInRole = await _user.GetUsersInRoleAsync(role.Name);
-                    userList.AddRange(usersInRole);
+                    var usersInRole = await _user.GetUsersInRoleAsync(role.Name!);
+                    userIds.AddRange(usersInRole.Select(u => u.Id));
                 }
             }
-            return userList.Select(UserMapper.EntityToUserDto).ToList();
+            return userIds.Distinct().ToList();
         }
         public async Task<MessageDto> AddMessageAsync(MessageAdd messageAdd)
         {
+            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(messageAdd.SenderId!, messageAdd.RecipientIds!.FirstOrDefault()!);
+            if (lastMessage != null && lastMessage.IsReplied && lastMessage.RepliedById != messageAdd.SenderId)
+            {
+                messageAdd.RecipientIds = new List<string> { lastMessage.RepliedById! };
+            }
+
             var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
             await _unit.MessageRepository.AddAsync(message);
 
@@ -50,26 +54,43 @@ namespace Shop.Application.Services.Implementations
         }
         public async Task<MessageDto> ReplyMessageAsync(MessageAdd messageAdd)
         {
+            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(messageAdd.SenderId!, messageAdd.RecipientIds!.FirstOrDefault()!);
             var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
+
+            if (lastMessage != null && lastMessage.IsReplied)
+            {
+                if (lastMessage.RepliedById != messageAdd.SenderId)
+                {
+                    throw new BadRequestException("Người dùng không có quyền phản hồi tin nhắn này.");
+                }
+            }
+            else
+            {
+                message.IsReplied = true;
+                message.RepliedById = message.SenderId;
+            }
             await _unit.MessageRepository.AddAsync(message);
 
             return await _unit.CompleteAsync()
                 ? MessageMapper.EntityToMessageDto(message)
                 : throw new BadRequestException("Thêm tin nhắn thất bại");
+
         }
         public Task AddFileAsync(IFormFileCollection files)
         {
             throw new NotImplementedException();
         }
 
-        public Task<MessageDto> GetLastMessage(string senderId, string recipientId)
+        public async Task<MessageDto> GetLastMessageAsync(string senderId, string recipientId)
         {
-            throw new NotImplementedException();
+            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(senderId, recipientId);
+            return MessageMapper.EntityToMessageDto(lastMessage);
         }
 
-        public Task<IEnumerable<MessageDto>> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        public async Task<IEnumerable<MessageDto>> GetMessageThread(string senderId, string recipientId, int skip, int take)
         {
-            throw new NotImplementedException();
+            var messages = await _unit.MessageRepository.GetMessageThread(senderId, recipientId, skip, take);
+            return messages.Select(MessageMapper.EntityToMessageDto!);
         }
 
         

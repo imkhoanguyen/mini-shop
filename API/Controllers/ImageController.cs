@@ -1,4 +1,3 @@
-using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
@@ -57,6 +56,6 @@ namespace API.Controllers
         //    }
         //    return BadRequest(new { message = "Remove image failed." });
         //}
-       
+
     }
 }

@@ -5,6 +5,5 @@ namespace API.Interfaces
 {
     public interface IOrderItemsRepository : IRepository<OrderItems>
     {
-        
     }
 }

@@ -8,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Message } from '../../../_models/message.module';
+import { MessageDto } from '../../../_models/message.module';
 import { User } from '../../../_models/user.module';
 import { AccountService } from '../../../_services/account.service';
 import { MessageService } from '../../../_services/message.service';
@@ -23,7 +23,7 @@ import { ChatService } from '../../../_services/chat.service';
 })
 export class ChatComponent implements OnInit {
   selectedUser: any;
-  messages: Message[] = [];
+  messages: MessageDto[] = [];
   customers: User[] = [];
   user!: User;
   content: string = '';
@@ -78,7 +78,7 @@ export class ChatComponent implements OnInit {
     this.messageService
       .getMessages(this.user.id, this.selectedUser.id, currentSkip, 10)
       .subscribe(
-        (messages: Message[]) => {
+        (messages: MessageDto[]) => {
           if (messages.length > 0) {
             this.messages = [...messages.reverse(), ...this.messages];
           }
@@ -181,60 +181,60 @@ export class ChatComponent implements OnInit {
       this.messageService.uploadFiles(formData).subscribe((response: any) => {
         console.log(response);
         for (let i = 0; i < response.files.length; i++) {
-          const message: Message = {
-            id: 0,
-            senderId: this.user.id,
-            recipientId: this.selectedUser.id,
-            content: this.content || '',
-            fileUrl: response.files[i].fileUrl,
-            fileType: response.files[i].fileType,
-            sentAt: new Date().toISOString(),
-          };
-          console.log("message", message);
-          this.sendMessageToServer(message);
+          // const message: Message = {
+          //   id: 0,
+          //   senderId: this.user.id,
+          //   recipientId: this.selectedUser.id,
+          //   content: this.content || '',
+          //   fileUrl: response.files[i].fileUrl,
+          //   fileType: response.files[i].fileType,
+          //   sentAt: new Date().toISOString(),
+          // };
+          // console.log("message", message);
+          // this.sendMessageToServer(message);
         }
-        this.resetMessageInput();
+        //this.resetMessageInput();
       });
     } else {
-      const message: Message = {
-        id: 0,
-        senderId: this.user.id,
-        recipientId: this.selectedUser.id,
-        content: this.content,
-        fileUrl: null,
-        fileType: undefined,
-        sentAt: new Date().toISOString(),
+      // const message: MessageDto = {
+        // id: 0,
+        // senderId: this.user.id,
+        // recipientId: this.selectedUser.id,
+        // content: this.content,
+        // fileUrl: null,
+        // fileType: undefined,
+        // sentAt: new Date().toISOString(),
       };
-      console.log("message1", message);
-      this.sendMessageToServer(message);
-      this.resetMessageInput();
+      // console.log("message1", message);
+      // this.sendMessageToServer(message);
+      // this.resetMessageInput();
     }
   }
 
 
 
-  sendMessageToServer(message: Message) {
-    this.messageService.sendMessage(message).subscribe(
-      (response) => {
-        console.log(response);
-        this.chatService.sendMessage(message);
-        this.lastMessage = message.content || '';
-        const selectedCustomer = this.customers.find(
-          (customer) => customer.id === this.selectedUser.id
-        );
-        if (selectedCustomer) {
-          selectedCustomer.lastMessage = this.lastMessage;
-        }
-        this.scrollToBottom();
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
+  // sendMessageToServer(message: Message) {
+  //   this.messageService.sendMessage(message).subscribe(
+  //     (response) => {
+  //       console.log(response);
+  //       this.chatService.sendMessage(message);
+  //       this.lastMessage = message.content || '';
+  //       const selectedCustomer = this.customers.find(
+  //         (customer) => customer.id === this.selectedUser.id
+  //       );
+  //       if (selectedCustomer) {
+  //         selectedCustomer.lastMessage = this.lastMessage;
+  //       }
+  //       this.scrollToBottom();
+  //     },
+  //     (error) => {
+  //       console.log(error);
+  //     }
+  //   );
+  // }
 
-  resetMessageInput() {
-    this.content = '';
-    this.selectedFiles = [];
-  }
-}
+  // resetMessageInput() {
+  //   this.content = '';
+  //   this.selectedFiles = [];
+  // }
+//}

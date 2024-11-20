@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.Configurations.EntityConfig;
@@ -11,6 +12,7 @@ namespace Shop.Infrastructure.DataAccess
         public StoreContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Color> Colors { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }

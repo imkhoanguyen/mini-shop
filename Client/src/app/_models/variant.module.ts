@@ -1,7 +1,8 @@
-export interface VariantStatus {
-  draft: 0;
-  publish: 1;
+export enum VariantStatus {
+  Draft = 0,
+  Publish = 1,
 }
+
 export interface VariantBase {
   productId: number;
   price: number;
@@ -9,6 +10,7 @@ export interface VariantBase {
   quantity: number;
   sizeId: number;
   colorId: number;
+  status: VariantStatus;
 }
 
 export interface VariantAdd extends VariantBase {
@@ -17,7 +19,6 @@ export interface VariantAdd extends VariantBase {
 
 export interface VariantUpdate extends VariantBase {
   id: number;
-  imageFiles: File[];
 }
 
 export interface VariantDto extends VariantBase {

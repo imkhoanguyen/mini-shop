@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { environment } from "../../environments/environment";
 import { Injectable } from "@angular/core";
 import { Color } from "../_models/color.module";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: 'root',

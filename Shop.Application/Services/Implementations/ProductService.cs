@@ -23,7 +23,7 @@ namespace Shop.Application.Services.Implementations
         }
         public async Task<ProductDto> AddAsync(ProductAdd productAdd)
         {
-            if (await _unit.ProductRepository.ExistsAsync(c => c.Name.ToLower() == productAdd.Name.ToLower()))
+            if (await _unit.ProductRepository.ExistsAsync(c => c.Name.ToLower() == productAdd.Name.ToLower() && !c.IsDelete))
             {
                 throw new BadRequestException("Sản phẩm đã tồn tại");
             }
@@ -153,6 +153,31 @@ namespace Shop.Application.Services.Implementations
                 throw new BadRequestException("Sản phẩm đã tồn tại");
 
             var product = ProductMapper.ProductUpdateDtoToEntity(productUpdate);
+
+            if (productUpdate.ImageFile != null)
+            {
+                if (product.Image != null && !string.IsNullOrEmpty(product.Image.PublicId))
+                {
+                    var deletionResult = await _cloudinaryService.DeleteImageAsync(product.Image.PublicId);
+                    if (deletionResult.Error != null)
+                    {
+                        throw new BadRequestException("Lỗi khi xóa ảnh cũ");
+                    }
+                }
+
+                var uploadResult = await _cloudinaryService.UploadImageAsync(productUpdate.ImageFile);
+                if (uploadResult.Error != null)
+                {
+                    throw new BadRequestException("Lỗi khi thêm ảnh mới");
+                }
+
+                product.Image = new ProductImage
+                {
+                    ImgUrl = uploadResult.Url,
+                    PublicId = uploadResult.PublicId,
+                };
+            }
+
             await _unit.ProductRepository.UpdateProductAsync(product);
 
             return await _unit.CompleteAsync()

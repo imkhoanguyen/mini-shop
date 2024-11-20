@@ -1,105 +1,80 @@
-using API.Entities;
-using API.Helpers;
-using API.Interfaces;
+
 using Microsoft.AspNetCore.Mvc;
+using Shop.Application.DTOs.Colors;
+using Shop.Application.Mappers;
+using Shop.Application.Parameters;
+using Shop.Application.Services.Abstracts;
 
 namespace API.Controllers
 {
     public class ColorController : BaseApiController
     {
-        //private readonly IUnitOfWork _unitOfWork;
+        private readonly IColorService _colorService;
 
-        //public ColorController(IUnitOfWork unitOfWork)
-        //{
-        //    _unitOfWork = unitOfWork;
-        //}
+        public ColorController(IColorService colorService)
+        {
+            _colorService = colorService;
+        }
 
-        //// GET api/color/GetAll
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAllcolorsAsync()
-        //{
-        //    var colors = await _unitOfWork.ColorRepository.GetAllColorsAsync();
-        //    if (colors == null)
-        //    {
-        //        return NotFound("Không tìm thấy color nào.");
-        //    }
-        //    var colorsDto = colors.Select(c => Color.toColorDto(c)).ToList();
-        //    return Ok(colorsDto);
-        //}
-        //// GET api/color/GetById
-        //[HttpGet("GetById/{id}")]
-        //public async Task<IActionResult> GetcolorsById(int id)
-        //{
-        //    var colors = await _unitOfWork.ColorRepository.GetColorsById(id);
-        //    if (colors == null)
-        //    {
-        //        return NotFound("Không tìm thấy color nào.");
-        //    }
-        //    var colorDto = Color.toColorDto(colors);
-        //    return Ok(colorDto);
-        //}
+        // GET api/color/GetAll
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAllcolorsAsync()
+        {
+            var colors = await _colorService.GetAllColorsAsync();
 
-        //[HttpGet("GetAllPaging")]
-        //public async Task<ActionResult<IEnumerable<ColorDto>>> GetAllcolorsAsync([FromQuery] ColorParams colorParams)
-        //{
-        //    var colors = await _unitOfWork.ColorRepository.GetAllColorsAsync(colorParams);
-        //    if (colors == null)
-        //    {
-        //        return NotFound("Không tìm thấy color nào.");
-        //    }
-        //    var colorsDto = colors.Select(c => Color.toColorDto(c)).ToList();
-        //    return Ok(colors);
-        //}
+            var colorsDto = colors.Select(c => ColorMapper.EntityToColorDto(c)).ToList();
+            return Ok(colorsDto);
+        }
+        // GET api/color/GetById
+        [HttpGet("GetById/{id}")]
+        public async Task<IActionResult> GetcolorsById(int id)
+        {
+            var color = await _colorService.GetColorsById(id);
+            var colorDto = ColorMapper.EntityToColorDto(color);
+            return Ok(colorDto);
+        }
 
-        //// POST api/color/Add
-        //[HttpPost("Add")]
-        //public async Task<ActionResult> Addcolor(ColorAddDto colorAddDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-        //    if (await _unitOfWork.ColorRepository.colorExistsAsync(colorAddDto.Name!))
-        //    {
-        //        return BadRequest(new {message ="color với tên này đã tồn tại."});
-        //    }
-        //    var color = ColorAddDto.toColor(colorAddDto);
-        //    _unitOfWork.ColorRepository.AddColor(color);
+        [HttpGet("GetAllPaging")]
+        public async Task<ActionResult<IEnumerable<ColorDto>>> GetAllcolorsAsync([FromQuery] ColorParams colorParams)
+        {
+            var colors = await _colorService.GetAllColorsAsync(colorParams);
+            if (colors == null)
+            {
+                return NotFound("Không tìm thấy color nào.");
+            }
+            var colorsDto = colors.Select(c => ColorMapper.EntityToColorDto(c)).ToList();
+            return Ok(colors);
+        }
 
-        //    if (await _unitOfWork.Complete())
-        //        return Ok(new {message ="Thêm màu sắc thành công"});
-        //    return BadRequest(new {message ="Thêm màu sắc thất bại"});
-        //}
+        // POST api/color/Add
+        [HttpPost("Add")]
+        public async Task<ActionResult> Addcolor(ColorAddDto colorAddDto)
+        {
+            var color = ColorMapper.ColorAddDtoToEntity(colorAddDto);
+            await _colorService.AddColor(color);
 
-        //// PUT api/color/Update
-        //[HttpPut("Update")]
-        //public async Task<IActionResult> Updatecolor(ColorDto colorDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-        //    if (await _unitOfWork.ColorRepository.colorExistsAsync(colorDto.Name!))
-        //    {
-        //        return BadRequest("color với tên này đã tồn tại.");
-        //    }
-        //    var color = ColorDto.toColor(colorDto);
-        //    _unitOfWork.ColorRepository.UpdateColor(color);
+            return Ok(new { message = "Thêm màu thanh cong" });
+        }
 
-        //    if (await _unitOfWork.Complete())
-        //        return Ok("Update color successfully.");
-        //    return BadRequest("Update color failed.");
-        //}
+        // PUT api/color/Update
+        [HttpPut("Update")]
+        public async Task<IActionResult> Updatecolor(ColorDto colorDto)
+        {
+            var color = ColorMapper.ColorDtoToEntity(colorDto);
+            await _colorService.UpdateAsync(color);
 
-        //// DELETE api/color/Delete
-        //[HttpDelete("Delete")]
-        //public async Task<IActionResult> Deletecolor(ColorDto colorDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //        return BadRequest(ModelState);
-        //    var color = ColorDto.toColor(colorDto);
-        //    _unitOfWork.ColorRepository.DeleteColor(color);
+            return Ok("Update color success.");
+        }
 
-        //    if (await _unitOfWork.Complete())
-        //        return Ok("Delete color successfully.");
-        //    return BadRequest("Delete color failed.");
+        // DELETE api/color/Delete
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> Deletecolor(ColorDto colorDto)
+        {
+            var color = ColorMapper.ColorDtoToEntity(colorDto);
+            await _colorService.DeleteAsync(color);
 
-        //}
+            return Ok("Delete color success.");
+
+        }
     }
 }

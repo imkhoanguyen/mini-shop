@@ -1,4 +1,3 @@
-using API.Entities;
 using Shop.Application.Repositories;
 using Shop.Domain.Entities;
 
@@ -8,5 +7,6 @@ namespace API.Interfaces
     {
         Task UpdateShippingMethodAsync(ShippingMethod shippingMethod); // update some attribute
         Task DeleteShippingMethodAsync(ShippingMethod shippingMethod); // safe delete
+        Task<IEnumerable<ShippingMethod>> GetAllShippingMethodsAsync(bool tracked);
     }
 }

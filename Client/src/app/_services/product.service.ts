@@ -54,13 +54,13 @@ export class ProductService {
   deleteProduct(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/Product/Delete?id=${id}`);
   }
-  addImage(productId: number, frmData: FormData) {
-    return this.http.post<ProductDto>(
+  addProductImage(productId: number, frmData: FormData) {
+    return this.http.post(
       `${this.apiUrl}/product/add-images/${productId}`,
       frmData
     );
   }
-  removeImage(productId: number, imageId: number) {
+  removeProductImage(productId: number, imageId: number) {
     return this.http.delete(
       `${this.apiUrl}/product/remove-image/${productId}?imageId=${imageId}`
     );

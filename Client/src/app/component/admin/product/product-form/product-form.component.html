@@ -43,28 +43,57 @@
 
       <div class="mb-4">
         <label class="form-label font-weight-bold">Tải lên hình ảnh</label>
-        <p-fileUpload
-          name="images"
-          url="https://www.primefaces.org/cdn/api/upload.php"
-          [multiple]="false"
-          accept="image/*"
-          maxFileSize="1000000"
-          (onSelect)="onSelectedFiles($event)"
-          [style]="{ width: '100%' }">
+        <p-fileUpload name="images" url="https://www.primefaces.org/cdn/api/upload.php" [multiple]="false"
+          accept="image/*" maxFileSize="1000000" (onSelect)="onSelectedFile($event)" [style]="{ width: '100%' }">
 
-          <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback" let-clearCallback="clearCallback">
+          <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
+            let-clearCallback="clearCallback">
             <div class="d-flex justify-content-between align-items-center">
-              <p-button (click)="choose($event, chooseCallback)" icon="pi pi-images" class="p-button-rounded p-button-outlined" />
-              <p-button (click)="clearCallback()" icon="pi pi-times" class="p-button-rounded p-button-danger" [disabled]="!files || files.length === 0" />
+              <div class="d-flex gap-2">
+                <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true"
+                  [outlined]="true" />
+                <p-button (onClick)="clearCallback()" icon="pi pi-times" [rounded]="true" [outlined]="true"
+                  severity="danger" [disabled]="!files || files.length === 0" />
+              </div>
+              <p-progressBar [value]="totalSizePercent" [showValue]="false" styleClass="md:w-20rem h-1rem w-full"
+                [ngClass]="{ 'exceeded-progress-bar': totalSizePercent > 100 }">
+                <span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span>
+              </p-progressBar>
             </div>
           </ng-template>
-
           <ng-template pTemplate="empty">
-            <div class="d-flex flex-column align-items-center">
+            <div class="d-flex flex-column align-items-center" *ngIf="!hasImage; else imageDisplay">
               <i class="pi pi-cloud-upload text-muted display-1 mb-3"></i>
               <p class="text-muted">Kéo và thả tệp vào đây để tải lên.</p>
             </div>
           </ng-template>
+
+
+          <ng-template #imageDisplay>
+            <div class="d-flex flex-column "  style="height: 100%;">
+              <div *ngFor="let file of selectedFile">
+                <div class="p-fileupload-files " >
+                  <div class="p-fileupload-row ng-star-inserted ">
+                    <!-- Hình ảnh -->
+                    <div class="ng-star-inserted d-flex align-items-center">
+                      <img *ngIf="file.src" [src]="file.src" alt="Hình ảnh sản phẩm" width="50" class="me-3">
+                    </div>
+                    <!-- Tên ảnh -->
+                    <div class="p-fileupload-filename d-flex align-items-center">
+                      Ảnh sản phẩm
+                    </div>
+                    <!-- Nút xóa -->
+                    <div class="d-flex justify-content-end">
+                      <p-button icon="pi pi-times" (onClick)="removeProductImage(file)" severity="primary" [rounded]="true" [outlined]="false"></p-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+
+
+
         </p-fileUpload>
       </div>
 
@@ -73,172 +102,171 @@
 
     <div class="card mt-5 p-4 shadow-sm">
       <h3 class="mb-4">Biến Thể</h3>
-      <div [formGroup]="variantsForm">
-        <!-- <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="row mb-4"> -->
-          <p-accordion [activeIndex]="0">
-            <p-accordionTab header="Biến thể ">
-              <div class="row mb-3">
-                <div class="col-md-4 mb-3">
-                  <p-inputNumber
-                    placeholder="Giá tiền"
-                    mode="currency"
-                    currency="VND"
-                    locale="en-US"
-                    formControlName="price"
-                    class="pInputText"
-                  />
-                </div>
-                <div class="col-md-4 mb-3">
-                  <p-inputNumber
-                    placeholder="Giá tiền giảm (nếu có)"
-                    mode="currency"
-                    currency="VND"
-                    locale="en-US"
-                    formControlName="priceSell"
-                    class="pInputText"
-                  />
-                </div>
-                <div class="col-md-4 mb-3">
-                  <p-inputNumber
-                    placeholder="Số lượng"
-                    mode="decimal"
-                    [useGrouping]="false"
-                    formControlName="quantity"
-                    class="pInputText"
-                  />
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <div class="col-md-6 mb-3">
-                  <p-dropdown
-                    [style]="{width: '100%'}"
-                    [options]="colors"
-                    formControlName="colorId"
-                    placeholder="Chọn Màu Sắc"
-                    optionLabel="name"
-                    optionValue="id"
-                    [showClear]="true"
-                    [filter]="true"
-                    (onFilter)="onColorFilter($event)"
-                  >
-                    <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
-                    <ng-template pTemplate="empty">
-                      <div class="no-data">
-                        No data found.
-                        <button (click)="showColorDialog()" class="btn btn-primary">Add Color</button>
-                      </div>
-                    </ng-template>
-                  </p-dropdown>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <p-dropdown
-                    [style]="{width: '100%'}"
-                    [options]="sizes"
-                    formControlName="sizeId"
-                    placeholder="Chọn Kích thước"
-                    optionLabel="name"
-                    optionValue="id"
-                    [showClear]="true"
-                    [filter]="true"
-                    (onFilter)="onSizeFilter($event)"
-                  >
-                    <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
-                    <ng-template pTemplate="empty">
-                      <div class="no-data">
-                        No data found.
-                        <button (click)="addSize()" class="btn btn-primary">Add Size</button>
-                      </div>
-                    </ng-template>
-                  </p-dropdown>
-                </div>
-              </div>
-
-              <div class="row mb-3">
-                <div class="col-12">
-                  <label for="imageUpload" class="form-label">Tải lên hình ảnh</label>
-                  <div class="card-body">
-                    <p-fileUpload
-                      name="myfile[]"
-                      url="https://www.primefaces.org/cdn/api/upload.php"
-                      [multiple]="true"
-                      accept="image/*"
-                      maxFileSize="1000000"
-                      (onSelect)="onSelectedVariantFiles($event)"
-                    >
-                      <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
-                        let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
-                        <div class="d-flex justify-content-between align-items-center">
-                          <div class="d-flex gap-2">
-                            <p-button
-                              (onClick)="choose($event, chooseCallback)"
-                              icon="pi pi-images"
-                              [rounded]="true"
-                              [outlined]="true"
-                            />
-                            <p-button
-                              (onClick)="clearCallback()"
-                              icon="pi pi-times"
-                              [rounded]="true"
-                              [outlined]="true"
-                              severity="danger"
-                              [disabled]="!files || files.length === 0"
-                            />
-                          </div>
-                          <p-progressBar
-                            [value]="totalSizePercent"
-                            [showValue]="false"
-                            styleClass="md:w-20rem h-1rem w-full"
-                            [ngClass]="{ 'exceeded-progress-bar': totalSizePercent > 100 }">
-                            <span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span>
-                          </p-progressBar>
-                        </div>
-                      </ng-template>
-
-                      <ng-template pTemplate="empty">
-                        <div class="d-flex flex-column align-items-center justify-content-center">
-                          <i class="pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400"></i>
-                          <p class="mt-4 mb-0">Kéo và thả tệp vào đây để tải lên.</p>
-                        </div>
-                      </ng-template>
-                    </p-fileUpload>
+      <form [formGroup]="variantsForm">
+        <div formArrayName="variants">
+          <div *ngFor="let variant of variants.controls; let i = index" [formGroupName]="i" class="mb-4">
+            <p-accordion [activeIndex]="0">
+              <p-accordionTab header="Biến thể {{i + 1}}">
+                <div class="row mb-3">
+                  <div class="col-md-4 mb-3">
+                    <p-inputNumber placeholder="Giá tiền" mode="currency" currency="VND" locale="en-US"
+                      formControlName="price" class="pInputText" />
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <p-inputNumber placeholder="Giá tiền giảm (nếu có)" mode="currency" currency="VND" locale="en-US"
+                      formControlName="priceSell" class="pInputText" />
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <p-inputNumber placeholder="Số lượng" mode="decimal" [useGrouping]="false"
+                      formControlName="quantity" class="pInputText" />
                   </div>
                 </div>
-              </div>
 
-              <!-- <div class="col-12 mt-2">
-                <p-button label="Xóa Biến Thể" icon="pi pi-trash" class="p-button-danger" (click)="removeVariant(i)"></p-button>
-              </div> -->
-            </p-accordionTab>
-          </p-accordion>
-        <!-- </div> -->
-          <!-- <div class="d-flex justify-content-end mt-4">
-            <p-button label="Thêm Biến Thể" icon="pi pi-plus" (click)="addVariant()"></p-button>
-          </div> -->
+                <div class="row mb-3">
+                  <div class="col-md-6 mb-3">
+                    <p-dropdown [style]="{width: '100%'}" [options]="colors" formControlName="colorId"
+                      placeholder="Chọn Màu Sắc" optionLabel="name" optionValue="id" [showClear]="true" [filter]="true"
+                      (onFilter)="onColorFilter($event)">
+                      <ng-template let-item pTemplate="item">
+                        <div class="flex align-items-center gap-2">
+                          <button class="btn color-btn" [style.backgroundColor]="item.code"></button>
+                          <span>{{ item.name }}</span>
+                        </div>
+                      </ng-template>
+                      <ng-template pTemplate="empty">
+                        <div class="no-data">
+                          No data found.
+                          <button (click)="showColorDialog()" class="btn btn-primary">Add Color</button>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                  </div>
 
-        <div class="d-flex justify-content-between mt-4">
-          <p-button label="{{ isUpdate ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm' }}"
-            icon="{{ isUpdate ? 'pi pi-pencil' : 'pi pi-plus' }}" (click)="onSubmit()"
-            [disabled]="!productForm.valid && !variantsForm.valid">
-          </p-button>
+                  <div class="col-md-6 mb-3">
+                    <p-dropdown [style]="{width: '100%'}" [options]="sizes" formControlName="sizeId"
+                      placeholder="Chọn Kích thước" optionLabel="name" optionValue="id" [showClear]="true"
+                      [filter]="true" (onFilter)="onSizeFilter($event)">
+                      <ng-template let-item pTemplate="item">{{ item.name }}</ng-template>
+                      <ng-template pTemplate="empty">
+                        <div class="no-data">
+                          No data found.
+                          <button (click)="addSize()" class="btn btn-primary">Add Size</button>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                  </div>
+                </div>
+
+                <div class="row mb-3">
+                  <div class="col-12">
+                    <label for="imageUpload" class="form-label">Tải lên hình ảnh</label>
+                    <div class="card-body">
+                      <p-fileUpload name="myfile[]" url="https://www.primefaces.org/cdn/api/upload.php"
+                        [multiple]="true" accept="image/*" maxFileSize="1000000"
+                        (onSelect)="onSelectedVariantFiles($event,i)">
+                        <ng-template pTemplate="header" let-files let-chooseCallback="chooseCallback"
+                          let-clearCallback="clearCallback" let-uploadCallback="uploadCallback">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2">
+                              <p-button (onClick)="choose($event, chooseCallback)" icon="pi pi-images" [rounded]="true"
+                                [outlined]="true" />
+                              <p-button (onClick)="clearCallback()" icon="pi pi-times" [rounded]="true"
+                                [outlined]="true" severity="danger" [disabled]="!files || files.length === 0" />
+                            </div>
+                            <p-progressBar [value]="totalSizePercent" [showValue]="false"
+                              styleClass="md:w-20rem h-1rem w-full"
+                              [ngClass]="{ 'exceeded-progress-bar': totalSizePercent > 100 }">
+                              <span class="white-space-nowrap">{{ totalSize }}B / 1Mb</span>
+                            </p-progressBar>
+                          </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="empty">
+                          <div class="d-flex flex-column align-items-center" *ngIf="!selectedFilesMap[variant.value.id]?.length; else imageDisplay">
+                            <i class="pi pi-cloud-upload text-muted display-1 mb-3"></i>
+                            <p class="text-muted">Kéo và thả tệp vào đây để tải lên.</p>
+                          </div>
+                        </ng-template>
+
+
+                        <ng-template #imageDisplay>
+                          <div class="d-flex flex-column "  style="height: 100%;">
+                            <div *ngFor="let file of selectedFilesMap[variant.value.id]">
+                              <div class="p-fileupload-files " >
+                                <div class="p-fileupload-row ng-star-inserted ">
+                                  <!-- Hình ảnh -->
+                                  <div class="ng-star-inserted d-flex align-items-center">
+                                    <img *ngIf="file.src" [src]="file.src" alt="Hình ảnh biến thể" width="50" class="me-3">
+                                  </div>
+                                  <!-- Tên ảnh -->
+                                  <div class="p-fileupload-filename d-flex align-items-center">
+                                    Ảnh biến thể
+                                  </div>
+                                  <!-- Nút xóa -->
+                                  <div class="d-flex justify-content-end">
+                                    <p-button icon="pi pi-times" (onClick)="removeVariantImage(variant.value.id, file)" severity="primary" [rounded]="true" [outlined]="false"></p-button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <i class="pi pi-cloud-upload text-muted display-1 mb-3"></i>
+                            <p class="text-muted">Kéo và thả tệp vào đây để tải lên.</p>
+                          </div>
+                        </ng-template>
+                      </p-fileUpload>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 mt-2">
+                  <p-button label="Xóa Biến Thể" icon="pi pi-trash" class="p-button-danger"
+                    (click)="removeVariant(i)"></p-button>
+                </div>
+
+              </p-accordionTab>
+            </p-accordion>
+
+          </div>
         </div>
-      </div>
+      </form>
     </div>
+    <div class="d-flex justify-content-end mt-4">
+      <p-button label="Thêm Biến Thể" icon="pi pi-plus" (click)="addVariant()"></p-button>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <p-button label="{{ isUpdate ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm' }}"
+        icon="{{ isUpdate ? 'pi pi-pencil' : 'pi pi-plus' }}" (click)="onSubmit()">
+      </p-button>
+    </div>
+
   </form>
 </div>
 
-<p-dialog header="Thêm màu" [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
-  <div class="form-group">
-    <label for="name">Tên Màu</label>
-    <input pInputText id="name" [(ngModel)]="name" class="form-control" />
-  </div>
-  <div class="form-group mt-3">
-    <label for="code">Mã Màu</label>
-    <p-colorPicker [(ngModel)]="code" class="w-100"></p-colorPicker>
-  </div>
-  <div class="d-flex justify-content-end mt-3 gap-2">
-    <p-button label="Hủy" class="p-button-secondary" (click)="visible = false"></p-button>
-    <p-button label="Thêm" (click)="addColor()"></p-button>
-  </div>
+<p-dialog header="Thêm màu" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem', height: '25rem' }">
+
+    <!-- Tên -->
+    <div class="flex items-center gap-4 mb-4">
+      <label for="name" class="font-semibold w-1/4">Tên</label>
+      <input pInputText id="name" [(ngModel)]="name" autocomplete="off" class="w-full" />
+    </div>
+
+    <!-- Code -->
+    <div class="flex items-center gap-4 mb-6">
+      <label for="code" class="font-semibold w-1/4">Code</label>
+      <input type="text" placeholder="Nhập mã màu" [(ngModel)]="code" (ngModelChange)="updateColorFromInput($event)"
+        class="p-inputtext w-1/4" />
+    </div>
+
+    <!-- Color Picker -->
+    <div class="mb-6">
+      <p-colorPicker [(ngModel)]="code" class="m-2 flex-grow" />
+    </div>
+
+    <!-- Action buttons -->
+    <div class="d-flex gap-3 p-4 flex justify-content-end">
+      <p-button label="Hủy" severity="secondary" (onClick)="visible = false"
+        class="w-24"></p-button>
+      <p-button label="Thêm" (onClick)="addColor()" class="w-24"></p-button>
+    </div>
+
 </p-dialog>

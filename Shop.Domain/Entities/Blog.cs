@@ -1,6 +1,4 @@
-﻿using Shop.Domain.Entities;
-
-namespace API.Entities
+﻿namespace Shop.Domain.Entities
 {
     public class Blog : BaseEntity
     {

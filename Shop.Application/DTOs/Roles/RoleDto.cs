@@ -1,4 +1,4 @@
-﻿using API.Entities;
+﻿
 using System.ComponentModel.DataAnnotations;
 
 namespace Shop.Application.DTOs.Roles
@@ -10,8 +10,8 @@ namespace Shop.Application.DTOs.Roles
         public required string Description { get; set; }
         public DateTime Created { get; set; }
 
-        
+
     }
 
-    
+
 }

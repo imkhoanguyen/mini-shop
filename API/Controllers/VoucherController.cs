@@ -1,4 +1,3 @@
-using API.Entities;
 using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Vouchers;
@@ -32,7 +31,7 @@ namespace API.Controllers
 
         //    return BadRequest("Failed to add voucher");
         //}
-        
+
         //[HttpGet("GetAllVouchers")] 
         //public async Task<IActionResult> GetAllVouchers()
         //{
@@ -57,7 +56,7 @@ namespace API.Controllers
 
         //    return Ok(voucher);
         //}
-       
+
         //[HttpPut("UpdateVoucher/{id}")]
         //public async Task<IActionResult> UpdateVoucher(int id, [FromForm] UpdateVoucherDto updateVoucherDto)
         //{
@@ -67,7 +66,7 @@ namespace API.Controllers
         //    }
 
         //    var existingVoucher = _unitOfWork.VoucherRepository.GetVoucher(id);
-            
+
         //    if (existingVoucher == null)
         //    {
         //        return NotFound("Voucher not found.");
@@ -90,7 +89,7 @@ namespace API.Controllers
         //public async Task<IActionResult> DeleteVoucher(int id)
         //{
         //    var existingVoucher = _unitOfWork.VoucherRepository.GetVoucher(id);
-            
+
         //    if (existingVoucher == null)
         //    {
         //        return NotFound("Voucher not found.");
@@ -112,7 +111,7 @@ namespace API.Controllers
         //public async Task<IActionResult> RestoreVoucher(int id)
         //{
         //    var existingVoucher = _unitOfWork.VoucherRepository.GetVoucher(id);
-            
+
         //    if (existingVoucher == null)
         //    {
         //        return NotFound("Voucher not found.");
@@ -131,6 +130,6 @@ namespace API.Controllers
         //}
 
 
-        
+
     }
 }
