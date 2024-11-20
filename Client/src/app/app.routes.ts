@@ -21,7 +21,7 @@ import { ServerErrorComponent } from './component/errors/server-error/server-err
 import { CategoryComponent } from './component/admin/category/category.component';
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 import { BlogComponent } from './component/admin/blog/blog.component';
-import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
+// import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
 import { CheckOutComponent } from './component/check-out/check-out.component';
 export const routes: Routes = [
@@ -45,8 +45,8 @@ export const routes: Routes = [
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
       { path: 'blog', component: BlogComponent },
-      { path: 'blog/new', component: AddBlogComponent },
-      { path: 'blog/edit/:id', component: AddBlogComponent },
+      // { path: 'blog/new', component: AddBlogComponent },
+      // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],
   },
   { path: 'login', component: LoginComponent },

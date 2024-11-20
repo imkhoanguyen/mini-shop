@@ -50,22 +50,8 @@ export class ProductUserComponent implements OnInit {
   }
 
   loadProduct() {
-    this.productSrv.getAllProduct().subscribe(
-      (Res: any) => {
-        this.productArray = Res.data; // Gán dữ liệu vào productArray
-        // loc ra category là id của mobile  thì nạp vào mảng này mobile
-        this.productArraySmartPhone = this.productArray.filter(
-          (product) => product.categoryId === 1
-        );
-        this.productArrayLaptop = this.productArray.filter(
-          (product) => product.categoryId === 4
-        );
-        console.log('Products loaded:', this.productArray); // In ra giá trị của productArray
-        console.log('Smartphone Products:', this.productArraySmartPhone);
-      },
-      (error) => {
-        console.error('Error fetching products:', error); // In lỗi nếu có
-      }
-    );
+   
+   this.productArray = this.productSrv.getAllProduct();
+   
   }
 }

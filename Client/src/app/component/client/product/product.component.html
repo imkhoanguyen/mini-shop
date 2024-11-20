@@ -239,10 +239,10 @@
           
           <div class="swiper product-swiper">
             <div class="swiper-wrapper">
-              <div class="swiper-slide"  *ngFor="let item of productArraySmartPhone" >
+              <div class="swiper-slide"  *ngFor="let item of productArray" >
                 <div class="product-card position-relative">
                    <div class="image-holder">
-                    <img [src]="item.productImageUrl" alt="product-item" class="img-fluid" >
+                    <img [src]="item.image.imgUrl" alt="product-item" class="img-fluid" >
                  
                   </div>
                   <div class="cart-concern position-absolute">
