@@ -19,13 +19,13 @@
                                 <div class="bi-star-fill"></div>
                             </div>
                             <!-- Product price-->
-                            ${{ item.variants && item.variants.length > 0 ? item.variants[0].price : 'No price available' }}
+                            ${{ item.variants && item.variants.length > 0 ? item.variants[0].quantity : 'No price available' }}
                         </div>
                     </div>
                     <!-- Product actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                         <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to card</a></div>
-                        <div class="text-center"><a  class="btn btn-outline-dark" href="#" [routerLink]="['/product/productList']">Detail</a></div>
+                        <div class="text-center"><a [routerLink]="['/product/productDetail/' ,item.id ]" class="btn btn-outline-dark" href="#" >Detail</a></div>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,8 @@ import { HeaderComponent } from '../../../layout/headerClient/header.component';
 import { FooterClientComponent } from '../../../layout/footerClient/footerClient.component';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
+import { ProductDetailComponent } from '../productDetail/productDetail.components';
+
 
 @Component({
   selector: 'app-product-list',
@@ -13,7 +15,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './productList.component.html',
   // templateUrl : './productL'
   styleUrl: './productList.component.css',
-  imports: [CommonModule, HeaderComponent, FooterClientComponent],
+  imports: [CommonModule, HeaderComponent, FooterClientComponent ,  RouterModule ,ProductDetailComponent],
 })
 export class ProductListComponent implements OnInit {
     productId?: string; // Ma
@@ -32,7 +34,8 @@ export class ProductListComponent implements OnInit {
     this.productSrv.getAllProductByCategory(categoryId).subscribe(
      
       (products) => {
-        this.productArray = products; 
+        this.productArray = products;
+        console.log ("----", this.productArray) 
       },
 
     );

@@ -16,4 +16,7 @@ getAllProduct ( ) : Observable<any[]>{
 getAllProductByCategory (id  : number ) : Observable<any[]>{
       return this.http.get<any[]>(`http://localhost:3000/products/GetAllProductsByCategory?id=${id}`);
 }
+getProductDetail(id :number) :Observable<any[]>{
+    return this.http.get<any[]>(`http://localhost:3000/products/${id}`) 
+}
 }

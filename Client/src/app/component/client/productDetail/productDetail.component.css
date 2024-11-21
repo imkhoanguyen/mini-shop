@@ -10824,3 +10824,59 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+
+S
+
+.product-card {
+  /* Tạo khung cho card sản phẩm */
+  border: 1px solid #ddd;
+  padding: 20px;
+}
+
+.image-container {
+  /* Cột chứa hình ảnh */
+  width: 50%;
+  float: left;
+}
+
+.description-container {
+  /* Cột chứa mô tả */
+  width: 50%;
+  float: right;
+}
+
+.product-name {
+  /* Tiêu đề sản phẩm */
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.product-price {
+  /* Giá sản phẩm */
+  font-size: 18px;
+  color: #666;
+  text-decoration: line-through; /* Gạch ngang giá cũ */
+}
+
+.product-price-new {
+  /* Giá sản phẩm mới */
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.product-description {
+  /* Mô tả sản phẩm */
+  font-size: 16px;
+  color: #888;
+}
+
+.add-to-cart-button {
+  /* Nút thêm vào giỏ hàng */
+  background-color: #4CAF50; /* Màu xanh lá cây */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+}

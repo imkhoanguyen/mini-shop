@@ -30,25 +30,6 @@ export class ProductUserComponent implements OnInit {
     this.loadProduct();
   }
 
-  getAllProductByCategory(categoryId: number) {
-    this.productSrv
-      .getAllProductByCategory(categoryId)
-      .subscribe((products)=>
-      {
-        this.productArray = products
-      }
-    );
-  }
-  productList() {
-  
-    this.router.navigate(['/product/productList'], {
-      state: { productArray: this.productArraySmartPhone },
-    }).then(success => {
-      console.log('Navigation success:', success);
-    }).catch(err => {
-      console.error('Navigation error:', err);
-    });
-  }
 loadProduct() {
     this.productSrv.getAllProduct().subscribe(
       (products) => {

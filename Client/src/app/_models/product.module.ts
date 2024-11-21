@@ -32,3 +32,7 @@ export interface ImageProductDto {
   id: number;
   imgUrl: string;
 }
+export interface ProductGet extends ProductBase
+{
+  
+}
