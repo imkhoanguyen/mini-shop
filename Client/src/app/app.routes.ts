@@ -24,9 +24,11 @@ import { BlogComponent } from './component/admin/blog/blog.component';
 // import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
 import { CheckOutComponent } from './component/check-out/check-out.component';
+import { ProductDetailComponent } from './component/client/productDetail/productDetail.components';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
+  {path :'product/productDetail/:id' ,component : ProductDetailComponent},
   {
     path: 'admin',
     component: AdminComponent,

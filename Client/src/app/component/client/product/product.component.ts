@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
     RouterModule,
     HeaderComponent,
     FooterClientComponent,
-    ProductListComponent,
+    // ProductListComponent,
   ],
 })
 export class ProductUserComponent implements OnInit {

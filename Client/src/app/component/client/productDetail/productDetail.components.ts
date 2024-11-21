@@ -6,17 +6,17 @@ import { HeaderComponent } from '../../../layout/headerClient/header.component';
 import { FooterClientComponent } from '../../../layout/footerClient/footerClient.component';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  templateUrl: './productList.component.html',
+  templateUrl: './productDetail.component.html',
   // templateUrl : './productL'
-  styleUrl: './productList.component.css',
+  styleUrl: './productDetail.component.css',
   imports: [CommonModule, HeaderComponent, FooterClientComponent],
 })
-export class ProductListComponent implements OnInit {
-    productId?: string; // Ma
+export class ProductDetailComponent implements OnInit {
+    productId?: string; 
     productArray: any[] = [];
     constructor(private route: ActivatedRoute, private productSrv: productUserService) {}
     ngOnInit(): void {
