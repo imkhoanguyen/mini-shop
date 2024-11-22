@@ -34,11 +34,13 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  
   getProductDetail(ProductId: number): void {
     this.productSrv.getProductDetail(ProductId).subscribe(
       (product) => {
-        this.productFound = product; // Assign the product object directly
-        console.log('--------hello---', this.productFound); // Log the value directly here
+        this.productFound = product;
+        const categoryId  = this.productFound.categoryIds ;
+     
       },
       (error) => {
         console.error('Error loading product details:', error);
