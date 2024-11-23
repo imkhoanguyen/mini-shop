@@ -32,7 +32,20 @@ export interface ImageProductDto {
   id: number;
   imgUrl: string;
 }
-export interface ProductGet extends ProductBase
+export interface ProductGet 
 {
-  
+  id: number;
+  created: string;  
+  updated: string; 
+  image: {
+    id: number;
+    imgUrl: string;  
+  };
+  variants: any[]; 
+  name: string;
+  description: string;
+  status: number;
+  categoryIds: number[];  
+
+
 }

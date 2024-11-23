@@ -10826,7 +10826,7 @@ textarea.form-control-lg {
 }
 
 
-S
+
 
 .product-card {
   /* Tạo khung cho card sản phẩm */
@@ -11099,3 +11099,55 @@ S
 
 
 /* ----------------------------------- */
+
+
+
+/* Container for the input and button */
+
+/* Input field style */
+
+
+/* Button style */
+.add-to-cart-btn-detail {
+  padding: 10px 20px;
+  background-color: #007BFF; /* Blue background */
+  color: white; /* Text color */
+  font-size: 16px;
+  border: none; /* Remove default border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  width: 150px;
+
+}
+
+/* Hover and active states for the button */
+.add-to-cart-btn-detail:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+
+
+/* Disabled button state */
+.add-to-cart-btn-detail:disabled {
+  background-color: #c0c0c0; /* Light gray background when disabled */
+  cursor: not-allowed; /* Not-allowed cursor */
+}
+
+.input_quantity {
+  width: 150px;
+   height: 50px;
+
+margin: 10px;
+}
+
+/* Foc
+/* Optional responsive design */
+@media (max-width: 768px) {
+  .input-text-detail {
+    max-width: 4rem; /* Reduce max width on smaller screens */
+  }
+  .add-to-cart-btn-detail {
+    padding: 8px 16px; /* Adjust button padding on smaller screens */
+  }
+}
