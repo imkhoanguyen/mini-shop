@@ -24,6 +24,8 @@ import { BlogComponent } from './component/admin/blog/blog.component';
 import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
 import { CheckOutComponent } from './component/check-out/check-out.component';
+import { ShippingMethodComponent } from './component/admin/shippingmethod/shippingmethod.component';
+import { DiscountComponent } from './component/admin/discount/discount.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -47,6 +49,8 @@ export const routes: Routes = [
       { path: 'blog', component: BlogComponent },
       { path: 'blog/new', component: AddBlogComponent },
       { path: 'blog/edit/:id', component: AddBlogComponent },
+      { path: 'shippingmethod',component:ShippingMethodComponent},
+      { path: 'discount' , component :DiscountComponent},
     ],
   },
   { path: 'login', component: LoginComponent },

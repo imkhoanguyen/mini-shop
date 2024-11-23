@@ -4,9 +4,9 @@ namespace Shop.Domain.Entities
     {
         public string Name { get; set; } = null!;
         public decimal Cost { get; set; }
-        public DateTime? EstimatedDeliveryTime { get; set; }
-        public DateTime? Created { get; set; } = DateTime.UtcNow;
-        public DateTime? Updated { get; set; }
+        public string EstimatedDeliveryTime { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Updated { get; set; }
         public bool IsDelete { get; set; } = false;
     }
 }

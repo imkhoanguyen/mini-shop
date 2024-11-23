@@ -95,6 +95,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
     };
     this.categoryService.getCategoriesPagedList(params).subscribe((result) => {
       this.selectedCategories = result.items || [];
+      console.log(result);
       this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
 
       this.totalRecords = this.pagination.totalItems;

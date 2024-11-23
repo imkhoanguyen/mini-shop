@@ -5,20 +5,29 @@ namespace Shop.Application.Mappers
 {
     public class ShippingMethodMapper
     {
-        public static ShippingMethod ShippingMethodDtoToEntity(ShippingMethodDto shippingMethodDto)
+        public static ShippingMethod ShippingMethodAddDtoToEntity(ShippingMethodAdd shippingMethod)
         {
             return new ShippingMethod
             {
-                Id = shippingMethodDto.Id,
-                Name = shippingMethodDto.Name,
-                Cost = shippingMethodDto.Cost,
-                EstimatedDeliveryTime = shippingMethodDto.EstimatedDeliveryTime,
-                Created = shippingMethodDto.Created,
-                Updated = shippingMethodDto.Updated
+                Name =shippingMethod.Name,
+                Cost=shippingMethod.Cost,
+                EstimatedDeliveryTime = shippingMethod.EstimatedDeliveryTime,
+                Created= DateTime.UtcNow.AddHours(7),
+                Updated=DateTime.UtcNow.AddHours(7)
             };
         }
-
-        public static ShippingMethodDto ShippingMethodEntityToDto(ShippingMethod shippingMethod)
+        public static ShippingMethod ShippingMethodUpdateToEntity(ShippingMethodUpdate shippingMethod)
+        {
+            return new ShippingMethod
+            {
+                Id=shippingMethod.Id,
+                Name=shippingMethod.Name,
+                Cost=shippingMethod.Cost,
+                EstimatedDeliveryTime = shippingMethod.EstimatedDeliveryTime,
+                Updated=DateTime.UtcNow.AddHours(7),
+            };
+        }
+        public static ShippingMethodDto EntityToShippingMethodDto(ShippingMethod shippingMethod)
         {
             return new ShippingMethodDto
             {
@@ -27,7 +36,7 @@ namespace Shop.Application.Mappers
                 Cost = shippingMethod.Cost,
                 EstimatedDeliveryTime = shippingMethod.EstimatedDeliveryTime,
                 Created = shippingMethod.Created,
-                Updated = shippingMethod.Updated
+                Updated = shippingMethod.Updated,
             };
         }
     }

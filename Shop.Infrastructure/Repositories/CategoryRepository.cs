@@ -16,7 +16,6 @@ namespace Shop.Infrastructure.Repositories
         {
             _context = context;
         }
-
         public async Task UpdateCategoryAsync(Category category)
         {
             var categoryDb = await _context.Categories.FirstOrDefaultAsync(c => c.Id == category.Id);

@@ -1,5 +1,4 @@
 ﻿using Shop.Application.DTOs.Categories;
-using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 
 namespace Shop.Application.Mappers

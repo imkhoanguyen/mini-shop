@@ -11,5 +11,6 @@ namespace Shop.Application.Repositories
         Task DeleteCategoryAsync(Category category);
 
         Task UpdateCategoryAsync(Category category);
+        
     }
 }

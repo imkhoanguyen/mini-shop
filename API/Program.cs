@@ -83,6 +83,10 @@ try
     await RoleClaimSeed.SeedAsync(context, roleManager);
     await UserSeed.SeedAsync(userManager, roleManager);
     await UserRoleSeed.SeedAsync(userManager, context);
+    await ShippingMethodSeed.SeedAsync(context);
+    await DiscountSeed.SeedAsync(context);
+    await ColorSeed.SeedAsync(context);
+    await SizeSeed.SeedAsync(context);
 }
 catch (Exception ex)
 {

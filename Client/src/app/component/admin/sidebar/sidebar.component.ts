@@ -69,6 +69,16 @@ export class SidebarComponent {
       icon: 'pi pi-book',
       label: 'Quản lý Blog',
     },
+    {
+      routerLink:'shippingmethod',
+      icon:'pi pi-check-square',
+      label:'Quản lý phương thức Ship'
+    },
+    {
+      routerLink:'discount',
+      icon:'pi pi-check-square',
+      label:'Quản lý Mã giảm giá'
+    },
   ];
 
   toggleCollapse(): void {

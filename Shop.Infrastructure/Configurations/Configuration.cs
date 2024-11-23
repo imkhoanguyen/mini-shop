@@ -37,7 +37,6 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IVariantService, VariantService>();
-
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ISizeService, SizeService>();
             services.AddScoped<IColorService, ColorService>();
@@ -46,6 +45,7 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IShippingMethodService, ShippingMethodService>();
             services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IDiscountService,DiscountService>();
             services.AddSignalR();
         }
 

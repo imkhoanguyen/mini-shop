@@ -41,7 +41,7 @@ namespace API.Controllers
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(tokenRequest.Token);
             var user = await _userManager.FindByEmailAsync(payload.Email) ?? new AppUser
-            { 
+            {
                 Email = payload.Email,
                 UserName = payload.Email,
                 FullName = payload.Name,
