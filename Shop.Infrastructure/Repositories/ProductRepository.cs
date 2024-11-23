@@ -117,7 +117,14 @@ namespace Shop.Infrastructure.Repositories
                     .Include(p => p.Variants.Where(v => !v.IsDelete))
                     .ThenInclude(v => v.Images)
                     .Where(c => !c.IsDelete).ToListAsync();
-            return await _context.Products.AsNoTracking().Include(p => p.ProductCategories).Include(p => p.Variants).Where(c => !c.IsDelete).ToListAsync();
+            return await _context.Products
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants) 
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete && c.Variants.All(v => !v.IsDelete)) 
+                .AsNoTracking()
+                .ToListAsync();
         }
         public async Task DeleteProductAsync(Product product)
         {
@@ -128,5 +135,22 @@ namespace Shop.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<Product>> GetProductsAsync(Expression<Func<Product, bool>> expression, bool tracked = false)
+        {
+            var query = tracked ? _context.Products
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete)
+            : _context.Products.AsNoTracking().AsQueryable()
+                .Include(p => p.ProductCategories)
+                .Include(p => p.Image)
+                .Include(p => p.Variants.Where(v => !v.IsDelete))
+                .ThenInclude(v => v.Images)
+                .Where(c => !c.IsDelete);
+
+            return await query.Where(expression).ToListAsync();
+        }
     }
 }

@@ -5,82 +5,55 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using API.Interfaces;
 using API.SignalR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Messages;
+using Shop.Application.DTOs.Users;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Ultilities;
+using Shop.Domain.Entities;
 
 namespace API.Controllers
 {
     public class MessagesController : BaseApiController
     {
         private readonly IMessageService _messageService;
-        public MessagesController(IMessageService messageService)
+        private readonly UserManager<AppUser> _userManager;
+        public MessagesController(IMessageService messageService, UserManager<AppUser> userManager)
         {
             _messageService = messageService;
+            _userManager = userManager;
         }
-        //[HttpPost("UploadFiles")]
-        //public async Task<IActionResult> UploadFiles([FromForm] IFormFileCollection files)
-        //{
-        //    // Nếu không có tệp, trả về response trống
-        //    if (files == null || files.Count == 0)
-        //    {
-        //        return Ok(new { files = new List<object>() });
-        //    }
-
-        //    var uploadResults = new List<object>();
-
-        //    foreach (var file in files)
-        //    {
-        //        var uploadResult = await _fileService.UploadFileAsync(file);
-        //        if (uploadResult == null)
-        //        {
-        //            return BadRequest(new { message = $"File '{file.FileName}' upload failed." });
-        //        }
-
-        //        uploadResults.Add(new
-        //        {
-        //            fileUrl = uploadResult.Url.ToString(),
-        //            fileType = file.ContentType
-        //        });
-        //    }
-
-        //    return Ok(new { files = uploadResults });
-        //}
-
-        [HttpPost("AddMessage")]
-        public async Task<IActionResult> AddMessage(MessageAdd messageAdd)
+        [HttpGet("GetCustomers")]
+        public async Task<ActionResult<List<string>>> GetCustomers()
         {
-            var usersWithClaim = await _messageService.GetUsersByClaimValueAsync(ClaimStore.Message_Reply);
-            if (!usersWithClaim.Contains(messageAdd.SenderId!))
-            {
-                messageAdd.RecipientIds = usersWithClaim;
-                var message = await _messageService.AddMessageAsync(messageAdd);
-                return Ok(message);
-            }
-            else if (usersWithClaim.Contains(messageAdd.SenderId!))
-            {
-                var message = await _messageService.ReplyMessageAsync(messageAdd);
-                return Ok(message);
-            }
+            var customers = await _messageService.GetUsersWithoutClaimAsync(ClaimStore.Message_Reply);
+            return Ok(customers);
+        }
+        [HttpPost("AddMessage")]
+        public async Task<IActionResult> AddMessage([FromForm] MessageAdd messageAdd)
+        {
+            var adminClaim = await _messageService.GetUsersByClaimValueAsync(ClaimStore.Message_Reply);
 
-            return BadRequest("Người dùng không có quyền thực hiện hành động này.");
+            var message = adminClaim.Contains(messageAdd.SenderId!)
+                ? await _messageService.ReplyMessageAsync(messageAdd, ClaimStore.Message_Reply)
+                : await _messageService.AddMessageAsync(messageAdd, ClaimStore.Message_Reply);
+
+            return Ok(message);
+
         }
         [HttpGet("GetMessageThread")]
-        public async Task<IActionResult> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        public async Task<IActionResult> GetMessageThread(string customerId)
         {
-            if (skip < 0 || take <= 0)
-            {
-                return BadRequest("Tham số không hợp lệ.");
-            }
-            var messages = await _messageService.GetMessageThread(senderId, recipientId, skip, take);
+
+            var messages = await _messageService.GetMessageThread(customerId);
             return Ok(messages);
         }
         [HttpGet("GetLastMessage")]
-        public async Task<IActionResult> GetLastMessage(string senderId, string recipientId)
+        public async Task<IActionResult> GetLastMessage(string userId)
         {
-            var message = await _messageService.GetLastMessageAsync(senderId, recipientId);
+            var message = await _messageService.GetLastMessageAsync(userId);
             return Ok(message);
         }
 

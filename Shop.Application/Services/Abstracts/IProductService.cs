@@ -18,6 +18,7 @@ namespace Shop.Application.Services.Abstracts
         Task RemoveImageAsync(int productId, int imageId);
         Task<PagedList<ProductDto>> GetAllAsync(ProductParams productParams, bool tracked);
         Task<IEnumerable<ProductDto>> GetAllAsync(bool tracked);
+        Task<IEnumerable<ProductDto>> GetProductsByCategoryId(int categoryId);
         Task<ProductDto?> GetAsync(Expression<Func<Product, bool>> expression);
     }
 }

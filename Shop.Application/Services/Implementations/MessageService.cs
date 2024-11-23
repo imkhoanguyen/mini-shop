@@ -14,11 +14,14 @@ namespace Shop.Application.Services.Implementations
         private readonly IUnitOfWork _unit;
         private readonly RoleManager<AppRole> _role;
         private readonly UserManager<AppUser> _user;
-        public MessageService(IUnitOfWork unit, RoleManager<AppRole> role, UserManager<AppUser> user)
+        private readonly ICloudinaryService _cloudinaryService;
+         
+        public MessageService(IUnitOfWork unit, RoleManager<AppRole> role, UserManager<AppUser> user, ICloudinaryService cloudinaryService)
         {
             _unit = unit;
             _role = role;
             _user = user;
+            _cloudinaryService = cloudinaryService;
         }
         public async Task<List<string>> GetUsersByClaimValueAsync(string claimValue)
         {
@@ -33,42 +36,98 @@ namespace Shop.Application.Services.Implementations
                 {
                     var usersInRole = await _user.GetUsersInRoleAsync(role.Name!);
                     userIds.AddRange(usersInRole.Select(u => u.Id));
+                    
                 }
             }
             return userIds.Distinct().ToList();
         }
-        public async Task<MessageDto> AddMessageAsync(MessageAdd messageAdd)
+
+        public async Task<List<string>> GetUsersWithoutClaimAsync(string claimValue)
         {
-            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(messageAdd.SenderId!, messageAdd.RecipientIds!.FirstOrDefault()!);
-            if (lastMessage != null && lastMessage.IsReplied && lastMessage.RepliedById != messageAdd.SenderId)
+            var rolesWithClaim = await _unit.MessageRepository.GetRoleWithClaim(claimValue);
+
+            var allUserIds = _user.Users.Select(u => u.Id).ToList();
+
+            var adminUserIds = new List<string>();
+
+            foreach (var roleId in rolesWithClaim)
             {
-                messageAdd.RecipientIds = new List<string> { lastMessage.RepliedById! };
-            }
-
-            var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
-            await _unit.MessageRepository.AddAsync(message);
-
-            return await _unit.CompleteAsync()
-                ? MessageMapper.EntityToMessageDto(message)
-                : throw new BadRequestException("Thêm tin nhắn thất bại");
-        }
-        public async Task<MessageDto> ReplyMessageAsync(MessageAdd messageAdd)
-        {
-            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(messageAdd.SenderId!, messageAdd.RecipientIds!.FirstOrDefault()!);
-            var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
-
-            if (lastMessage != null && lastMessage.IsReplied)
-            {
-                if (lastMessage.RepliedById != messageAdd.SenderId)
+                var role = await _role.FindByIdAsync(roleId.ToString());
+                if (role != null)
                 {
-                    throw new BadRequestException("Người dùng không có quyền phản hồi tin nhắn này.");
+                    var usersInRole = await _user.GetUsersInRoleAsync(role.Name!);
+                    adminUserIds.AddRange(usersInRole.Select(u => u.Id));
                 }
             }
-            else
+
+            var customerUserIds = allUserIds.Except(adminUserIds).ToList();
+            return customerUserIds;
+        }
+
+
+        public async Task<MessageDto> AddMessageAsync(MessageAdd messageAdd, string claimValue)
+        {
+            var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
+
+            var adminIds = await GetUsersByClaimValueAsync(claimValue); 
+            message.RecipientIds = adminIds;
+            
+           
+            if (messageAdd.Files?.Count > 0)
             {
-                message.IsReplied = true;
-                message.RepliedById = message.SenderId;
+                foreach (var file in messageAdd.Files)
+                {
+                    var uploadResult = await _cloudinaryService.UploadFileAsync(file);
+                    if (uploadResult.Error != null)
+                    {
+                        throw new BadRequestException("Lỗi khi thêm file");
+                    }
+                    var messageFile = new MessageFile
+                    {
+                        FileUrl = uploadResult.Url,
+                        FileType = file.ContentType,
+                    };
+                    message.Files.Add(messageFile);
+                }
             }
+
+            await _unit.MessageRepository.AddAsync(message);
+
+            return await _unit.CompleteAsync()
+                ? MessageMapper.EntityToMessageDto(message)
+                : throw new BadRequestException("Thêm tin nhắn thất bại");
+        }
+        public async Task<MessageDto> ReplyMessageAsync(MessageAdd messageAdd, string claimValue)
+        {
+            var message = MessageMapper.MessageAddDtoToEntity(messageAdd);
+
+            
+            var customerId = messageAdd.RecipientIds;
+            var otherAdmins = await GetUsersByClaimValueAsync(claimValue);
+            otherAdmins.Remove(messageAdd.SenderId!);
+
+            message.RecipientIds = customerId.Concat(otherAdmins).ToList();
+   
+            if (messageAdd.Files?.Count > 0)
+            {
+                foreach (var file in messageAdd.Files)
+                {
+                    var uploadResult = await _cloudinaryService.UploadFileAsync(file);
+                    if (uploadResult.Error != null)
+                    {
+                        throw new BadRequestException("Lỗi khi thêm file");
+                    }
+                    var messageFile = new MessageFile
+                    {
+                        FileUrl = uploadResult.Url,
+                        FileType = file.ContentType,
+                    };
+                    message.Files.Add(messageFile);
+                }
+            }
+
+            message.RepliedByAdminId = message.SenderId;
+
             await _unit.MessageRepository.AddAsync(message);
 
             return await _unit.CompleteAsync()
@@ -76,20 +135,16 @@ namespace Shop.Application.Services.Implementations
                 : throw new BadRequestException("Thêm tin nhắn thất bại");
 
         }
-        public Task AddFileAsync(IFormFileCollection files)
-        {
-            throw new NotImplementedException();
-        }
 
-        public async Task<MessageDto> GetLastMessageAsync(string senderId, string recipientId)
+        public async Task<MessageDto> GetLastMessageAsync(string userId)
         {
-            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(senderId, recipientId);
+            var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(userId);
             return MessageMapper.EntityToMessageDto(lastMessage);
         }
 
-        public async Task<IEnumerable<MessageDto>> GetMessageThread(string senderId, string recipientId, int skip, int take)
+        public async Task<IEnumerable<MessageDto>> GetMessageThread(string customerId)
         {
-            var messages = await _unit.MessageRepository.GetMessageThread(senderId, recipientId, skip, take);
+            var messages = await _unit.MessageRepository.GetMessageThread(customerId);
             return messages.Select(MessageMapper.EntityToMessageDto!);
         }
 

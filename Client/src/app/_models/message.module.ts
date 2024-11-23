@@ -9,11 +9,13 @@ export interface MessageBase {
   recipientIds: string[];
   content: string | null;
 }
-export interface MessageAdd extends MessageBase {}
+export interface MessageAdd extends MessageBase {
+  files: File[];
+}
 export interface MessageDto extends MessageBase {
   id: number;
   sentAt: string;
-  Files: FileMessageDto[];
+  files: FileMessageDto[];
   isReplied: boolean;
   repliedById: string | null;
 }

@@ -9,7 +9,7 @@
       <img height="40" src="http://localhost:5000/avatar/{{customer.avatar}}" width="40"/>
       <div class="chat-info">
           <div class="chat-name">
-              {{ customer.fullname }}
+              {{ customer.fullName }}
           </div>
           <div class="chat-message">
               {{customer.lastMessage}}
@@ -22,10 +22,10 @@
   <div class="chat-window">
     <div class="chat-header">
       <div class="d-flex align-items-center">
-        <img alt="Profile picture of {{ selectedUser?.fullname }}" height="40" [src]="'http://localhost:5000/avatar/' + (selectedUser?.avatar || '')" width="40"/>
+        <img alt="Profile picture of {{ selectedUser?.fullName }}" height="40" [src]="'http://localhost:5000/avatar/' + (selectedUser?.avatar || '')" width="40"/>
         <div class="chat-header-info">
           <div class="chat-header-name">
-            {{ selectedUser?.fullname || 'Select a chat' }}
+            {{ selectedUser?.fullName || 'Select a chat' }}
           </div>
         </div>
       </div>
@@ -33,25 +33,24 @@
     <div class="chat-body" #messagesContainer (scroll)="onScroll()">
       <div class="messages" *ngFor="let message of messages; track by message">
         <!-- Tin nhắn bên trái (recipient) -->
-        <!-- <div *ngIf="message.recipientId === user.id" class="message left-message">
-          <img class="avatar" height="40" src="http://localhost:5000/avatar/{{ selectedUser?.avatar }}" width="40" />
+        <div *ngIf="message.senderId === selectedUser.id" class="message left-message">
+          <img class="avatar" height="40" src="http://localhost:5000/avatar/user.jpg" width="40" />
           <div class="message-content">
-            <div class="text">{{ message.content }}</div>
-            <div class="file-content">
-              <img *ngIf="isImage(message.fileType)" [src]="message.fileUrl" class="message-media" />
-              <video *ngIf="isVideo(message.fileType)" [src]="message.fileUrl" controls class="message-media"></video>
+            <div class="text" *ngIf="message.content !== null">{{ message.content.trim() }}</div>
+            <div class="file-content" *ngFor="let file of message.files">
+              <img *ngIf="isImage(file.fileType)" [src]="file.fileUrl" class="message-media" />
+              <video *ngIf="isVideo(file.fileType)" [src]="file.fileUrl" controls class="message-media"></video>
             </div>
           </div>
-        </div> -->
-
+        </div>
         <!-- Tin nhắn bên phải (sender) -->
-        <div *ngIf="message.senderId === user.id" class="message right-message">
+        <div *ngIf="message.senderId !== selectedUser.id" class="message right-message">
           <div class="message-content">
-            <div class="text" *ngIf="message.content">{{ message.content }}</div>
-            <!-- <div class="file-content">
-              <img *ngIf="isImage(message.fileType)" [src]="message.fileUrl" class="message-media" />
-              <video *ngIf="isVideo(message.fileType)" [src]="message.fileUrl" controls class="message-media"></video>
-            </div> -->
+            <div class="text" *ngIf="message.content !== null">{{ message.content.trim() }}</div>
+            <div class="file-content" *ngFor="let file of message.files">
+              <img *ngIf="isImage(file.fileType)" [src]="file.fileUrl" class="message-media" />
+              <video *ngIf="isVideo(file.fileType)" [src]="file.fileUrl" controls class="message-media"></video>
+            </div>
           </div>
         </div>
       </div>
@@ -69,16 +68,30 @@
         </label>
       </div>
     </div>
-    <div class="chat-input">
+    <div *ngIf="typingAdminId" class="typing-status">
+      Admin khác đang nhập tin nhắn...
+    </div>
+    <div *ngIf="!typingAdminId" class="chat-input">
       <label for="fileInput">
         <i class="bi bi-image-fill"></i>
         <input type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
       </label>
-      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text" (keyup.enter)="sendMessage()" />
+
+      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text"
+             (keyup)="notifyTyping()"
+             (blur)="stopTyping()"
+             (keyup.enter)="sendMessage()"
+             (focus)="notifyTyping()"
+             />
       <button (click)="sendMessage()">
         <i class="fas fa-paper-plane"></i>
         Send
       </button>
+    </div>
+    <div *ngIf="typingAdminId">
+      <p>
+        Hiện tại không thể gửi tin nhắn vì admin khác đang nhập tin nhắn...
+      </p>
     </div>
   </div>
 

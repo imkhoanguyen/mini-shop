@@ -232,12 +232,14 @@ export class ProductComponent {
     this.loadProducts();
   }
 
-  onPageSizeChange(newPageSize: any): void {
-    this.pageSize = newPageSize.value;
-    this.pageNumber = 1;
-    this.loadProducts();
+  onPageSizeChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    if (target) {
+      this.pageSize = +target.value;
+      this.pageNumber = 1;
+      this.loadProducts();
+    }
   }
-
   loadProducts(): void {
     const params = {
       pageNumber: this.pageNumber,
