@@ -18,7 +18,7 @@ import { ProductGet } from '../../../_models/product.module'; // You can define 
 export class ProductDetailComponent implements OnInit {
   productId?: string;
   productFound: any = {}; // Change to object instead of array
-  productArrayRelated: any[] = [];
+  productArrayRelated: ProductGet[] = [];
   constructor(
     private route: ActivatedRoute,
     private productSrv: productUserService
@@ -40,7 +40,7 @@ export class ProductDetailComponent implements OnInit {
       (product) => {
         this.productFound = product;
         const categoryId  = this.productFound.categoryIds ;
-     
+       this.getAllProductRelatedByCategory(categoryId)
       },
       (error) => {
         console.error('Error loading product details:', error);
@@ -51,8 +51,9 @@ export class ProductDetailComponent implements OnInit {
   getAllProductRelatedByCategory(categoryId: number) {
     this.productSrv
       .getAllProductByCategory(categoryId)
-      .subscribe((products) => {
+      .subscribe((products :ProductGet[]) => {
         this.productArrayRelated = products;
+        console.log ("productRelated Array"+ this.productArrayRelated);
       });
   }
 }
