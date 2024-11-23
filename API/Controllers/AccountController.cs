@@ -116,6 +116,14 @@ namespace API.Controllers
             userDto.Token = await _tokenService.CreateToken(user);
             return Ok(userDto);
         }
+        [HttpGet("userId/{userId}")]
+        public async Task<ActionResult<UserDto>> GetUserById(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var userDto = UserMapper.EntityToUserDto(user);
+            userDto.Token = await _tokenService.CreateToken(user);
+            return Ok(userDto);
+        }
         private async Task<bool> CheckUsernameExistsAsync(string username)
         {
             return await _userManager.FindByNameAsync(username) != null;
@@ -182,8 +190,5 @@ namespace API.Controllers
                     password.Any(char.IsDigit) && 
                     password.Any(char.IsPunctuation);
         }
-
-      
-
     }
 }

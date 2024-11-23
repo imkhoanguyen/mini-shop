@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Shop.Application.DTOs.Messages;
+﻿using Shop.Application.DTOs.Messages;
+using Shop.Domain.Entities;
 
 namespace Shop.Application.Services.Abstracts
 {
     public interface IMessageService
     {
-        Task<MessageDto> AddMessageAsync(MessageAdd messageAdd);
-        Task<MessageDto> ReplyMessageAsync(MessageAdd messageAdd);
-        Task<List<string>> GetUsersByClaimValueAsync(string claimValue);
-        Task<MessageDto> GetLastMessageAsync(string senderId, string recipientId);
-        Task<IEnumerable<MessageDto>> GetMessageThread(string senderId, string recipientId, int skip, int take);
-        Task AddFileAsync(IFormFileCollection files);
+        Task<MessageDto> AddMessageAsync(MessageAdd messageAdd, string claimValue);
+        Task<MessageDto> ReplyMessageAsync(MessageAdd messageAdd, string claimValue);
+        Task<List<string>> GetUsersByClaimValueAsync(string hasClaim);
+        Task<List<string>> GetUsersWithoutClaimAsync(string hasClaim);
+        Task<MessageDto> GetLastMessageAsync(string userId);
+        Task<IEnumerable<MessageDto>> GetMessageThread(string customerId);
     }
 }

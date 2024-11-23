@@ -30,14 +30,20 @@ namespace api.Controllers
         [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts()
         {
-            var categories = await _productService.GetAllAsync(false);
-            return Ok(categories);
+            var products = await _productService.GetAllAsync(false);
+            return Ok(products);
         }
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ProductDto>> GetProductById(int id)
         {
-            var product = await _productService.GetAsync(c => c.Id == id);
+            var product = await _productService.GetAsync(p => p.Id == id);
             return Ok(product);
+        }
+        [HttpGet("categoryId/{categoryId:int}")]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetProductsByCategoryId(int categoryId)
+        {
+            var products = await _productService.GetProductsByCategoryId(categoryId);
+            return Ok(products);
         }
 
         [HttpPost("Add")]

@@ -116,6 +116,15 @@ namespace Shop.Application.Services.Implementations
             return ProductMapper.EntityToProductDto(product);
         }
 
+        public async Task<IEnumerable<ProductDto>> GetProductsByCategoryId(int categoryId)
+        {
+            var product = await _unit.ProductRepository.GetProductsAsync(p =>
+                p.ProductCategories.Any(pc => pc.CategoryId == categoryId), false);
+            if (product is null) throw new NotFoundException("Sản phẩm không tồn tại");
+
+            return product.Select(ProductMapper.EntityToProductDto);
+        }
+
         public async Task RemoveImageAsync(int productId, int imageId)
         {
             var product = await _unit.ProductRepository.GetAsync(r => r.Id == productId, true);

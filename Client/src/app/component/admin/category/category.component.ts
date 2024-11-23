@@ -111,10 +111,13 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.loadCategories();
   }
 
-  onPageSizeChange(newPageSize: any): void {
-    this.pageSize = newPageSize.value;
-    this.pageNumber = 1;
-    this.loadCategories();
+  onPageSizeChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    if (target) {
+      this.pageSize = +target.value;
+      this.pageNumber = 1;
+      this.loadCategories();
+    }
   }
 
   onSearch(): void {

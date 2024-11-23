@@ -26,6 +26,7 @@ namespace Shop.Application.Mappers
                 RecipientIds = message.RecipientIds,
                 Content = message.Content,
                 SentAt = message.SentAt,
+                RepliedByAdminId = message.RepliedByAdminId,
                 Files = message.Files.Select(MessageFileToFileMessageDto).ToList()
             };
         }

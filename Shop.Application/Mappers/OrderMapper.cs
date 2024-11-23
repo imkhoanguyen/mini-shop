@@ -24,5 +24,33 @@ namespace Shop.Application.Mappers
                 ShippingMethodId = dto.ShippingMethodId
             };
         }
+
+        public static OrderDto FromEntityToDto(Order order)
+        {
+            return new OrderDto
+            {
+                Id = order.Id,
+                SubTotal = order.SubTotal,
+                OrderDate = order.Order_date,
+                Address = order.Address,
+                Phone = order.Phone,
+                ShippingFee = order.ShippingFee,
+                Created = order.Created,
+                Updated = order.Updated,
+                ShippingMethodId = order.ShippingMethodId,
+                UserId = order.UserId,
+                DiscountId = order.DiscountId,
+                DiscountPrice = order.DiscountPrice,
+                orderItems = order.OrderItems.Select(item => new OrderItemsDto
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    SizeName=item.SizeName,
+                    ProductName=item.ProductName,
+                    ColorName=item.ColorName,
+                }).ToList()
+            };
+        }
     }
 }

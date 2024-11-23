@@ -5,7 +5,6 @@ namespace Shop.Application.DTOs.Messages
         public int Id { get; set; }
         public DateTime SentAt { get; set; }
         public List<FileMessageDto> Files { get; set; } = new List<FileMessageDto>();
-        public bool IsReplied { get; set; } 
-        public string? RepliedById { get; set; }
+        public string? RepliedByAdminId { get; set; }
     }
 }

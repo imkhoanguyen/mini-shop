@@ -26,5 +26,30 @@ namespace API.Controllers
             return Ok(order.Id);
 
         }
+
+         [HttpGet("orders/{userId}")]
+        public async Task<IActionResult> GetOrdersByUserId(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("User ID is required.");
+            }
+
+            try
+            {
+                var orders = await _orderService.GetOrdersByUserIdAsync(userId);
+
+                if (orders == null || !orders.Any())
+                {
+                    return NotFound("No orders found for this user.");
+                }
+
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

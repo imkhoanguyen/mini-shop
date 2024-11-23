@@ -12,21 +12,17 @@ export class MessageService {
   apiUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
-  getMessages(senderId: string, recipientId: string, skip: number, take: number): Observable<MessageDto[]> {
+  getMessages(customerId: string): Observable<MessageDto[]> {
     return this.http.get<MessageDto[]>(this.apiUrl +
-      "/Messages/GetMessageThread?senderId=" + senderId +
-      "&recipientId=" + recipientId +
-      "&skip="+skip+
-      "&take="+take);
+      "/Messages/GetMessageThread?customerId=" + customerId);
   }
-  uploadFiles(files: FormData): Observable<{ fileUrl: string, fileType: string }[]> {
-    return this.http.post<{ fileUrl: string, fileType: string }[]>(this.apiUrl + "/Messages/UploadFiles", files);
+  addMessage(data: FormData){
+    return this.http.post<MessageDto>(this.apiUrl + "/Messages/AddMessage", data);
   }
-
-  addMessage(data: MessageAdd): Observable<MessageAdd> {
-    return this.http.post<MessageAdd>(this.apiUrl + "/Messages/AddMessage", data);
+  getLastMessage(userId: string): Observable<MessageDto> {
+    return this.http.get<MessageDto>(this.apiUrl + "/Messages/GetLastMessage?userId=" + userId);
   }
-  getLastMessage(senderId: string, recipientId: string): Observable<MessageDto> {
-    return this.http.get<MessageDto>(this.apiUrl + "/Messages/GetLastMessage?senderId=" + senderId + "&recipientId=" + recipientId);
+  getCustomers() {
+    return this.http.get<string[]>(this.apiUrl + "/Messages/GetCustomers");
   }
 }
