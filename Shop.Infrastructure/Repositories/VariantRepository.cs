@@ -2,6 +2,7 @@ using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
+using System.Linq.Expressions;
 
 namespace Shop.Infrastructure.Repositories
 {
@@ -39,7 +40,22 @@ namespace Shop.Infrastructure.Repositories
                 variantDb.Quantity = variant.Quantity;
                 variantDb.PriceSell = variant.PriceSell;
                 variantDb.Status = variant.Status;
+                variantDb.ColorId = variant.ColorId;
+                variantDb.SizeId = variant.SizeId;
             }
+        }
+        public override async Task<Variant?> GetAsync(Expression<Func<Variant, bool>> expression, bool tracked = false)
+        {
+            var query = _context.Variants
+                 .Include(v => v.Images)
+                 .Where(v => !v.IsDelete).AsQueryable();
+
+            if (!tracked)
+            {
+                query = query.AsNoTracking();
+            }
+
+            return await query.FirstOrDefaultAsync(expression);
         }
 
     }

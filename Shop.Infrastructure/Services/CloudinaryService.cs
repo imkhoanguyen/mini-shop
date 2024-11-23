@@ -25,7 +25,7 @@ namespace Shop.Infrastructure.Services
                 var uploadParam = new ImageUploadParams
                 {
                     File = new FileDescription(file.FileName, stream),
-                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+                    Transformation = new Transformation().Height(300).Width(450).Crop("fill").Gravity("face"),
                     Folder = "mini-upload"
                 };
                 uploadResult = await _cloudinary.UploadAsync(uploadParam);
@@ -145,7 +145,7 @@ namespace Shop.Infrastructure.Services
                     File = new FileDescription(file.FileName, stream),
                     Folder = "mini-images",
                     PublicId = Guid.NewGuid().ToString(),
-                    Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face"),
+                    Transformation = new Transformation().Height(300).Width(450).Crop("fill").Gravity("face"),
                 };
                 var imageResult = await _cloudinary.UploadAsync(imageUploadParam);
                 if (imageResult.Error != null)

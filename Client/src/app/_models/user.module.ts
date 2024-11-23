@@ -4,7 +4,7 @@ export interface User {
   token: string;
   role: string;
   userName: string;
-  fullname: string;
+  fullName: string;
   phoneNumber: string;
   address: string;
   avatar: string;

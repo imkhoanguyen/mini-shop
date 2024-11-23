@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
     RouterModule,
     HeaderComponent,
     FooterClientComponent,
-    ProductListComponent,
+    // ProductListComponent,
   ],
 })
 export class ProductUserComponent implements OnInit {
@@ -30,41 +30,26 @@ export class ProductUserComponent implements OnInit {
     this.loadProduct();
   }
 
-  getAllProductByCategory(categoryId: number) {
-    this.productSrv
-      .getAllProductByCategory(categoryId)
-      .subscribe((Res: any) => {
-        this.productArray = Res.data;
-      });
-  }
-  productList() {
-    console.log("Product Array Smartphone before navigating:", this.productArraySmartPhone);
-  
-    this.router.navigate(['/product/productList'], {
-      state: { productArray: this.productArraySmartPhone },
-    }).then(success => {
-      console.log('Navigation success:', success);
-    }).catch(err => {
-      console.error('Navigation error:', err);
-    });
-  }
-
-  loadProduct() {
+loadProduct() {
     this.productSrv.getAllProduct().subscribe(
-      (Res: any) => {
-        this.productArray = Res.data; // Gán dữ liệu vào productArray
-        // loc ra category là id của mobile  thì nạp vào mảng này mobile
-        this.productArraySmartPhone = this.productArray.filter(
-          (product) => product.categoryId === 1
-        );
-        this.productArrayLaptop = this.productArray.filter(
-          (product) => product.categoryId === 4
-        );
-        console.log('Products loaded:', this.productArray); // In ra giá trị của productArray
-        console.log('Smartphone Products:', this.productArraySmartPhone);
+      (products) => {
+        this.productArray = products; 
+
+        this.productArray.forEach(product => {
+          if (product.variants && product.variants.length > 0) {
+            const price = product.variants[0].price;
+            console.log(`Price for product ${product.id}: ${price}`);
+          } else {
+            console.log(`No variants for product ${product.id}`);
+          }
+        });
+  
+        this.productArraySmartPhone = products.filter(product => product.categoryIds.includes(1));
+         this.productArrayLaptop = products.filter(product => product.categoryIds.includes(2));
       },
+     
       (error) => {
-        console.error('Error fetching products:', error); // In lỗi nếu có
+        console.error('Error loading products:', error);
       }
     );
   }

@@ -7,16 +7,13 @@ namespace Shop.Domain.Entities
         public string? SenderId { get; set; }
         public List<string>? RecipientIds { get; set; }
         public string? Content { get; set; }
-        public string? FileUrl { get; set; }
-        public string? FileType { get; set; }
         public DateTime SentAt { get; set; }
-        public bool IsReplied { get; set; } = false;
-        public string? RepliedById { get; set; }
+        public string? RepliedByAdminId { get; set; }
 
         [ForeignKey("SenderId")]
         public AppUser? Sender { get; set; }
-        [ForeignKey("RepliedByUserId ")]
-        public AppUser? RepliedByUser { get; set; }
+        [ForeignKey("RepliedByAdminId ")]
+        public AppUser? RepliedByAdmin { get; set; }
 
         public ICollection<MessageFile> Files { get; set; } = new List<MessageFile>();
     }

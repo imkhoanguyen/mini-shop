@@ -37,6 +37,7 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IVariantService, VariantService>();
+            services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ISizeService, SizeService>();
             services.AddScoped<IColorService, ColorService>();

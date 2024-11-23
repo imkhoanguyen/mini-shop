@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
 
 namespace Shop.Infrastructure.DataAccess.Seed
@@ -10,9 +11,14 @@ namespace Shop.Infrastructure.DataAccess.Seed
 
             if (context.UserRoles.Any()) return;
 
-            var adminUser = await userManager.FindByNameAsync("Admin");
+            var adminUsers = await userManager.Users
+               .Where(u => u.UserName.Contains("admin"))
+               .ToListAsync();
 
-            await userManager.AddToRoleAsync(adminUser, "Admin");
+            foreach (var adminUser in adminUsers)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
 
             var customerUser = await userManager.FindByNameAsync("Customer");
 

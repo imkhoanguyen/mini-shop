@@ -22,6 +22,22 @@ namespace Shop.Infrastructure.DataAccess.Seed
                 },
                 new AppUser
                 {
+                    FullName = "Admin2",
+                    UserName = "admin2",
+                    Email = "admin2@gmail.com",
+                    PhoneNumber = "0123456789",
+                    Avatar = "user.jpg",
+                },
+                new AppUser
+                {
+                    FullName = "Admin3",
+                    UserName = "admin3",
+                    Email = "admin3@gmail.com",
+                    PhoneNumber = "0123456789",
+                    Avatar = "user.jpg",
+                },
+                new AppUser
+                {
                     FullName = "Customer",
                     UserName = "customer",
                     Email = "khoasgu01@gmail.com",

@@ -23,7 +23,7 @@ namespace Shop.Application.Services.Implementations
         }
         public async Task<ProductDto> AddAsync(ProductAdd productAdd)
         {
-            if (await _unit.ProductRepository.ExistsAsync(c => c.Name.ToLower() == productAdd.Name.ToLower()))
+            if (await _unit.ProductRepository.ExistsAsync(c => c.Name.ToLower() == productAdd.Name.ToLower() && !c.IsDelete))
             {
                 throw new BadRequestException("Sản phẩm đã tồn tại");
             }
@@ -116,6 +116,15 @@ namespace Shop.Application.Services.Implementations
             return ProductMapper.EntityToProductDto(product);
         }
 
+        public async Task<IEnumerable<ProductDto>> GetProductsByCategoryId(int categoryId)
+        {
+            var product = await _unit.ProductRepository.GetProductsAsync(p =>
+                p.ProductCategories.Any(pc => pc.CategoryId == categoryId), false);
+            if (product is null) throw new NotFoundException("Sản phẩm không tồn tại");
+
+            return product.Select(ProductMapper.EntityToProductDto);
+        }
+
         public async Task RemoveImageAsync(int productId, int imageId)
         {
             var product = await _unit.ProductRepository.GetAsync(r => r.Id == productId, true);
@@ -153,6 +162,31 @@ namespace Shop.Application.Services.Implementations
                 throw new BadRequestException("Sản phẩm đã tồn tại");
 
             var product = ProductMapper.ProductUpdateDtoToEntity(productUpdate);
+
+            if (productUpdate.ImageFile != null)
+            {
+                if (product.Image != null && !string.IsNullOrEmpty(product.Image.PublicId))
+                {
+                    var deletionResult = await _cloudinaryService.DeleteImageAsync(product.Image.PublicId);
+                    if (deletionResult.Error != null)
+                    {
+                        throw new BadRequestException("Lỗi khi xóa ảnh cũ");
+                    }
+                }
+
+                var uploadResult = await _cloudinaryService.UploadImageAsync(productUpdate.ImageFile);
+                if (uploadResult.Error != null)
+                {
+                    throw new BadRequestException("Lỗi khi thêm ảnh mới");
+                }
+
+                product.Image = new ProductImage
+                {
+                    ImgUrl = uploadResult.Url,
+                    PublicId = uploadResult.PublicId,
+                };
+            }
+
             await _unit.ProductRepository.UpdateProductAsync(product);
 
             return await _unit.CompleteAsync()

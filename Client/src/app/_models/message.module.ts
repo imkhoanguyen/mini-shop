@@ -1,9 +1,21 @@
-export interface Message {
+
+export interface FileMessageDto {
   id: number;
-  senderId: string;
-  recipientId: string;
-  content: string | null;
   fileUrl: string | null;
   fileType: string | undefined;
+}
+export interface MessageBase {
+  senderId: string;
+  recipientIds: string[];
+  content: string | null;
+}
+export interface MessageAdd extends MessageBase {
+  files: File[];
+}
+export interface MessageDto extends MessageBase {
+  id: number;
   sentAt: string;
+  files: FileMessageDto[];
+  isReplied: boolean;
+  repliedById: string | null;
 }

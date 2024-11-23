@@ -6,8 +6,8 @@ namespace API.Interfaces
 {
     public interface IMessageRepository : IRepository<Message>
     {
-        //Task<IEnumerable<Message?>> GetMessageThread(string senderId, string recipientId, int skip, int take);
-        //Task<Message?> GetLastMessage(string senderId, string recipientId);
+        Task<IEnumerable<Message?>> GetMessageThread(string customerId);
+        Task<Message> GetLastMessageAsync(string customerId);
         Task<List<string>> GetRoleWithClaim(string claimValue);
     }
 }

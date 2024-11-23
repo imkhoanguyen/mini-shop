@@ -67,11 +67,11 @@
               <p class="text-muted">Kéo và thả tệp vào đây để tải lên.</p>
             </div>
           </ng-template>
-          <button type="button" pbutton="" class="p-element p-button-icon-only p-button p-component"></button>
+
 
           <ng-template #imageDisplay>
             <div class="d-flex flex-column "  style="height: 100%;">
-              <div *ngFor="let file of selectedFiles">
+              <div *ngFor="let file of selectedFile">
                 <div class="p-fileupload-files " >
                   <div class="p-fileupload-row ng-star-inserted ">
                     <!-- Hình ảnh -->
@@ -84,7 +84,7 @@
                     </div>
                     <!-- Nút xóa -->
                     <div class="d-flex justify-content-end">
-                      <p-button icon="pi pi-times" (onClick)="removeFile(file)" severity="primary" [rounded]="true" [outlined]="false"></p-button>
+                      <p-button icon="pi pi-times" (onClick)="removeProductImage(file)" severity="primary" [rounded]="true" [outlined]="false"></p-button>
                     </div>
                   </div>
                 </div>
@@ -182,16 +182,16 @@
                         </ng-template>
 
                         <ng-template pTemplate="empty">
-                          <div class="d-flex flex-column align-items-center" *ngIf="!hasVariantImage; else imageDisplay">
+                          <div class="d-flex flex-column align-items-center" *ngIf="!selectedFilesMap[variant.value.id]?.length; else imageDisplay">
                             <i class="pi pi-cloud-upload text-muted display-1 mb-3"></i>
                             <p class="text-muted">Kéo và thả tệp vào đây để tải lên.</p>
                           </div>
                         </ng-template>
-                        <button type="button" pbutton="" class="p-element p-button-icon-only p-button p-component"></button>
+
 
                         <ng-template #imageDisplay>
                           <div class="d-flex flex-column "  style="height: 100%;">
-                            <div *ngFor="let file of selectedFiles">
+                            <div *ngFor="let file of selectedFilesMap[variant.value.id]">
                               <div class="p-fileupload-files " >
                                 <div class="p-fileupload-row ng-star-inserted ">
                                   <!-- Hình ảnh -->
@@ -204,11 +204,13 @@
                                   </div>
                                   <!-- Nút xóa -->
                                   <div class="d-flex justify-content-end">
-                                    <p-button icon="pi pi-times" (onClick)="removeFile(file)" severity="primary" [rounded]="true" [outlined]="false"></p-button>
+                                    <p-button icon="pi pi-times" (onClick)="removeVariantImage(variant.value.id, file)" severity="primary" [rounded]="true" [outlined]="false"></p-button>
                                   </div>
                                 </div>
                               </div>
                             </div>
+                            <i class="pi pi-cloud-upload text-muted display-1 mb-3"></i>
+                            <p class="text-muted">Kéo và thả tệp vào đây để tải lên.</p>
                           </div>
                         </ng-template>
                       </p-fileUpload>
@@ -241,28 +243,30 @@
 </div>
 
 <p-dialog header="Thêm màu" [modal]="true" [(visible)]="visible" [style]="{ width: '35rem', height: '25rem' }">
-  <div class="flex flex-col gap-4">
 
+    <!-- Tên -->
     <div class="flex items-center gap-4 mb-4">
       <label for="name" class="font-semibold w-1/4">Tên</label>
       <input pInputText id="name" [(ngModel)]="name" autocomplete="off" class="w-full" />
     </div>
 
+    <!-- Code -->
     <div class="flex items-center gap-4 mb-6">
       <label for="code" class="font-semibold w-1/4">Code</label>
       <input type="text" placeholder="Nhập mã màu" [(ngModel)]="code" (ngModelChange)="updateColorFromInput($event)"
         class="p-inputtext w-1/4" />
+    </div>
 
+    <!-- Color Picker -->
+    <div class="mb-6">
       <p-colorPicker [(ngModel)]="code" class="m-2 flex-grow" />
-
     </div>
 
     <!-- Action buttons -->
-    <div class="d-flex gap-3 p-4">
+    <div class="d-flex gap-3 p-4 flex justify-content-end">
       <p-button label="Hủy" severity="secondary" (onClick)="visible = false"
-        class="w-24 justify-content-start"></p-button>
-      <p-button label="Thêm" (onClick)="addColor()" class="w-24 justify-content-end"></p-button>
+        class="w-24"></p-button>
+      <p-button label="Thêm" (onClick)="addColor()" class="w-24"></p-button>
     </div>
 
-  </div>
 </p-dialog>

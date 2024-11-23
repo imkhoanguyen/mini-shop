@@ -113,5 +113,7 @@ export class AccountService {
     }
     return null; // Trả về null nếu không có user trong localStorage
   }
+  getUserId(userId: string){
+    return this.http.get<User>(this.apiUrl +"/Account/userId/"+userId);
+  }
 }
-  

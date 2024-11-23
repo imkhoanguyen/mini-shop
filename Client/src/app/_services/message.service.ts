@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Message } from '../_models/message.module';
+import { MessageAdd, MessageDto } from '../_models/message.module';
 
 @Injectable({
   providedIn: 'root'
@@ -12,21 +12,17 @@ export class MessageService {
   apiUrl = environment.apiUrl;
   constructor(private http: HttpClient) {}
 
-  getMessages(senderId: string, recipientId: string, skip: number, take: number): Observable<Message[]> {
-    return this.http.get<Message[]>(this.apiUrl +
-      "/Messages/GetMessageThread?senderId=" + senderId +
-      "&recipientId=" + recipientId +
-      "&skip="+skip+
-      "&take="+take);
+  getMessages(customerId: string): Observable<MessageDto[]> {
+    return this.http.get<MessageDto[]>(this.apiUrl +
+      "/Messages/GetMessageThread?customerId=" + customerId);
   }
-  uploadFiles(files: FormData): Observable<{ fileUrl: string, fileType: string }[]> {
-    return this.http.post<{ fileUrl: string, fileType: string }[]>(this.apiUrl + "/Messages/UploadFiles", files);
+  addMessage(data: FormData){
+    return this.http.post<MessageDto>(this.apiUrl + "/Messages/AddMessage", data);
   }
-
-  sendMessage(data: Message): Observable<Message> {
-    return this.http.post<Message>(this.apiUrl + "/Messages/SendMessage", data);
+  getLastMessage(userId: string): Observable<MessageDto> {
+    return this.http.get<MessageDto>(this.apiUrl + "/Messages/GetLastMessage?userId=" + userId);
   }
-  getLastMessage(senderId: string, recipientId: string): Observable<Message> {
-    return this.http.get<Message>(this.apiUrl + "/Messages/GetLastMessage?senderId=" + senderId + "&recipientId=" + recipientId);
+  getCustomers() {
+    return this.http.get<string[]>(this.apiUrl + "/Messages/GetCustomers");
   }
 }
