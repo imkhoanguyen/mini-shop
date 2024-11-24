@@ -17,6 +17,7 @@ import { ChatComponent } from "../../component/chat/chat.component";
   styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
+  public cartItem:number = 0;
   sidebarVisible: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   private router = inject(Router);

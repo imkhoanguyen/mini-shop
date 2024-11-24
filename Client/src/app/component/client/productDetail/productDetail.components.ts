@@ -19,6 +19,8 @@ export class ProductDetailComponent implements OnInit {
   productId?: string;
   productFound: any = {}; // Change to object instead of array
   productArrayRelated: ProductGet[] = [];
+  showAdd :boolean =true ;
+  showRemove : boolean = false ;
   constructor(
     private route: ActivatedRoute,
     private productSrv: productUserService
@@ -55,5 +57,14 @@ export class ProductDetailComponent implements OnInit {
         this.productArrayRelated = products;
         console.log ("productRelated Array"+ this.productArrayRelated);
       });
+  }
+
+  addToCart()
+  {
+
+  }
+  removeItem()
+  {
+
   }
 }
