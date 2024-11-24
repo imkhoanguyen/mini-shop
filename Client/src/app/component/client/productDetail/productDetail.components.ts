@@ -7,7 +7,7 @@ import { FooterClientComponent } from '../../../layout/footerClient/footerClient
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductGet } from '../../../_models/product.module'; // You can define a specific interface for Product if you want
-
+import { ApiService } from '../shared/api.service';
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -19,11 +19,14 @@ export class ProductDetailComponent implements OnInit {
   productId?: string;
   productFound: any = {}; // Change to object instead of array
   productArrayRelated: ProductGet[] = [];
-  showAdd :boolean =true ;
-  showRemove : boolean = false ;
+  showAdd: boolean = true;
+  showRemove: boolean = false;
+  
   constructor(
     private route: ActivatedRoute,
-    private productSrv: productUserService
+    private productSrv: productUserService,
+    private api :ApiService 
+ 
   ) {}
 
   ngOnInit(): void {
@@ -36,13 +39,12 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  
   getProductDetail(ProductId: number): void {
     this.productSrv.getProductDetail(ProductId).subscribe(
       (product) => {
         this.productFound = product;
-        const categoryId  = this.productFound.categoryIds ;
-       this.getAllProductRelatedByCategory(categoryId)
+        const categoryId = this.productFound.categoryIds;
+        this.getAllProductRelatedByCategory(categoryId);
       },
       (error) => {
         console.error('Error loading product details:', error);
@@ -53,18 +55,19 @@ export class ProductDetailComponent implements OnInit {
   getAllProductRelatedByCategory(categoryId: number) {
     this.productSrv
       .getAllProductByCategory(categoryId)
-      .subscribe((products :ProductGet[]) => {
+      .subscribe((products: ProductGet[]) => {
         this.productArrayRelated = products;
-        console.log ("productRelated Array"+ this.productArrayRelated);
+        console.log('productRelated Array' + this.productArrayRelated);
       });
   }
 
-  addToCart()
-  {
-
+  addToCart(data:ProductGet) {
+    this.showAdd = false ;
+    this.showRemove  = true ;
+this.api.addToCart(data)
   }
-  removeItem()
-  {
-
+  removeItem() {
+    this.showAdd = true ;
+    this.showRemove = false ;
   }
 }
