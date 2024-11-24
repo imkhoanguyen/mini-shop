@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@microsoft/signalr";
+import { HttpClient } from '@angular/common/http';
+
 import { BehaviorSubject } from "rxjs";
 import { ProductGet } from "../../../_models/product.module";
 @Injectable({
@@ -18,6 +19,16 @@ export class ApiService
     console.log("add to cart" ,this.cartItemList)
  }
  
+ removeToCart (data :ProductGet){
+this.cartItemList.map ( (a:ProductGet ,index :ProductGet)=>
+{
+    if(data.id === a.id)
+    {
+        this.cartItemList.splice(index,1)
+    }
+})
+this.productList.next(this.cartItemList)
+}
  products ()
  {
     return this.productList.asObservable();

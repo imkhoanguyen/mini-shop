@@ -21,12 +21,11 @@ export class ProductDetailComponent implements OnInit {
   productArrayRelated: ProductGet[] = [];
   showAdd: boolean = true;
   showRemove: boolean = false;
-  
+
   constructor(
     private route: ActivatedRoute,
     private productSrv: productUserService,
-    private api :ApiService 
- 
+    private api: ApiService
   ) {}
 
   ngOnInit(): void {
@@ -61,13 +60,14 @@ export class ProductDetailComponent implements OnInit {
       });
   }
 
-  addToCart(data:ProductGet) {
-    this.showAdd = false ;
-    this.showRemove  = true ;
-this.api.addToCart(data)
+  addToCart(data: any) {
+    this.showAdd = false;
+    this.showRemove = true;
+    this.api.addToCart(data);
   }
-  removeItem() {
-    this.showAdd = true ;
-    this.showRemove = false ;
+  removeItem(data: ProductGet) {
+    this.showAdd = true;
+    this.showRemove = false;
+    this.api.removeToCart(data)
   }
 }
