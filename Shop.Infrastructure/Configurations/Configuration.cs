@@ -33,6 +33,7 @@ namespace Shop.Infrastructure.Configurations
         public static void RegisterDI(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<ICloudinaryService, CloudinaryService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();

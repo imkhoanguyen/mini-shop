@@ -4,6 +4,7 @@ namespace Shop.Application.Repositories
 {
     public interface IUnitOfWork
     {
+        IAddressRepository AddressRepository{ get; }
         ICategoryRepository CategoryRepository { get; }
         IProductRepository ProductRepository { get; }
         ISizeRepository SizeRepository { get; }
