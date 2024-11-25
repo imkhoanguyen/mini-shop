@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using API.Extensions;
 using API.Interfaces;
 using API.SignalR;
 using Microsoft.AspNetCore.Identity;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Messages;
 using Shop.Application.DTOs.Users;
+using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
@@ -44,11 +46,12 @@ namespace API.Controllers
 
         }
         [HttpGet("GetMessageThread")]
-        public async Task<IActionResult> GetMessageThread(string customerId)
+        public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessageThread([FromQuery]MessageParams messageParams, string customerId)
         {
 
-            var messages = await _messageService.GetMessageThread(customerId);
-            return Ok(messages);
+            var pagedList = await _messageService.GetMessageThread(messageParams, customerId);
+            Response.AddPaginationHeader(pagedList);
+            return Ok(pagedList);
         }
         [HttpGet("GetLastMessage")]
         public async Task<IActionResult> GetLastMessage(string userId)

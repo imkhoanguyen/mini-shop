@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
+  HostListener,
   inject,
   OnDestroy,
   OnInit,
@@ -16,7 +17,8 @@ import { AccountService } from '../../../_services/account.service';
 import { MessageService } from '../../../_services/message.service';
 import { ChatService } from '../../../_services/chat.service';
 import { ToastrService } from '../../../_services/toastr.service';
-
+import { PaginatedResult, Pagination } from '../../../_models/pagination';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -25,20 +27,30 @@ import { ToastrService } from '../../../_services/toastr.service';
   styleUrl: './chat.component.css',
 })
 export class ChatComponent implements OnInit, OnDestroy {
+  private messageSubscription!: Subscription;
   selectedUser: any;
   message: string = '';
   isTyping: boolean = false;
   messages: MessageDto[] = [];
   typingAdminId: string | null = null;
   recipientUser!: User;
+  searchText: string = '';
   customers: User[] = [];
+  filteredCustomers: User[] = [];
   user!: User;
   content: string = '';
-  loadingOldMessages = false;
+  lastMessage: string = '';
+  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
   selectedFiles: { src: string; file: File; type: string }[] = [];
   recipientId: string = '';
-  searchQuery = '';
+  params = {
+    pageNumber: 1,
+    pageSize: 10,
+    search: ''
+  };
 
+  addPageSize: number = 5;
+  loading = false;
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
   private chatService = inject(ChatService);
@@ -60,12 +72,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
+
   }
-  filterCustomers() {
-    this.customers = this.customers.filter((customer) =>
-      customer.fullName.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-  }
+
   onVisibilityChange(): void {
     if (document.visibilityState === 'visible') {
       this.notifyTyping();
@@ -73,22 +82,21 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   private setupMessageReceived() {
-    console.log('setupMessageReceived');
-    this.chatService.messageReceived$.subscribe({
-      next: (message: MessageDto | null) => {
-        if (message) {
-          console.log('receivedfromUser', message);
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
 
-          this.messages.push(message);
-
+    this.chatService.typingStatus$.subscribe({
+      next: (status) => {
+        if (status && this.content !== null && status.customerId === this.selectedUser.id) {
+          this.typingAdminId = status.isTyping ? status.adminId : null;
+        } else {
           this.typingAdminId = null;
         }
       },
-      error: (err) => console.error('Error receiving message:', err),
+      error: (err) => console.error('Error updating typing status:', err),
     });
   }
-
-
 
   private setupTypingStatus() {
     document.addEventListener('visibilitychange', () => {
@@ -116,6 +124,8 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.accountService.getUserId(customer).subscribe({
             next: (user : User) => {
               this.customers.push(user);
+              this.filteredCustomers.push(user);
+              this.getLastMessage(user.id);
             },
             error: (error) => {
               console.error('Error occurred while fetching user info:', error);
@@ -128,9 +138,29 @@ export class ChatComponent implements OnInit, OnDestroy {
       },
     });
   }
+
+  onSearch(): void {
+    if(this.searchText) {
+      console.log("searchText", this.searchText);
+      this.filteredCustomers = this.customers.filter((customer) => {
+        return customer.fullName.toLowerCase().includes(this.searchText.toLowerCase());
+      });
+    }
+    else {
+      this.filteredCustomers = this.customers;
+    }
+    console.log("a",this.filteredCustomers);
+  }
+
   selectUser(customer: any) {
     this.selectedUser = customer;
     this.messages = [];
+    this.params ={
+      pageNumber: 1,
+      pageSize: 10,
+      search: ''
+    }
+    console.log("selectedUser", this.selectedUser);
     this.loadMessages(this.selectedUser.id);
     this.scrollToBottom();
 
@@ -141,49 +171,54 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
   onScroll() {
     const element = this.messagesContainer.nativeElement;
-    if (element.scrollTop === 0 && !this.loadingOldMessages) {
-     // this.loadMessages();
+    const previousHeight = element.scrollHeight;
+
+    if (element.scrollTop === 0 && !this.loading) {
+      if (this.pagination.currentPage < this.pagination.totalPages) {
+        this.params.pageNumber++;
+        this.loadMessages(this.selectedUser.id);
+        setTimeout(() => {
+          const currentHeight = element.scrollHeight;
+          element.scrollTop = currentHeight - previousHeight;
+        }, 100);
+      }
     }
   }
-  getLastMessage(callback?: () => void) {
-    this.messageService.getLastMessage(this.user.id).subscribe(
+
+  getLastMessage(customerId: string) {
+    this.messageService.getLastMessage(customerId).subscribe(
       (message: MessageDto) => {
-        if (message) {
-          this.recipientId = message.repliedById || '';
-          this.accountService.getUserId(this.recipientId).subscribe({
-            next: (response : User) => {
-              this.recipientUser = response;
-            },
-            error: (error) =>{
-              console.log("Lỗi"+ error);
-            }
-          })
-        }
-        if (callback) {
-          callback();
+        const user = this.customers.find(c => c.id === customerId);
+        if (user) {
+          user.lastMessage = message?.content ?? '';
         }
       },
       (error) => {
         console.error('Error occurred:', error);
-        if (callback) {
-          callback();
-        }
       }
     );
   }
 
   loadMessages(customerId: string) {
-    this.messageService
-      .getMessages(customerId)
-      .subscribe(
-        (messages: MessageDto[]) => {
-          this.messages = messages;
-          console.log('messages', this.messages);
-        },
-        (error) => {
-          console.error('Error occurred:', error);
-        }
-      );
+    if (this.loading) return;
+    this.loading = true;
+
+    this.messageService.getMessageThread(this.params, customerId).subscribe(result => {
+      if (result.items) {
+        this.messages = [...result.items.reverse(), ...this.messages];
+      }
+      console.log("messages", this.messages);
+      this.pagination = result.pagination || { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+      this.loading = false;
+    });
+  }
+
+
+  onSearchText(searchTerm: string) {
+    this.params.search = searchTerm;
+    this.params.pageNumber = 1;
+    this.messages = [];
+    this.loadMessages(this.selectedUser.id);
   }
 
   onFileSelected(event: any) {
@@ -255,17 +290,21 @@ export class ChatComponent implements OnInit, OnDestroy {
     }, 100);
   }
   notifyTyping(): void {
-    this.isTyping = true;
-    this.chatService.notifyTyping(this.selectedUser!.id, this.user.id);
+    if (this.selectedUser && this.user) {
+      this.isTyping = true;
+      this.chatService.notifyTyping(this.selectedUser.id, this.user.id);
+    }
   }
 
   stopTyping(): void {
-    this.isTyping = false;
-    this.chatService.stopTyping(this.selectedUser!.id, this.user.id);
+    if (this.selectedUser && this.user) {
+      this.isTyping = false;
+      this.chatService.stopTyping(this.selectedUser.id, this.user.id);
+    }
   }
 
   sendMessage() {
-    if (!this.content) {
+    if (!this.content.trim() && this.selectedFiles.length === 0) {
       return;
     }
     const formData = new FormData();
@@ -278,8 +317,9 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.messageService.addMessage(formData).subscribe({
       next: (response: MessageDto) => {
         console.log("response", response);
+        this.messages.push(response);
         this.chatService.sendMessage(response);
-        this.loadMessages(this.selectedUser!.id);
+        this.selectedUser!.lastMessage = response.content;
         this.scrollToBottom();
         this.resetMessageInput();
       },

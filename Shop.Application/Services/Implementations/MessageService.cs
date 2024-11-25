@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Shop.Application.DTOs.Categories;
 using Shop.Application.DTOs.Messages;
 using Shop.Application.Mappers;
+using Shop.Application.Parameters;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using Shop.Domain.Exceptions;
 
@@ -142,10 +145,12 @@ namespace Shop.Application.Services.Implementations
             return MessageMapper.EntityToMessageDto(lastMessage);
         }
 
-        public async Task<IEnumerable<MessageDto>> GetMessageThread(string customerId)
+        public async Task<PagedList<MessageDto>> GetMessageThread(MessageParams messageParams, string customerId)
         {
-            var messages = await _unit.MessageRepository.GetMessageThread(customerId);
-            return messages.Select(MessageMapper.EntityToMessageDto!);
+            var messages = await _unit.MessageRepository.GetMessageThread(messageParams, customerId);
+            var messageDtos = messages.Select(MessageMapper.EntityToMessageDto!);
+            return new PagedList<MessageDto>(messageDtos, messages.TotalCount, messageParams.PageNumber, messageParams.PageSize);
+
         }
 
         
