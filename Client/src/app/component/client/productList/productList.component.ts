@@ -8,7 +8,8 @@ import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductDetailComponent } from '../productDetail/productDetail.components';
 import { ApiService } from '../shared/api.service';
-import { ProductGet } from '../../../_models/product.module';
+import { ProductDto, ProductGet } from '../../../_models/product.module';
+import { ProductService } from '../../../_services/product.service';
 
 @Component({
   selector: 'app-product-list',
@@ -23,13 +24,14 @@ export class ProductListComponent implements OnInit {
     productArray: any[] = [];
     showAdd: boolean = true;
     showRemove: boolean = false;
-    constructor(private route: ActivatedRoute, private productSrv: productUserService ,private api :ApiService) {}
+    private productService = inject(ProductService)
+    constructor(private route: ActivatedRoute,private api :ApiService) {}
     ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
         this.productId = params.get('id') || '';
         console.log('Received Product ID:', this.productId);
         if (this.productId) {
-          this.getAllProductByCategory(+this.productId); 
+          this.getAllProductByCategory(+this.productId);
         }
       });
   }
@@ -37,14 +39,14 @@ export class ProductListComponent implements OnInit {
     this.productService.getAllProductByCategory(categoryId).subscribe(
       (products : ProductDto[]) => {
         this.productArray = products;
-        console.log ("----", this.productArray) 
+        console.log ("----", this.productArray)
       },
 
     );
   }
 
 
-  
+
   addToCart(data: any) {
     this.showAdd = false;
     this.showRemove = true;

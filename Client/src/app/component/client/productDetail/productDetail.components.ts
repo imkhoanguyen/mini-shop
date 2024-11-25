@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductGet } from '../../../_models/product.module'; // You can define a specific interface for Product if you want
 import { ApiService } from '../shared/api.service';
+import { ProductService } from '../../../_services/product.service';
 @Component({
   selector: 'app-product-list',
   standalone: true,
