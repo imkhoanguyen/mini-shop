@@ -5,10 +5,13 @@ import { Login } from '../_models/login.module';
 import { environment } from '../../environments/environment';
 import { ResetPassword } from '../_models/resetPassword';
 import { User } from '../_models/user.module';
+import { MessageService } from './message.service';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
   private http = inject(HttpClient);
+  private messageService = inject(MessageService);
+  private users: string[] = [];
   apiUrl = environment.apiUrl;
 
   currentUser = signal<User | null>(null);
@@ -43,7 +46,6 @@ export class AccountService {
   }
   logout() {
     localStorage.removeItem('user');
-    localStorage.removeItem('token');
     this.currentUser.set(null);
   }
   setCurrentUser(user: User) {
@@ -116,4 +118,24 @@ export class AccountService {
   getUserId(userId: string){
     return this.http.get<User>(this.apiUrl +"/Account/userId/"+userId);
   }
+
+  isCustomerRole(): Promise<boolean> {
+    return new Promise((resolve) => {
+      const user = this.getCurrentUser();
+      if (!user) {
+        resolve(false);
+        return;
+      }
+      this.messageService.getCustomers().subscribe({
+        next: (customers: string[]) => {
+          resolve(customers.includes(user.id));
+        },
+        error: () => {
+          resolve(false); 
+        }
+      });
+    });
+  }
+
+
 }

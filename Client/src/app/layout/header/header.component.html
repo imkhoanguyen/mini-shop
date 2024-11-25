@@ -15,14 +15,14 @@
         <li class="nav-item">
           <a class="nav-link" href="#">Sản Phẩm</a>
         </li>
-        <li class="nav-item" >
+        <li class="nav-item" *ngIf="isLoggedIn && !isCustomer">
           <a class="btn btn-primary ms-2" routerLink="/admin">Admin</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <div class="ms-auto" *ngIf="!accountService.currentUser()">
-          <i class="fas fa-shopping-cart" style="color:black;font-size:18px; margin-left:800px" routerLink="product/cart-page">{{ cartItem }}</i>
-          <a class="btn btn-primary" (click)="loginForm()">Đăng nhập</a>
+          <i class="fas fa-shopping-cart" style="color:white;font-size:18px; margin-left:800px">&nbsp;{{ cartItem }}</i>
+          <a class="btn btn-primary" *ngIf="!isLoggedIn" (click)="loginForm()">Đăng nhập</a>
           <a class="btn btn-secondary" (click)="registerForm()">Đăng ký</a>
           <a class="nav-link" href="#" title="Thông báo">
             <i class="fas fa-bell"></i>
@@ -56,4 +56,7 @@
     </div>
   </div>
 </nav>
-<app-chat></app-chat>
+@if (accountService.currentUser() && isLoggedIn && isCustomer) {
+  <app-chat ></app-chat>
+}
+

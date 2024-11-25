@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Sidebar, SidebarModule } from 'primeng/sidebar';
 import { PanelMenuModule } from 'primeng/panelmenu';
@@ -20,6 +20,8 @@ import { ApiService } from '../../component/client/shared/api.service';
 export class HeaderComponent implements OnInit {
   public cartItem:number = 0;
   sidebarVisible: boolean = false;
+  isCustomer: boolean = false;
+  isLoggedIn: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   private router = inject(Router);
   accountService = inject(AccountService);
@@ -29,6 +31,8 @@ export class HeaderComponent implements OnInit {
       const user = JSON.parse(userJson) as User;
       this.accountService.setCurrentUser(user);
     }
+  constructor(private cdr: ChangeDetectorRef) {
+
   }
   
   ngOnInit(): void {
@@ -37,7 +41,28 @@ this.api.products().subscribe(res =>
   this.cartItem=res.length
 }
 )
+    const userJson = localStorage.getItem('user');
+  if (userJson) {
+    const user = JSON.parse(userJson) as User;
+    this.accountService.setCurrentUser(user);
+    this.isLoggedIn = true;
 
+    this.accountService.isCustomerRole().then((result) => {
+      this.isCustomer = result;
+      this.cdr.detectChanges(); 
+    });
+  } else {
+    this.isLoggedIn = false;
+    this.isCustomer = false;
+  }
+  }
+
+  logout(): void {
+    this.accountService.logout();
+    this.isLoggedIn = false;
+    this.isCustomer = false;
+    this.cdr.detectChanges();
+    this.router.navigate(['/login']);
   }
   loginForm(){
     this.router.navigateByUrl('/login');
@@ -45,7 +70,5 @@ this.api.products().subscribe(res =>
   registerForm() {
     this.router.navigateByUrl('/register');
   }
-  logout() {
-    this.accountService.logout();
-  }
+
 }

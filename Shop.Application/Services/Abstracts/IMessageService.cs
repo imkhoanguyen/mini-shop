@@ -1,4 +1,6 @@
 ﻿using Shop.Application.DTOs.Messages;
+using Shop.Application.Parameters;
+using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 
 namespace Shop.Application.Services.Abstracts
@@ -10,6 +12,6 @@ namespace Shop.Application.Services.Abstracts
         Task<List<string>> GetUsersByClaimValueAsync(string hasClaim);
         Task<List<string>> GetUsersWithoutClaimAsync(string hasClaim);
         Task<MessageDto> GetLastMessageAsync(string userId);
-        Task<IEnumerable<MessageDto>> GetMessageThread(string customerId);
+        Task<PagedList<MessageDto>> GetMessageThread(MessageParams messageParams, string customerId);
     }
 }

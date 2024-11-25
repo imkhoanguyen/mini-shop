@@ -7,6 +7,7 @@ import { MessageService } from '../../_services/message.service';
 import { ChatService } from '../../_services/chat.service';
 import { MessageDto } from '../../_models/message.module';
 import { ToastrService } from '../../_services/toastr.service';
+import { PaginatedResult, Pagination } from '../../_models/pagination';
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -20,9 +21,18 @@ export class ChatComponent implements OnInit {
   recipientUser!: User;
   user!: User;
   content: string = '';
-  loadingOldMessages = false;
+  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+
+  params = {
+    pageNumber: 1,
+    pageSize: 10,
+    search: ''
+  };
+  addPageSize: number = 5;
+  loading = false;
+
+
   selectedFiles: { src: string; file: File; type: string }[] = [];
-  recipientId: string = '';
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
   private chatService = inject(ChatService);
@@ -50,22 +60,31 @@ export class ChatComponent implements OnInit {
         this.scrollToBottom();
       }, 10);
     }
+    this.chatService.joinGroup('', this.user.id);
 
   }
   onScroll() {
-
     const element = this.messagesContainer.nativeElement;
-    if (element.scrollTop === 0 && !this.loadingOldMessages) {
-      this.loadMessages();
-    }
+    const previousHeight = element.scrollHeight;
 
+    if (element.scrollTop === 0 && !this.loading) {
+      if (this.pagination.currentPage < this.pagination.totalPages) {
+        this.params.pageNumber++;
+        this.loadMessages();
+        setTimeout(() => {
+          const currentHeight = element.scrollHeight;
+          element.scrollTop = currentHeight - previousHeight;
+        }, 100);
+      }
+    }
   }
   private setupMessageCustomerReceived() {
-    console.log("setupMessageReceived called");
+    console.log('setupMessageCustomerReceived called');
     this.chatService.messageReceived$.subscribe({
       next: (message: MessageDto | null) => {
-        if (message) {
-          console.log('Message received:', message);
+
+        if (message && message.senderId !== this.user.id) { // Kiểm tra senderId
+          console.log('Message received from admin:', message);
           this.messages.push(message);
           this.scrollToBottom();
         }
@@ -76,17 +95,19 @@ export class ChatComponent implements OnInit {
 
 
   loadMessages() {
-    this.messageService
-      .getMessages(this.user.id)
-      .subscribe(
-        (messages: MessageDto[]) => {
-          this.messages = messages;
-        },
-        (error) => {
-          console.error('Error occurred:', error);
-        }
-      );
+    if (this.loading) return;
+    this.loading = true;
+
+    this.messageService.getMessageThread(this.params, this.user.id).subscribe(result => {
+      if (result.items) {
+        this.messages = [...result.items.reverse(), ...this.messages];
+      }
+      console.log("messages", this.messages);
+      this.pagination = result.pagination || { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+      this.loading = false;
+    });
   }
+
 
   onFileSelected(event: any) {
     const files: FileList = event.target.files;
@@ -157,7 +178,7 @@ export class ChatComponent implements OnInit {
     }, 100);
   }
   sendMessage() {
-    if (!this.content) {
+    if (!this.content.trim() && this.selectedFiles.length === 0) {
       return;
     }
     const formData = new FormData();
@@ -169,9 +190,8 @@ export class ChatComponent implements OnInit {
     });
     this.messageService.addMessage(formData).subscribe({
       next: (response: MessageDto) => {
-        console.log("response", response);
+        this.messages.push(response);
         this.chatService.sendMessage(response);
-        this.loadMessages();
         this.scrollToBottom();
         this.resetMessageInput();
       },

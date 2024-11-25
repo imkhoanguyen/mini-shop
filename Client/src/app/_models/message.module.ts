@@ -17,5 +17,5 @@ export interface MessageDto extends MessageBase {
   sentAt: string;
   files: FileMessageDto[];
   isReplied: boolean;
-  repliedById: string | null;
+  repliedByAdminId: string | null;
 }
