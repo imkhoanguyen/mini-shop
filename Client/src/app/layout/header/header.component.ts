@@ -31,10 +31,8 @@ export class HeaderComponent implements OnInit {
       const user = JSON.parse(userJson) as User;
       this.accountService.setCurrentUser(user);
     }
-  constructor(private cdr: ChangeDetectorRef) {
 
   }
-  
   ngOnInit(): void {
 this.api.products().subscribe(res =>
 {
@@ -49,7 +47,6 @@ this.api.products().subscribe(res =>
 
     this.accountService.isCustomerRole().then((result) => {
       this.isCustomer = result;
-      this.cdr.detectChanges(); 
     });
   } else {
     this.isLoggedIn = false;
@@ -61,7 +58,6 @@ this.api.products().subscribe(res =>
     this.accountService.logout();
     this.isLoggedIn = false;
     this.isCustomer = false;
-    this.cdr.detectChanges();
     this.router.navigate(['/login']);
   }
   loginForm(){

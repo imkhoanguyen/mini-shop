@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { productUserService } from '../../../_services/productUser.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -34,9 +34,8 @@ export class ProductListComponent implements OnInit {
       });
   }
   getAllProductByCategory(categoryId: number) {
-    this.productSrv.getAllProductByCategory(categoryId).subscribe(
-     
-      (products) => {
+    this.productService.getAllProductByCategory(categoryId).subscribe(
+      (products : ProductDto[]) => {
         this.productArray = products;
         console.log ("----", this.productArray) 
       },

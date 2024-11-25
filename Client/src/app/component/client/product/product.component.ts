@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { productUserService } from '../../../_services/productUser.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -6,6 +6,8 @@ import { FooterClientComponent } from '../../../layout/footerClient/footerClient
 import { HeaderComponent } from '../../../layout/headerClient/header.component';
 import { ProductListComponent } from '../productList/productList.component';
 import { Router } from '@angular/router';
+import { ProductService } from '../../../_services/product.service';
+import { ProductDto } from '../../../_models/product.module';
 @Component({
   selector: 'app-product',
   standalone: true,
@@ -23,16 +25,16 @@ export class ProductUserComponent implements OnInit {
   productArray: any[] = [];
   productArraySmartPhone: any[] = [];
   productArrayLaptop: any[] = [];
-
-  constructor(private productSrv: productUserService, private router: Router) {}
+  private productService = inject(ProductService);  
+  constructor( private router: Router) {}
 
   ngOnInit(): void {
     this.loadProduct();
   }
 
 loadProduct() {
-    this.productSrv.getAllProduct().subscribe(
-      (products) => {
+    this.productService.getAllProducts().subscribe(
+      (products : ProductDto[]) => {
         this.productArray = products; 
 
         this.productArray.forEach(product => {

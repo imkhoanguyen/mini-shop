@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { productUserService } from '../../../_services/productUser.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -17,11 +17,12 @@ import { ApiService } from '../shared/api.service';
 })
 export class ProductDetailComponent implements OnInit {
   productId?: string;
-  productFound: any = {}; // Change to object instead of array
+  productFound: any = {}; 
   productArrayRelated: ProductGet[] = [];
-  showAdd: boolean = true;
-  showRemove: boolean = false;
+  showAdd :boolean =true ;
+  showRemove : boolean = false ;
 
+  private productService = inject(ProductService);
   constructor(
     private route: ActivatedRoute,
     private productSrv: productUserService,
@@ -33,13 +34,13 @@ export class ProductDetailComponent implements OnInit {
       this.productId = params.get('id') || '';
       console.log('Received Product ID:', this.productId);
       if (this.productId) {
-        this.getProductDetail(+this.productId); // Ensure the id is passed as a number
+        this.getProductDetail(+this.productId); 
       }
     });
   }
 
   getProductDetail(ProductId: number): void {
-    this.productSrv.getProductDetail(ProductId).subscribe(
+    this.productService.getProductById(ProductId).subscribe(
       (product) => {
         this.productFound = product;
         const categoryId = this.productFound.categoryIds;
@@ -52,7 +53,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   getAllProductRelatedByCategory(categoryId: number) {
-    this.productSrv
+    this.productService
       .getAllProductByCategory(categoryId)
       .subscribe((products: ProductGet[]) => {
         this.productArrayRelated = products;
