@@ -29,6 +29,7 @@ export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
   {path :'product/productDetail/:id' ,component : ProductDetailComponent},
+  // {path : 'product/cart-page' ,component:Cart}
   {
     path: 'admin',
     component: AdminComponent,
