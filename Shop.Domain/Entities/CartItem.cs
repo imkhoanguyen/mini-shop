@@ -2,6 +2,7 @@
 
 namespace Shop.Domain.Entities
 {
+    [NotMapped]
     public class CartItem
     {
         public int Quantity { get; set; }
