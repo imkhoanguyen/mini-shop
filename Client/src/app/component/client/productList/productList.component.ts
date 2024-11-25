@@ -7,7 +7,8 @@ import { FooterClientComponent } from '../../../layout/footerClient/footerClient
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductDetailComponent } from '../productDetail/productDetail.components';
-
+import { ApiService } from '../shared/api.service';
+import { ProductGet } from '../../../_models/product.module';
 
 @Component({
   selector: 'app-product-list',
@@ -20,7 +21,9 @@ import { ProductDetailComponent } from '../productDetail/productDetail.component
 export class ProductListComponent implements OnInit {
     productId?: string; // Ma
     productArray: any[] = [];
-    constructor(private route: ActivatedRoute, private productSrv: productUserService) {}
+    showAdd: boolean = true;
+    showRemove: boolean = false;
+    constructor(private route: ActivatedRoute, private productSrv: productUserService ,private api :ApiService) {}
     ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
         this.productId = params.get('id') || '';
@@ -39,5 +42,18 @@ export class ProductListComponent implements OnInit {
       },
 
     );
+  }
+
+
+  
+  addToCart(data: any) {
+    this.showAdd = false;
+    this.showRemove = true;
+    this.api.addToCart(data);
+  }
+  removeItem(data: ProductGet) {
+    this.showAdd = true;
+    this.showRemove = false;
+    this.api.removeToCart(data)
   }
 }
