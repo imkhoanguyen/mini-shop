@@ -1,18 +1,18 @@
 <div class="d-flex container">
   <div class="sidebar">
-   <input class="search-bar" placeholder="Search..." type="text"/>
+   <input class="search-bar" placeholder="Search..." type="text" [(ngModel)]="searchText" (input)="onSearch()"/>
    <div class="chat-list">
     <h5>
      Chats
     </h5>
-    <div class="chat-item" *ngFor="let customer of customers" (click)="selectUser(customer)" >
+    <div class="chat-item" *ngFor="let customer of filteredCustomers" (click)="selectUser(customer)" >
       <img height="40" src="http://localhost:5000/avatar/{{customer.avatar}}" width="40"/>
       <div class="chat-info">
           <div class="chat-name">
               {{ customer.fullName }}
           </div>
           <div class="chat-message">
-              {{customer.lastMessage}}
+              {{customer.lastMessage || 'Đã gửi một File'}}
           </div>
       </div>
     </div>
@@ -31,6 +31,7 @@
       </div>
     </div>
     <div class="chat-body" #messagesContainer (scroll)="onScroll()">
+      <div *ngIf="loading">Đang tải...</div>
       <div class="messages" *ngFor="let message of messages; track by message">
         <!-- Tin nhắn bên trái (recipient) -->
         <div *ngIf="message.senderId === selectedUser.id" class="message left-message">
@@ -88,7 +89,7 @@
         Send
       </button>
     </div>
-    <div *ngIf="typingAdminId">
+    <div *ngIf="typingAdminId && typingAdminId !== user.id">
       <p>
         Hiện tại không thể gửi tin nhắn vì admin khác đang nhập tin nhắn...
       </p>

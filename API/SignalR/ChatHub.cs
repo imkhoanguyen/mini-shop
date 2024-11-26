@@ -22,14 +22,14 @@ namespace API.SignalR
             }
 
             ActiveAdmins[customerId] = adminId;
-            await Clients.OthersInGroup(customerId).SendAsync("ReceiveTypingStatus", true, adminId);
+            await Clients.OthersInGroup(customerId).SendAsync("ReceiveTypingStatus", true, customerId, adminId);
         }
         public async Task StopTyping(string customerId, string adminId)
         {
             if (ActiveAdmins.TryGetValue(customerId, out var activeAdminId) && activeAdminId == adminId)
             {
                 ActiveAdmins.TryRemove(customerId, out _);
-                await Clients.OthersInGroup(customerId).SendAsync("ReceiveTypingStatus", false, adminId);
+                await Clients.OthersInGroup(customerId).SendAsync("ReceiveTypingStatus", false, customerId, adminId);
             }
 
         }
@@ -41,10 +41,16 @@ namespace API.SignalR
             }
 
             await Clients.Group(message.SenderId).SendAsync("ReceiveMessage", message);
+            Console.WriteLine($"Message sent to sender: {message.SenderId}");
+
             if (message.RecipientIds != null && message.RecipientIds.Any())
             {
                 var tasks = message.RecipientIds
-                    .Select(recipientId => Clients.Group(recipientId).SendAsync("ReceiveMessage", message));
+                    .Select(recipientId =>
+                    {
+                        Console.WriteLine($"Sending message to recipient: {recipientId}");
+                        return Clients.Group(recipientId).SendAsync("ReceiveMessage", message);
+                    });
                 await Task.WhenAll(tasks);
             }
         }

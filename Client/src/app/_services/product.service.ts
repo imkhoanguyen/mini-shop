@@ -38,12 +38,16 @@ export class ProductService {
       })
     );
   }
-  getAllCProducts () {
+  getAllProducts () {
     return this.http.get<ProductDto[]>(`${this.apiUrl}/Product/all`);
   }
   getProductById(id: number): Observable<ProductDto> {
     return this.http.get<ProductDto>(`${this.apiUrl}/Product/${id}`);
   }
+  getAllProductByCategory(id: number ) : Observable<any[]>{
+    return this.http.get<any[]>(`${this.apiUrl}/Product/categoryId/${id}`);
+  }
+
   addProduct(Product: FormData): Observable<ProductDto> {
     return this.http.post<ProductDto>(this.apiUrl+"/Product/Add", Product);
   }

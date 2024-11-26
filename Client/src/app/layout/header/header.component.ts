@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Sidebar, SidebarModule } from 'primeng/sidebar';
 import { PanelMenuModule } from 'primeng/panelmenu';
@@ -8,6 +8,7 @@ import { AccountService } from '../../_services/account.service';
 import { Router } from '@angular/router';
 import { User } from '../../_models/user.module';
 import { ChatComponent } from "../../component/chat/chat.component";
+import { ApiService } from '../../component/client/shared/api.service';
 
 @Component({
   selector: 'app-header',
@@ -19,19 +20,45 @@ import { ChatComponent } from "../../component/chat/chat.component";
 export class HeaderComponent implements OnInit {
   public cartItem:number = 0;
   sidebarVisible: boolean = false;
+  isCustomer: boolean = false;
+  isLoggedIn: boolean = false;
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   private router = inject(Router);
   accountService = inject(AccountService);
-  constructor() {
+  constructor(private api:ApiService) {
     const userJson = localStorage.getItem('user');
     if (userJson) {
       const user = JSON.parse(userJson) as User;
       this.accountService.setCurrentUser(user);
     }
+
   }
   ngOnInit(): void {
+this.api.products().subscribe(res =>
+{
+  this.cartItem=res.length
+}
+)
+    const userJson = localStorage.getItem('user');
+  if (userJson) {
+    const user = JSON.parse(userJson) as User;
+    this.accountService.setCurrentUser(user);
+    this.isLoggedIn = true;
 
+    this.accountService.isCustomerRole().then((result) => {
+      this.isCustomer = result;
+    });
+  } else {
+    this.isLoggedIn = false;
+    this.isCustomer = false;
+  }
+  }
 
+  logout(): void {
+    this.accountService.logout();
+    this.isLoggedIn = false;
+    this.isCustomer = false;
+    this.router.navigate(['/login']);
   }
   loginForm(){
     this.router.navigateByUrl('/login');
@@ -39,7 +66,5 @@ export class HeaderComponent implements OnInit {
   registerForm() {
     this.router.navigateByUrl('/register');
   }
-  logout() {
-    this.accountService.logout();
-  }
+
 }

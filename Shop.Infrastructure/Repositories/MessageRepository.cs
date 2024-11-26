@@ -1,7 +1,11 @@
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Shop.Application.Parameters;
+using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
+using Shop.Infrastructure.Ultilities;
+using System.Diagnostics;
 
 namespace Shop.Infrastructure.Repositories
 {
@@ -28,23 +32,39 @@ namespace Shop.Infrastructure.Repositories
         {
             return await _context.Messages
                 .Include(m => m.Files)
-                .Where(m => (m.SenderId == customerId || 
+                .Where(m => (m.SenderId == customerId ||
                     m.RecipientIds != null && m.RecipientIds.Contains(customerId)))
                 .OrderByDescending(m => m.SentAt)
                 .FirstOrDefaultAsync();
         }
 
 
-        public async Task<IEnumerable<Message?>> GetMessageThread(string customerId)
+        public async Task<PagedList<Message?>> GetMessageThread(MessageParams messageParams, string customerId)
         {
-            return await _context.Messages
+            var query = _context.Messages
                 .Include(m => m.Files)
                 .Where(m =>
-                    (m.SenderId == customerId  || m.RecipientIds!.Contains(customerId))
-                )
-                .OrderBy(m => m.SentAt)
-                .ToListAsync();
-                }
+                    m.SenderId == customerId || m.RecipientIds.Contains(customerId)) 
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(messageParams.Search))
+            {
+                query = query.Where(c =>
+                    c.Content.ToLower().Contains(messageParams.Search.ToLower()) ||
+                    c.Id.ToString() == messageParams.Search);
+            }
+            if (!string.IsNullOrEmpty(messageParams.OrderBy))
+            {
+                query = messageParams.OrderBy switch
+                {
+                    "id" => query.OrderBy(c => c.Id),
+                    "id_desc" => query.OrderByDescending(c => c.Id),
+                    _ => query.OrderByDescending(c => c.Id)
+                };
+            }
+
+            return await query.ApplyPaginationAsync(messageParams.PageNumber, messageParams.PageSize);
+        }
 
     }
 }

@@ -14,7 +14,7 @@ export class ChatService implements OnDestroy {
 
   // State management
   public typingBlocked$ = new BehaviorSubject<string | null>(null);
-  public typingStatus$ = new BehaviorSubject<{ isTyping: boolean; adminId: string } | null>(null);
+  public typingStatus$ = new BehaviorSubject<{ isTyping: boolean; customerId: string, adminId: string } | null>(null);
   public messageReceived$ = new BehaviorSubject<MessageDto | null>(null);
   public connectionState$ = new BehaviorSubject<string>('disconnected');
 
@@ -22,7 +22,7 @@ export class ChatService implements OnDestroy {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(environment.hubUrl)
       .withAutomaticReconnect() // Tự động thử kết nối lại
-      .configureLogging(signalR.LogLevel.Information)
+      .configureLogging(signalR.LogLevel.Debug)
       .build();
 
     this.registerHubEvents();
@@ -68,8 +68,8 @@ export class ChatService implements OnDestroy {
       this.messageReceived$.next(message);
     });
 
-    this.hubConnection.on('ReceiveTypingStatus', (isTyping: boolean, adminId: string) => {
-      this.typingStatus$.next({ isTyping, adminId });
+    this.hubConnection.on('ReceiveTypingStatus', (isTyping: boolean, customerId: string, adminId: string) => {
+      this.typingStatus$.next({ isTyping, customerId, adminId });
     });
 
     this.hubConnection.on('TypingBlocked', (adminId: string) => {
@@ -97,6 +97,7 @@ export class ChatService implements OnDestroy {
   }
 
   sendMessage(message: MessageDto): void {
+    console.log("dang goi ham send")
     this.hubConnection
       .invoke('SendMessage', message)
       .catch(err => console.error('Error sending message:', err));

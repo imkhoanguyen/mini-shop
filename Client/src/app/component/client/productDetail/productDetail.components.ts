@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { productUserService } from '../../../_services/productUser.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -7,7 +7,8 @@ import { FooterClientComponent } from '../../../layout/footerClient/footerClient
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductGet } from '../../../_models/product.module'; // You can define a specific interface for Product if you want
-
+import { ApiService } from '../shared/api.service';
+import { ProductService } from '../../../_services/product.service';
 @Component({
   selector: 'app-product-list',
   standalone: true,
@@ -17,13 +18,16 @@ import { ProductGet } from '../../../_models/product.module'; // You can define 
 })
 export class ProductDetailComponent implements OnInit {
   productId?: string;
-  productFound: any = {}; // Change to object instead of array
+  productFound: any = {}; 
   productArrayRelated: ProductGet[] = [];
   showAdd :boolean =true ;
   showRemove : boolean = false ;
+
+  private productService = inject(ProductService);
   constructor(
     private route: ActivatedRoute,
-    private productSrv: productUserService
+    private productSrv: productUserService,
+    private api: ApiService
   ) {}
 
   ngOnInit(): void {
@@ -31,18 +35,17 @@ export class ProductDetailComponent implements OnInit {
       this.productId = params.get('id') || '';
       console.log('Received Product ID:', this.productId);
       if (this.productId) {
-        this.getProductDetail(+this.productId); // Ensure the id is passed as a number
+        this.getProductDetail(+this.productId); 
       }
     });
   }
 
-  
   getProductDetail(ProductId: number): void {
-    this.productSrv.getProductDetail(ProductId).subscribe(
+    this.productService.getProductById(ProductId).subscribe(
       (product) => {
         this.productFound = product;
-        const categoryId  = this.productFound.categoryIds ;
-       this.getAllProductRelatedByCategory(categoryId)
+        const categoryId = this.productFound.categoryIds;
+        this.getAllProductRelatedByCategory(categoryId);
       },
       (error) => {
         console.error('Error loading product details:', error);
@@ -51,20 +54,22 @@ export class ProductDetailComponent implements OnInit {
   }
 
   getAllProductRelatedByCategory(categoryId: number) {
-    this.productSrv
+    this.productService
       .getAllProductByCategory(categoryId)
-      .subscribe((products :ProductGet[]) => {
+      .subscribe((products: ProductGet[]) => {
         this.productArrayRelated = products;
-        console.log ("productRelated Array"+ this.productArrayRelated);
+        console.log('productRelated Array' + this.productArrayRelated);
       });
   }
 
-  addToCart()
-  {
-
+  addToCart(data: any) {
+    this.showAdd = false;
+    this.showRemove = true;
+    this.api.addToCart(data);
   }
-  removeItem()
-  {
-
+  removeItem(data: ProductGet) {
+    this.showAdd = true;
+    this.showRemove = false;
+    this.api.removeToCart(data)
   }
 }

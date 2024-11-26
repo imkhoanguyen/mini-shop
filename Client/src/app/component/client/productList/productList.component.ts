@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { productUserService } from '../../../_services/productUser.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
@@ -7,7 +7,9 @@ import { FooterClientComponent } from '../../../layout/footerClient/footerClient
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductDetailComponent } from '../productDetail/productDetail.components';
-
+import { ApiService } from '../shared/api.service';
+import { ProductDto, ProductGet } from '../../../_models/product.module';
+import { ProductService } from '../../../_services/product.service';
 
 @Component({
   selector: 'app-product-list',
@@ -20,24 +22,39 @@ import { ProductDetailComponent } from '../productDetail/productDetail.component
 export class ProductListComponent implements OnInit {
     productId?: string; // Ma
     productArray: any[] = [];
-    constructor(private route: ActivatedRoute, private productSrv: productUserService) {}
+    showAdd: boolean = true;
+    showRemove: boolean = false;
+    private productService = inject(ProductService)
+    constructor(private route: ActivatedRoute,private api :ApiService) {}
     ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
         this.productId = params.get('id') || '';
         console.log('Received Product ID:', this.productId);
         if (this.productId) {
-          this.getAllProductByCategory(+this.productId); 
+          this.getAllProductByCategory(+this.productId);
         }
       });
   }
   getAllProductByCategory(categoryId: number) {
-    this.productSrv.getAllProductByCategory(categoryId).subscribe(
-     
-      (products) => {
+    this.productService.getAllProductByCategory(categoryId).subscribe(
+      (products : ProductDto[]) => {
         this.productArray = products;
-        console.log ("----", this.productArray) 
+        console.log ("----", this.productArray)
       },
 
     );
+  }
+
+
+
+  addToCart(data: any) {
+    this.showAdd = false;
+    this.showRemove = true;
+    this.api.addToCart(data);
+  }
+  removeItem(data: ProductGet) {
+    this.showAdd = true;
+    this.showRemove = false;
+    this.api.removeToCart(data)
   }
 }
