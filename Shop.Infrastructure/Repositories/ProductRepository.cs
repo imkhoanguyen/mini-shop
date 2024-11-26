@@ -53,7 +53,7 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).ToListAsync();
+                .Where(c => !c.IsDelete).ToListAsync();
         }
 
         public override async Task<Product?> GetAsync(Expression<Func<Product, bool>> expression, bool tracked = false)
@@ -63,7 +63,7 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).AsQueryable();
+                .Where(c => !c.IsDelete).AsQueryable();
 
             if (!tracked)
             {
@@ -117,13 +117,13 @@ namespace Shop.Infrastructure.Repositories
                     .Include(p => p.Image)
                     .Include(p => p.Variants.Where(v => !v.IsDelete))
                     .ThenInclude(v => v.Images)
-                    .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).ToListAsync();
+                    .Where(c => !c.IsDelete).ToListAsync();
             return await _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants) 
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public && c.Variants.All(v => !v.IsDelete)) 
+                .Where(c => !c.IsDelete && c.Variants.All(v => !v.IsDelete)) 
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -143,13 +143,13 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public)
+                .Where(c => !c.IsDelete)
             : _context.Products.AsNoTracking().AsQueryable()
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public);
+                .Where(c => !c.IsDelete);
 
             return await query.Where(expression).ToListAsync();
         }
