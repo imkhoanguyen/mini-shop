@@ -2,7 +2,7 @@ import { VariantDto } from "./variant.module";
 
 export enum ProductStatus {
   Draft = 0,
-  Publish = 1,
+  Public = 1,
 }
 
 export interface ProductBase {
@@ -32,20 +32,20 @@ export interface ImageProductDto {
   id: number;
   imgUrl: string;
 }
-export interface ProductGet 
+export interface ProductGet
 {
   id: number;
-  created: string;  
-  updated: string; 
+  created: string;
+  updated: string;
   image: {
     id: number;
-    imgUrl: string;  
+    imgUrl: string;
   };
-  variants: any[]; 
+  variants: any[];
   name: string;
   description: string;
   status: number;
-  categoryIds: number[];  
+  categoryIds: number[];
 
 
 }

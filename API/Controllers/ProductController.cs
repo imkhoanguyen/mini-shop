@@ -19,9 +19,9 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts([FromQuery] ProductParams productParams)
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAllProducts([FromQuery] ProductParams productParams, bool tracked)
         {
-            var pagedList = await _productService.GetAllAsync(productParams, false);
+            var pagedList = await _productService.GetAllAsync(productParams, tracked);
 
             Response.AddPaginationHeader(pagedList);
             return Ok(pagedList);

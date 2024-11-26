@@ -3,6 +3,7 @@ using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
+using Shop.Domain.Enum;
 using Shop.Infrastructure.DataAccess;
 using Shop.Infrastructure.Ultilities;
 using System.Linq.Expressions;
@@ -52,7 +53,7 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete).ToListAsync();
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).ToListAsync();
         }
 
         public override async Task<Product?> GetAsync(Expression<Func<Product, bool>> expression, bool tracked = false)
@@ -62,7 +63,7 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete).AsQueryable();
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).AsQueryable();
 
             if (!tracked)
             {
@@ -72,20 +73,20 @@ namespace Shop.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(expression);
         }
 
-        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked = false)
+        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked)
         {
             var query = tracked ? _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete)
-            : _context.Products.AsNoTracking().AsQueryable()
+                .Where(c => !c.IsDelete )
+            : _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete);
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrEmpty(ProductParams.Search))
             {
@@ -116,13 +117,13 @@ namespace Shop.Infrastructure.Repositories
                     .Include(p => p.Image)
                     .Include(p => p.Variants.Where(v => !v.IsDelete))
                     .ThenInclude(v => v.Images)
-                    .Where(c => !c.IsDelete).ToListAsync();
+                    .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).ToListAsync();
             return await _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants) 
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Variants.All(v => !v.IsDelete)) 
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public && c.Variants.All(v => !v.IsDelete)) 
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -142,13 +143,13 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete)
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public)
             : _context.Products.AsNoTracking().AsQueryable()
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete);
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public);
 
             return await query.Where(expression).ToListAsync();
         }

@@ -1,6 +1,7 @@
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Entities;
+using Shop.Domain.Enum;
 using Shop.Infrastructure.DataAccess;
 using System.Linq.Expressions;
 
@@ -48,7 +49,7 @@ namespace Shop.Infrastructure.Repositories
         {
             var query = _context.Variants
                  .Include(v => v.Images)
-                 .Where(v => !v.IsDelete).AsQueryable();
+                 .Where(v => !v.IsDelete && v.Status == VariantStatus.Public).AsQueryable();
 
             if (!tracked)
             {

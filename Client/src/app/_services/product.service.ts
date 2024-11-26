@@ -14,14 +14,14 @@ export class ProductService {
 
   apiUrl = environment.apiUrl;
 
-  getProductsPagedList(params: any): Observable<PaginatedResult<ProductDto[]>> {
+  getProductsPagedList(params: any, tracked: boolean): Observable<PaginatedResult<ProductDto[]>> {
     let httpParams = new HttpParams();
     if (params.pageNumber) httpParams = httpParams.set('pageNumber', params.pageNumber.toString());
     if (params.pageSize) httpParams = httpParams.set('pageSize', params.pageSize.toString());
     if (params.orderBy) httpParams = httpParams.set('orderBy', params.orderBy);
     if (params.search) httpParams = httpParams.set('search', params.search);
 
-    return this.http.get<ProductDto[]>(this.apiUrl + "/Product", {
+    return this.http.get<ProductDto[]>(this.apiUrl + "/Product/?tracked="+tracked, {
       params: httpParams,
       observe: 'response'
     }).pipe(
