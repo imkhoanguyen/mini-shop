@@ -69,6 +69,11 @@ export class SidebarComponent {
       icon: 'pi pi-book',
       label: 'Quản lý Blog',
     },
+    {
+      routerLink: 'statistic',
+      icon: 'pi pi-chart-line',
+      label: 'Thống kê',
+    },
   ];
 
   toggleCollapse(): void {

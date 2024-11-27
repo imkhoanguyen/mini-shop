@@ -60,6 +60,10 @@ namespace Shop.Application.Services.Implementations
         {
             return await _unitOfWork.OrderRepository.CountOrdersTodayAsync();
         }
+        public async Task<int> CountOrdersByDateAsync(DateTime date)
+        {
+            return await _unitOfWork.OrderRepository.CountOrdersByDateAsync(date);
+        }
         public async Task<int> CountOrdersByMonthAsync(int year, int month)
         {
             return await _unitOfWork.OrderRepository.CountOrdersByMonthAsync(year, month);

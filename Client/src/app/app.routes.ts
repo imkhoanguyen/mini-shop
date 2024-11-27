@@ -27,6 +27,7 @@ import { CheckOutComponent } from './component/check-out/check-out.component';
 import { ProductDetailComponent } from './component/client/productDetail/productDetail.components';
 import { CartPageComponent } from './component/client/cart/cart.component';
 import { authGuard } from './_guards/auth.guard';
+import { StatisticComponent } from './component/admin/statistic/statistic.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -50,6 +51,7 @@ export const routes: Routes = [
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
       { path: 'blog', component: BlogComponent },
+      { path: 'statistic', component: StatisticComponent },
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],

@@ -65,6 +65,25 @@ namespace API.Controllers
             });
         }
 
+        [HttpGet("revenue/by-date")]
+        public async Task<IActionResult> GetRevenueByDate([FromQuery] DateTime date)
+        {
+            if (date == null || date == DateTime.MinValue)
+            {
+                return BadRequest("Invalid date.");
+            }
+
+            var revenue = await _orderService.GetTotalRevenueByDateAsync(date);
+
+            return Ok(new
+            {
+                date = date.Date,
+                totalRevenue = revenue,
+                status = "PaymentReceived"
+            });
+        }
+
+
         [HttpGet("revenue/monthly")]
         public async Task<IActionResult> GetMonthlyRevenue([FromQuery] int year, [FromQuery] int month)
         {
@@ -125,6 +144,23 @@ namespace API.Controllers
             return Ok(new
             {
                 date = DateTime.UtcNow.Date,
+                count,
+                status = "PaymentReceived"
+            });
+        }
+        [HttpGet("count-orders/by-date")]
+        public async Task<IActionResult> CountOrdersByDate([FromQuery] DateTime date)
+        {
+            if (date == null || date == DateTime.MinValue)
+            {
+                return BadRequest("Invalid date.");
+            }
+
+            var count = await _orderService.CountOrdersByDateAsync(date);
+
+            return Ok(new
+            {
+                date = date.Date,
                 count,
                 status = "PaymentReceived"
             });
