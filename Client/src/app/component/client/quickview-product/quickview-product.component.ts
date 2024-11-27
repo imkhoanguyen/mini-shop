@@ -8,6 +8,10 @@ import { ImageModule } from 'primeng/image';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { VariantDto } from '../../../_models/variant.module';
+import { CartItem } from '../../../_models/cart';
+import { CartService } from '../../../_services/cart.service';
+import { ToastrService } from '../../../_services/toastr.service';
 
 @Component({
   selector: 'app-quickview-product',
@@ -28,11 +32,13 @@ import { InputNumberModule } from 'primeng/inputnumber';
 export class QuickviewProductComponent {
   @Input() productId: number = 0;
   private productService = inject(ProductService);
+  private cartService = inject(CartService);
+  private toastrService = inject(ToastrService);
   visible: boolean = false;
   productDetail!: ProductDto;
   listImage: string[] = [];
 
-  selectedVariant = 0;
+  selectedVariant!: VariantDto;
   count = 1;
 
   responsiveOptions = [
@@ -58,6 +64,7 @@ export class QuickviewProductComponent {
           v.images.map((i) => i.imgUrl)
         );
         this.listImage.unshift(this.productDetail.image.imgUrl);
+        this.selectedVariant = response.variants[0];
 
         this.showDialog();
       },
@@ -71,13 +78,34 @@ export class QuickviewProductComponent {
 
   closeDialog() {
     this.visible = false;
-    this.selectedVariant = 0;
     this.count = 1;
     this.listImage = [];
   }
 
-  onVariantSelect(variantId: number): void {
-    this.selectedVariant = variantId;
-    console.log('Selected Variant ID:', this.selectedVariant);
+  onVariantSelect(variant: VariantDto): void {
+    this.selectedVariant = variant;
+    console.log('Selected Variant:', this.selectedVariant);
+  }
+
+  addToCart() {
+    const cardItem: CartItem = {
+      productId: this.productId,
+      colorName: this.selectedVariant.color.name,
+      sizeName: this.selectedVariant.size.name,
+      price: this.selectedVariant.priceSell,
+      productImage: this.productDetail.image.imgUrl,
+      quantity: this.count,
+      productName: this.productDetail.name,
+      variantId: this.selectedVariant.id,
+    };
+    this.cartService
+      .addItemToCart(cardItem, cardItem.quantity)
+      .then((success) => {
+        if (success) {
+          this.toastrService.success('Thêm sản phẩm vào giỏ hành thành công!');
+        } else {
+          this.toastrService.error('Thêm sản phẩm vào giở hàng thất bại.');
+        }
+      });
   }
 }

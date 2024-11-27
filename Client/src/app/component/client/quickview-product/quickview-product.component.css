@@ -59,3 +59,17 @@
 ::ng-deep .ng-tns-c3223267463-3 {
   object-fit: cover;
 }
+.variant-item {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.variant-info {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.d-flex.flex-wrap {
+  flex-wrap: wrap;
+  gap: 1rem;
+}
