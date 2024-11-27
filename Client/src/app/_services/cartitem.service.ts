@@ -3,7 +3,6 @@ import { Injectable, signal } from "@angular/core";
 import { environment } from "../../environments/environment";
 import { CartItem } from "../_models/cartitem.module";
 import { Observable } from "rxjs";
-import { Category } from "../_models/category.module";
 
 @Injectable(
 {
