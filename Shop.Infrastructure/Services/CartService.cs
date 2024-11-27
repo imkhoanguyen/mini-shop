@@ -30,7 +30,7 @@ namespace Shop.Infrastructure.Services
         public async Task<ShoppingCart?> SetCartAsync(ShoppingCart cart)
         {
             var created = await _database.StringSetAsync(cart.Id, 
-                JsonSerializer.Serialize(cart), TimeSpan.FromSeconds(60));
+                JsonSerializer.Serialize(cart), TimeSpan.FromSeconds(60*5));
 
             if (!created) return null;
 

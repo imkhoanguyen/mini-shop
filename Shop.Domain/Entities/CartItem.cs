@@ -12,5 +12,6 @@ namespace Shop.Domain.Entities
         public required string ColorName { get; set; }
         public required string ProductImage { get; set; }
         public int ProductId { get; set; }
+        public int VariantId { get; set; }
     }
 }
