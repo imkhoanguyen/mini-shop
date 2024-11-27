@@ -45,8 +45,8 @@ namespace Shop.Application.Mappers
                 Price = variant.Price,
                 PriceSell = variant.PriceSell,
                 Quantity = variant.Quantity,
-                Size = SizeMapper.EntityToSizeDto(variant.Size!),
-                Color = ColorMapper.EntityToColorDto(variant.Color!),
+                Size = variant.Size != null ? SizeMapper.EntityToSizeDto(variant.Size) : null,
+                Color = variant.Color != null ? ColorMapper.EntityToColorDto(variant.Color) : null,
                 Status = variant.Status,
                 Images = variant.Images.Select(VariantImageToImageVariantDto).ToList()
             };
