@@ -88,11 +88,11 @@ export class ProductFormComponent implements OnInit {
 
   productStatus: { name: string; key: ProductStatus }[] = [
     { name: 'Draft', key: ProductStatus.Draft },
-    { name: 'Publish', key: ProductStatus.Publish },
+    { name: 'Public', key: ProductStatus.Public },
   ];
   variantStatus: { name: string; key: VariantStatus }[] = [
     { name: 'Draft', key: VariantStatus.Draft },
-    { name: 'Publish', key: VariantStatus.Publish },
+    { name: 'Public', key: VariantStatus.Public },
   ];
 
   constructor(
@@ -128,7 +128,7 @@ export class ProductFormComponent implements OnInit {
       name: ['', Validators.required],
       selectedCategories: [[], Validators.required],
       description: [''],
-      status: [ProductStatus.Draft],
+      status: [ProductStatus.Public],
       imageFile: this.fb.array([]),
     });
 
@@ -176,9 +176,9 @@ export class ProductFormComponent implements OnInit {
           price: [variant.price, Validators.required],
           priceSell: [variant.priceSell || null],
           quantity: [variant.quantity, Validators.required],
-          colorId: [variant.colorId || null],
-          sizeId: [variant.sizeId || null],
-          status: [variant.status || VariantStatus.Draft],
+          colorId: [variant.color.id, Validators.required],
+          sizeId: [variant.size.id, Validators.required],
+          status: [variant.status || VariantStatus.Public],
           imageFiles: this.fb.array([]),
         });
 
@@ -224,9 +224,9 @@ export class ProductFormComponent implements OnInit {
       price: this.fb.control(null, Validators.required),
       priceSell: this.fb.control(null),
       quantity: this.fb.control(null, Validators.required),
-      colorId: this.fb.control(null),
-      sizeId: this.fb.control(null),
-      status: this.fb.control(VariantStatus.Draft),
+      colorId: this.fb.control(null, Validators.required),
+      sizeId: this.fb.control(null, Validators.required),
+      status: this.fb.control(VariantStatus.Public),
       imageFiles: this.fb.array([]),
     });
     this.variants.push(variantGroup);
@@ -450,8 +450,8 @@ export class ProductFormComponent implements OnInit {
             const hasChanged = (currentVariant.price !== variant.price ||
                 currentVariant.priceSell !== variant.priceSell ||
                 currentVariant.quantity !== variant.quantity ||
-                currentVariant.colorId !== variant.colorId ||
-                currentVariant.sizeId !== variant.sizeId ||
+                currentVariant.color.id !== variant.colorId ||
+                currentVariant.size.id !== variant.sizeId ||
                 currentVariant.status !== variant.status);
 
             if (hasChanged) {
@@ -511,22 +511,26 @@ export class ProductFormComponent implements OnInit {
 }
 
   private createVariantFormData(productId: number, variant: any): FormData {
+    if (variant.price <= variant.priceSell) {
+      this.toastService.error('Giá bán phải lớn hơn giá nhập.');
+      throw new Error('Giá bán phải lớn hơn giá nhập.');
+    }
+
     const variantFormData = new FormData();
     variantFormData.append('productId', productId.toString());
     variantFormData.append('price', variant.price.toString());
+
     if (variant.priceSell) {
       variantFormData.append('priceSell', variant.priceSell.toString());
     }
+
     variantFormData.append('quantity', variant.quantity.toString());
     variantFormData.append('status', variant.status.toString());
-    if (variant.colorId) {
-        variantFormData.append('colorId', variant.colorId.toString());
-    }
-    if (variant.sizeId) {
-        variantFormData.append('sizeId', variant.sizeId.toString());
-    }
+    variantFormData.append('colorId', variant.colorId.toString());
+    variantFormData.append('sizeId', variant.sizeId.toString());
 
-    return variantFormData;
+    return variantFormData; // Always return a valid FormData or null
+
   }
   private getProductId(): number {
     let productId: number = 0;

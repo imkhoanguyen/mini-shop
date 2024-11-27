@@ -16,10 +16,17 @@ namespace Shop.Application.Services.Implementations
     {
         private readonly IUnitOfWork _unit;
         private readonly ICloudinaryService _cloudinaryService;
-        public ProductService(IUnitOfWork unit, ICloudinaryService cloudinaryService)
+        private readonly ICategoryService _categoryService;
+        private readonly ISizeService _sizeService;
+        private readonly IColorService _colorService;
+        public ProductService(IUnitOfWork unit, ICloudinaryService cloudinaryService, ICategoryService categoryService,
+            IColorService colorService, ISizeService sizeService)
         {
             _unit = unit;
             _cloudinaryService = cloudinaryService;
+            _categoryService = categoryService;
+            _colorService = colorService;
+            _sizeService = sizeService;
         }
         public async Task<ProductDto> AddAsync(ProductAdd productAdd)
         {
@@ -96,15 +103,30 @@ namespace Shop.Application.Services.Implementations
 
         public async Task<PagedList<ProductDto>> GetAllAsync(ProductParams productParams, bool tracked)
         {
-            var product = await _unit.ProductRepository.GetAllProductsAsync(productParams, tracked);
-
-            var productDto = product.Select(ProductMapper.EntityToProductDto);
-            return new PagedList<ProductDto>(productDto, product.TotalCount, productParams.PageNumber, productParams.PageSize);
+            var products = await _unit.ProductRepository.GetAllProductsAsync(productParams, tracked);
+            foreach (var product in products)
+            {
+                foreach (var variant in product.Variants)
+                {
+                    variant.Color = await _colorService.GetColorsById(variant.ColorId);
+                    variant.Size = await _sizeService.GetSizesById(variant.SizeId);
+                }
+            }
+            var productDto = products.Select(ProductMapper.EntityToProductDto);
+            return new PagedList<ProductDto>(productDto, products.TotalCount, productParams.PageNumber, productParams.PageSize);
         }
 
         public async Task<IEnumerable<ProductDto>> GetAllAsync(bool tracked)
         {
             var products = await _unit.ProductRepository.GetAllProductsAsync(tracked);
+            foreach (var product in products)
+            {
+                foreach (var variant in product.Variants)
+                {
+                    variant.Color = await _colorService.GetColorsById(variant.ColorId);
+                    variant.Size = await _sizeService.GetSizesById(variant.SizeId);
+                }
+            }
             return products.Select(ProductMapper.EntityToProductDto);
         }
 
@@ -112,17 +134,29 @@ namespace Shop.Application.Services.Implementations
         {
             var product = await _unit.ProductRepository.GetAsync(expression);
             if (product is null) throw new NotFoundException("Sản phẩm không tồn tại");
-
+            foreach (var variant in product.Variants)
+            {
+                variant.Color = await _colorService.GetColorsById(variant.ColorId);
+                variant.Size = await _sizeService.GetSizesById(variant.SizeId);
+            }
             return ProductMapper.EntityToProductDto(product);
         }
 
         public async Task<IEnumerable<ProductDto>> GetProductsByCategoryId(int categoryId)
         {
-            var product = await _unit.ProductRepository.GetProductsAsync(p =>
+            var products = await _unit.ProductRepository.GetProductsAsync(p =>
                 p.ProductCategories.Any(pc => pc.CategoryId == categoryId), false);
-            if (product is null) throw new NotFoundException("Sản phẩm không tồn tại");
-
-            return product.Select(ProductMapper.EntityToProductDto);
+        
+            if (products is null) throw new NotFoundException("Sản phẩm không tồn tại");
+            foreach (var product in products)
+            {
+                foreach (var variant in product.Variants)
+                {
+                    variant.Color = await _colorService.GetColorsById(variant.ColorId);
+                    variant.Size = await _sizeService.GetSizesById(variant.SizeId);
+                }
+            }
+            return products.Select(ProductMapper.EntityToProductDto);
         }
 
         public async Task RemoveImageAsync(int productId, int imageId)

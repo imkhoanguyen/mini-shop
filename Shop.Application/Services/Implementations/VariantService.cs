@@ -13,10 +13,15 @@ namespace Shop.Application.Services.Implementations
     {
         private readonly IUnitOfWork _unit;
         private readonly ICloudinaryService _cloudinaryService;
-        public VariantService(IUnitOfWork unit, ICloudinaryService cloudinaryService)
+        private readonly ISizeService _sizeService;
+        private readonly IColorService _colorService;
+        public VariantService(IUnitOfWork unit, ICloudinaryService cloudinaryService,
+        IColorService colorService, ISizeService sizeService)
         {
             _unit = unit;
             _cloudinaryService = cloudinaryService;
+            _colorService = colorService;
+            _sizeService = sizeService;
         }
         public async Task<VariantDto> AddAsync(VariantAdd variantAdd)
         {
@@ -99,12 +104,22 @@ namespace Shop.Application.Services.Implementations
             var variant = await _unit.VariantRepository.GetAsync(expression);
             if (variant is null) throw new NotFoundException("Biến thể không tồn tại");
 
+            variant.Color = await _colorService.GetColorsById(variant.ColorId);
+            variant.Size = await _sizeService.GetSizesById(variant.SizeId);
+            
             return VariantMapper.EntityToVariantDto(variant);
         }
 
         public async Task<IEnumerable<VariantDto>> GetByProductId(int ProductId)
         {
             var variants = await _unit.VariantRepository.GetByProductIdAsync(ProductId);
+            foreach (var variant in variants)
+            {
+                    variant.Color = await _colorService.GetColorsById(variant.ColorId);
+                    variant.Size = await _sizeService.GetSizesById(variant.SizeId);
+
+                
+            }
             return variants.Select(VariantMapper.EntityToVariantDto);
         }
 

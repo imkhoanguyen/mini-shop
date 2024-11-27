@@ -131,9 +131,9 @@
                 <td>{{ variant.price | currency: 'VND' }}</td>
                 <td>{{ variant.priceSell | currency: 'VND' }}</td>
                 <td>{{ variant.quantity }}</td>
-                <td>{{ getSizeNameById(variant.sizeId) }}</td>
+                <td>{{ variant.size.name }}</td>
                 <td>
-                  <button class="btn btn-lg color-btn" [style.backgroundColor]="getColorCodeById(variant.colorId)"></button>
+                  <button class="btn btn-lg color-btn" [style.backgroundColor]="variant.color.code"></button>
 
                 </td>
                 <td>

@@ -3,6 +3,7 @@ using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
+using Shop.Domain.Enum;
 using Shop.Infrastructure.DataAccess;
 using Shop.Infrastructure.Ultilities;
 using System.Linq.Expressions;
@@ -72,20 +73,20 @@ namespace Shop.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(expression);
         }
 
-        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked = false)
+        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked)
         {
             var query = tracked ? _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete)
-            : _context.Products.AsNoTracking().AsQueryable()
+                .Where(c => !c.IsDelete )
+            : _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete);
+                .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).AsNoTracking().AsQueryable();
 
             if (!string.IsNullOrEmpty(ProductParams.Search))
             {

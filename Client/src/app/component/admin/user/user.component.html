@@ -1,0 +1,178 @@
+<p-toast></p-toast>
+
+<!-- Search and Pagination Controls -->
+<div class="row align-items-center mb-3">
+  <div class="col">
+    <input
+      type="text"
+      [(ngModel)]="searchString"
+      (input)="onSearch()"
+      class="form-control"
+      placeholder="Tìm kiếm..."
+    />
+  </div>
+  <div class="col-auto">
+    <select
+      class="form-select"
+      [(ngModel)]="pageSize"
+      (change)="onPageSizeChange($event)"
+    >
+      <option *ngFor="let option of pageSizeOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button
+      class="btn btn-success"
+      (click)="openDialog()"
+    >
+      <i class="pi pi-plus"></i> Thêm Người dùng
+    </button>
+  </div>
+</div>
+
+
+
+<!-- Categories Table -->
+<div class="table-responsive">
+  <p-table
+    [value]="selectedUsers"
+    [(selection)]="selectedUsers"
+    dataKey="id"
+    [tableStyle]="{ 'min-width': '50rem' }"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Ảnh</th>
+        <th>Tên</th>
+        <th>Tài khoản</th>
+        <th>Email</th>
+        <th>Trạng thái</th>
+        <th>Hành Động</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>
+          <img class="avatar"
+            [src]="user.avatar === 'user.jpg' ? 'http://localhost:5000/avatar/user.jpg' : user.avatar"
+            alt="Avatar"
+            height="40"
+            width="40"
+          />
+        </td>
+        <td>{{ user.fullName }}</td>
+        <td>{{ user.userName }}</td>
+        <td>{{ user.email  }}</td>
+        <td>{{ user.isLocked  }}</td>
+        <td>
+          <button
+            class="btn btn-info"
+            (click)="openDialog(user)"
+            tooltip="Chỉnh sửa"
+            tooltipPosition="top"
+          >
+            <i class="pi pi-file-edit"></i>
+          </button>
+          <!-- <button
+            class="btn btn-danger"
+            (click)="confirmDelete(user)"
+            tooltip="Xóa"
+            tooltipPosition="top"
+          >
+            <i class="pi pi-trash"></i>
+          </button> -->
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<!-- Paginator -->
+<p-paginator
+  (onPageChange)="onPageChange($event)"
+  [first]="first"
+  [rows]="pageSize"
+  [totalRecords]="totalRecords"
+></p-paginator>
+
+<!-- Dialog Add/Update user -->
+<p-dialog
+  [header]="headerText"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  [modal]="true"
+>
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="fullName" class="form-label">FullName:</label>
+      <input
+        pInputText
+        id="fullName"
+        class="form-control"
+        autocomplete="off"
+        formControlName="fullName"
+      />
+      <div *ngIf="userForm.get('fullName')?.invalid && userForm.get('fullName')?.touched">
+        <small class="text-danger">Tên không được để trống</small>
+      </div>
+      <label for="userName" class="form-label">UserName:</label>
+      <input
+        pInputText
+        id="userName"
+        class="form-control"
+        autocomplete="off"
+        formControlName="userName"
+      />
+      <div *ngIf="userForm.get('userName')?.invalid && userForm.get('userName')?.touched">
+        <small class="text-danger">UserName không được để trống</small>
+      </div>
+      <label for="email" class="form-label">Email:</label>
+      <input
+        pInputText
+        id="email"
+        class="form-control"
+        type="email"
+        autocomplete="off"
+        formControlName="email"
+      />
+      <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+        <small class="text-danger">Email không được để trống</small>
+      </div>
+      
+      <label for="password" class="form-label">Password:</label>
+      <input
+        pInputText
+        type="password"
+        id="password"
+        class="form-control"
+        autocomplete="off"
+        formControlName="password"
+      />
+      <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+        <small class="text-danger">Password không được để trống</small>
+      </div>
+      <label for="avatar" class="form-label">Avatar:</label><br>
+      <button class="btn btn-primary" type="button" (click)="fileInput.click()">Chọn Avatar</button>
+      <input #fileInput type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
+      <div class="image-container" *ngIf="selectedFile">
+        <div class="image-preview">
+          <img [src]="selectedFile.src" alt="Image Preview" style="max-width: 40px; margin-bottom: 10px;">
+          </div>
+          <!-- <button class="close-button" (click)="removeImage(selectedFile.src)">X</button>  -->
+      </div>
+      <br><label for="role" class="form-label">Chọn quyền</label><br>
+      <p-dropdown 
+        [options]="roles" 
+        [(ngModel)]="selectedRole"
+        optionLabel="name" 
+        placeholder="Select a Role" />
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-secondary me-2" (click)="visible = false">Hủy</button>
+      <button class="btn btn-primary" type="submit">{{ btnText }}</button>
+    </div>
+  </form>
+</p-dialog>

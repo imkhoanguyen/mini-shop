@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Variants;
-using Shop.Application.Mappers;
 using Shop.Application.Services.Abstracts;
-using Shop.Application.Services.Implementations;
-using Shop.Domain.Entities;
+
 
 namespace API.Controllers
 {
@@ -14,17 +11,20 @@ namespace API.Controllers
         private readonly IProductService _productService;
         private readonly ICloudinaryService _cloudinaryService;
 
-        public VariantController(IVariantService variantService, ICloudinaryService cloudinaryService, IProductService productService)
+        public VariantController(IVariantService variantService, ICloudinaryService cloudinaryService, 
+            IProductService productService)
         {
             _variantService = variantService;
             _cloudinaryService = cloudinaryService;
             _productService = productService;
+
         }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<VariantDto>> GetVariantById(int id)
         {
             var variant = await _variantService.GetAsync(c => c.Id == id);
+
             return Ok(variant);
         }
         [HttpGet("GetByProductId")]
@@ -39,6 +39,7 @@ namespace API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            if(variantAdd.Price <= variantAdd.PriceSell) return BadRequest("PriceSell không được vượt quá Price");
             var product = await _productService.GetAsync(c => c.Id == variantAdd.ProductId);
             if (product == null) return NotFound("Sản phẩm không tồn tại");
 
