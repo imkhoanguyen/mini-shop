@@ -1,32 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { productUserService } from '../../../_services/productUser.service';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-import { FooterClientComponent } from '../../../layout/footerClient/footerClient.component';
-import { HeaderComponent } from '../../../layout/headerClient/header.component';
-import { ProductListComponent } from '../productList/productList.component';
-import { Router } from '@angular/router';
-import { ApiService } from '../shared/api.service';
-import { ProductGet } from '../../../_models/product.module';
+import { Component, inject, OnInit } from '@angular/core';
+import { CartService } from '../../../_services/cart.service';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FormsModule } from '@angular/forms';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
+import { CartItem } from '../../../_models/cart';
 
 @Component({
-  selector: 'app-product',
+  selector: 'app-cart',
   standalone: true,
+  imports: [InputNumberModule, FormsModule, BreadcrumbModule],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css',
-  imports: [CommonModule, RouterModule, HeaderComponent, FooterClientComponent],
 })
-export class CartPageComponent implements OnInit {
-  showProduct: any = [];
-  constructor(private api: ApiService) {}
+export class CartComponent implements OnInit {
+  cartService = inject(CartService);
+
+  // breadcrumb
+  items: MenuItem[] | undefined;
+
   ngOnInit(): void {
-    this.api.products().subscribe((res) => {
-      this.showProduct = res;
-      console.log ("Cart Array " , this.showProduct)
-    });
+    this.items = [
+      { label: 'Trang chủ', routerLink: '/home' },
+      { label: 'Giỏ hàng', routerLink: '/cart' },
+    ];
   }
 
-  removeItem(data: ProductGet) {
-    this.api.removeToCart(data)
+  onPlus(item: CartItem) {
+    this.cartService.addItemToCart(item);
+  }
+
+  onMinus(item: CartItem) {
+    this.cartService.removeItemFromCart(item);
+  }
+
+  onRemoveItem(item: CartItem) {
+    this.cartService.removeItemFromCart(item, item.quantity);
   }
 }

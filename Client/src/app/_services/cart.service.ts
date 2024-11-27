@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Cart, CartItem } from '../_models/cart';
 import { firstValueFrom, map, tap } from 'rxjs';
@@ -11,6 +11,13 @@ export class CartService {
   baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
   cart = signal<Cart | null>(null);
+  totals = computed(() => {
+    const cart = this.cart();
+    return cart?.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+  });
 
   getCart(id: string) {
     return this.http.get<Cart>(this.baseUrl + '/cart?id=' + id).pipe(
@@ -32,7 +39,9 @@ export class CartService {
     item: CartItem,
     quantity: number
   ): CartItem[] {
-    const index = items.findIndex((x) => x.variantId === item.variantId);
+    const index = items.findIndex(
+      (x) => x.variantId === item.variantId && x.productId === item.productId
+    );
     if (index === -1) {
       item.quantity = quantity;
       items.push(item);
@@ -52,6 +61,35 @@ export class CartService {
       console.error('Failed to add item to cart:', error);
       return false;
     }
+  }
+
+  async removeItemFromCart(item: CartItem, quantity = 1) {
+    const cart = this.cart();
+    if (!cart) return;
+    const index = cart.items.findIndex(
+      (x) => x.productId === item.productId && x.variantId === item.variantId
+    );
+    if (index !== -1) {
+      if (cart.items[index].quantity > quantity) {
+        cart.items[index].quantity -= quantity;
+      } else {
+        cart.items.splice(index, 1);
+      }
+      if (cart.items.length === 0) {
+        this.deleteCart();
+      } else {
+        await firstValueFrom(this.setCart(cart));
+      }
+    }
+  }
+
+  deleteCart() {
+    this.http.delete(this.baseUrl + '/cart?id=' + this.cart()?.id).subscribe({
+      next: () => {
+        localStorage.removeItem('cart_id');
+        this.cart.set(null);
+      },
+    });
   }
 
   setCart(cart: Cart) {

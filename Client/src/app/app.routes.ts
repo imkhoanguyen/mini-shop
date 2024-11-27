@@ -25,15 +25,14 @@ import { BlogComponent } from './component/admin/blog/blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
 import { CheckOutComponent } from './component/check-out/check-out.component';
 import { ProductDetailComponent } from './component/client/productDetail/productDetail.components';
-import { CartPageComponent } from './component/client/cart/cart.component';
 import { authGuard } from './_guards/auth.guard';
 import { ShopComponent } from './component/client/shop/shop.component';
 import { UserComponent } from './component/admin/user/user.component';
+import { CartComponent } from './component/client/cart/cart.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
   { path: 'product/productDetail/:id', component: ProductDetailComponent },
-  { path: 'product/cart-page', component: CartPageComponent },
   {
     path: 'admin',
     component: AdminComponent,
@@ -68,4 +67,5 @@ export const routes: Routes = [
   // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'shop', component: ShopComponent },
+  { path: 'cart', component: CartComponent },
 ];
