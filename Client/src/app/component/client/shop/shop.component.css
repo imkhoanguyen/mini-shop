@@ -1,0 +1,108 @@
+.product-card {
+  margin-bottom: 30px;
+}
+
+.product-title {
+  color: #333;
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.466667;
+  position: relative;
+  padding-right: 30px;
+  white-space: normal; /* Cho phép xuống dòng */
+  word-wrap: break-word; /* Ngắt từ nếu quá dài */
+  overflow-wrap: break-word; /* Đảm bảo tương thích */
+  font-weight: bold;
+}
+
+.product-price {
+  text-decoration: line-through;
+}
+
+.product-price,
+.product-price-sell {
+  font-size: 14px;
+  line-height: 1.466667;
+  letter-spacing: 1px;
+  color: #a6a6a6;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.product-price-sell {
+  color: #000;
+}
+
+.product {
+  position: relative;
+}
+.wishlist-icon {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+.product-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  display: block;
+}
+
+.quick-view-btn {
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  text-decoration: underline;
+  border-radius: 50px;
+  font-weight: bold;
+}
+
+.quick-view-btn:hover {
+  background-color: #333;
+  color: #fff;
+}
+
+.product-image:hover .quick-view-btn {
+  opacity: 1;
+  visibility: visible;
+}
+
+::ng-deep .p-breadcrumb {
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+::ng-deep .p-breadcrumb-list {
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .p-menuitem-link {
+  text-decoration: none;
+}
+
+::ng-deep .p-inputtext {
+  width: 100%;
+}
+::ng-deep .p-dropdown-items,
+::ng-deep .p-multiselect-items {
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+}

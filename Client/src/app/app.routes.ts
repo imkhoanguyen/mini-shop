@@ -27,14 +27,16 @@ import { CheckOutComponent } from './component/check-out/check-out.component';
 import { ProductDetailComponent } from './component/client/productDetail/productDetail.components';
 import { CartPageComponent } from './component/client/cart/cart.component';
 import { authGuard } from './_guards/auth.guard';
+import { ShopComponent } from './component/client/shop/shop.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
-  {path :'product/productDetail/:id' ,component : ProductDetailComponent},
-  {path : 'product/cart-page' ,component:CartPageComponent},
+  { path: 'product/productDetail/:id', component: ProductDetailComponent },
+  { path: 'product/cart-page', component: CartPageComponent },
   {
     path: 'admin',
-    component: AdminComponent, canActivate: [authGuard],
+    component: AdminComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
@@ -63,4 +65,5 @@ export const routes: Routes = [
   { path: 'checkout', component: CheckOutComponent },
   // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
+  { path: 'shop', component: ShopComponent },
 ];
