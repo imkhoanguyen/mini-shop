@@ -48,6 +48,7 @@
         <th>Tên</th>
         <th>Tài khoản</th>
         <th>Email</th>
+        <th>Quyền</th>
         <th>Trạng thái</th>
         <th>Hành Động</th>
       </tr>
@@ -66,7 +67,17 @@
         <td>{{ user.fullName }}</td>
         <td>{{ user.userName }}</td>
         <td>{{ user.email  }}</td>
-        <td>{{ user.isLocked  }}</td>
+        <td>{{ user.role }}</td>
+        <td>
+          <div (click)="showDialog(user)">
+            <p-tag
+              [severity]="user.isLocked ? 'danger' : 'success'"
+              [value]="user.isLocked ? 'Đang bị khóa' : 'Bình thường'"
+              [rounded]="true">
+            </p-tag>
+          </div>
+        </td>
+
         <td>
           <button
             class="btn btn-info"
@@ -141,7 +152,7 @@
       <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
         <small class="text-danger">Email không được để trống</small>
       </div>
-      
+
       <label for="password" class="form-label">Password:</label>
       <input
         pInputText
@@ -154,21 +165,32 @@
       <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
         <small class="text-danger">Password không được để trống</small>
       </div>
-      <label for="avatar" class="form-label">Avatar:</label><br>
-      <button class="btn btn-primary" type="button" (click)="fileInput.click()">Chọn Avatar</button>
-      <input #fileInput type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
-      <div class="image-container" *ngIf="selectedFile">
-        <div class="image-preview">
-          <img [src]="selectedFile.src" alt="Image Preview" style="max-width: 40px; margin-bottom: 10px;">
+      <label for="avatar" class="form-label">Avatar:</label>
+      <div class="avatar-container">
+        <button class="btn btn-primary" type="button" (click)="fileInput.click()">Chọn Avatar</button>
+        <input #fileInput type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
+        <div class="image-container" *ngIf="selectedFile">
+          <div class="image-preview">
+            <img [src]="selectedFile.src" alt="Image Preview">
           </div>
-          <!-- <button class="close-button" (click)="removeImage(selectedFile.src)">X</button>  -->
+        </div>
       </div>
-      <br><label for="role" class="form-label">Chọn quyền</label><br>
-      <p-dropdown 
-        [options]="roles" 
-        [(ngModel)]="selectedRole"
-        optionLabel="name" 
-        placeholder="Select a Role" />
+      <div class="row">
+        <div class="col-4">
+          <label for="role" class="form-label">Chọn quyền:</label>
+        </div>
+        <div class="col-8">
+          <select
+          class="form-select" formControlName="role"
+        >
+          <option *ngFor="let role of roles" [value]="role.name">
+            {{ role.name }}
+          </option>
+        </select>
+        </div>
+
+      </div>
+
     </div>
     <div class="d-flex justify-content-end">
       <button class="btn btn-secondary me-2" (click)="visible = false">Hủy</button>
@@ -176,3 +198,38 @@
     </div>
   </form>
 </p-dialog>
+<p-dialog
+  header="Trạng thái Người dùng"
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [responsive]="true"
+  [style]="{ width: '300px' }"
+>
+  <form [formGroup]="lockUserForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="lockStatus">Trạng thái khóa:</label>
+      <select id="lockStatus" class="form-control" formControlName="lockStatus">
+        <option [ngValue]="true">Khóa</option>
+        <option [ngValue]="false">Mở khóa</option>
+      </select>
+    </div>
+
+    <div *ngIf="lockUserForm.get('lockStatus')?.value === 'true' || lockUserForm.get('lockStatus')?.value === true">
+      <div class="form-group">
+        <label for="minutes">Số phút:</label>
+        <input id="minutes" type="number" class="form-control" formControlName="minutes" />
+      </div>
+      <div class="form-group">
+        <label for="hours">Số giờ:</label>
+        <input id="hours" type="number" class="form-control" formControlName="hours" />
+      </div>
+      <div class="form-group">
+        <label for="days">Số ngày:</label>
+        <input id="days" type="number" class="form-control" formControlName="days" />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+  </form>
+</p-dialog>
+

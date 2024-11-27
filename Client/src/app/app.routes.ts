@@ -28,6 +28,7 @@ import { ProductDetailComponent } from './component/client/productDetail/product
 import { CartPageComponent } from './component/client/cart/cart.component';
 import { authGuard } from './_guards/auth.guard';
 import { ShopComponent } from './component/client/shop/shop.component';
+import { UserComponent } from './component/admin/user/user.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
@@ -52,6 +53,7 @@ export const routes: Routes = [
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
       { path: 'blog', component: BlogComponent },
+      { path: 'user', component: UserComponent },
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],

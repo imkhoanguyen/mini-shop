@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-
+import { jwtDecode } from "jwt-decode";
 @Injectable({
   providedIn: 'root',
 })
@@ -42,4 +42,14 @@ export class AuthService {
 
     return decodedToken && decodedToken.role === role;
   }
+  getRoleFromToken(token: string): string {
+    try {
+      const decodedToken: any = jwtDecode(token);
+      return decodedToken.role;
+    } catch (error) {
+      console.error('Token không hợp lệ', error);
+      return '';
+    }
+  }
 }
+

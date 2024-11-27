@@ -48,6 +48,11 @@ export class SidebarComponent {
       label: 'Chat',
     },
     {
+      routerLink: 'user',
+      icon: 'pi pi-users',
+      label: 'Quản lý người dùng',
+    },
+    {
       routerLink: 'role',
       icon: 'pi pi-key',
       label: 'Quyền',

@@ -53,6 +53,10 @@ export class RoleService {
     return this.http.delete(`${this.baseUrl}/role/${roleId}`);
   }
 
+  getAllRoles() {
+    return this.http.get<Role[]>(this.baseUrl + '/role/all');
+  }
+
   getAllPermission() {
     return this.http.get<PermissionGroup[]>(this.baseUrl + '/role/permissions');
   }
