@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { catchError, map, Observable, pipe, tap, throwError } from 'rxjs';
 import { Login } from '../_models/login.module';
@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { ResetPassword } from '../_models/resetPassword';
 import { User } from '../_models/user.module';
 import { MessageService } from './message.service';
+import { PaginatedResult } from '../_models/pagination';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -101,6 +102,50 @@ export class AccountService {
         );
     }
   }
+  getUsersPagedList(params: any): Observable<PaginatedResult<User[]>> {
+    let httpParams = new HttpParams();
+    if (params.pageNumber) httpParams = httpParams.set('pageNumber', params.pageNumber.toString());
+    if (params.pageSize) httpParams = httpParams.set('pageSize', params.pageSize.toString());
+    if (params.orderBy) httpParams = httpParams.set('orderBy', params.orderBy);
+    if (params.search) httpParams = httpParams.set('search', params.search);
+
+    return this.http.get<User[]>(this.apiUrl + "/Account/all", {
+      params: httpParams,
+      observe: 'response'
+    }).pipe(
+      map((response: HttpResponse<User[]>) => {
+        const paginatedResult = new PaginatedResult<User[]>();
+        paginatedResult.items = response.body || [];
+
+        const paginationHeader = response.headers.get('Pagination');
+        if (paginationHeader) {
+          paginatedResult.pagination = JSON.parse(paginationHeader);
+        }
+
+        return paginatedResult;
+      })
+    );
+  }
+  addUser(user: FormData): Observable<User> {
+    return this.http.post<User>(this.apiUrl + '/Account/Add/User', user);
+  }
+  updateUser(user: FormData): Observable<User> {
+    return this.http.put<User>(this.apiUrl + '/Account/Update/User', user);
+  }
+  lockUser(id: string, lockParams: any) {
+    const params = new HttpParams()
+      .set('minutes', lockParams.minutes || '')
+      .set('hours', lockParams.hours || '')
+      .set('days', lockParams.days || '');
+
+    return this.http.put(`http://localhost:5000/api/Account/Lock/User?id=${id}`, null, {
+      params,
+      responseType: 'text',
+    });
+  }
+  unlockUser(userId: string): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/Account/Unlock/User?id=${userId}`, {});
+  }
 
   getCurrentUser(): User | null {
     const userJson = localStorage.getItem('user');
@@ -131,7 +176,7 @@ export class AccountService {
           resolve(customers.includes(user.id));
         },
         error: () => {
-          resolve(false); 
+          resolve(false);
         }
       });
     });

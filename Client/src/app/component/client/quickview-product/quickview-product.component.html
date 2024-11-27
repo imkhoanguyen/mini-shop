@@ -1,0 +1,111 @@
+@if(productDetail) {
+<div class="card flex justify-content-center">
+  <p-dialog
+    header="Quick View Product"
+    [modal]="true"
+    [(visible)]="visible"
+    [style]="{ width: '70rem' }"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    (onHide)="closeDialog()"
+  >
+    <div class="container">
+      <div class="row">
+        <div class="col-6">
+          <p-galleria
+            [value]="listImage"
+            [numVisible]="5"
+            [circular]="true"
+            [showItemNavigators]="true"
+            [showThumbnails]="false"
+            [responsiveOptions]="responsiveOptions"
+            [containerStyle]="{ 'max-width': '100%' }"
+          >
+            <ng-template pTemplate="item" let-item>
+              <p-image
+                [src]="item"
+                height="500"
+                width="400"
+                clas="img-preview"
+                [preview]="true"
+              />
+              <img />
+            </ng-template>
+          </p-galleria>
+        </div>
+
+        <div class="col-6">
+          <div class="product-title mb-3">
+            {{ productDetail.name }}
+          </div>
+
+          <div class="d-flex gap-2 align-items-center mb-3">
+            <div class="product-price-sell">
+              {{ selectedVariant.priceSell }}đ
+            </div>
+            <div class="product-price">{{ selectedVariant.price }}đ</div>
+          </div>
+
+          <div
+            class="product-description mb-3"
+            pTooltip="{{ productDetail.description }}"
+            tooltipPosition="top"
+            [innerHTML]="productDetail.description"
+          ></div>
+
+          <div class="mb-3">
+            <div class="mb-2 fw-bold">Loại sản phẩm:</div>
+
+            <div class="d-flex gap-3 flex-wrap">
+              @for (variant of productDetail.variants; track variant.id) {
+              <div
+                [ngClass]="{
+                  'selected-variant': selectedVariant.id === variant.id
+                }"
+                class="form-check p-0 variant-item"
+              >
+                <div
+                  (click)="onVariantSelect(variant)"
+                  class="form-check-label d-flex gap-2 align-items-center"
+                  [ngClass]="{
+                    'selected-variant': selectedVariant.id === variant.id
+                  }"
+                >
+                  <img
+                    src="{{ variant.images[0].imgUrl }}"
+                    alt="{{ productDetail.name }}"
+                    style="object-fit: cover"
+                    width="40"
+                    height="40"
+                  />
+                  <div class="variant-info">
+                    <span>{{ variant.size.name }}</span> +
+                    <span>{{ variant.color.name }}</span>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <div class="fw-bold mb-2">Số lượng:</div>
+            <p-inputNumber
+              [(ngModel)]="count"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              inputId="horizontal"
+              spinnerMode="horizontal"
+              [step]="1"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              [min]="1"
+            />
+          </div>
+
+          <p-button label="ADD TO CART" type="button" (onClick)="addToCart()" />
+        </div>
+      </div>
+    </div>
+  </p-dialog>
+</div>
+}

@@ -25,17 +25,19 @@ import { BlogComponent } from './component/admin/blog/blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
 import { CheckOutComponent } from './component/check-out/check-out.component';
 import { ProductDetailComponent } from './component/client/productDetail/productDetail.components';
-import { CartPageComponent } from './component/client/cart/cart.component';
 import { authGuard } from './_guards/auth.guard';
+import { ShopComponent } from './component/client/shop/shop.component';
+import { UserComponent } from './component/admin/user/user.component';
+import { CartComponent } from './component/client/cart/cart.component';
 import { StatisticComponent } from './component/admin/statistic/statistic.component';
 export const routes: Routes = [
   { path: '', component: ProductUserComponent },
   { path: 'product/productList/:id', component: ProductListComponent },
-  {path :'product/productDetail/:id' ,component : ProductDetailComponent},
-  {path : 'product/cart-page' ,component:CartPageComponent},
+  { path: 'product/productDetail/:id', component: ProductDetailComponent },
   {
     path: 'admin',
-    component: AdminComponent, canActivate: [authGuard],
+    component: AdminComponent,
+    canActivate: [authGuard],
     children: [
       { path: '', component: DashboardComponent },
       { path: 'dashboard', component: DashboardComponent },
@@ -51,6 +53,7 @@ export const routes: Routes = [
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
       { path: 'blog', component: BlogComponent },
+      { path: 'user', component: UserComponent },
       { path: 'statistic', component: StatisticComponent },
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
@@ -65,4 +68,6 @@ export const routes: Routes = [
   { path: 'checkout', component: CheckOutComponent },
   // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
+  { path: 'shop', component: ShopComponent },
+  { path: 'cart', component: CartComponent },
 ];

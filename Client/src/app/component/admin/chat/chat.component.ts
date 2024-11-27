@@ -328,6 +328,13 @@ export class ChatComponent implements OnInit, OnDestroy {
       },
     });
   }
+  getAvatarUrl(avatar: string): string {
+    if (avatar && avatar.startsWith('http')) {
+      return avatar;
+    } else {
+      return 'http://localhost:5000/avatar/' + avatar;
+    }
+  }
 
   resetMessageInput() {
     this.content = '';

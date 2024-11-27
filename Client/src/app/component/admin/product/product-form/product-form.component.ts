@@ -408,114 +408,158 @@ export class ProductFormComponent implements OnInit {
 
   private async addProduct(formData: FormData) {
     try {
+      const variantArray = this.variantsForm.get('variants') as FormArray;
+      for (const control of variantArray.controls) {
+        const variant = control.value;
+        if (variant.price <= 0) {
+          this.toastService.error('Giá nhập phải lớn hơn 0.');
+          return;
+        }
+
+        if (variant.priceSell <= 0) {
+          this.toastService.error('Giá bán phải lớn hơn 0.');
+          return;
+        }
+
+        if (variant.quantity < 0) {
+          this.toastService.error('Số lượng không thể nhỏ hơn 0.');
+          return;
+        }
+        if (variant.price <= variant.priceSell) {
+          this.toastService.error('Giá bán phải lớn hơn giá nhập.');
+          return;
+        }
+      }
+
+      // Thêm sản phẩm
       const response = await this.productService.addProduct(formData).toPromise();
       if (response && response.id) {
-        await this.processVariants(response.id, this.variantsForm.get('variants') as FormArray);
+        await this.processVariants(response.id, variantArray);
         this.toastService.success('Thêm sản phẩm thành công.');
       } else {
-        this.toastService.error('Lỗi khi thêm sản phẩm: Không nhận được ID sản phẩm.');
+        //this.toastService.error('Lỗi khi thêm sản phẩm.');
       }
     } catch (error) {
-      this.toastService.error('Lỗi khi thêm sản phẩm: ' + error);
+      console.error('Lỗi khi thêm sản phẩm:', error);
+      //this.toastService.error('Lỗi khi thêm sản phẩm: ' + error);
     }
   }
 
   private async updateProduct(formData: FormData) {
     try {
+
+      const variantArray = this.variantsForm.get('variants') as FormArray;
+      for (const control of variantArray.controls) {
+        const variant = control.value;
+
+        if (variant.price <= 0) {
+          this.toastService.error('Giá nhập phải lớn hơn 0.');
+          return;
+        }
+
+        if (variant.priceSell <= 0) {
+          this.toastService.error('Giá bán phải lớn hơn 0.');
+          return;
+        }
+
+        if (variant.quantity < 0) {
+          this.toastService.error('Số lượng không thể nhỏ hơn 0.');
+          return;
+        }
+        if (variant.price <= variant.priceSell) {
+          this.toastService.error('Giá bán phải lớn hơn giá nhập.');
+          return;
+        }
+      }
+
+      // Cập nhật sản phẩm
       const response = await this.productService.updateProduct(formData).toPromise();
       if (response && response.id) {
-        await this.processVariants(response.id, this.variantsForm.get('variants') as FormArray);
+        await this.processVariants(response.id, variantArray);
         this.toastService.success('Cập nhật sản phẩm thành công.');
       } else {
-        this.toastService.error('Lỗi khi cập nhật sản phẩm: Không nhận được ID sản phẩm.');
+        this.toastService.error('Lỗi khi cập nhật sản phẩm.');
       }
     } catch (error) {
-      this.toastService.error('Lỗi khi cập nhật sản phẩm: ' + error);
+      console.error('Lỗi khi cập nhật sản phẩm:', error);
+      //this.toastService.error('Lỗi khi cập nhật sản phẩm: ' + error);
     }
   }
 
   private async processVariants(productId: number, variantsArray: FormArray) {
     const variantPromises = variantsArray.controls.map(async (control: AbstractControl) => {
-        const variantGroup = control as FormGroup;
+      const variantGroup = control as FormGroup;
+      const variant = variantGroup.value;
+      const variantFormData = this.createVariantFormData(productId, variant);
 
-        const variant = variantGroup.value;
-        const variantFormData = this.createVariantFormData(productId, variant);
+      if (variant.price <= 0) {
+        this.toastService.error('Giá nhập phải lớn hơn 0.');
+        return;
+      }
 
-        if (variant.id) {
-            const currentVariant = await this.variantService.getVariantById(variant.id).toPromise();
-            if (!currentVariant) {
-                throw new Error(`Variant with id ${variant.id} not found`);
-            }
+      if (variant.priceSell <= 0) {
+        this.toastService.error('Giá bán phải lớn hơn 0.');
+        return;
+      }
 
-            const hasChanged = (currentVariant.price !== variant.price ||
-                currentVariant.priceSell !== variant.priceSell ||
-                currentVariant.quantity !== variant.quantity ||
-                currentVariant.color.id !== variant.colorId ||
-                currentVariant.size.id !== variant.sizeId ||
-                currentVariant.status !== variant.status);
-
-            if (hasChanged) {
-                const variantUpdate: VariantUpdate = {
-                    id: variant.id,
-                    productId: productId,
-                    price: variant.price.toString(),
-                    priceSell: variant.priceSell != null ? variant.priceSell.toString() : 0,
-                    quantity: variant.quantity.toString(),
-                    colorId: variant.colorId ? variant.colorId.toString() : null,
-                    sizeId: variant.sizeId ? variant.sizeId.toString() : null,
-                    status: variant.status
-                };
-
-                console.log("variantUpdate", variantUpdate);
-                await this.variantService.updateVariant(variantUpdate).toPromise();
-            }
-
-            const imagesFormArray = variantGroup.get('imageFiles') as FormArray;
-            if (imagesFormArray && imagesFormArray.length > 0) {
-                const files: File[] = imagesFormArray.controls
-                    .map(ctrl => ctrl.value)
-                    .filter(file => file instanceof File) as File[];
-
-                if (files.length > 0) {
-                    await this.variantService.addVariantImages(variant.id, files).toPromise();
-                    this.toastService.success('Cập nhật hình ảnh biến thể thành công.');
-                } else {
-                    this.toastService.success('Không có hình ảnh nào để cập nhật.');
-                }
-            }
-
-            this.toastService.success('Cập nhật biến thể thành công.');
-
-        } else {
-            const imagesFormArray = variantGroup.get('imageFiles') as FormArray;
-            if (imagesFormArray && imagesFormArray.length > 0) {
-                for (const ctrl of imagesFormArray.controls) {
-                    const file = ctrl.value;
-                    if (file instanceof File) {
-                        variantFormData.append('imageFiles', file);
-                    }
-                }
-                await this.variantService.addVariant(variantFormData).toPromise();
-                this.toastService.success('Thêm biến thể thành công.');
-            }
+      if (variant.quantity < 0) {
+        this.toastService.error('Số lượng không thể nhỏ hơn 0.');
+        return;
+      }
+      if (variant.price <= variant.priceSell) {
+        this.toastService.error('Giá bán phải lớn hơn giá nhập.');
+        return;
+      }
+      if (variant.id) {
+        const currentVariant = await this.variantService.getVariantById(variant.id).toPromise();
+        if (!currentVariant) {
+          throw new Error(`Variant with id ${variant.id} not found`);
         }
+
+        const hasChanged = (currentVariant.price !== variant.price ||
+                            currentVariant.priceSell !== variant.priceSell ||
+                            currentVariant.quantity !== variant.quantity ||
+                            currentVariant.color.id !== variant.colorId ||
+                            currentVariant.size.id !== variant.sizeId ||
+                            currentVariant.status !== variant.status);
+
+        if (hasChanged) {
+          
+          const variantUpdate: VariantUpdate = {
+            id: variant.id,
+            productId: productId,
+            price: variant.price.toString(),
+            priceSell: variant.priceSell != null ? variant.priceSell.toString() : 0,
+            quantity: variant.quantity.toString(),
+            colorId: variant.colorId ? variant.colorId.toString() : null,
+            sizeId: variant.sizeId ? variant.sizeId.toString() : null,
+            status: variant.status
+          };
+
+          await this.variantService.updateVariant(variantUpdate).toPromise();
+          this.toastService.success('Cập nhật biến thể thành công.');
+        }
+      } else {
+        if (variant.price <= variant.priceSell) {
+          this.toastService.error('Giá bán phải lớn hơn giá nhập.');
+          return;
+        }
+
+        await this.variantService.addVariant(variantFormData).toPromise();
+        this.toastService.success('Thêm biến thể thành công.');
+      }
     });
 
     try {
-        await Promise.all(variantPromises);
-        this.router.navigateByUrl("/admin/product");
+      await Promise.all(variantPromises);
+      this.router.navigateByUrl("/admin/product");
     } catch (error) {
-        console.error('Chi tiết lỗi từ API:', error);
-        this.toastService.error('Lỗi khi xử lý biến thể: ' + error);
+      console.error('Chi tiết lỗi từ API:', error);
+      this.toastService.error('Lỗi khi xử lý biến thể: ' + error);
     }
-}
+  }
 
   private createVariantFormData(productId: number, variant: any): FormData {
-    if (variant.price <= variant.priceSell) {
-      this.toastService.error('Giá bán phải lớn hơn giá nhập.');
-      throw new Error('Giá bán phải lớn hơn giá nhập.');
-    }
-
     const variantFormData = new FormData();
     variantFormData.append('productId', productId.toString());
     variantFormData.append('price', variant.price.toString());
@@ -529,9 +573,9 @@ export class ProductFormComponent implements OnInit {
     variantFormData.append('colorId', variant.colorId.toString());
     variantFormData.append('sizeId', variant.sizeId.toString());
 
-    return variantFormData; // Always return a valid FormData or null
-
+    return variantFormData;
   }
+
   private getProductId(): number {
     let productId: number = 0;
     this.route.paramMap.subscribe((params) => {

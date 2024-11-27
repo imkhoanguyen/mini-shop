@@ -1,0 +1,19 @@
+::ng-deep .p-inputtext {
+  max-width: 50px;
+}
+
+::ng-deep .p-breadcrumb {
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+}
+
+::ng-deep .p-breadcrumb-list {
+  padding: 0;
+  margin: 0;
+}
+
+::ng-deep .p-menuitem-link {
+  text-decoration: none;
+}

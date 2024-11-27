@@ -142,6 +142,7 @@ namespace Shop.Application.Services.Implementations
         public async Task<MessageDto> GetLastMessageAsync(string userId)
         {
             var lastMessage = await _unit.MessageRepository.GetLastMessageAsync(userId);
+            if (lastMessage == null) return null;
             return MessageMapper.EntityToMessageDto(lastMessage);
         }
 

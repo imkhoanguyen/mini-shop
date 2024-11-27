@@ -25,7 +25,7 @@ namespace Shop.Infrastructure.Repositories
                 .Include(p => p.Image)
                 .FirstOrDefaultAsync(c => c.Id == product.Id);
             if (productDb is null) return;
-            
+
             productDb.Name = product.Name;
             productDb.Description = product.Description;
             productDb.Status = product.Status;
@@ -36,7 +36,7 @@ namespace Shop.Infrastructure.Repositories
             }
 
             _context.ProductCategories.RemoveRange(productDb.ProductCategories);
-            
+
             var newProductCategories = product.ProductCategories.Select(categoryId => new ProductCategory
             {
                 ProductId = product.Id,
@@ -73,14 +73,14 @@ namespace Shop.Infrastructure.Repositories
             return await query.FirstOrDefaultAsync(expression);
         }
 
-        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams ProductParams, bool tracked)
+        public async Task<PagedList<Product>> GetAllProductsAsync(ProductParams productParams, bool tracked)
         {
             var query = tracked ? _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
                 .Include(p => p.Variants.Where(v => !v.IsDelete))
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete )
+                .Where(c => !c.IsDelete)
             : _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
@@ -88,15 +88,30 @@ namespace Shop.Infrastructure.Repositories
                 .ThenInclude(v => v.Images)
                 .Where(c => !c.IsDelete && c.Status == ProductStatus.Public).AsNoTracking().AsQueryable();
 
-            if (!string.IsNullOrEmpty(ProductParams.Search))
+            if (!string.IsNullOrEmpty(productParams.Search))
             {
-                query = query.Where(c => c.Name.ToLower().Contains(ProductParams.Search.ToLower())
-                    || c.Id.ToString() == ProductParams.Search);
+                query = query.Where(c => c.Name.ToLower().Contains(productParams.Search.ToLower())
+                    || c.Id.ToString() == productParams.Search);
             }
 
-            if (!string.IsNullOrEmpty(ProductParams.OrderBy))
+            if (productParams.SelectedCategory != null && productParams.SelectedCategory.Any())
             {
-                query = ProductParams.OrderBy switch
+                query = query.Where(p => p.ProductCategories
+                    .Any(pc => productParams.SelectedCategory.Contains(pc.CategoryId)));
+            }
+            if (productParams.SelectedSize != null && productParams.SelectedSize.Any())
+            {
+                query = query.Where(p => p.Variants
+                    .Any(v => productParams.SelectedSize.Contains(v.SizeId)));
+            }
+            if (productParams.SelectedColor > 0)
+            {
+                query = query.Where(p => p.Variants.Any(v => v.ColorId == productParams.SelectedColor));
+            }
+
+            if (!string.IsNullOrEmpty(productParams.OrderBy))
+            {
+                query = productParams.OrderBy switch
                 {
                     "id" => query.OrderBy(c => c.Id),
                     "id_desc" => query.OrderByDescending(c => c.Id),
@@ -106,7 +121,7 @@ namespace Shop.Infrastructure.Repositories
                 };
             }
 
-            return await query.ApplyPaginationAsync(ProductParams.PageNumber, ProductParams.PageSize);
+            return await query.ApplyPaginationAsync(productParams.PageNumber, productParams.PageSize);
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync(bool tracked = false)
@@ -121,9 +136,9 @@ namespace Shop.Infrastructure.Repositories
             return await _context.Products
                 .Include(p => p.ProductCategories)
                 .Include(p => p.Image)
-                .Include(p => p.Variants) 
+                .Include(p => p.Variants)
                 .ThenInclude(v => v.Images)
-                .Where(c => !c.IsDelete && c.Variants.All(v => !v.IsDelete)) 
+                .Where(c => !c.IsDelete && c.Variants.All(v => !v.IsDelete))
                 .AsNoTracking()
                 .ToListAsync();
         }

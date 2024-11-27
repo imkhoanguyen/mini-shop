@@ -1,15 +1,20 @@
 ﻿
+using API.Extensions;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Shop.Application.DTOs;
 using Shop.Application.DTOs.Auth;
 using Shop.Application.DTOs.Auth.Facebook;
 using Shop.Application.DTOs.Users;
 using Shop.Application.Mappers;
+using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
 using System.Text;
 
@@ -22,11 +27,13 @@ namespace API.Controllers
 
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
+        private readonly ICloudinaryService _cloudinaryService;
+        private readonly IMessageService _service;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
 
         public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
-            ITokenService tokenService, IEmailService emailService, IConfiguration configuration)
+            ITokenService tokenService, IEmailService emailService, ICloudinaryService cloudinaryService, IConfiguration configuration, IMessageService service)
         {
             _tokenService = tokenService;
             _signInManager = signInManager;
@@ -34,6 +41,8 @@ namespace API.Controllers
             _emailService = emailService;
             _httpClient = new HttpClient();
             _configuration = configuration;
+            _service = service;
+            _cloudinaryService = cloudinaryService;
         }
 
         [HttpPost("login/google")]
@@ -41,7 +50,7 @@ namespace API.Controllers
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(tokenRequest.Token);
             var user = await _userManager.FindByEmailAsync(payload.Email) ?? new AppUser
-            { 
+            {
                 Email = payload.Email,
                 UserName = payload.Email,
                 FullName = payload.Name,
@@ -98,7 +107,14 @@ namespace API.Controllers
         {
             if (!IsPasswordValid(registerDto.Password))
                 return BadRequest("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
-            
+            if (registerDto.UserName.Length < 6)
+                return BadRequest("UserName không được dưới 6 ký tự");
+            if (await CheckUsernameExistsAsync(registerDto.UserName))
+                return BadRequest("Username đã tồn tại");
+            if (await EmailExists(registerDto.Email))
+            {
+                return BadRequest("Email đã tồn tại");
+            }
             var user = new AppUser
             {
                 FullName = registerDto.FullName,
@@ -124,12 +140,209 @@ namespace API.Controllers
             userDto.Token = await _tokenService.CreateToken(user);
             return Ok(userDto);
         }
+        [HttpPost("Add/User")]
+        public async Task<ActionResult<UserDto>> CreateUser([FromForm] UserAdd userAdd)
+        {
+            if (!IsPasswordValid(userAdd.Password))
+                return BadRequest("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
+            if (userAdd.UserName.Length < 6)
+                return BadRequest("UserName không được dưới 6 ký tự");
+            if (await CheckUsernameExistsAsync(userAdd.UserName))
+                return BadRequest("Username đã tồn tại");
+            if (await EmailExists(userAdd.Email))
+            {
+                return BadRequest("Email đã tồn tại");
+            }
+            var user = new AppUser
+            {
+                FullName = userAdd.FullName,
+                Email = userAdd.Email,
+                UserName = userAdd.UserName,
+
+            };
+            if (userAdd.Avatar?.Length > 0)
+            {
+                var resultUpload = await _cloudinaryService.UploadImageAsync(userAdd.Avatar);
+                user.Avatar = resultUpload.Url;
+            }
+            else
+            {
+                user.Avatar = "user.jpg";
+            }
+
+            var result = await _userManager.CreateAsync(user, userAdd.Password);
+
+            if (!result.Succeeded)
+                return BadRequest("Không thể tạo tài khoản");
+
+            var roleResult = await _userManager.AddToRoleAsync(user, userAdd.Role);
+            if (!roleResult.Succeeded)
+                return BadRequest("Không thể gán quyền cho tài khoản");
+
+            var userDto = UserMapper.EntityToUserDto(user);
+            userDto.Token = await _tokenService.CreateToken(user);
+
+            return Ok(userDto);
+        }
+        [HttpPut("Update/User")]
+        public async Task<ActionResult<UserDto>> UpdateUser([FromForm] UserUpdate userDto)
+        {
+            if (userDto == null)
+                return BadRequest("Dữ liệu không hợp lệ");
+
+            if (await EmailExists(userDto.Email, userDto.Id))
+            {
+                return BadRequest("Email đã tồn tại");
+            }
+
+            var user = await _userManager.FindByIdAsync(userDto.Id);
+            if (user == null)
+                return NotFound("User không tồn tại");
+
+            if (!string.IsNullOrEmpty(userDto.Password))
+            {
+                if (!IsPasswordValid(userDto.Password))
+                    return BadRequest("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
+
+                var passwordHash = _userManager.PasswordHasher.HashPassword(user, userDto.Password);
+                user.PasswordHash = passwordHash;
+            }
+            user.UserName = userDto.UserName ?? user.UserName;
+            user.Email = userDto.Email ?? user.Email;
+            user.FullName = userDto.FullName ?? user.FullName;
+
+            if (userDto.Avatar?.Length > 0)
+            {
+                var resultUpload = await _cloudinaryService.UploadImageAsync(userDto.Avatar);
+                user.Avatar = resultUpload.Url;
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest("Cập nhật không thành công");
+            var roleResult = await _userManager.AddToRoleAsync(user, userDto.Role);
+            if (!roleResult.Succeeded)
+                return BadRequest("Không thể gán quyền cho tài khoản");
+
+            var updatedUserDto = UserMapper.EntityToUserDto(user);
+            updatedUserDto.Token = await _tokenService.CreateToken(user);
+
+            return Ok(updatedUserDto);
+        }
+
+
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers([FromQuery] UserParams userParams)
+        {
+            var customerClaimIds = await _service.GetUsersWithoutClaimAsync(ClaimStore.Message_Reply);
+            var query = _userManager.Users.AsNoTracking()
+                .Where(user => customerClaimIds.Contains(user.Id));
+
+            if (!string.IsNullOrEmpty(userParams.Search))
+            {
+                query = query.Where(u => u.FullName.ToLower().Contains(userParams.Search.ToLower())
+                    || u.Email.ToLower().Contains(userParams.Search.ToLower())
+                    || u.UserName.ToLower().Contains(userParams.Search.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(userParams.OrderBy))
+            {
+                query = userParams.OrderBy switch
+                {
+                    "username" => query.OrderBy(u => u.UserName),
+                    "username_desc" => query.OrderByDescending(u => u.UserName),
+                    "email" => query.OrderBy(u => u.Email),
+                    "email_desc" => query.OrderByDescending(u => u.Email),
+                    _ => query.OrderBy(u => u.UserName)
+                };
+            }
+
+            var count = await query.CountAsync();
+
+            var users = await query
+               .Skip((userParams.PageNumber - 1) * userParams.PageSize)
+               .Take(userParams.PageSize)
+               .ToListAsync();
+
+            var userDtos = new List<UserDto>();
+            foreach (var user in users)
+            {
+
+                var userDto = UserMapper.EntityToUserDto(user);
+                if (user.LockoutEnd.HasValue && (user.LockoutEnd > DateTimeOffset.UtcNow || user.LockoutEnd == DateTimeOffset.MaxValue))
+                {
+                    userDto.IsLocked = true;
+                }
+                else
+                {
+                    userDto.IsLocked = false;
+                }
+                userDto.Token = await _tokenService.CreateToken(user);
+                userDtos.Add(userDto);
+            }
+
+            var pagedList = new PagedList<UserDto>(userDtos, count, userParams.PageNumber, userParams.PageSize);
+
+            Response.AddPaginationHeader(pagedList);
+
+            return Ok(pagedList);
+        }
+        [HttpPut("Lock/User")]
+        public async Task<ActionResult> LockUser(string id, [FromQuery] int? minutes, [FromQuery] int? hours, [FromQuery] int? days)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound("User không tồn tại");
+
+            DateTimeOffset lockoutEnd;
+            if (minutes.HasValue) lockoutEnd = DateTimeOffset.Now.AddMinutes(minutes.Value);
+            else if (hours.HasValue) lockoutEnd = DateTimeOffset.Now.AddHours(hours.Value);
+            else if (days.HasValue) lockoutEnd = DateTimeOffset.Now.AddDays(days.Value);
+            else lockoutEnd = DateTimeOffset.MaxValue;
+
+            user.LockoutEnd = lockoutEnd;
+
+            if (user.LockoutEnd <= DateTimeOffset.UtcNow)
+            {
+                user.LockoutEnd = null;
+            }
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest("Lock user thất bại");
+
+            return Ok(new { message = "Lock user thành công" });
+        }
+        [HttpPut("Unlock/User")]
+        public async Task<ActionResult> UnlockUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+                return NotFound("User không tồn tại");
+
+            user.LockoutEnd = null;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+                return BadRequest("Unlock user thất bại");
+
+            return Ok(new { message = "Unlock user thành công" });
+        }
+
         private async Task<bool> CheckUsernameExistsAsync(string username)
         {
             return await _userManager.FindByNameAsync(username) != null;
         }
         [HttpGet("email-exists")]
-        public async Task<bool> EmailExists([FromQuery] string email) => await _userManager.FindByEmailAsync(email) != null;
+        private async Task<bool> EmailExists(string email, string userId = null)
+        {
+            var existingUser = await _userManager.Users
+                .Where(u => u.Email == email)
+                .FirstOrDefaultAsync();
+
+            if (existingUser == null || existingUser.Id == userId)
+                return false;
+            return true;
+        }
+
 
 
         [HttpGet("forget-password")]
@@ -184,10 +397,10 @@ namespace API.Controllers
 
         private bool IsPasswordValid(string password)
         {
-            return  password.Length >= 6 && 
-                    password.Any(char.IsUpper) && 
-                    password.Any(char.IsLower) && 
-                    password.Any(char.IsDigit) && 
+            return password.Length >= 6 &&
+                    password.Any(char.IsUpper) &&
+                    password.Any(char.IsLower) &&
+                    password.Any(char.IsDigit) &&
                     password.Any(char.IsPunctuation);
         }
     }
