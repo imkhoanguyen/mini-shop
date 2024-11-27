@@ -85,7 +85,7 @@ export class ShopComponent implements OnInit {
   }
 
   loadListProduct() {
-    this.productService.getProductsPagedList(this.params).subscribe({
+    this.productService.getProductsPagedList(this.params, false).subscribe({
       next: (response) => {
         if (response.items && response.pagination) {
           this.products = response.items || [];
