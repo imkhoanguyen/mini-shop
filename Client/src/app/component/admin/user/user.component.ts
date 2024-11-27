@@ -18,6 +18,8 @@ import { ToastrService } from '../../../_services/toastr.service';
 import { RoleService } from '../../../_services/role.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { Role } from '../../../_models/role';
+import { AuthService } from '../../../_services/auth.service';
+import { TagModule } from 'primeng/tag';
 @Component({
   selector: 'app-user',
   standalone: true,
@@ -32,7 +34,8 @@ import { Role } from '../../../_models/role';
     ReactiveFormsModule,
     PaginatorModule,
     ConfirmDialogModule,
-    TooltipModule],
+    TooltipModule,
+    TagModule],
   templateUrl: './user.component.html',
   styleUrl: './user.component.css'
 })
@@ -41,10 +44,12 @@ export class UserComponent {
   roles: Role[] = [];
   selectedRole!: Role;
   visible: boolean = false;
-  btnText: string = 'Thêm';
-  headerText: string = 'Thêm Người dùng';
+  btnText: string = 'Cập nhật';
+  headerText: string = 'Cập nhật Người dùng';
   userForm!: FormGroup;
-
+  displayDialog: boolean = false;
+  selectedUser!: User;
+  lockUserForm!: FormGroup;
   pageSizeOptions = [
     { label: '5', value: 5 },
     { label: '10', value: 10 },
@@ -67,8 +72,10 @@ export class UserComponent {
     private accountService: AccountService,
     private roleService: RoleService,
     private toastService: ToastrService,
+    private authService: AuthService
   ) {
     this.userForm = this.initializeForm();
+    this.lockUserForm = this.initializeLockForm();
   }
 
   ngOnInit(): void {
@@ -86,9 +93,18 @@ export class UserComponent {
       fullName: ['', Validators.required],
       userName: ['', Validators.required],
       email: ['', Validators.required, Validators.email],
-      password: ['', Validators.required],
+      password: [''],
       avatar: [''],
       role: ['', Validators.required],
+    });
+  }
+  initializeLockForm(): FormGroup {
+    return this.builder.group({
+      id: [null],
+      lockStatus: [false, Validators.required],
+      minutes: [null],
+      hours: [null],
+      days: [null],
     });
   }
 
@@ -100,6 +116,10 @@ export class UserComponent {
     };
     this.accountService.getUsersPagedList(params).subscribe((result) => {
       this.selectedUsers = result.items || [];
+      this.selectedUsers.forEach((user) => {
+        user.role = this.authService.getRoleFromToken(user.token);
+      })
+      console.log("selectedUsers", this.selectedUsers)
       this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
 
       this.totalRecords = this.pagination.totalItems;
@@ -138,7 +158,9 @@ export class UserComponent {
 
   openDialog(user?: User): void {
     this.visible = true;
+    console.log('User:', user);
     if (user) {
+      this.userForm.reset();
       this.userForm.patchValue(user);
       this.btnText = 'Cập nhật';
       this.headerText = 'Cập nhật Người dùng';
@@ -148,30 +170,70 @@ export class UserComponent {
       this.headerText = 'Thêm Người dùng';
     }
   }
+  showDialog(user: User): void {
+    this.displayDialog = true;
+    this.lockUserForm.patchValue({
+      id: user.id,
+      lockStatus: user.isLocked,
+      minutes: null,
+      hours: null,
+      days: null,
+    })
+  }
+
+  closeDialog(): void {
+    this.displayDialog = false;
+  }
+  onFileSelected(event: any) {
+    const file: FileList = event.target.files;
+    if (file && file[0]) {
+      const reader = new FileReader();
+
+      reader.onload = (e: any) => {
+        this.selectedFile = {
+          src: e.target.result,
+          file: file[0],
+        };
+      };
+
+      reader.readAsDataURL(file[0]);
+    }
+  }
 
   onSubmit(): void {
-    if (this.userForm.invalid) {
-      this.toastService.error('Vui lòng điền đầy đủ thông tin.');
-      return;
+    if (this.userForm.valid) {
+    const formData = new FormData();
+    formData.append('id', this.userForm.get('id')?.value);
+    formData.append('fullName', this.userForm.get('fullName')?.value);
+    formData.append('userName', this.userForm.get('userName')?.value);
+    formData.append('email', this.userForm.get('email')?.value);
+    formData.append('password', this.userForm.get('password')?.value);
+    formData.append('role', this.userForm.get('role')?.value);
+    if (this.selectedFile?.file) {
+      formData.append('avatar', this.selectedFile.file);
     }
+    console.log("idddd", this.userForm.get('id')?.value); // Kiểm tra giá trị ID
 
-    const userData = { ...this.userForm.value, id: this.userForm.value.id || 0 };
-
-    const subscription = userData.id === 0
-      ? this.accountService.register(userData).pipe(
+    const subscription = this.userForm.get('id')?.value === null
+      ? this.accountService.addUser(formData).pipe(
           switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
         ).subscribe({
           next: (result) => {
             this.selectedUsers = result.items || [];
-            this.toastService.success('Danh mục đã được thêm thành công.');
+            this.toastService.success('Người dùng đã được thêm thành công.');
             this.visible = false;
           },
           error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi thêm người dùng.');
+            if (err.status === 400 && err.error) {
+              const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi thêm.';
+              this.toastService.error(errorMessage);
+            } else {
+              this.toastService.error('Có lỗi xảy ra khi thêm người dùng.');
+            }
             console.error(err);
           }
         })
-      : this.accountService.updateUser(userData).pipe(
+      : this.accountService.updateUser(formData).pipe(
           switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
         ).subscribe({
           next: (result) => {
@@ -180,32 +242,67 @@ export class UserComponent {
             this.visible = false;
           },
           error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi cập nhật người dùng.');
+            if (err.status === 400 && err.error) {
+              const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi cập nhật.';
+              this.toastService.error(errorMessage);
+            } else {
+              this.toastService.error('Có lỗi xảy ra khi cập nhật người dùng.');
+            }
             console.error(err);
           }
         });
+      this.subscriptions.add(subscription);
+    }
+    if(this.lockUserForm.valid){
+      const formValue = this.lockUserForm.value;
+      const lockStatus = Boolean(formValue.lockStatus);
 
-    this.subscriptions.add(subscription);
-  }
-  onFileSelected(event: any) {
-    const file: FileList = event.target.files;
-    if (file && file[0]) {
-      const reader = new FileReader();
-  
-      reader.onload = (e: any) => {
-        this.selectedFile = {
-          src: e.target.result,
-          file: file[0],
+      console.log('Form Value:', formValue);
+      console.log('Lock Status:', lockStatus);
+
+      if (lockStatus) {
+        const lockParams = {
+          minutes: formValue.minutes,
+          hours: formValue.hours,
+          days: formValue.days,
         };
-      };
-  
-      reader.readAsDataURL(file[0]);
+        this.accountService.lockUser(formValue.id, lockParams).subscribe({
+          next: () => {
+            this.toastService.success('Khóa người dùng thành công');
+            this.displayDialog = false;
+            this.loadUsers();
+          },
+          error: (err) => {
+            this.toastService.error('Khóa người dùng thất bại');
+            console.error(err);
+          },
+        });
+      } else if (!lockStatus) {
+        this.accountService.unlockUser(formValue.id).subscribe({
+          next: () => {
+            this.toastService.success('Mở khóa người dùng thành công');
+            this.displayDialog = false;
+            this.loadUsers();
+          },
+          error: (err) => {
+            this.toastService.error('Mở khóa người dùng thất bại');
+            console.error(err);
+          },
+        });
+      } else {
+        console.error('Giá trị lockStatus không hợp lệ:', lockStatus);
+      }
+    }else{
+      this.toastService.error('Vui lòng kiểm tra lại thông tin');
     }
   }
+
   // removeImage(index: number) {
   //   this.selectedFile.splice(index, 1);
   // }
 
 
-  
+
 }
+
+
