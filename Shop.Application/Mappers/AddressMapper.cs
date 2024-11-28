@@ -19,7 +19,9 @@ namespace Shop.Application.Mappers
                 City = address.City,
                 District = address.District,
                 Street = address.Street,
-                AppUserId = address.AppUserId
+                AppUserId = address.AppUserId,
+                fullName=address.fullName,
+                phone=address.phone,
                 // AppUser = address.AppUser
             };
         }
@@ -30,7 +32,9 @@ namespace Shop.Application.Mappers
                 City = addressAddDto.City,
                 District = addressAddDto.District,
                 Street = addressAddDto.Street,
-                AppUserId = addressAddDto.AppUserId
+                AppUserId = addressAddDto.AppUserId,
+                fullName=addressAddDto.fullName,
+                phone=addressAddDto.phone
             };
         }
 

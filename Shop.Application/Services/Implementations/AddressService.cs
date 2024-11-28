@@ -33,22 +33,6 @@ namespace Shop.Application.Services.Implementations
         
         public async Task<AddressDto> AddAddressAsync(AddressAddDto addressAddDto)
         {
-            // if (addressAddDto == null)
-            // {
-            //     throw new ArgumentNullException(nameof(addressAddDto), "Address information cannot be null.");
-            // }
-
-            // // Map DTO to Entity
-            // var address = AddressMapper.FromDtoToEntity(addressAddDto);
-
-            // // Add address using repository
-            // await _unitOfWork.AddressRepository.AddAsync(address);
-
-            // // Commit changes to the database
-            // await _unitOfWork.CompleteAsync();
-
-            // // Return the added address as a DTO
-            // return AddressMapper.FromEntityToDto(address);
             if (addressAddDto == null)
             {
                 throw new ArgumentNullException(nameof(addressAddDto), "Address information cannot be null.");
@@ -102,6 +86,8 @@ namespace Shop.Application.Services.Implementations
             address.District = addressAddDto.District;
             address.Street = addressAddDto.Street;
             address.AppUserId = addressAddDto.AppUserId;
+            address.fullName = addressAddDto.fullName;
+            address.phone = addressAddDto.phone;
 
             await _unitOfWork.AddressRepository.UpdateAsync(address);
             await _unitOfWork.CompleteAsync();
