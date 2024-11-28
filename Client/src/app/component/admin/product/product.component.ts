@@ -35,6 +35,8 @@ import { TagModule } from 'primeng/tag';
 import { ToastrService } from '../../../_services/toastr.service';
 import { ProductDto, ProductStatus, ProductUpdate } from '../../../_models/product.module';
 import { PaginatedResult, Pagination } from '../../../_models/pagination';
+import { VariantDto, VariantStatus, VariantUpdate } from '../../../_models/variant.module';
+import { VariantService } from '../../../_services/variant.service';
 @Component({
   selector: 'app-product',
   standalone: true,
@@ -81,7 +83,7 @@ export class ProductComponent {
 
   productStatus: { name: string; key: ProductStatus }[] = [
     { name: 'Draft', key: ProductStatus.Draft },
-    { name: 'Publish', key: ProductStatus.Publish },
+    { name: 'Public', key: ProductStatus.Public },
   ];
 
   pageSizeOptions = [
@@ -97,8 +99,7 @@ export class ProductComponent {
     private builder: FormBuilder,
     private categoryService: CategoryService,
     private productService: ProductService,
-    private sizeService: SizeService,
-    private colorService: ColorService,
+
     private toastService: ToastrService,
     private confirmationService: ConfirmationService,
     private router: Router,
@@ -109,8 +110,6 @@ export class ProductComponent {
     this.initializeForm();
     this.loadProducts();
     this.fetchCategoryNames();
-    this.fetchSizeNames();
-    this.fetchColorCodes();
   }
   showDialog(product: any) {
     this.visible = true;
@@ -134,35 +133,10 @@ export class ProductComponent {
     });
   }
 
-  fetchSizeNames() {
-    this.sizeService.getAllSizes().subscribe((data: any[]) => {
-      this.sizeNames = data.reduce((acc, size) => {
-        acc[size.id] = size.name;
-        return acc;
-      }, {});
-    });
-  }
-
-  fetchColorCodes() {
-    this.colorService.getAllColors().subscribe((data: any[]) => {
-      this.colorCodes = data.reduce((acc, color) => {
-        acc[color.id] = color.code;
-        return acc;
-      }, {});
-    });
-  }
-
   getCategoryNameById(categoryId: number): string {
     return this.categoryNames[categoryId];
   }
 
-  getSizeNameById(sizeId: number): string {
-    return this.sizeNames[sizeId];
-  }
-
-  getColorCodeById(colorId: number): string {
-    return this.colorCodes[colorId];
-  }
   getStatus(status: number): boolean {
     if (status == 1) {
       return true;
@@ -175,7 +149,7 @@ export class ProductComponent {
       name: product.name,
       description: product.description,
       categoryIds: product.categoryIds,
-      status: value ? ProductStatus.Publish : ProductStatus.Draft,
+      status: value ? ProductStatus.Public : ProductStatus.Draft,
     };
 
     const formData = new FormData();
@@ -198,7 +172,8 @@ export class ProductComponent {
         this.toastService.error('Có lỗi xảy ra khi cập nhật trạng thái.');
       }
     });
-}
+  }
+
   truncateDescription(description: string, maxLength: number = 30): string {
     if (description.length > maxLength) {
       return description.substring(0, maxLength) + '...'; // Cắt và thêm dấu ba chấm
@@ -246,7 +221,7 @@ export class ProductComponent {
       pageSize: this.pageSize,
       search: this.searchString
     };
-    this.productService.getProductsPagedList(params).subscribe((result) => {
+    this.productService.getProductsPagedList(params, true).subscribe((result) => {
       this.selectedProducts = result.items || [];
       this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
 

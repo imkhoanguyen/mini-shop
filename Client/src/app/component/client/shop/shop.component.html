@@ -1,0 +1,193 @@
+<div class="container my-5">
+  <div class="d-flex mb-5">
+    <p-breadcrumb class="max-w-full" [model]="items" />
+  </div>
+
+  <div class="d-flex gap-3 mb-3">
+    <h1>Tất cả sản phẩm</h1>
+    <div class="d-flex justify-content-end gap-3 ms-auto">
+      <p-button
+        icon="pi pi-refresh"
+        label="Làm mới"
+        [outlined]="true"
+        severity="secondary"
+        type="button"
+        (onClick)="refresh()"
+      />
+      <p-button
+        icon="pi pi-filter"
+        label="Lọc"
+        [outlined]="true"
+        severity="secondary"
+        type="button"
+        (onClick)="toggleFilterBox()"
+      />
+      <p-button
+        icon="pi pi-search"
+        label="Tìm kiếm"
+        [outlined]="true"
+        severity="secondary"
+        type="button"
+        (onClick)="toggleSeachBox()"
+      />
+    </div>
+  </div>
+
+  <!-- search box -->
+  <div *ngIf="visibleSearch === true" class="mb-3">
+    <p-iconField iconPosition="left" style="width: 100%">
+      <p-inputIcon styleClass="pi pi-search" />
+      <input
+        type="text"
+        pInputText
+        placeholder="Nhập tên sản phẩm"
+        [(ngModel)]="searchString"
+        (keydown.enter)="applyFilter()"
+      />
+    </p-iconField>
+  </div>
+
+  <!-- filter box -->
+  <div
+    *ngIf="visibleFilter === true"
+    class="card p-3 mb-3"
+    style="background-color: #f2f2f2"
+  >
+    <div class="d-flex flex-wrap gap-3">
+      <!-- order by -->
+      <div style="flex: 1 1 200px">
+        <p-dropdown
+          [options]="orderList"
+          [(ngModel)]="orderBy"
+          optionLabel="display"
+          placeholder="Sắp xếp theo"
+        ></p-dropdown>
+      </div>
+
+      <!-- filter by size -->
+      <div style="flex: 1 1 200px">
+        <p-multiSelect
+          [options]="listSize"
+          [(ngModel)]="selectedSizes"
+          optionLabel="name"
+          placeholder="Chọn kích thước"
+        ></p-multiSelect>
+      </div>
+
+      <!-- filter by color -->
+      <div style="flex: 1 1 200px">
+        <p-dropdown
+          [options]="listColor"
+          [(ngModel)]="selectedColor"
+          optionLabel="name"
+          [showClear]="true"
+          placeholder="Chọn màu sắc"
+        >
+          <!-- Template cho mục được chọn -->
+          <ng-template pTemplate="selectedItem">
+            <div class="d-flex align-items-center gap-2" *ngIf="selectedColor">
+              <div
+                [ngStyle]="{
+                  'width.px': 16,
+                  'height.px': 16,
+                  'background-color': selectedColor.code
+                }"
+                style="border: 1px solid #ccc"
+              ></div>
+              <span>{{ selectedColor.name }}</span>
+            </div>
+          </ng-template>
+
+          <!-- Template cho danh sách các item -->
+          <ng-template let-color pTemplate="item">
+            <div class="d-flex align-items-center gap-2">
+              <div
+                [ngStyle]="{
+                  'width.px': 16,
+                  'height.px': 16,
+                  'background-color': color.code
+                }"
+                style="border: 1px solid #ccc"
+              ></div>
+              <span>{{ color.name }}</span>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+
+      <!-- filter by category -->
+      <div style="flex: 1 1 200px">
+        <p-multiSelect
+          [options]="listCategory"
+          [(ngModel)]="selectedCategory"
+          optionLabel="name"
+          placeholder="Chọn danh mục"
+        ></p-multiSelect>
+      </div>
+
+      <!-- button apply filter -->
+      <div class="ms-auto" style="flex: 0 1 auto">
+        <p-button
+          icon="pi pi-filter"
+          label="Lọc"
+          type="button"
+          (onClick)="applyFilter()"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+
+  <!-- list product -->
+  <div class="row">
+    @for (product of products; track product.id) {
+    <div class="col-sm-6 col-md-4 col-lg-3 product-card">
+      <div class="product-image">
+        <img
+          alt="{{ product.name }}"
+          height="400"
+          src="{{ product.image.imgUrl }}"
+          width="300"
+          style="object-fit: cover"
+        />
+        <button
+          type="button"
+          class="quick-view-btn"
+          (click)="openQuickViewProduct(product.id)"
+        >
+          Quick View
+        </button>
+      </div>
+
+      <div class="product">
+        <div class="product-title">
+          {{ product.name }}
+          <div class="wishlist-icon">
+            <i class="far fa-heart"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 align-items-center">
+        <div class="product-price-sell">
+          {{ product.variants[0].priceSell }}đ
+        </div>
+        <div class="product-price">{{ product.variants[0].price }}đ</div>
+      </div>
+    </div>
+    }
+  </div>
+
+  @if(pagination) {
+  <div class="d-flex justify-content-center">
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="(pagination.currentPage - 1) * params.pageSize || 0"
+      [rows]="params.pageSize"
+      [totalRecords]="pagination.totalItems || 0"
+    />
+  </div>
+  }
+</div>
+
+<!-- product quick view modal -->
+<app-quickview-product></app-quickview-product>

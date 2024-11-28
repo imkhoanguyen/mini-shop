@@ -1,5 +1,4 @@
 using API.Helpers;
-using Shop.Application.DTOs.Auth.Facebook;
 using Shop.Application.Repositories;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;

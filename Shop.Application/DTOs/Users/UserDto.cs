@@ -8,5 +8,6 @@ namespace Shop.Application.DTOs.Users
         public string? Email { get; set; }
         public string? Avatar { get; set; }
         public string? Token { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

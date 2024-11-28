@@ -14,10 +14,10 @@ namespace Shop.Domain.Entities
         public int ProductId { get; set; }
         [ForeignKey("ProductId")]
         public Product? Product { get; set; }
-        public int? SizeId { get; set; }
+        public int SizeId { get; set; }
         public Size? Size { get; set; }
 
-        public int? ColorId { get; set; }
+        public int ColorId { get; set; }
         public Color? Color { get; set; }
 
         public ICollection<VariantImage> Images { get; set; } = new List<VariantImage>();

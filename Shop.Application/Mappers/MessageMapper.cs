@@ -39,5 +39,6 @@ namespace Shop.Application.Mappers
                 FileType = entity.FileType ?? string.Empty
             };
         }
+       
     }
 }

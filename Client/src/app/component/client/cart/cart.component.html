@@ -1,0 +1,97 @@
+<div class="container my-5">
+  <div class="d-flex mb-5">
+    <p-breadcrumb class="max-w-full" [model]="items" />
+  </div>
+  <h1 class="mb-5 text-center">Giỏ hàng</h1>
+  <div class="card p-3">
+    <table class="table" style="border: none">
+      <thead>
+        <tr>
+          <th class="py-4">Sản phẩm</th>
+          <th class="py-4"></th>
+          <th class="py-4">Kích cỡ</th>
+          <th class="py-4">Màu sắc</th>
+          <th class="py-4">Đơn giá</th>
+          <th class="py-4" style="width: 15%">Số lượng</th>
+          <th class="py-4">Tổng(VNĐ)</th>
+          <th class="py-4" style="width: 5%"></th>
+        </tr>
+      </thead>
+
+      <tbody class="align-middle">
+        @for (item of cartService.cart()?.items; track $index) {
+        <tr>
+          <td>
+            <p-image
+              src="{{ item.productImage }}"
+              alt="{{ item.productName }}"
+              previewImageSrc="{{ item.productImage }}"
+              [preview]="true"
+            />
+          </td>
+          <td>{{ item.productName }}</td>
+          <td>{{ item.sizeName }}</td>
+          <td>{{ item.colorName }}</td>
+          <td>{{ item.price }}</td>
+          <td>
+            <div class="btn-group">
+              <button
+                type="button"
+                (click)="onMinus(item)"
+                class="btn btn-sm btn-secondary"
+                style="width: 50px"
+              >
+                <i class="pi pi-minus"></i>
+              </button>
+              <p-inputNumber
+                inputId="integeronly"
+                [(ngModel)]="item.quantity"
+              />
+              <button
+                type="button"
+                (click)="onPlus(item)"
+                class="btn btn-sm btn-secondary"
+                style="width: 50px"
+              >
+                <i class="pi pi-plus"></i>
+              </button>
+            </div>
+          </td>
+          <td>{{ item.quantity * item.price }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="onRemoveItem(item)"
+            >
+              <i class="fa-sharp fa-solid fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="row mt-3">
+      <div class="col-md-4 offset-md-4">
+        <ul class="list-group mb-4">
+          <li class="d-flex justify-content-between align-items-center">
+            <h5 class="text-dark fw-semibold text-uppercase">Total (VNĐ)</h5>
+            <h4 class="text-dark fw-bolder">{{ cartService.totals() }}</h4>
+          </li>
+        </ul>
+      </div>
+      <div class="row">
+        <div class="col-md-2 offset-md-5">
+          <button
+            type="button"
+            (click)="checkout()"
+            class="btn btn-primary border-0 bg-gradient w-100 py-2 text-uppercase fw-bold"
+          >
+            Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

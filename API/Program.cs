@@ -9,6 +9,8 @@ using Shop.Domain.Entities;
 using Shop.Infrastructure.Configurations;
 using Shop.Infrastructure.DataAccess;
 using Shop.Infrastructure.DataAccess.Seed;
+using Shop.Infrastructure.Services;
+using StackExchange.Redis;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +30,18 @@ builder.Services.AuthConfig(builder.Configuration);
 builder.Services.RegisterPolicy(builder.Configuration);
 
 builder.Services.RegisterDI(builder.Configuration);
+
+// register and config redis
+builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("Redis");
+    if (connectionString == null)
+        throw new Exception("Can not gett redis connection string");
+    var configuration  = ConfigurationOptions.Parse(connectionString, true);
+    return ConnectionMultiplexer.Connect(configuration);
+});
+
+builder.Services.AddSingleton<ICartService, CartService>();
 
 
 var app = builder.Build();

@@ -1,58 +1,108 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Mini Shop</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" href="#">Trang chủ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Sản Phẩm</a>
+          <a class="nav-link" routerLink="/shop">Sản Phẩm</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" *ngIf="isLoggedIn && !isCustomer">
           <a class="btn btn-primary ms-2" routerLink="/admin">Admin</a>
         </li>
       </ul>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+      <ul
+        class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex justify-content-center align-items-center gap-3"
+      >
+        <a
+          routerLink="/cart"
+          style="position: relative; display: inline-block; color: #000"
+        >
+          <i
+            class="pi pi-shopping-cart"
+            style="font-size: 24px; cursor: pointer"
+          ></i>
+          <span class="cart-count">
+            {{ cartService.cart()?.items?.length ?? 0 }}
+          </span>
+        </a>
         <div class="ms-auto" *ngIf="!accountService.currentUser()">
-          <a class="btn btn-primary" (click)="loginForm()">Đăng nhập</a>
-          <a class="btn btn-secondary" (click)="registerForm()">Đăng ký</a>
-          <a class="nav-link" href="#" title="Thông báo">
-            <i class="fas fa-bell"></i>
-          </a>
+          <div class="d-flex align-items-center gap-3">
+            <a class="btn btn-primary" *ngIf="!isLoggedIn" (click)="loginForm()"
+              >Đăng nhập</a
+            >
+            <a class="btn btn-secondary" (click)="registerForm()">Đăng ký</a>
+          </div>
         </div>
         <div *ngIf="accountService.currentUser()" class="dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="userDropdown"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
             @if(accountService.currentUser()?.avatar == "user.jpg"){
-              <img
+
+            <img
               class="img-rounded"
-              src="http://localhost:5000/avatar/{{accountService.currentUser()?.avatar}}"
-              alt="User Avatar">
-            }
-            @else{
-              <img
+              src="http://localhost:5000/avatar/{{
+                accountService.currentUser()?.avatar
+              }}"
+              alt="User Avatar"
+            />
+            } @else{
+            <img
               class="img-rounded"
               [src]="accountService.currentUser()?.avatar"
-              alt="User Avatar">
+              alt="User Avatar"
+            />
             }
 
-            <i class="fas fa-user"></i> {{ accountService.currentUser()?.fullName }}
+            <span class="ms-1">
+              {{ accountService.currentUser()?.fullName }}</span
+            >
           </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="#"><i class="bi bi-person-bounding-box"></i>Profile</a></li>
-            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+          <ul
+            class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="userDropdown"
+          >
+            <li>
+              <a class="dropdown-item" href="#"
+                ><i class="bi bi-person-bounding-box"></i>Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#"
+                ><i class="bi bi-gear"></i> Settings</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" (click)="logout()"
+                ><i class="bi bi-box-arrow-right"></i> Logout</a
+              >
+            </li>
           </ul>
         </div>
       </ul>
     </div>
   </div>
 </nav>
+@if (accountService.currentUser() && isLoggedIn && isCustomer) {
 <app-chat></app-chat>
+}

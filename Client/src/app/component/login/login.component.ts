@@ -134,7 +134,7 @@ export class LoginComponent implements OnInit {
     }
     this.accountService.login(data).subscribe(
       (res) => {
-        this.router.navigateByUrl('/');
+        window.location.href = '/';
       },
       (error) => {
         this.showMessage('error', error);

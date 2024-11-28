@@ -9,6 +9,7 @@ namespace Shop.Infrastructure.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly StoreContext _context;
+        public IAddressRepository AddressRepository{ get; private set;}
         public ICategoryRepository CategoryRepository { get; private set; }
 
         public IProductRepository ProductRepository { get; private set; }
@@ -40,6 +41,7 @@ namespace Shop.Infrastructure.Repositories
         public UnitOfWork(StoreContext context)
         {
             _context = context;
+            AddressRepository = new AddressRepository(_context);
             CategoryRepository = new CategoryRepository(_context);
             ProductRepository = new ProductRepository(_context);
             SizeRepository = new SizeRepository(_context);

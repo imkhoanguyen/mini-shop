@@ -6,7 +6,6 @@ namespace Shop.Domain.Entities
     public class Order : BaseEntity
     {
         public decimal SubTotal { get; set; }
-        public DateTime Order_date { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
         public string? Address { get; set; }
         public string? Phone { get; set; }
@@ -24,6 +23,7 @@ namespace Shop.Domain.Entities
         public int DiscountId { get; set; }
 
         public decimal DiscountPrice { get; set; }
+        public string Description { get; set; }
 
         public decimal GetTotal()
         {

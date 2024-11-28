@@ -1,10 +1,8 @@
-using Shop.Application.Parameters;
 
-namespace API.Helpers
+namespace Shop.Application.Parameters
 {
     public class MessageParams : BaseParams
     {
-        public string? UserName { get; set; }
-        public string Container { get; set; } = "Unread";
+        public override string OrderBy { get; set; } = "id_desc";
     }
 }

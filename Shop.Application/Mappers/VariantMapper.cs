@@ -1,5 +1,6 @@
 ﻿using Shop.Application.DTOs.Variants;
 using Shop.Domain.Entities;
+using System.Drawing;
 
 namespace Shop.Application.Mappers
 {
@@ -31,6 +32,7 @@ namespace Shop.Application.Mappers
                 SizeId = variantDto.SizeId,
                 ColorId = variantDto.ColorId,
                 Status = variantDto.Status,
+
             };
         }
 
@@ -43,8 +45,8 @@ namespace Shop.Application.Mappers
                 Price = variant.Price,
                 PriceSell = variant.PriceSell,
                 Quantity = variant.Quantity,
-                SizeId = variant.SizeId,
-                ColorId = variant.ColorId,
+                Size = variant.Size != null ? SizeMapper.EntityToSizeDto(variant.Size) : null,
+                Color = variant.Color != null ? ColorMapper.EntityToColorDto(variant.Color) : null,
                 Status = variant.Status,
                 Images = variant.Images.Select(VariantImageToImageVariantDto).ToList()
             };

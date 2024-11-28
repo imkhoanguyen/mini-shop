@@ -1,0 +1,75 @@
+::ng-deep .p-galleria .p-galleria-item-nav {
+  color: #000 !important;
+}
+
+.product-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.product-price,
+.product-price-sell {
+  font-size: 20px;
+  color: #a6a6a6;
+  font-weight: bold;
+}
+
+.product-price {
+  text-decoration: line-through;
+}
+
+.product-price-sell {
+  color: #000;
+}
+
+.product-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-variant {
+  border: 1px solid #000;
+}
+
+.btn-variant:hover {
+  background-color: #a6a6a6;
+}
+
+.form-check-label {
+  display: block;
+  padding: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  cursor: pointer;
+  margin-bottom: 10px;
+  width: 150px;
+  max-width: 200px;
+  border-color: #a6a6a6;
+}
+
+.form-check-label:hover {
+  color: #2463eb;
+}
+
+.selected-variant {
+  color: #2463eb;
+  border-color: #2463eb;
+}
+
+::ng-deep .ng-tns-c3223267463-3 {
+  object-fit: cover;
+}
+.variant-item {
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+.variant-info {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.d-flex.flex-wrap {
+  flex-wrap: wrap;
+  gap: 1rem;
+}

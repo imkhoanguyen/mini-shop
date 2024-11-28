@@ -14,7 +14,6 @@ namespace Shop.Application.Mappers
             return new Order
             {
                 SubTotal = dto.SubTotal,
-                Order_date = dto.OrderDate,
                 Address = dto.Address,
                 Phone = dto.Phone,
                 ShippingFee = dto.ShippingFee,
@@ -31,7 +30,6 @@ namespace Shop.Application.Mappers
             {
                 Id = order.Id,
                 SubTotal = order.SubTotal,
-                OrderDate = order.Order_date,
                 Address = order.Address,
                 Phone = order.Phone,
                 ShippingFee = order.ShippingFee,
