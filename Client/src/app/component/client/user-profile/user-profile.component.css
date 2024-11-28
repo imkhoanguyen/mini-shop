@@ -1,0 +1,88 @@
+.profile-container,
+.address {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.profile-header,
+.address-header {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.profile-subheader {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.profile-picture img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin: 0 5px;
+}
+
+
+.profile-picture button {
+  margin-top: 10px;
+}
+
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-label {
+  font-weight: 600;
+}
+.form-control {
+  width: 100%;
+}
+
+.btn-save {
+  background-color: #ff5722;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-save:hover {
+  background-color: #e64a19;
+}
+
+.default-badge {
+  background-color: #28a745;
+  color: white;
+  padding: 3px 8px;
+  font-size: 0.875rem;
+  border-radius: 4px;
+}
+
+.btn-new-address {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-new-address:hover {
+  background-color: #0056b3;
+}
+
+.btn-link {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+  color: #0056b3;
+}

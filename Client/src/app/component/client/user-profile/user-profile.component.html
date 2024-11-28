@@ -1,0 +1,145 @@
+<p-toast />
+<p-confirmDialog />
+<div class="container">
+  <div class="row justify-content-center" style="margin-top: 30px;">
+    <div class="col-lg-7 mb-4">
+      <div class="profile-container">
+        <div class="profile-header">Hồ Sơ Của Tôi</div>
+        <div class="profile-subheader">
+          Quản lý thông tin hồ sơ để bảo mật tài khoản
+        </div>
+        <form [formGroup]="userForm" (ngSubmit)="submit()">
+          <div class="profile-picture text-center">
+            <img class="avatar"
+              alt="Profile Picture"
+              [src]="selectedFile?.src ? selectedFile?.src : (accountService.currentUser()?.avatar === 'user.jpg' ? 'http://localhost:5000/avatar/user.jpg' : accountService.currentUser()?.avatar)"
+            />
+            <button class="btn btn-outline-primary mt-2" type="button" (click)="fileInput.click()">Chọn Avatar</button>
+          <input #fileInput type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
+
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Tên đăng nhập</label>
+                <input class="form-control" type="text" formControlName="userName" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <div>
+                  <input class="form-control" type="text" formControlName="email" />
+                </div>
+              </div>
+
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Tên</label>
+                <input class="form-control" type="text" formControlName="fullName" />
+              </div>
+
+            </div>
+          </div>
+
+          <button class="btn-save w-100 mt-3" type="submit">Lưu</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="address">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="address-header">Địa chỉ của tôi</div>
+          <button class="btn btn-new-address" (click)="openDialog()">+ Thêm địa chỉ mới</button>
+        </div>
+        <div class="address-section">
+          <div *ngFor="let address of addressUser" class="address-item">
+            <div>{{ address.fullName}}</div>
+            <div>{{ address.phone}}</div>
+            <div>{{ address.street }}</div>
+            <div>{{ address.district }}, {{ address.city }}</div>
+
+            <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-info" (click)="openDialog(address)">Cập nhật</button>
+                <button class="btn btn-danger" (click)="confirmDelete($event, address)">Xóa</button>
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p-dialog
+  [header]="headerText"
+  [(visible)]="visible"
+  [style]="{ width: '25rem' }"
+  [modal]="true"
+>
+  <form [formGroup]="addressForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+
+      <label for="fullName" class="form-label">Tên </label>
+      <input
+        pInputText
+        id="fullName"
+        class="form-control"
+        type="fullName"
+        autocomplete="off"
+        formControlName="fullName"
+      />
+      <div *ngIf="addressForm.get('fullName')?.invalid && addressForm.get('fullName')?.touched">
+        <small class="text-danger">Tên không được để trống</small>
+      </div>
+      <label for="phone" class="form-label">Số điện thoại </label>
+      <input
+        pInputText
+        id="phone"
+        class="form-control"
+        type="phone"
+        autocomplete="off"
+        formControlName="phone"
+      />
+      <div *ngIf="addressForm.get('phone')?.invalid && addressForm.get('phone')?.touched">
+        <small class="text-danger">Số điện thoại không được để trống</small>
+      </div>
+      <label for="street" class="form-label">Street:</label>
+      <input
+        pInputText
+        id="street"
+        class="form-control"
+        type="street"
+        autocomplete="off"
+        formControlName="street"
+      />
+      <div *ngIf="addressForm.get('street')?.invalid && addressForm.get('street')?.touched">
+        <small class="text-danger">Street không được để trống</small>
+      </div>
+      <label for="district" class="form-label">District:</label>
+      <input
+        pInputText
+        id="district"
+        class="form-control"
+        autocomplete="off"
+        formControlName="district"
+      />
+      <div *ngIf="addressForm.get('district')?.invalid && addressForm.get('district')?.touched">
+        <small class="text-danger">Quận/Huyện không được để trống</small>
+      </div>
+      <label for="city" class="form-label">City:</label>
+      <input
+        pInputText
+        id="city"
+        class="form-control"
+        autocomplete="off"
+        formControlName="city"
+      />
+      <div *ngIf="addressForm.get('city')?.invalid && addressForm.get('city')?.touched">
+        <small class="text-danger">Tỉnh/Thành phố không được để trống</small>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-secondary me-2" (click)="visible = false">Hủy</button>
+      <button class="btn btn-primary" type="submit">{{ btnText }}</button>
+    </div>
+  </form>
+</p-dialog>

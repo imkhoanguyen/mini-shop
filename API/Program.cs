@@ -92,6 +92,8 @@ try
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
     await CategorySeed.SeedAsync(context);
+    await ColorSeed.SeedAsync(context);
+    await SizeSeed.SeedAsync(context);
     await ProductSeed.SeedAsync(context);
     await RoleSeed.SeedAsync(roleManager);
     await RoleClaimSeed.SeedAsync(context, roleManager);
@@ -99,8 +101,7 @@ try
     await UserRoleSeed.SeedAsync(userManager, context);
     await ShippingMethodSeed.SeedAsync(context);
     await DiscountSeed.SeedAsync(context);
-    await ColorSeed.SeedAsync(context);
-    await SizeSeed.SeedAsync(context);
+
 }
 catch (Exception ex)
 {

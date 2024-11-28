@@ -7,8 +7,8 @@ import { Address } from "../_models/address.module";
 @Injectable({
   providedIn: 'root',
 })
-
 export class AddressService {
+
   apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient){}
@@ -28,4 +28,5 @@ export class AddressService {
   getAddressById(id: string){
     return this.http.get<Address>(this.apiUrl + "/Address/" + id);
   }
+
 }

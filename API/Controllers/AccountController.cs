@@ -220,9 +220,35 @@ namespace API.Controllers
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
                 return BadRequest("Cập nhật không thành công");
-            var roleResult = await _userManager.AddToRoleAsync(user, userDto.Role);
-            if (!roleResult.Succeeded)
-                return BadRequest("Không thể gán quyền cho tài khoản");
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            // Kiểm tra nếu Role mới bằng null hoặc rỗng
+            string? roleToUpdate = string.IsNullOrEmpty(userDto.Role)
+                ? currentRoles.FirstOrDefault()
+                : userDto.Role;
+            if (!string.IsNullOrEmpty(roleToUpdate))
+            {
+                if (currentRoles.Count > 0)
+                {
+                    var currentRole = currentRoles.FirstOrDefault();
+
+                    if (currentRole != roleToUpdate)
+                    {
+                        var removeRoleResult = await _userManager.RemoveFromRoleAsync(user, currentRole);
+                        if (!removeRoleResult.Succeeded)
+                            return BadRequest("Không thể xóa quyền cũ của tài khoản");
+                        var addRoleResult = await _userManager.AddToRoleAsync(user, roleToUpdate);
+                        if (!addRoleResult.Succeeded)
+                            return BadRequest("Không thể gán quyền mới cho tài khoản");
+                    }
+                }
+                else
+                {
+                    var addRoleResult = await _userManager.AddToRoleAsync(user, roleToUpdate);
+                    if (!addRoleResult.Succeeded)
+                        return BadRequest("Không thể gán quyền cho tài khoản");
+                }
+            }
 
             var updatedUserDto = UserMapper.EntityToUserDto(user);
             updatedUserDto.Token = await _tokenService.CreateToken(user);

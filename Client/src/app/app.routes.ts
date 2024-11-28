@@ -29,6 +29,7 @@ import { StatisticComponent } from './component/admin/statistic/statistic.compon
 import { CheckoutComponent } from './component/client/checkout/checkout.component';
 import { ShippingMethodComponent } from './component/admin/shippingmethod/shippingmethod.component';
 import { DiscountComponent } from './component/admin/discount/discount.component';
+import { UserProfileComponent } from './component/client/user-profile/user-profile.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -69,4 +70,5 @@ export const routes: Routes = [
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'shop', component: ShopComponent },
   { path: 'cart', component: CartComponent },
+  { path: 'user-profile', component: UserProfileComponent}
 ];

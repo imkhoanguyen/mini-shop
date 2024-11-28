@@ -66,6 +66,13 @@ namespace API.Controllers
             return Ok(roleDtos);
         }
 
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<AppRole>>> GetAllRoles()
+        {
+            var roles = await _roleManager.Roles.ToListAsync();
+            return Ok(roles);
+        }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AppRole>> GetRole(string id)

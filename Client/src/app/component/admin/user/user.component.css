@@ -4,12 +4,16 @@
   height: 35px;
   margin-right: 10px;
 }
-.image-container {
-  position: relative;
+.avatar-container {
   display: flex;
-  flex-wrap: wrap;
-  margin: 10px;
-  gap: 15px;
+  align-items: center;
+  gap: 10px;
+}
+
+.image-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 10px;
@@ -18,7 +22,6 @@
 
 .image-preview img {
   display: block;
-  border-radius: 50%;
   width: 35px;
   height: 35px;
   object-fit: cover;
@@ -30,35 +33,4 @@
 .image-preview img:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-}
-
-.close-button {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background-color: rgba(255, 0, 0, 0.85);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 25px;
-  height: 25px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.close-button:hover {
-  background-color: rgba(255, 0, 0, 1);
-  transform: scale(1.1);
-}
-
-.image-preview {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }

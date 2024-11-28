@@ -92,7 +92,7 @@ export class UserComponent {
       id: [0],
       fullName: ['', Validators.required],
       userName: ['', Validators.required],
-      email: ['', Validators.required, Validators.email],
+      email: ['', [Validators.required, Validators.email]],
       password: [''],
       avatar: [''],
       role: ['', Validators.required],
@@ -158,12 +158,13 @@ export class UserComponent {
 
   openDialog(user?: User): void {
     this.visible = true;
+    this.btnText = 'Cập nhật';
+    this.headerText = 'Cập nhật Người dùng';
     console.log('User:', user);
     if (user) {
       this.userForm.reset();
       this.userForm.patchValue(user);
-      this.btnText = 'Cập nhật';
-      this.headerText = 'Cập nhật Người dùng';
+
     } else {
       this.userForm.reset();
       this.btnText = 'Thêm';
@@ -199,60 +200,65 @@ export class UserComponent {
       reader.readAsDataURL(file[0]);
     }
   }
+  submit(): void {
+    if (this.userForm.valid) {
+      const formData = new FormData();
+      formData.append('id', this.userForm.get('id')?.value);
+      formData.append('fullName', this.userForm.get('fullName')?.value);
+      formData.append('userName', this.userForm.get('userName')?.value);
+      formData.append('email', this.userForm.get('email')?.value);
+      formData.append('password', this.userForm.get('password')?.value);
+      formData.append('role', this.userForm.get('role')?.value);
+      if (this.selectedFile?.file) {
+        formData.append('avatar', this.selectedFile.file);
+      }
+      console.log("idddd", this.userForm.get('id')?.value);
+
+      const subscription = this.userForm.get('id')?.value === null
+        ? this.accountService.addUser(formData).pipe(
+            switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
+          ).subscribe({
+            next: (result) => {
+              this.selectedUsers = result.items || [];
+              this.toastService.success('Người dùng đã được thêm thành công.');
+              this.loadUsers();
+              this.visible = false;
+            },
+            error: (err) => {
+              if (err.status === 400 && err.error) {
+                const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi thêm.';
+                this.toastService.error(errorMessage);
+              } else {
+                this.toastService.error('Có lỗi xảy ra khi thêm người dùng.');
+              }
+              console.error(err);
+            }
+          })
+        : this.accountService.updateUser(formData).pipe(
+            switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
+          ).subscribe({
+            next: (result) => {
+              this.selectedUsers = Array.isArray(result.items) ? result.items : [];
+              this.toastService.success('Người dùng đã được cập nhật thành công.');
+              this.loadUsers();
+              this.visible = false;
+            },
+            error: (err) => {
+              if (err.status === 400 && err.error) {
+                const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi cập nhật.';
+                this.toastService.error(errorMessage);
+              } else {
+                this.toastService.error('Có lỗi xảy ra khi cập nhật người dùng.');
+              }
+              console.error(err);
+            }
+          });
+        this.subscriptions.add(subscription);
+      }
+  }
 
   onSubmit(): void {
-    if (this.userForm.valid) {
-    const formData = new FormData();
-    formData.append('id', this.userForm.get('id')?.value);
-    formData.append('fullName', this.userForm.get('fullName')?.value);
-    formData.append('userName', this.userForm.get('userName')?.value);
-    formData.append('email', this.userForm.get('email')?.value);
-    formData.append('password', this.userForm.get('password')?.value);
-    formData.append('role', this.userForm.get('role')?.value);
-    if (this.selectedFile?.file) {
-      formData.append('avatar', this.selectedFile.file);
-    }
-    console.log("idddd", this.userForm.get('id')?.value); // Kiểm tra giá trị ID
 
-    const subscription = this.userForm.get('id')?.value === null
-      ? this.accountService.addUser(formData).pipe(
-          switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedUsers = result.items || [];
-            this.toastService.success('Người dùng đã được thêm thành công.');
-            this.visible = false;
-          },
-          error: (err) => {
-            if (err.status === 400 && err.error) {
-              const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi thêm.';
-              this.toastService.error(errorMessage);
-            } else {
-              this.toastService.error('Có lỗi xảy ra khi thêm người dùng.');
-            }
-            console.error(err);
-          }
-        })
-      : this.accountService.updateUser(formData).pipe(
-          switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedUsers = Array.isArray(result.items) ? result.items : [];
-            this.toastService.success('Người dùng đã được cập nhật thành công.');
-            this.visible = false;
-          },
-          error: (err) => {
-            if (err.status === 400 && err.error) {
-              const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi cập nhật.';
-              this.toastService.error(errorMessage);
-            } else {
-              this.toastService.error('Có lỗi xảy ra khi cập nhật người dùng.');
-            }
-            console.error(err);
-          }
-        });
-      this.subscriptions.add(subscription);
-    }
     if(this.lockUserForm.valid){
       const formValue = this.lockUserForm.value;
       const lockStatus = Boolean(formValue.lockStatus);

@@ -524,7 +524,7 @@ export class ProductFormComponent implements OnInit {
                             currentVariant.status !== variant.status);
 
         if (hasChanged) {
-          
+
           const variantUpdate: VariantUpdate = {
             id: variant.id,
             productId: productId,
@@ -537,16 +537,27 @@ export class ProductFormComponent implements OnInit {
           };
 
           await this.variantService.updateVariant(variantUpdate).toPromise();
-          this.toastService.success('Cập nhật biến thể thành công.');
+          //this.toastService.success('Cập nhật biến thể thành công.');
         }
       } else {
         if (variant.price <= variant.priceSell) {
           this.toastService.error('Giá bán phải lớn hơn giá nhập.');
           return;
         }
+        const imagesFormArray = variantGroup.get('imageFiles') as FormArray;
+        if (imagesFormArray && imagesFormArray.length > 0) {
+            for (const ctrl of imagesFormArray.controls) {
+                const file = ctrl.value;
+                if (file instanceof File) {
+                    variantFormData.append('imageFiles', file);
+                }
+            }
+            await this.variantService.addVariant(variantFormData).toPromise();
+            //this.toastService.success('Thêm biến thể thành công.');
+        }
 
-        await this.variantService.addVariant(variantFormData).toPromise();
-        this.toastService.success('Thêm biến thể thành công.');
+        // await this.variantService.addVariant(variantFormData).toPromise();
+        // this.toastService.success('Thêm biến thể thành công.');
       }
     });
 
@@ -616,8 +627,9 @@ export class ProductFormComponent implements OnInit {
       const file = control.value;
       if (file instanceof File) {
         formData.append('imageFile', file);
+
       } else {
-        console.error('Dự kiến là một file, nhưng nhận được:', file);
+        //console.error('Dự kiến là một file, nhưng nhận được:', file);
       }
     });
 
