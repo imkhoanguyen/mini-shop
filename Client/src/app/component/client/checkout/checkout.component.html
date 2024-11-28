@@ -1,1 +1,228 @@
-<p>checkout works!</p>
+<section class="min-vh-100 pb-4 pt-5" style="background-color: #eef0f7">
+  <div class="container">
+    <div class="row">
+      <div class="col-7">
+        <!-- @* address *@ -->
+        <div class="card box-shadow">
+          <div class="card-body">
+            <div class="mb-4 mt-2">
+              <img src="~/css/images/icons/logo-01.png" />
+            </div>
+            <h5 class="mb-4 fw-bold">Shipping information</h5>
+            <select
+              class="form-select"
+              [(ngModel)]="order.address"
+              (change)="onChangeAddress()"
+            >
+              <option value="" disabled selected>Chọn địa chỉ</option>
+              @for (item of addressList; track item.id) {
+              <option
+                [value]="
+                  item.street + ' - ' + item.district + ' - ' + item.city
+                "
+              >
+                {{ item.street }} - {{ item.district }} - {{ item.city }}
+              </option>
+              }
+            </select>
+            <!-- alert -->
+            <div
+              *ngIf="order.address !== ''"
+              class="alert alert-success address-detail mt-3"
+              role="alert"
+            >
+              <h4 class="alert-heading address-specificAddress fw-bold"></h4>
+              <p class="address-phone mt-2"></p>
+              <hr />
+              <p class="mb-0 a address-fullname"></p>
+            </div>
+            <!--  input address field  -->
+            <div class="address-container mt-3">
+              <div class="mb-3">
+                <div class="row">
+                  <div class="col-6">
+                    <input placeholder="Full name" class="form-control" />
+                  </div>
+                  <div class="col-6">
+                    <input placeholder="Phone number" class="form-control" />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <input placeholder="Specific Address" class="form-control" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--  order desciption  -->
+        <div class="card mt-4 box-shadow">
+          <h5 class="card-header fw-bold p-3">2. Order description</h5>
+          <div class="card-body">
+            <textarea
+              class="form-control"
+              style="min-height: 120px"
+              placeholder="Enter note..."
+              [(ngModel)]="order.description"
+            ></textarea>
+          </div>
+        </div>
+
+        <!--  shipping method  -->
+        <div class="card mt-4 box-shadow">
+          <h5 class="card-header fw-bold p-3 mb-3">3. Shipping method</h5>
+
+          <div class="form-check mb-3 px-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              id="@shippingMethod.Id"
+              name="Order.ShippingMethodId"
+              value="@shippingMethod.Id"
+              checked
+              data-cost="@shippingMethod.Cost"
+            />
+            <label class="form-check-label" for="@shippingMethod.Id">
+              <strong>shippingMethod.Name</strong> <br />
+              <small></small>
+            </label>
+          </div>
+
+          <div class="form-check mb-3 px-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              id="@shippingMethod.Id"
+              name="Order.ShippingMethodId"
+              value="@shippingMethod.Id"
+              data-cost="@shippingMethod.Cost"
+            />
+
+            <label class="form-check-label" for="@shippingMethod.Id">
+              <strong>shippingMethod.Name</strong> <br />
+              <small>des</small>
+            </label>
+          </div>
+        </div>
+
+        <!-- payment method -->
+        <div class="card mt-4 box-shadow">
+          <h5 class="card-header fw-bold p-3 mb-3">4. Payment method</h5>
+
+          <div class="form-check mb-3 px-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              id="offline"
+              name="Order.PaymentMethod"
+              value="0"
+              checked
+            />
+            <label
+              class="form-check-label d-flex gap-2 align-items-center p-3"
+              for="offline"
+            >
+              <i class="fa-solid fa-truck-fast fa-lg"></i>
+              <strong>Cash on delivery</strong>
+            </label>
+          </div>
+
+          <div class="form-check mb-3 px-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              id="online"
+              name="Order.PaymentMethod"
+              value="1"
+            />
+            <label
+              class="form-check-label d-flex gap-2 align-items-center p-3"
+              for="online"
+            >
+              <i class="fa-brands fa-cc-stripe fa-lg"></i>
+              <strong>Payment with Stripe</strong>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- order sumary  -->
+      <div class="col-5">
+        <!-- order items  -->
+        <div class="card box-shadow">
+          <h5 class="card-header fw-bold p-3">5. Order summary</h5>
+          <div class="card-body">
+            <table class="table">
+              <tbody class="align-midle">
+                @for (item of cartService.cart()?.items; track $index) {
+                <tr>
+                  <th scope="row">
+                    <img
+                      src="{{ item.productImage }}"
+                      style="height: 80px; width: 80px; object-fit: cover"
+                    />
+                  </th>
+                  <td>
+                    <div class="d-flex flex-column">
+                      <a
+                        class="fw-bold text-primary"
+                        style="text-decoration: none"
+                      >
+                        {{ item.quantity }} x {{ item.productName }}
+                      </a>
+                      <div class="fs-sm text-muted">
+                        Size: {{ item.sizeName }}, Color: {{ item.colorName }}
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end">
+                    <span class="fw-bold">{{ item.price }}đ</span>
+                  </td>
+                </tr>
+                }
+                <tr style="font-size: 16px">
+                  <th scope="row" colspan="2">
+                    <span class="fw-bold">Subtotal</span>
+                  </th>
+                  <td class="text-end">
+                    <span class="fw-bold">{{ cartService.totals() }}</span>
+                    <input
+                      hidden
+                      placeholder="subtotal"
+                      asp-for="@Model.Order.SubTotal"
+                    />
+                  </td>
+                </tr>
+                <tr style="font-size: 16px">
+                  <th scope="row" colspan="2">
+                    <span class="fw-bold">Shipping fee</span>
+                  </th>
+                  <td class="text-end">
+                    <span class="fw-bold shipping-fee-display">1</span>
+                  </td>
+                </tr>
+                <tr style="font-size: 16px">
+                  <th scope="row" colspan="2">
+                    <span class="fw-bold">Total</span>
+                  </th>
+                  <td class="text-end">
+                    <span class="fw-bold total-display">1</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- btn submit  -->
+        <div class="card mt-3">
+          <button type="submit" class="btn btn-primary p-3 fw-bold">
+            &#10004; Complete Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

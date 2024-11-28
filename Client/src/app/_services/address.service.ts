@@ -22,10 +22,10 @@ export class AddressService {
   deleteAddress(addressId:number){
     return this.http.delete(this.apiUrl+ `/Address/delete/${addressId}`)
   }
-  getAllAddressByUserId(userId:number){
+  getAllAddressByUserId(userId:string){
     return this.http.get<Address[]>(this.apiUrl + `/Address/user/${userId}`);
   }
-  getAddressById(id: number){
+  getAddressById(id: string){
     return this.http.get<Address>(this.apiUrl + "/Address/" + id);
   }
 }
