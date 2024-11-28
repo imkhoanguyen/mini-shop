@@ -25,6 +25,7 @@ import { authGuard } from './_guards/auth.guard';
 import { ShopComponent } from './component/client/shop/shop.component';
 import { UserComponent } from './component/admin/user/user.component';
 import { CartComponent } from './component/client/cart/cart.component';
+import { StatisticComponent } from './component/admin/statistic/statistic.component';
 import { CheckoutComponent } from './component/client/checkout/checkout.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -48,6 +49,7 @@ export const routes: Routes = [
       { path: 'role/permission/:id', component: RolePermissionComponent },
       { path: 'blog', component: BlogComponent },
       { path: 'user', component: UserComponent },
+      { path: 'statistic', component: StatisticComponent },
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],

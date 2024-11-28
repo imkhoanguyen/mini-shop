@@ -76,7 +76,16 @@ namespace Shop.Infrastructure.Repositories
                 .Where(o => o.Order_date.Date == today && o.Status == OrderStatus.PaymentReceived)
                 .CountAsync();
         }
+        public async Task<int> CountOrdersByDateAsync(DateTime date)
+        {
+            var startOfDay = date.Date;
+            var endOfDay = date.Date.AddDays(1).AddTicks(-1);
 
+            // Count Orders for the selected date with PaymentReceived status
+            return await _context.Orders
+                .Where(o => o.Order_date >= startOfDay && o.Order_date <= endOfDay && o.Status == OrderStatus.PaymentReceived)
+                .CountAsync();
+        }
         public async Task<int> CountOrdersByMonthAsync(int year, int month)
         {
             var startOfMonth = new DateTime(year, month, 1);

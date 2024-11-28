@@ -1,0 +1,126 @@
+h2 {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 20px;
+    color: #333; /* Màu đen đậm cho tiêu đề */
+    font-size: 24px; /* Font size lớn hơn */
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+/* Container chính chứa timepick, revenue và count */
+.statistics-container {
+    display: flex;
+    justify-content: space-evenly; /* Khoảng cách đều nhau giữa các phần tử */
+    align-items: stretch; /* Căn chỉnh các phần tử với chiều cao bằng nhau */
+    gap: 20px; /* Khoảng cách giữa các phần tử */
+    padding: 20px;
+    background-color: #f4f7fc; /* Màu nền nhẹ nhàng cho container */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    height: 200px; /* Đặt chiều cao cố định hoặc điều chỉnh theo nhu cầu */
+}
+
+/* Timepick giữ nguyên */
+.timepick {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 35%; /* Chiếm 35% chiều rộng */
+    background-color: #ffffff; /* Màu nền trắng cho phần Timepick */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Đảm bảo căn chỉnh nội dung bên trong */
+}
+
+/* Revenue và count */
+.revenue, .count {
+    flex: 1; /* Chiếm đều chiều rộng còn lại */
+    text-align: center;
+    background-color: #ffffff; /* Màu nền trắng cho phần Revenue và Count */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Căn chỉnh nội dung bên trong */
+}
+
+/* Thêm màu nền cho Doanh thu và Số lượng đơn hàng */
+.revenue h3, .count h3 {
+    color: #4b9ce2; /* Màu xanh nhẹ cho văn bản tiêu đề */
+    font-size: 35px;
+    font-weight: 500;
+}
+
+/* Màu nền cho số liệu */
+.revenue p, .count p {
+    font-size: 22px;
+    color: #2d3e50; /* Màu chữ tối cho số liệu */
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+/* Chart container */
+.chart-container {
+    display: flex;
+    justify-content: center; /* Căn giữa biểu đồ */
+    align-items: center;
+    width: 100%; /* Biểu đồ chiếm toàn bộ chiều rộng */
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    overflow: hidden; /* Ẩn phần thừa nếu quá lớn */
+}
+
+/* Biểu đồ */
+p-chart {
+    flex: 1; /* Biểu đồ tự giãn nở để phù hợp với container */
+    width: 100%; /* Đảm bảo biểu đồ luôn chiếm toàn bộ chiều rộng container */
+    height: auto; /* Chiều cao tự động điều chỉnh */
+}
+
+/* Canvas trong biểu đồ */
+p-chart canvas {
+    display: block;
+    width: 100% !important; /* Biểu đồ tự giãn theo chiều ngang */
+    height: auto !important; /* Tự điều chỉnh chiều cao */
+    max-width: 100%; /* Đảm bảo không vượt quá container */
+}
+
+/* Thêm màu sắc cho các dropdown và calendar */
+p-calendar, p-dropdown {
+    width: 100%;
+    background-color: #ffffff; /* Màu nền trắng cho calendar và dropdown */
+}
+
+/* Màu cho các dropdown options */
+p-dropdown .p-dropdown-items {
+    background-color: #f7f9fc; /* Màu nền nhẹ cho các lựa chọn */
+    color: #4b9ce2; /* Màu chữ cho các lựa chọn */
+}
+
+/* Chỉnh sửa hiệu ứng hover cho dropdown items */
+p-dropdown .p-dropdown-items .p-dropdown-item:hover {
+    background-color: #e1effc; /* Màu nền khi hover vào item */
+    color: #2d3e50; /* Màu chữ khi hover */
+}
+
+/* Màu sắc cho input và các thành phần tương tác */
+input, select {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+input:focus, select:focus {
+    border-color: #4b9ce2; /* Màu border khi input hoặc select đang được focus */
+    box-shadow: 0 0 5px rgba(75, 156, 226, 0.5);
+}

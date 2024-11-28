@@ -42,7 +42,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> AddAddressAsync([FromBody] AddressAddDto addressAddDto)
         {
             if (addressAddDto == null)
@@ -76,7 +76,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut("{addressId}")]
+        [HttpPut("update/{addressId}")]
         public async Task<IActionResult> UpdateAddressAsync(int addressId, [FromBody] AddressAddDto addressAddDto)
         {
             if (addressAddDto == null)
@@ -95,7 +95,7 @@ namespace API.Controllers
             }
         }
 
-        [HttpDelete("{addressId}")]
+        [HttpDelete("delete/{addressId}")]
         public async Task<IActionResult> DeleteAddressAsync(int addressId)
         {
             try

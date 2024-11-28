@@ -1,0 +1,27 @@
+<h2>Thống kê</h2>
+<div class="statistics-container">
+  <div class="timepick">
+    <p-calendar 
+        [(ngModel)]="selectedDate" 
+        [showIcon]="true" 
+        dateFormat="dd/mm/yy" 
+        placeholder="Chọn ngày">
+    </p-calendar>
+    <p-dropdown 
+        [options]="dropdownOptions" 
+        [(ngModel)]="selectedOption" 
+        (ngModelChange)="onDropdownChange($event)" 
+        placeholder="Hiện tại">
+    </p-dropdown>
+  </div>
+  <div class="revenue">
+    <h3>Doanh thu: <br>{{ revenueOrder | currency: 'VND' }}</h3>
+  </div>
+  <div class="count">
+    <h3>Số lượng đơn hàng: <br>{{ countOrder }} đơn</h3>
+  </div>
+</div>
+
+<div class="chart-container">
+  <p-chart type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
+</div>

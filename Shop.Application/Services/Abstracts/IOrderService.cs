@@ -16,6 +16,7 @@ namespace Shop.Application.Services.Abstracts
         Task<decimal> GetTotalRevenueByMonthAsync(int year, int month);
         Task<decimal> GetTotalRevenueByYearAsync(int year);
         Task<int> CountOrdersTodayAsync();
+        Task<int> CountOrdersByDateAsync(DateTime date);
         Task<int> CountOrdersByMonthAsync(int year, int month);
         Task<int> CountOrdersByYearAsync(int year);
     }
