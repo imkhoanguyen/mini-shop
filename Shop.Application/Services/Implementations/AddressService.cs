@@ -33,6 +33,22 @@ namespace Shop.Application.Services.Implementations
         
         public async Task<AddressDto> AddAddressAsync(AddressAddDto addressAddDto)
         {
+            // if (addressAddDto == null)
+            // {
+            //     throw new ArgumentNullException(nameof(addressAddDto), "Address information cannot be null.");
+            // }
+
+            // // Map DTO to Entity
+            // var address = AddressMapper.FromDtoToEntity(addressAddDto);
+
+            // // Add address using repository
+            // await _unitOfWork.AddressRepository.AddAsync(address);
+
+            // // Commit changes to the database
+            // await _unitOfWork.CompleteAsync();
+
+            // // Return the added address as a DTO
+            // return AddressMapper.FromEntityToDto(address);
             if (addressAddDto == null)
             {
                 throw new ArgumentNullException(nameof(addressAddDto), "Address information cannot be null.");
@@ -41,13 +57,20 @@ namespace Shop.Application.Services.Implementations
             // Map DTO to Entity
             var address = AddressMapper.FromDtoToEntity(addressAddDto);
 
-            // Add address using repository
+            // Kiểm tra xem người dùng đã có địa chỉ này chưa (nếu cần)
+            var existingAddress = await _unitOfWork.AddressRepository.GetAddressByUserIdAsync(addressAddDto.AppUserId);
+            if (existingAddress.Any(a => a.City == addressAddDto.City && a.District == addressAddDto.District && a.Street == addressAddDto.Street))
+            {
+                throw new InvalidOperationException("This address already exists for the user.");
+            }
+
+            // Thêm địa chỉ vào cơ sở dữ liệu
             await _unitOfWork.AddressRepository.AddAsync(address);
 
-            // Commit changes to the database
+            // Commit thay đổi vào cơ sở dữ liệu
             await _unitOfWork.CompleteAsync();
 
-            // Return the added address as a DTO
+            // Trả về địa chỉ đã được thêm dưới dạng DTO
             return AddressMapper.FromEntityToDto(address);
         }
 

@@ -8,7 +8,8 @@ namespace Shop.Domain.Entities
         public DateOnly DateOfBirth { get; set; }
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; } = DateTime.UtcNow;
-        public Address? Address { get; set; }
+        // public Address? Address { get; set; }
+        public List<Address> Address { get; set; } = new();
         public string? Avatar { get; set; } = "user.jpg";
         public List<Image> Images { get; set; } = new();
         public List<Message> MessageSent { get; set; } = new();

@@ -2,6 +2,7 @@ using Shop.Application.Repositories;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Shop.Infrastructure.Repositories
 {
@@ -38,6 +39,9 @@ namespace Shop.Infrastructure.Repositories
             _context.Addresses.Remove(address);
             await _context.SaveChangesAsync();  // Make sure to save asynchronously
         }
-
+        public async Task<Address?> FindAsync(Expression<Func<Address, bool>> predicate)
+        {
+            return await _context.Addresses.FirstOrDefaultAsync(predicate);
+        }
     }
 }
