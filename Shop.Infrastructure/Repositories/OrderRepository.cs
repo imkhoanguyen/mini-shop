@@ -20,7 +20,7 @@ namespace Shop.Infrastructure.Repositories
                 .Include(o => o.OrderItems)
                 .Include(o => o.ShippingMethod) 
                 .Include(o => o.Discount) 
-                .OrderByDescending(o => o.Order_date) 
+                .OrderByDescending(o => o.Created) 
                 .ToListAsync();
         }
 
@@ -31,7 +31,7 @@ namespace Shop.Infrastructure.Repositories
 
             // Lấy danh sách các Order trong ngày với trạng thái PaymentReceived
             var orders = await _context.Orders
-                .Where(o => o.Order_date >= startOfDay && o.Order_date <= endOfDay && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created >= startOfDay && o.Created <= endOfDay && o.Status == OrderStatus.PaymentReceived)
                 .ToListAsync();
 
             // Tính tổng doanh thu bằng GetTotal()
@@ -47,7 +47,7 @@ namespace Shop.Infrastructure.Repositories
 
             // Lọc các Order theo tháng, năm và trạng thái PaymentReceived
             var orders = await _context.Orders
-                .Where(o => o.Order_date >= startOfMonth && o.Order_date <= endOfMonth && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created >= startOfMonth && o.Created <= endOfMonth && o.Status == OrderStatus.PaymentReceived)
                 .ToListAsync();
 
             // Tính tổng doanh thu
@@ -62,7 +62,7 @@ namespace Shop.Infrastructure.Repositories
 
             // Lọc các Order theo năm và trạng thái PaymentReceived
             var orders = await _context.Orders
-                .Where(o => o.Order_date >= startOfYear && o.Order_date <= endOfYear && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear && o.Status == OrderStatus.PaymentReceived)
                 .ToListAsync();
 
             // Tính tổng doanh thu
@@ -73,7 +73,7 @@ namespace Shop.Infrastructure.Repositories
         {
             var today = DateTime.UtcNow.Date;
             return await _context.Orders
-                .Where(o => o.Order_date.Date == today && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created.Date == today && o.Status == OrderStatus.PaymentReceived)
                 .CountAsync();
         }
         public async Task<int> CountOrdersByDateAsync(DateTime date)
@@ -83,7 +83,7 @@ namespace Shop.Infrastructure.Repositories
 
             // Count Orders for the selected date with PaymentReceived status
             return await _context.Orders
-                .Where(o => o.Order_date >= startOfDay && o.Order_date <= endOfDay && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created >= startOfDay && o.Created <= endOfDay && o.Status == OrderStatus.PaymentReceived)
                 .CountAsync();
         }
         public async Task<int> CountOrdersByMonthAsync(int year, int month)
@@ -92,7 +92,7 @@ namespace Shop.Infrastructure.Repositories
             var endOfMonth = startOfMonth.AddMonths(1).AddTicks(-1);
 
             return await _context.Orders
-                .Where(o => o.Order_date >= startOfMonth && o.Order_date <= endOfMonth && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created >= startOfMonth && o.Created <= endOfMonth && o.Status == OrderStatus.PaymentReceived)
                 .CountAsync();
         }
 
@@ -102,7 +102,7 @@ namespace Shop.Infrastructure.Repositories
             var endOfYear = startOfYear.AddYears(1).AddTicks(-1);
 
             return await _context.Orders
-                .Where(o => o.Order_date >= startOfYear && o.Order_date <= endOfYear && o.Status == OrderStatus.PaymentReceived)
+                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear && o.Status == OrderStatus.PaymentReceived)
                 .CountAsync();
         }
 
