@@ -13,7 +13,7 @@
           <th class="py-4">Màu sắc</th>
           <th class="py-4">Đơn giá</th>
           <th class="py-4" style="width: 15%">Số lượng</th>
-          <th class="py-4">Tổng</th>
+          <th class="py-4">Tổng(VNĐ)</th>
           <th class="py-4" style="width: 5%"></th>
         </tr>
       </thead>
@@ -22,10 +22,11 @@
         @for (item of cartService.cart()?.items; track $index) {
         <tr>
           <td>
-            <img
+            <p-image
               src="{{ item.productImage }}"
               alt="{{ item.productName }}"
-              style="width: 120px; height: 120px; object-fit: cover"
+              previewImageSrc="{{ item.productImage }}"
+              [preview]="true"
             />
           </td>
           <td>{{ item.productName }}</td>
@@ -84,6 +85,7 @@
         <div class="col-md-2 offset-md-5">
           <button
             type="button"
+            (click)="checkout()"
             class="btn btn-primary border-0 bg-gradient w-100 py-2 text-uppercase fw-bold"
           >
             Checkout

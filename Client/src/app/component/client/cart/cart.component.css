@@ -17,3 +17,9 @@
 ::ng-deep .p-menuitem-link {
   text-decoration: none;
 }
+
+::ng-deep .p-image img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}

@@ -212,4 +212,22 @@ export class ShopComponent implements OnInit {
     console.log(this.params);
     this.loadListProduct();
   }
+
+  refresh() {
+    this.params = {
+      pageSize: 3,
+      pageNumber: 1,
+      search: '',
+      selectedSize: [] as number[],
+      selectedColor: 0,
+      selectedCategory: [] as number[],
+      orderBy: 'id_desc',
+    };
+    this.searchString = '';
+    this.selectedCategory = [];
+    this.selectedColor = null;
+    this.selectedSizes = [];
+    this.orderBy = null;
+    this.loadListProduct();
+  }
 }

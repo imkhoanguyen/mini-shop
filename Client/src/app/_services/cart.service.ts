@@ -13,9 +13,15 @@ export class CartService {
   cart = signal<Cart | null>(null);
   totals = computed(() => {
     const cart = this.cart();
-    return cart?.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
+    return (
+      cart?.items.reduce((sum, item) => sum + item.price * item.quantity, 0) ??
       0
+    );
+  });
+
+  itemCount = computed(() => {
+    return (
+      this.cart()?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0
     );
   });
 

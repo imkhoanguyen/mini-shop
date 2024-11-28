@@ -14,8 +14,6 @@ import { ResetPasswordComponent } from './component/reset-password/reset-passwor
 import { VoucherComponent } from './component/admin/voucher/voucher.component';
 import { AddVoucherComponent } from './component/admin/voucher/add-voucher/add-voucher.component';
 import { HomeComponent } from './component/home/home.component';
-import { ProductUserComponent } from './component/client/product/product.component';
-import { ProductListComponent } from './component/client/productList/productList.component';
 // import { NotFoundComponent } from './component/errors/not-found/not-found.component';
 import { ServerErrorComponent } from './component/errors/server-error/server-error.component';
 import { CategoryComponent } from './component/admin/category/category.component';
@@ -23,16 +21,13 @@ import { ProductFormComponent } from './component/admin/product/product-form/pro
 import { BlogComponent } from './component/admin/blog/blog.component';
 // import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { BlogUserComponent } from './component/blog-user/blog-user.component';
-import { CheckOutComponent } from './component/check-out/check-out.component';
-import { ProductDetailComponent } from './component/client/productDetail/productDetail.components';
 import { authGuard } from './_guards/auth.guard';
 import { ShopComponent } from './component/client/shop/shop.component';
 import { UserComponent } from './component/admin/user/user.component';
 import { CartComponent } from './component/client/cart/cart.component';
+import { CheckoutComponent } from './component/client/checkout/checkout.component';
 export const routes: Routes = [
-  { path: '', component: ProductUserComponent },
-  { path: 'product/productList/:id', component: ProductListComponent },
-  { path: 'product/productDetail/:id', component: ProductDetailComponent },
+  { path: '', component: HomeComponent },
   {
     path: 'admin',
     component: AdminComponent,
@@ -63,7 +58,7 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'home', component: HomeComponent },
   { path: 'blog/:id', component: BlogUserComponent },
-  { path: 'checkout', component: CheckOutComponent },
+  { path: 'cart/checkout', component: CheckoutComponent },
   // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'shop', component: ShopComponent },

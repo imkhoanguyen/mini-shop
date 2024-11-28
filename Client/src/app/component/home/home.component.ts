@@ -1,14 +1,12 @@
 import { Component } from '@angular/core';
-import { ReviewComponent } from "../review/review.component";
-import { HeaderComponent } from "../../layout/header/header.component";
+import { ReviewComponent } from '../review/review.component';
+import { HeaderComponent } from '../../layout/header/header.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ReviewComponent, HeaderComponent],
+  imports: [ReviewComponent],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  styleUrl: './home.component.css',
 })
-export class HomeComponent {
-
-}
+export class HomeComponent {}
