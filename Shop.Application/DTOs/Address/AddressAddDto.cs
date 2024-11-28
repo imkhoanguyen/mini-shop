@@ -6,6 +6,7 @@ namespace Shop.Application.DTOs.Address
         public string? District { get; set; }
         public string? Street { get; set; }
         public string? AppUserId { get; set; }
-
+        public string? fullName { get; set; }
+        public string? phone { get; set; }
     }
 }

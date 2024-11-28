@@ -4,5 +4,7 @@ export interface Address
     city: string,
     district: string,
     street: string,
-    appUserId: string
+    appUserId: string,
+    fullName:string,
+    phone:string
 }
