@@ -4,53 +4,58 @@
       <div class="col-7">
         <!-- @* address *@ -->
         <div class="card box-shadow">
+          <h5 class="card-header fw-bold p-3">1. Địa chỉ giao hàng</h5>
           <div class="card-body">
-            <div class="mb-4 mt-2">
-              <img src="~/css/images/icons/logo-01.png" />
-            </div>
-            <h5 class="mb-4 fw-bold">Shipping information</h5>
             <select
               class="form-select"
-              [(ngModel)]="order.address"
+              [(ngModel)]="selectedAddress"
               (change)="onChangeAddress()"
             >
-              <option value="" disabled selected>Chọn địa chỉ</option>
+              <option value="0" disabled selected>Chọn địa chỉ</option>
               @for (item of addressList; track item.id) {
-              <option
-                [value]="
-                  item.street + ' - ' + item.district + ' - ' + item.city
-                "
-              >
+              <option [value]="item.id">
                 {{ item.street }} - {{ item.district }} - {{ item.city }}
               </option>
               }
             </select>
             <!-- alert -->
             <div
-              *ngIf="order.address !== ''"
+              *ngIf="selectedAddress !== 0"
               class="alert alert-success address-detail mt-3"
               role="alert"
             >
-              <h4 class="alert-heading address-specificAddress fw-bold"></h4>
-              <p class="address-phone mt-2"></p>
+              <h4 class="alert-heading fw-bold">{{ order.address }}</h4>
+              <p class="mt-2">{{ order.phoneNumber }}</p>
               <hr />
-              <p class="mb-0 a address-fullname"></p>
+              <p class="mb-0">{{ order.fullName }}</p>
             </div>
             <!--  input address field  -->
             <div class="address-container mt-3">
               <div class="mb-3">
                 <div class="row">
                   <div class="col-6">
-                    <input placeholder="Full name" class="form-control" />
+                    <input
+                      placeholder="Tên người nhận hàng"
+                      class="form-control"
+                      [(ngModel)]="order.fullName"
+                    />
                   </div>
                   <div class="col-6">
-                    <input placeholder="Phone number" class="form-control" />
+                    <input
+                      placeholder="Số điện thoại nhận hàng"
+                      class="form-control"
+                      [(ngModel)]="order.phoneNumber"
+                    />
                   </div>
                 </div>
               </div>
               <div class="row">
                 <div class="col-12">
-                  <input placeholder="Specific Address" class="form-control" />
+                  <input
+                    placeholder="Địa chỉ giao hàng"
+                    class="form-control"
+                    [(ngModel)]="order.address"
+                  />
                 </div>
               </div>
             </div>
@@ -59,7 +64,7 @@
 
         <!--  order desciption  -->
         <div class="card mt-4 box-shadow">
-          <h5 class="card-header fw-bold p-3">2. Order description</h5>
+          <h5 class="card-header fw-bold p-3">2. Ghi chú</h5>
           <div class="card-body">
             <textarea
               class="form-control"
@@ -72,60 +77,52 @@
 
         <!--  shipping method  -->
         <div class="card mt-4 box-shadow">
-          <h5 class="card-header fw-bold p-3 mb-3">3. Shipping method</h5>
-
-          <div class="form-check mb-3 px-3">
+          <h5 class="card-header fw-bold p-3 mb-3">3. Hình thức vận chuyển</h5>
+          @for (item of shippingMethodList; track item.id) {
+          <label class="mb-3 px-3">
             <input
               class="form-check-input"
+              value="{{ item }}"
+              name="shipping-method"
               type="radio"
-              id="@shippingMethod.Id"
-              name="Order.ShippingMethodId"
-              value="@shippingMethod.Id"
-              checked
-              data-cost="@shippingMethod.Cost"
+              id="{{ item.id }}"
+              (change)="onShippingMethodChange(item)"
+              [checked]="item === shippingMethodList[0]"
             />
-            <label class="form-check-label" for="@shippingMethod.Id">
-              <strong>shippingMethod.Name</strong> <br />
-              <small></small>
-            </label>
-          </div>
-
-          <div class="form-check mb-3 px-3">
-            <input
-              class="form-check-input"
-              type="radio"
-              id="@shippingMethod.Id"
-              name="Order.ShippingMethodId"
-              value="@shippingMethod.Id"
-              data-cost="@shippingMethod.Cost"
-            />
-
-            <label class="form-check-label" for="@shippingMethod.Id">
-              <strong>shippingMethod.Name</strong> <br />
-              <small>des</small>
-            </label>
-          </div>
+            <div class="form-check-label">
+              <strong>{{ item.name }}</strong> <br />
+              <small
+                ><small *ngIf="item.cost === 0">FREE</small>
+                <small *ngIf="item.cost !== 0">{{ item.cost }}</small> VNĐ
+                {{ item.estimatedDeliveryTime }}</small
+              >
+            </div>
+          </label>
+          }
         </div>
 
         <!-- payment method -->
         <div class="card mt-4 box-shadow">
-          <h5 class="card-header fw-bold p-3 mb-3">4. Payment method</h5>
+          <h5 class="card-header fw-bold p-3 mb-3">
+            4. Phương thức thanh toán
+          </h5>
 
           <div class="form-check mb-3 px-3">
             <input
               class="form-check-input"
               type="radio"
               id="offline"
-              name="Order.PaymentMethod"
               value="0"
               checked
+              name="payment-method"
+              (change)="onPaymentMethodChange($event)"
             />
             <label
               class="form-check-label d-flex gap-2 align-items-center p-3"
               for="offline"
             >
               <i class="fa-solid fa-truck-fast fa-lg"></i>
-              <strong>Cash on delivery</strong>
+              <strong>Thanh toán khi nhận hàng</strong>
             </label>
           </div>
 
@@ -134,15 +131,16 @@
               class="form-check-input"
               type="radio"
               id="online"
-              name="Order.PaymentMethod"
               value="1"
+              name="payment-method"
+              (change)="onPaymentMethodChange($event)"
             />
             <label
               class="form-check-label d-flex gap-2 align-items-center p-3"
               for="online"
             >
               <i class="fa-brands fa-cc-stripe fa-lg"></i>
-              <strong>Payment with Stripe</strong>
+              <strong>Thanh toán online với Stripe</strong>
             </label>
           </div>
         </div>
@@ -152,7 +150,7 @@
       <div class="col-5">
         <!-- order items  -->
         <div class="card box-shadow">
-          <h5 class="card-header fw-bold p-3">5. Order summary</h5>
+          <h5 class="card-header fw-bold p-3">5. Chi tiết</h5>
           <div class="card-body">
             <table class="table">
               <tbody class="align-midle">
@@ -173,7 +171,8 @@
                         {{ item.quantity }} x {{ item.productName }}
                       </a>
                       <div class="fs-sm text-muted">
-                        Size: {{ item.sizeName }}, Color: {{ item.colorName }}
+                        Kích thước: {{ item.sizeName }}, Màu sắc:
+                        {{ item.colorName }}
                       </div>
                     </div>
                   </td>
@@ -184,42 +183,117 @@
                 }
                 <tr style="font-size: 16px">
                   <th scope="row" colspan="2">
-                    <span class="fw-bold">Subtotal</span>
+                    <span class="fw-bold">Giá sản phẩm</span>
                   </th>
                   <td class="text-end">
-                    <span class="fw-bold">{{ cartService.totals() }}</span>
-                    <input
-                      hidden
-                      placeholder="subtotal"
-                      asp-for="@Model.Order.SubTotal"
-                    />
+                    <span class="fw-bold">{{ cartService.totals() }}đ</span>
                   </td>
                 </tr>
                 <tr style="font-size: 16px">
                   <th scope="row" colspan="2">
-                    <span class="fw-bold">Shipping fee</span>
+                    <span class="fw-bold">Phí giao hàng</span>
                   </th>
                   <td class="text-end">
-                    <span class="fw-bold shipping-fee-display">1</span>
+                    <span class="fw-bold">{{ order.shippingFee }}đ</span>
                   </td>
                 </tr>
                 <tr style="font-size: 16px">
                   <th scope="row" colspan="2">
-                    <span class="fw-bold">Total</span>
+                    <span class="fw-bold">Thành tiền</span>
                   </th>
                   <td class="text-end">
-                    <span class="fw-bold total-display">1</span>
+                    <span class="fw-bold"
+                      >{{ cartService.totals() + order.shippingFee }}đ</span
+                    >
+                  </td>
+                </tr>
+
+                <tr *ngIf="currentDiscount != null" style="font-size: 16px">
+                  <th scope="row" colspan="2">
+                    <span
+                      *ngIf="currentDiscount.amountOff !== 0"
+                      class="fw-bold"
+                      >Khuyến mãi (giá)</span
+                    >
+                    <span
+                      *ngIf="currentDiscount.percentOff !== 0"
+                      class="fw-bold"
+                      >Khuyến mãi ({{ currentDiscount.percentOff }}%)</span
+                    >
+                  </th>
+                  <td class="text-end">
+                    <span
+                      *ngIf="currentDiscount.amountOff !== 0"
+                      class="fw-bold"
+                      >-{{ currentDiscount.amountOff }}đ</span
+                    >
+                  </td>
+                  <td class="text-end">
+                    <span *ngIf="currentDiscount.percentOff" class="fw-bold"
+                      >-{{
+                        ((cartService.totals() + order.shippingFee) *
+                          currentDiscount.percentOff) /
+                          100
+                      }}đ</span
+                    >
+                  </td>
+                </tr>
+
+                <tr *ngIf="currentDiscount != null" style="font-size: 16px">
+                  <th scope="row" colspan="2">
+                    <span class="fw-bold">Tổng cộng</span>
+                  </th>
+                  <td class="text-end">
+                    <span
+                      *ngIf="currentDiscount.amountOff !== 0"
+                      class="fw-bold"
+                      >{{
+                        cartService.totals() +
+                          order.shippingFee -
+                          currentDiscount.amountOff
+                      }}đ</span
+                    >
+
+                    <span
+                      *ngIf="currentDiscount.percentOff !== 0"
+                      class="fw-bold"
+                      >{{
+                        cartService.totals() +
+                          order.shippingFee -
+                          ((cartService.totals() + order.shippingFee) *
+                            currentDiscount.percentOff) /
+                            100
+                      }}đ</span
+                    >
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div class="card-footer d-flex gap-3 align-items-center">
+            <div style="padding: 8px; font-weight: bold">Khuyến mãi</div>
+            <div class="btn-group ms-auto">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Nhập mã khuyến mãi"
+                [(ngModel)]="discountCode"
+              />
+              <button
+                class="btn btn-outline-primary"
+                style="white-space: nowrap"
+                (click)="applyDiscount()"
+              >
+                Áp dụng
+              </button>
+            </div>
           </div>
         </div>
 
         <!-- btn submit  -->
         <div class="card mt-3">
           <button type="submit" class="btn btn-primary p-3 fw-bold">
-            &#10004; Complete Order
+            <i class="pi pi-check"></i> Hoàn tất
           </button>
         </div>
       </div>

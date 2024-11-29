@@ -18,7 +18,7 @@
 }
 
 .form-check-input:checked + .form-check-label::after {
-  content: "\2714"; /* Unicode character for a checkmark */
+  content: "\2713"; /* Unicode character for a checkmark */
   font-size: 16px;
   color: #fff;
   position: absolute;
