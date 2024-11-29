@@ -5,6 +5,7 @@ using Shop.Application.Services.Abstracts;
 using Shop.Application.Parameters;
 using Shop.Application.DTOs.Discounts;
 using CloudinaryDotNet.Actions;
+using Shop.Domain.Exceptions;
 
 namespace API.Controllers
 {
@@ -15,16 +16,17 @@ namespace API.Controllers
         {
             _discountService = discountService;
         }
-         [HttpGet]
-       public async Task<ActionResult<IEnumerable<DiscountDto>>> GetAllDiscount([FromQuery]DiscountParams parameters){
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DiscountDto>>> GetAllDiscount([FromQuery] DiscountParams parameters)
+        {
             var discounts = await _discountService.GetAllAsync(parameters, false);
             Response.AddPaginationHeader(discounts);
             return Ok(discounts);
-       }
+        }
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<DiscountDto>> GetDiscountById (int id)
+        public async Task<ActionResult<DiscountDto>> GetDiscountById(int id)
         {
-            var discount= await _discountService.GetAsync(dc=>dc.Id==id);
+            var discount = await _discountService.GetAsync(dc => dc.Id == id);
             return Ok(discount);
         }
         [HttpPost("Add")]
@@ -33,7 +35,7 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var dc = await _discountService.AddAsync(discountDto);
-            return CreatedAtAction(nameof(GetAllDiscount),new {id=dc.Id},dc);
+            return CreatedAtAction(nameof(GetAllDiscount), new { id = dc.Id }, dc);
         }
         [HttpPut("Update")]
         public async Task<ActionResult> UpdateDiscount(DiscountUpdate discountDto)
@@ -44,19 +46,38 @@ namespace API.Controllers
             return Ok(discount);
         }
         [HttpGet("All")]
-        public async Task<ActionResult<IEnumerable<DiscountDto>>>GetAllDiscount(){
-            var discounts=await _discountService.GetAllDiscount(false);
+        public async Task<ActionResult<IEnumerable<DiscountDto>>> GetAllDiscount()
+        {
+            var discounts = await _discountService.GetAllDiscount(false);
             return Ok(discounts);
         }
         [HttpDelete("Delete")]
         public async Task<ActionResult> DeleteDiscount(int id)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            await _discountService.DeleteAsync(dc=>dc.Id==id);
+            await _discountService.DeleteAsync(dc => dc.Id == id);
             return NoContent();
         }
-       
+
+        [HttpGet("code")]
+        public async Task<ActionResult<DiscountDto>> GetDiscountBycode([FromQuery] string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new BadRequestException("Code cannot be null or empty.");
+            }
+
+            var discount = await _discountService.GetAsync(d => d.PromotionCode == code);
+
+            if (discount == null)
+            {
+                throw new NotFoundException("Discount not found.");
+            }
+
+            return Ok(discount);
+        }
+
     }
-    
+
 }
