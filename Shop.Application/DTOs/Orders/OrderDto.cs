@@ -1,21 +1,34 @@
-using System.Numerics;
+﻿using Shop.Domain.Enum;
 
 namespace Shop.Application.DTOs.Orders
 {
     public class OrderDto
     {
-        public int Id { get; set; }
-        public decimal SubTotal { get; set; }
-        public DateTime OrderDate { get; set; }
+       
+        // address & user info
         public string? Address { get; set; }
         public string? Phone { get; set; }
+        public string? FullName { get; set; }
+        public string? UserId { get; set; }
+
+        // shipping method
         public decimal ShippingFee { get; set; }
         public decimal ShippingMethodId { get; set; }
+
+        // discount 
+        public int? DiscountId { get; set; }
+        public decimal? DiscountPrice { get; set; }
+
+        // order
+        public int Id { get; set; }
+        public decimal SubTotal { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-        public required string UserId { get; set; }
-        public int DiscountId { get; set; }
-        public decimal DiscountPrice { get; set; }
-        public List<OrderItemsDto> orderItems { get; set; } = new List<OrderItemsDto>();
+        public OrderStatus Status { get; set; }
+        public string? Description { get; set; }
+        public List<OrderItemsDto> OrderItems { get; set; } = new List<OrderItemsDto>();
+
+        // payment method
+        public string? PaymentMethod { get; set; }
     }
 }

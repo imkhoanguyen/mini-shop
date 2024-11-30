@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Shop.Application.Services.Abstracts;
+using Shop.Application.Interfaces;
 using Shop.Domain.Entities;
 using Shop.Domain.Exceptions;
 

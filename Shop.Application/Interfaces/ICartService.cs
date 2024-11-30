@@ -1,6 +1,6 @@
 ﻿using Shop.Domain.Entities;
 
-namespace Shop.Application.Services.Abstracts
+namespace Shop.Application.Interfaces
 {
     public interface ICartService
     {

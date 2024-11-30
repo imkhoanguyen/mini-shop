@@ -9,6 +9,7 @@ namespace Shop.Domain.Entities
         public required string ProductName { get; set; }
         public required string SizeName { get; set; }
         public required string ColorName { get; set; }
+        public required string ProductImage { get; set; }
         public int OrderId { get; set; }
         public int ProductId { get; set; }
         [ForeignKey("OrderId")]

@@ -1,6 +1,6 @@
 ﻿using Shop.Application.DTOs.Auth;
 
-namespace Shop.Application.Services.Abstracts
+namespace Shop.Application.Interfaces
 {
     public interface IEmailService
     {

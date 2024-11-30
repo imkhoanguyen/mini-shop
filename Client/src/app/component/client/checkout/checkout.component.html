@@ -44,7 +44,7 @@
                     <input
                       placeholder="Số điện thoại nhận hàng"
                       class="form-control"
-                      [(ngModel)]="order.phoneNumber"
+                      [(ngModel)]="order.phone"
                     />
                   </div>
                 </div>
@@ -225,16 +225,12 @@
                     <span
                       *ngIf="currentDiscount.amountOff !== 0"
                       class="fw-bold"
-                      >-{{ currentDiscount.amountOff }}đ</span
+                      >-{{ calDiscountPrice() }}đ</span
                     >
                   </td>
                   <td class="text-end">
                     <span *ngIf="currentDiscount.percentOff" class="fw-bold"
-                      >-{{
-                        ((cartService.totals() + order.shippingFee) *
-                          currentDiscount.percentOff) /
-                          100
-                      }}đ</span
+                      >-{{ calDiscountPrice() }}đ</span
                     >
                   </td>
                 </tr>
@@ -247,23 +243,13 @@
                     <span
                       *ngIf="currentDiscount.amountOff !== 0"
                       class="fw-bold"
-                      >{{
-                        cartService.totals() +
-                          order.shippingFee -
-                          currentDiscount.amountOff
-                      }}đ</span
+                      >{{ calTotal() }}đ</span
                     >
 
                     <span
                       *ngIf="currentDiscount.percentOff !== 0"
                       class="fw-bold"
-                      >{{
-                        cartService.totals() +
-                          order.shippingFee -
-                          ((cartService.totals() + order.shippingFee) *
-                            currentDiscount.percentOff) /
-                            100
-                      }}đ</span
+                      >{{ calTotal() }}đ</span
                     >
                   </td>
                 </tr>
@@ -292,9 +278,27 @@
 
         <!-- btn submit  -->
         <div class="card mt-3">
-          <button type="submit" class="btn btn-primary p-3 fw-bold">
+          <button
+            type="submit"
+            class="btn btn-primary p-3 fw-bold"
+            (click)="onAddOrderOrPayment()"
+          >
             <i class="pi pi-check"></i> Hoàn tất
           </button>
+        </div>
+
+        <div
+          *ngIf="validationErrors && validationErrors.length > 0"
+          class="mx-auto mb-4 bg-danger text-white rounded mt-3"
+        >
+          <ul class="list-unstyled p-3">
+            <li
+              *ngFor="let error of validationErrors; let i = index"
+              class="mb-2"
+            >
+              {{ error }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -10,6 +10,10 @@ import { ShippingMethodService } from '../../../_services/shippingMethod.service
 import { ShippingMethodDto } from '../../../_models/shippingMethod.module';
 import { DiscountService } from '../../../_services/discount.service';
 import { DiscountDto } from '../../../_models/discount.module';
+import { OrderAdd } from '../../../_models/orders.module';
+import { UtilityService } from '../../../_services/utility.service';
+import { OrderService } from '../../../_services/order.service';
+import { ToastrService } from '../../../_services/toastr.service';
 
 @Component({
   selector: 'app-checkout',
@@ -25,6 +29,11 @@ export class CheckoutComponent implements OnInit {
   private router = inject(Router);
   private shippingMethodService = inject(ShippingMethodService);
   private discountService = inject(DiscountService);
+  private utilService = inject(UtilityService);
+  private orderService = inject(OrderService);
+  private toastrService = inject(ToastrService);
+
+  validationErrors?: string[];
 
   addressList: Address[] = [];
   shippingMethodList: ShippingMethodDto[] = [];
@@ -32,6 +41,7 @@ export class CheckoutComponent implements OnInit {
   order: any = {
     description: '',
     shippingFee: 0,
+    shippingMethodId: 0,
     address: '',
     fullName: '',
     phoneNumber: '',
@@ -41,6 +51,7 @@ export class CheckoutComponent implements OnInit {
 
   selectedAddress = 0;
   currentDiscount!: DiscountDto | null;
+  selectedPaymentMethod = 0;
 
   ngOnInit(): void {
     if (!this.accountService.currentUser()) {
@@ -48,7 +59,6 @@ export class CheckoutComponent implements OnInit {
     }
     this.loadAddress();
     this.loadShippingMethod();
-    console.log(this.shippingMethodList[0].cost);
   }
 
   loadAddress() {
@@ -82,17 +92,18 @@ export class CheckoutComponent implements OnInit {
       address?.street + ' - ' + address?.district + ' - ' + address?.city;
 
     this.order.fullName = address?.fullName;
-    this.order.phoneNumber = address?.phone;
+    this.order.phone = address?.phone;
   }
 
   onShippingMethodChange(item: ShippingMethodDto) {
     console.log('selected shopping method', item);
     this.order.shippingFee = item.cost;
+    this.order.shippingMethodId = item.id;
   }
 
   onPaymentMethodChange(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    console.log('Selected payment method:', value);
+    this.selectedPaymentMethod = +value;
   }
 
   applyDiscount() {
@@ -103,5 +114,67 @@ export class CheckoutComponent implements OnInit {
       error: (er) => console.log(er),
     });
     console.log(this.discountCode);
+  }
+
+  calDiscountPrice() {
+    if (this.currentDiscount == null) return 0;
+
+    let priceDiscount = 0;
+    if (this.currentDiscount.amountOff !== 0) {
+      priceDiscount = this.currentDiscount.amountOff;
+    } else if (this.currentDiscount.percentOff !== 0) {
+      priceDiscount =
+        ((this.cartService.totals() + this.order.shippingFee) *
+          this.currentDiscount.percentOff) /
+        100;
+    }
+
+    return priceDiscount;
+  }
+
+  calTotal() {
+    return (
+      this.cartService.totals() +
+      this.order.shippingFee -
+      this.calDiscountPrice()
+    );
+  }
+
+  onAddOrderOrPayment() {
+    const orderAdd: OrderAdd = {
+      address: this.order.address,
+      phone: this.order.phone,
+      fullName: this.order.fullName,
+      shippingFee: this.order.shippingFee,
+      shippingMethodId: this.order.shippingMethodId,
+
+      description: this.order.description,
+      subTotal: this.cartService.totals(),
+      items: this.cartService.cart()?.items || [],
+      paymentMethod:
+        this.selectedPaymentMethod === 0
+          ? this.utilService.PAYMENT_OFFILINE
+          : this.utilService.PAYMENT_ONLINE,
+    };
+
+    if (this.currentDiscount) {
+      orderAdd.discountId = this.currentDiscount?.id;
+      orderAdd.discountPrice = this.calDiscountPrice();
+    }
+
+    if (this.selectedPaymentMethod === 0) {
+      orderAdd.paymentMethod = this.utilService.PAYMENT_OFFILINE;
+
+      this.orderService.addOrder(orderAdd).subscribe({
+        next: (res) => {
+          console.log(res);
+          this.toastrService.success('Đặt hàng thành công');
+        },
+        error: (er) => {
+          this.validationErrors = er;
+          console.log(er);
+        },
+      });
+    }
   }
 }

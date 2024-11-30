@@ -1,4 +1,4 @@
-﻿using Shop.Application.Services.Abstracts;
+﻿using Shop.Application.Interfaces;
 using Shop.Domain.Entities;
 using StackExchange.Redis;
 using System.Text.Json;

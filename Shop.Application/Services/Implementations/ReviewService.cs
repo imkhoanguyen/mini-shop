@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Shop.Application.DTOs.Reviews;
+using Shop.Application.Interfaces;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;

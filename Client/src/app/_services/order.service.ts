@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Orders } from '../_models/orders.module';
+import { OrderAdd, Orders } from '../_models/orders.module';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,35 +11,51 @@ export class OrderService {
   constructor(private http: HttpClient) {}
   apiUrl = environment.apiUrl;
 
+  addOrder(order: OrderAdd) {
+    return this.http.post<OrderAdd>(this.apiUrl + '/order', order);
+  }
+
   getOrderByUserId(id: string): Observable<Orders> {
     return this.http.get<Orders>(`${this.apiUrl}/Order/${id}`);
   }
   getRevenueOrderToday() {
     return this.http.get<any>(`${this.apiUrl}/Order/revenue/today`);
   }
-  getRevenueOrderDate(Date:string){
-    return this.http.get<any>(`${this.apiUrl}/Order/revenue/by-date?date=${Date}`);
+  getRevenueOrderDate(Date: string) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/revenue/by-date?date=${Date}`
+    );
   }
-  getRevenueOrderMonth(year:number,month:number) {
-    return this.http.get<any>(`${this.apiUrl}/Order/revenue/monthly?year=${year}&month=${month}`);
+  getRevenueOrderMonth(year: number, month: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/revenue/monthly?year=${year}&month=${month}`
+    );
   }
-  getRevenueOrderYear(year:number) {
-    return this.http.get<any>(`${this.apiUrl}/Order/revenue/yearly?year=${year}`);
+  getRevenueOrderYear(year: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/revenue/yearly?year=${year}`
+    );
   }
-  getRevenueOrderAllMonthInYear(year:number) {
-    return this.http.get<any>(`${this.apiUrl}/Order/revenue/allMonthInYear?year=${year}`);
+  getRevenueOrderAllMonthInYear(year: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/revenue/allMonthInYear?year=${year}`
+    );
   }
 
-  getCountOrderToday(){
+  getCountOrderToday() {
     return this.http.get<any>(`${this.apiUrl}/Order/count-today`);
   }
-  getCountOrderDate(Date:string){
-    return this.http.get<any>(`${this.apiUrl}/Order/count-orders/by-date?date=${Date}`);
+  getCountOrderDate(Date: string) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/count-orders/by-date?date=${Date}`
+    );
   }
-  getCountOrderMonth(year:number,month:number){
-    return this.http.get<any>(`${this.apiUrl}/Order/count-monthly?year=${year}&month=${month}`);
+  getCountOrderMonth(year: number, month: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/count-monthly?year=${year}&month=${month}`
+    );
   }
-  getCountOrderYear(year:number) {
+  getCountOrderYear(year: number) {
     return this.http.get<any>(`${this.apiUrl}/Order/count-yearly?year=${year}`);
   }
 }

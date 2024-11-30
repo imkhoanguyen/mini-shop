@@ -20,7 +20,7 @@ namespace Shop.Application.Mappers
                 OrderId = dto.OrderId,
                 SizeName = dto.SizeName,
                 ColorName = dto.ColorName,
-
+                ProductImage = dto.ProductImage
             };
         }
     }

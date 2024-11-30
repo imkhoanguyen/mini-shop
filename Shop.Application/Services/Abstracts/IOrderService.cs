@@ -10,7 +10,7 @@ namespace Shop.Application.Services.Abstracts
 {
     public interface IOrderService
     {
-        Task AddAsync(Order order);
+        Task<OrderDto> AddAsync(OrderAddDto dto);
         Task<List<OrderDto>> GetOrdersByUserIdAsync(string userId);
         Task<decimal> GetTotalRevenueByDateAsync(DateTime date);
         Task<decimal> GetTotalRevenueByMonthAsync(int year, int month);

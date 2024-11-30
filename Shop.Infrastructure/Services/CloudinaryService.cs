@@ -4,7 +4,7 @@ using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Shop.Application.DTOs.Cloudinary;
-using Shop.Application.Services.Abstracts;
+using Shop.Application.Interfaces;
 
 namespace Shop.Infrastructure.Services
 {

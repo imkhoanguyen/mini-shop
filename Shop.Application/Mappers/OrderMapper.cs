@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Shop.Application.DTOs.Orders;
 using Shop.Domain.Entities;
+using Shop.Domain.Enum;
 
 namespace Shop.Application.Mappers
 {
@@ -13,14 +14,17 @@ namespace Shop.Application.Mappers
         {
             return new Order
             {
-                SubTotal = dto.SubTotal,
                 Address = dto.Address,
                 Phone = dto.Phone,
-                ShippingFee = dto.ShippingFee,
                 UserId = dto.UserId,
+                FullName = dto.FullName,
                 DiscountId = dto.DiscountId,
                 DiscountPrice = dto.DiscountPrice,
-                ShippingMethodId = dto.ShippingMethodId
+                ShippingFee = dto.ShippingFee,
+                ShippingMethodId = dto.ShippingMethodId,
+                SubTotal = dto.SubTotal,
+                Description = dto.Description,
+                PaymentMethod = Enum.Parse<PaymentMethod>(dto.PaymentMethod),
             };
         }
 
@@ -28,18 +32,25 @@ namespace Shop.Application.Mappers
         {
             return new OrderDto
             {
-                Id = order.Id,
-                SubTotal = order.SubTotal,
                 Address = order.Address,
                 Phone = order.Phone,
-                ShippingFee = order.ShippingFee,
-                Created = order.Created,
-                Updated = order.Updated,
-                ShippingMethodId = order.ShippingMethodId,
+                FullName = order.FullName,
                 UserId = order.UserId,
+
+                ShippingFee = order.ShippingFee,
+                ShippingMethodId = order.ShippingMethodId,
+
                 DiscountId = order.DiscountId,
                 DiscountPrice = order.DiscountPrice,
-                orderItems = order.OrderItems.Select(item => new OrderItemsDto
+
+                Created = order.Created,
+                Updated = order.Updated,
+                Description = order.Description,
+                Status = order.Status,
+                Id = order.Id,
+                SubTotal = order.SubTotal,
+                PaymentMethod = order.PaymentMethod.ToString(),
+                OrderItems = order.OrderItems.Select(item => new OrderItemsDto
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
@@ -47,6 +58,7 @@ namespace Shop.Application.Mappers
                     SizeName=item.SizeName,
                     ProductName=item.ProductName,
                     ColorName=item.ColorName,
+                    ProductImage = item.ProductImage,
                 }).ToList()
             };
         }

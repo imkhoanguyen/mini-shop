@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Reviews;
+using Shop.Application.Interfaces;
 using Shop.Application.Services.Abstracts;
 using Shop.Domain.Entities;
 

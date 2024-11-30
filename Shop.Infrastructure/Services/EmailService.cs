@@ -1,7 +1,7 @@
 ﻿using API.Configurations;
 using Microsoft.Extensions.Options;
 using Shop.Application.DTOs.Auth;
-using Shop.Application.Services.Abstracts;
+using Shop.Application.Interfaces;
 using System.Net;
 using System.Net.Mail;
 

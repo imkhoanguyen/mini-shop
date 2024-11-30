@@ -3,7 +3,7 @@ using API.SignalR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Shop.Application.Services.Abstracts;
+using Shop.Application.Interfaces;
 using Shop.Application.Services.Implementations;
 using Shop.Domain.Entities;
 using Shop.Infrastructure.Configurations;
@@ -11,6 +11,7 @@ using Shop.Infrastructure.DataAccess;
 using Shop.Infrastructure.DataAccess.Seed;
 using Shop.Infrastructure.Services;
 using StackExchange.Redis;
+using Stripe;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,8 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
 });
 
 builder.Services.AddSingleton<ICartService, CartService>();
+
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 
 var app = builder.Build();

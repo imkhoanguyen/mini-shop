@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Orders;
-using Shop.Application.Mappers;
 using Shop.Application.Services.Abstracts;
 
 namespace API.Controllers
@@ -17,14 +13,12 @@ namespace API.Controllers
             _orderService = orderService;
         }
 
-        [HttpPost("Add")]
-        public async Task<ActionResult> Add(OrderAddDto dto)
+        [HttpPost]
+        public async Task<ActionResult> Add([FromBody]OrderAddDto dto)
         {
-            var order = OrderMapper.FromAddDtoToEntity(dto);
-            await _orderService.AddAsync(order);
-
-            return Ok(order.Id);
-
+            dto.UserId = ClaimsPrincipleExtensions.GetUserId(User);
+            var orderToReturn = await _orderService.AddAsync(dto);
+            return Ok(dto);
         }
 
         [HttpGet("{userId}")]

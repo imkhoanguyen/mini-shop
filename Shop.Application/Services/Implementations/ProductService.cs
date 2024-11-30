@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Shop.Application.DTOs.Products;
 using Shop.Application.DTOs.Variants;
+using Shop.Application.Interfaces;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;

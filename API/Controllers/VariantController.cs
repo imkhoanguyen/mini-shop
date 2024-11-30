@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Variants;
+using Shop.Application.Interfaces;
 using Shop.Application.Services.Abstracts;
 
 

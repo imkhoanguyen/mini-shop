@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Shop.Application.DTOs.Categories;
 using Shop.Application.DTOs.Messages;
+using Shop.Application.Interfaces;
 using Shop.Application.Mappers;
 using Shop.Application.Parameters;
 using Shop.Application.Repositories;

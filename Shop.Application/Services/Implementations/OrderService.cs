@@ -7,6 +7,7 @@ using Shop.Application.Services.Abstracts;
 using Shop.Domain.Entities;
 using Shop.Application.DTOs.Orders;
 using Shop.Application.Mappers;
+using Shop.Domain.Exceptions;
 
 namespace Shop.Application.Services.Implementations
 {
@@ -18,15 +19,29 @@ namespace Shop.Application.Services.Implementations
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddAsync(Order order)
+        public async Task<OrderDto> AddAsync(OrderAddDto dto)
         {
-            if (order == null)
+           var order = OrderMapper.FromAddDtoToEntity(dto);
+
+            order.OrderItems = dto.Items.Select(item => new OrderItems
             {
-                throw new ArgumentNullException(nameof(order), "order not null");
-            }
+                Quantity = item.Quantity,
+                Price = item.Price,
+                ProductName = item.ProductName,
+                ProductId = item.ProductId,
+                SizeName = item.SizeName,
+                ColorName = item.ColorName,
+                ProductImage = item.ProductImage,
+            }).ToList();
 
             await _unitOfWork.OrderRepository.AddAsync(order);
-            await _unitOfWork.CompleteAsync();
+
+            if (await _unitOfWork.CompleteAsync())
+            {
+                return OrderMapper.FromEntityToDto(order);
+            }
+
+            throw new BadRequestException("Có lỗi xảy ra khi thêm order");
         }
 
         public async Task<List<OrderDto>> GetOrdersByUserIdAsync(string userId)

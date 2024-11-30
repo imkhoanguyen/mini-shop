@@ -15,6 +15,7 @@ using System.Text;
 using Shop.Application.Repositories;
 using Shop.Infrastructure.Repositories;
 using Shop.Application.Services.Implementations;
+using Shop.Application.Interfaces;
 
 namespace Shop.Infrastructure.Configurations
 {

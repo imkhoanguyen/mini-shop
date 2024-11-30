@@ -1,4 +1,4 @@
-namespace Shop.Application.DTOs
+namespace Shop.Application.DTOs.Auth
 {
     public class TokenRequest
     {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Shop.Application.DTOs.Cloudinary;
 
-namespace Shop.Application.Services.Abstracts
+namespace Shop.Application.Interfaces
 {
     public interface ICloudinaryService
     {

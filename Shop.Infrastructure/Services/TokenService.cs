@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Shop.Application.Services.Abstracts;
+using Shop.Application.Interfaces;
 using Shop.Domain.Entities;
 
 namespace Shop.Infrastructure.Services
