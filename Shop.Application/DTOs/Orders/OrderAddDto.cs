@@ -32,6 +32,7 @@ namespace Shop.Application.DTOs.Orders
 
 
         public required string PaymentMethod { get; set; }
+        public string? StripeSessionId { get; set; }
 
         // list item
         [NotEmptyList(ErrorMessage = "Vui lòng thêm sản phẩm vào giỏ hàng")]

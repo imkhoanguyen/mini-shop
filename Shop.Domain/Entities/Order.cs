@@ -34,6 +34,7 @@ namespace Shop.Domain.Entities
 
         //payment method
         public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Offline;
+        public string? StripeSessionId { get; set; }
 
         public decimal GetTotal()
         {

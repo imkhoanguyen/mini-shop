@@ -14,6 +14,7 @@ import { OrderAdd } from '../../../_models/orders.module';
 import { UtilityService } from '../../../_services/utility.service';
 import { OrderService } from '../../../_services/order.service';
 import { ToastrService } from '../../../_services/toastr.service';
+import { PaymentService } from '../../../_services/payment.service';
 
 @Component({
   selector: 'app-checkout',
@@ -32,6 +33,7 @@ export class CheckoutComponent implements OnInit {
   private utilService = inject(UtilityService);
   private orderService = inject(OrderService);
   private toastrService = inject(ToastrService);
+  private paymentService = inject(PaymentService);
 
   validationErrors?: string[];
 
@@ -79,6 +81,7 @@ export class CheckoutComponent implements OnInit {
       next: (res) => {
         this.shippingMethodList = res;
         this.order.shippingFee = res[0].cost;
+        this.order.shippingMethodId = res[0].id;
       },
       error: (er) => {
         console.log(er);
@@ -169,6 +172,17 @@ export class CheckoutComponent implements OnInit {
         next: (res) => {
           console.log(res);
           this.toastrService.success('Đặt hàng thành công');
+        },
+        error: (er) => {
+          this.validationErrors = er;
+          console.log(er);
+        },
+      });
+    } else if (this.selectedPaymentMethod === 1) {
+      this.paymentService.createSessionCheckout(orderAdd).subscribe({
+        next: (res) => {
+          console.log(res);
+          this.toastrService.success('stripe');
         },
         error: (er) => {
           this.validationErrors = er;
