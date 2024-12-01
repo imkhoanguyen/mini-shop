@@ -10,7 +10,7 @@ import { ShippingMethodService } from '../../../_services/shippingMethod.service
 import { ShippingMethodDto } from '../../../_models/shippingMethod.module';
 import { DiscountService } from '../../../_services/discount.service';
 import { DiscountDto } from '../../../_models/discount.module';
-import { OrderAdd } from '../../../_models/orders.module';
+import { OrderAdd } from '../../../_models/order';
 import { UtilityService } from '../../../_services/utility.service';
 import { OrderService } from '../../../_services/order.service';
 import { ToastrService } from '../../../_services/toastr.service';
@@ -179,10 +179,10 @@ export class CheckoutComponent implements OnInit {
         },
       });
     } else if (this.selectedPaymentMethod === 1) {
+      orderAdd.paymentMethod = this.utilService.PAYMENT_ONLINE;
       this.paymentService.createSessionCheckout(orderAdd).subscribe({
-        next: (res) => {
-          console.log(res);
-          this.toastrService.success('stripe');
+        next: (res: any) => {
+          window.location.href = res.url;
         },
         error: (er) => {
           this.validationErrors = er;

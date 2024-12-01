@@ -14,6 +14,8 @@ namespace Shop.Application.DTOs.Orders
         // shipping method
         public decimal ShippingFee { get; set; }
         public decimal ShippingMethodId { get; set; }
+        public required string ShippingName { get; set; }
+        public required string ShippingMethodDesciption { get; set; }
 
         // discount 
         public int? DiscountId { get; set; }
@@ -24,7 +26,7 @@ namespace Shop.Application.DTOs.Orders
         public decimal SubTotal { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-        public OrderStatus Status { get; set; }
+        public string? Status { get; set; }
         public string? Description { get; set; }
         public List<OrderItemsDto> OrderItems { get; set; } = new List<OrderItemsDto>();
 

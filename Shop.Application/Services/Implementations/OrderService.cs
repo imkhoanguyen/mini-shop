@@ -8,6 +8,7 @@ using Shop.Domain.Entities;
 using Shop.Application.DTOs.Orders;
 using Shop.Application.Mappers;
 using Shop.Domain.Exceptions;
+using System.Linq.Expressions;
 
 namespace Shop.Application.Services.Implementations
 {
@@ -88,6 +89,14 @@ namespace Shop.Application.Services.Implementations
             return await _unitOfWork.OrderRepository.CountOrdersByYearAsync(year);
         }
 
+        public async Task<OrderDto> GetAsync(Expression<Func<Order, bool>> expression, bool tracked = false)
+        {
+            var order =  await _unitOfWork.OrderRepository.GetAsync(expression, tracked);
 
+            if (order == null)
+                throw new NotFoundException("Không tìm thấy đơn hàng");
+
+            return OrderMapper.FromEntityToDto(order);
+        }
     }
 }

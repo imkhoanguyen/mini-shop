@@ -3,6 +3,7 @@ using Shop.Domain.Entities;
 using Shop.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Shop.Domain.Enum;
+using System.Linq.Expressions;
 
 namespace Shop.Infrastructure.Repositories
 {
@@ -13,6 +14,16 @@ namespace Shop.Infrastructure.Repositories
         {
             _context = context;
         }
+
+        public override async Task<Order?> GetAsync(Expression<Func<Order, bool>> expression, bool tracked = false)
+        {
+            var query = tracked ? _context.Orders.AsQueryable() : _context.Orders.AsNoTracking().AsQueryable();
+
+            return await query.Include(o => o.OrderItems)
+                .Include(o => o.ShippingMethod)
+                .Include(o => o.Discount).FirstOrDefaultAsync(expression);
+        }
+
         public async Task<List<Order>> GetOrdersByUserIdAsync(string userId)
         {
             return await _context.Orders

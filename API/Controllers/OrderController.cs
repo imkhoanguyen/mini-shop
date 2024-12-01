@@ -1,7 +1,9 @@
 using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
 using Shop.Application.Services.Abstracts;
+using Shop.Domain.Exceptions;
 
 namespace API.Controllers
 {
@@ -19,6 +21,15 @@ namespace API.Controllers
             dto.UserId = ClaimsPrincipleExtensions.GetUserId(User);
             var orderToReturn = await _orderService.AddAsync(dto);
             return Ok(dto);
+        }
+
+        [HttpGet("stripeSessionId/{stripeSessionId}")]
+        public async Task<ActionResult<OrderDto>> GetByStripeSessionId(string stripeSessionId)
+        {
+            if (stripeSessionId.IsNullOrEmpty())
+                throw new BadRequestException("stripeSessionId is required");
+
+            return await _orderService.GetAsync(o => o.StripeSessionId == stripeSessionId);
         }
 
         [HttpGet("{userId}")]
@@ -45,6 +56,7 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
 
         [HttpGet("revenue/today")]
         public async Task<IActionResult> GetTodayRevenue()

@@ -1,0 +1,186 @@
+<section
+  *ngIf="order"
+  class="min-vh-100 pb-4 pt-5"
+  style="background-color: #eef0f7"
+>
+  <div class="container">
+    <form method="post">
+      <div class="row">
+        <div class="col-7">
+          <!-- @* address *@ -->
+          <div class="card box-shadow">
+            <div class="card-body">
+              <div class="d-flex gap-2 align-items-center mt-5">
+                <i
+                  class="fa-regular fa-circle-check fa-2xl"
+                  style="color: #63e6be; font-size: 80px"
+                ></i>
+                <div class="d-flex flex-column">
+                  <h5 class="fw-bold">
+                    Đơn hàng của bạn đã được đặt thành công!
+                  </h5>
+                  <span>Cảm ơn bạn đã mua sản phẩm của chúng tôi</span>
+                </div>
+              </div>
+
+              <h5 class="mb-4 mt-5 fw-bold">Thông tin đơn hàng</h5>
+
+              <table class="table table-bordered">
+                <tbody class="align-midle">
+                  <tr>
+                    <th scope="row">Mã đơn hàng:</th>
+                    <td>#{{ order.id }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Tên:</th>
+                    <td>{{ order.fullName }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Số điện thoại:</th>
+                    <td>{{ order.phone }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Địa chỉ:</th>
+                    <td>{{ order.address }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Ghi chú:</th>
+                    <td>{{ order.description }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Phương thức thanh toán:</th>
+                    <td>
+                      {{ order.paymentMethod }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Phương thức vận chuyển:</th>
+                    <td>{{ order.shippingName }} - {{ order.description }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Hình thức thanh toán:</th>
+                    <td>{{ order.paymentMethod }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Trạng thái đơn hàng:</th>
+                    <td>
+                      {{ order.status }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="text-end">
+                <a
+                  asp-controller="shop"
+                  asp-action="index"
+                  class="btn btn-primary fw-bold text-uppercase p-3"
+                >
+                  <div
+                    class="d-flex gap-2 align-items-center justify-content-center"
+                  >
+                    <span>Continue Shopping</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- @* order sumary *@ -->
+        <div class="col-5">
+          <!-- @* order items *@ -->
+          <div class="card box-shadow">
+            <h5 class="card-header fw-bold p-3">Order summary</h5>
+            <div class="card-body">
+              <table class="table">
+                <tbody class="align-midle">
+                  @for (item of order.orderItems; track $index) {
+                  <tr>
+                    <th scope="row">
+                      <img
+                        src="{{ item.productImage }}"
+                        style="height: 80px; width: 80px; object-fit: cover"
+                      />
+                    </th>
+                    <td>
+                      <div class="d-flex flex-column">
+                        <a
+                          class="fw-bold text-primary"
+                          style="text-decoration: none"
+                        >
+                          {{ item.quantity }} x {{ item.productName }}
+                        </a>
+                        <div class="fs-sm text-muted">
+                          Kích thước: {{ item.sizeName }}, Màu sắc:
+                          {{ item.colorName }}
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-end">
+                      <span class="fw-bold">${{ item.price }}</span>
+                    </td>
+                  </tr>
+                  }
+                  <tr style="font-size: 16px">
+                    <th scope="row" colspan="2">
+                      <span class="fw-bold">Giá sản phẩm</span>
+                    </th>
+                    <td class="text-end">
+                      <span class="fw-bold">${{ order.subTotal }}</span>
+                      <input
+                        hidden
+                        placeholder="subtotal"
+                        asp-for="@Model.SubTotal"
+                      />
+                    </td>
+                  </tr>
+                  <tr style="font-size: 16px">
+                    <th scope="row" colspan="2">
+                      <span class="fw-bold">Phí giao hàng</span>
+                    </th>
+                    <td class="text-end">
+                      <span class="fw-bold shipping-fee-display"
+                        >${{ order.shippingFee }}</span
+                      >
+                    </td>
+                  </tr>
+                  <tr style="font-size: 16px">
+                    <th scope="row" colspan="2">
+                      <span class="fw-bold">Thành tiền</span>
+                    </th>
+                    <td class="text-end">
+                      <span class="fw-bold total-display"
+                        >${{ calTotal() }}</span
+                      >
+                    </td>
+                  </tr>
+                  <tr style="font-size: 16px">
+                    <th scope="row" colspan="2">
+                      <span class="fw-bold">Khuyến mãi </span>
+                    </th>
+                    <td class="text-end">
+                      @if(order.discountPrice) {
+                      <span class="fw-bold">$-{{ order.discountPrice }}</span>
+                      } @else {
+                      <span class="fw-bold">$0</span>
+                      }
+                    </td>
+                  </tr>
+                  <tr style="font-size: 16px">
+                    <th scope="row" colspan="2">
+                      <span class="fw-bold">Tổng cộng </span>
+                    </th>
+                    <td class="text-end">
+                      <span class="fw-bold">${{ calFinal() }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

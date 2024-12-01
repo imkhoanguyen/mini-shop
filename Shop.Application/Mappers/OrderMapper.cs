@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Shop.Application.DTOs.Orders;
 using Shop.Domain.Entities;
 using Shop.Domain.Enum;
@@ -25,6 +21,7 @@ namespace Shop.Application.Mappers
                 SubTotal = dto.SubTotal,
                 Description = dto.Description,
                 PaymentMethod = Enum.Parse<PaymentMethod>(dto.PaymentMethod),
+                StripeSessionId = dto.StripeSessionId
             };
         }
 
@@ -39,6 +36,8 @@ namespace Shop.Application.Mappers
 
                 ShippingFee = order.ShippingFee,
                 ShippingMethodId = order.ShippingMethodId,
+                ShippingName = order.ShippingMethod.Name,
+                ShippingMethodDesciption = order.ShippingMethod.EstimatedDeliveryTime,
 
                 DiscountId = order.DiscountId,
                 DiscountPrice = order.DiscountPrice,
@@ -46,7 +45,7 @@ namespace Shop.Application.Mappers
                 Created = order.Created,
                 Updated = order.Updated,
                 Description = order.Description,
-                Status = order.Status,
+                Status = order.Status.ToString(),
                 Id = order.Id,
                 SubTotal = order.SubTotal,
                 PaymentMethod = order.PaymentMethod.ToString(),
@@ -56,9 +55,9 @@ namespace Shop.Application.Mappers
                     Quantity = item.Quantity,
                     Price = item.Price,
                     SizeName=item.SizeName,
-                    ProductName=item.ProductName,
                     ColorName=item.ColorName,
                     ProductImage = item.ProductImage,
+                    ProductName = item.ProductName,
                 }).ToList()
             };
         }

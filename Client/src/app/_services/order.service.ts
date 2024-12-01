@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { OrderAdd, Orders } from '../_models/orders.module';
+import { OrderAdd, Order } from '../_models/order';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -15,8 +15,14 @@ export class OrderService {
     return this.http.post<OrderAdd>(this.apiUrl + '/order', order);
   }
 
-  getOrderByUserId(id: string): Observable<Orders> {
-    return this.http.get<Orders>(`${this.apiUrl}/Order/${id}`);
+  getOrderByStripeSessionId(stripeSessionId: string) {
+    return this.http.get<Order>(
+      `${this.apiUrl}/Order/stripeSessionId/${stripeSessionId}`
+    );
+  }
+
+  getOrderByUserId(id: string): Observable<Order> {
+    return this.http.get<Order>(`${this.apiUrl}/Order/${id}`);
   }
   getRevenueOrderToday() {
     return this.http.get<any>(`${this.apiUrl}/Order/revenue/today`);

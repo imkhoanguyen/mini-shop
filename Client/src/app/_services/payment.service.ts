@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { OrderAdd } from '../_models/orders.module';
+import { OrderAdd } from '../_models/order';
 import { Order } from '../_models/types';
 import { HttpClient } from '@angular/common/http';
 
@@ -12,6 +12,6 @@ export class PaymentService {
   private http = inject(HttpClient);
 
   createSessionCheckout(order: OrderAdd) {
-    return this.http.post<Order>(this.baseUrl + '/payment', order);
+    return this.http.post<string>(this.baseUrl + '/payment', order);
   }
 }

@@ -13,8 +13,8 @@ namespace Shop.Infrastructure.Services
         private readonly ICartService _cartService;
         private readonly IUnitOfWork _unit;
         private readonly IOrderService _orderService;
-        private string _successUrl;
-        private string _cancelUrl;
+        private readonly string _successUrl;
+        private readonly string _cancelUrl;
 
         public PaymentService(IConfiguration config, ICartService cartService, IUnitOfWork unit, IOrderService orderService)
         {
@@ -101,7 +101,7 @@ namespace Shop.Infrastructure.Services
             var session = await service.CreateAsync(options);
 
             dto.StripeSessionId = session.Id;
-            var order = _orderService.AddAsync(dto);
+            var order = await _orderService.AddAsync(dto);
 
             return session.Url;
         }

@@ -1,19 +1,24 @@
 import { CartItem } from './cart';
-import { OrderItem } from './types';
-export interface Orders {
-  id?: Number;
-  subTotal: Number;
+export interface Order {
+  id?: number;
+  subTotal: number;
   address: string;
   fullName: string;
   phone: string;
   shippingFee: string;
-  shippingMethodId: Number;
+  shippingMethodId: number;
+  shippingMethodDescription: string;
+  shippingName: string;
   create: string;
   update: string;
   userId: string;
-  discountId: Number;
-  discountPrice: Number;
+  discountId?: number;
+  discountPrice?: number;
   orderItems: OrderItem[];
+  paymentMethod: string;
+  description: string;
+  strippeSessionId: string;
+  status: string;
 }
 
 export interface OrderAdd {
@@ -33,4 +38,16 @@ export interface OrderAdd {
   // list item
   items: CartItem[];
   paymentMethod: string;
+}
+
+export interface OrderItem {
+  id: number;
+  productId: number;
+  quantity: number;
+  price: number;
+  productName: number;
+  sizeName: number;
+  colorName: number;
+  orderId: number;
+  productImage: string;
 }

@@ -30,6 +30,8 @@ import { CheckoutComponent } from './component/client/checkout/checkout.componen
 import { ShippingMethodComponent } from './component/admin/shippingmethod/shippingmethod.component';
 import { DiscountComponent } from './component/admin/discount/discount.component';
 import { UserProfileComponent } from './component/client/user-profile/user-profile.component';
+import { CheckoutSuccessComponent } from './component/client/checkout-success/checkout-success.component';
+import { CheckoutCancelComponent } from './component/client/checkout-cancel/checkout-cancel.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -53,8 +55,8 @@ export const routes: Routes = [
       { path: 'blog', component: BlogComponent },
       { path: 'user', component: UserComponent },
       { path: 'statistic', component: StatisticComponent },
-      { path: 'shippingmethod',component:ShippingMethodComponent},
-      { path: 'discount' , component :DiscountComponent},
+      { path: 'shippingmethod', component: ShippingMethodComponent },
+      { path: 'discount', component: DiscountComponent },
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],
@@ -70,5 +72,10 @@ export const routes: Routes = [
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'shop', component: ShopComponent },
   { path: 'cart', component: CartComponent },
-  { path: 'user-profile', component: UserProfileComponent}
+  { path: 'user-profile', component: UserProfileComponent },
+  {
+    path: 'cart/checkout/success',
+    component: CheckoutSuccessComponent,
+  },
+  { path: 'cart/checkout/cancel', component: CheckoutCancelComponent },
 ];
