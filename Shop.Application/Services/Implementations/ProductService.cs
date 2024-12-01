@@ -1,5 +1,6 @@
 ﻿using API.Helpers;
 using Microsoft.AspNetCore.Http;
+using Shop.Application.DTOs.Orders;
 using Shop.Application.DTOs.Products;
 using Shop.Application.DTOs.Variants;
 using Shop.Application.Interfaces;
@@ -228,5 +229,35 @@ namespace Shop.Application.Services.Implementations
                 ? ProductMapper.EntityToProductDto(product)
                 : throw new BadRequestException("Cập nhật sản phẩm thất bại");
         }
+
+            public async Task<bool> UpdateQuantityProductAsync(Order order)
+            {
+                foreach (var item in order.OrderItems)
+                {
+                    // check quantity
+                    var variantOfProduct = await _unit.VariantRepository.GetAsync(v => v.ProductId == item.ProductId
+                    && v.Color.Name == item.ColorName && v.Size.Name == item.SizeName, true);
+
+                    if (variantOfProduct == null)
+                    {
+                        throw new BadRequestException($"Không tìm thấy loại sản phẩm có tên {item.ProductName}. Vui lòng xóa khỏi giỏ hàng và kiểm tra lại");
+                    }
+
+                if (item.Quantity > variantOfProduct.Quantity)
+                {
+                        throw new BadRequestException($"Số lượng sản phẩm có tên {item.ProductName} chỉ còn lại {variantOfProduct.Quantity}. Vui lòng điều chỉnh lại số lượng sản phẩm");
+                    }
+
+                    // update
+                    variantOfProduct.Quantity -= item.Quantity;
+                }
+
+                if (await _unit.CompleteAsync())
+                {
+                    return true;
+                }
+                throw new BadRequestException("Cập nhật số lượng sản phẩm thất bại");
+
+            }
     }
 }

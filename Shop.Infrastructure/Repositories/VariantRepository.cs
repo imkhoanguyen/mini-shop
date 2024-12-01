@@ -49,6 +49,8 @@ namespace Shop.Infrastructure.Repositories
         {
             var query = _context.Variants
                  .Include(v => v.Images)
+                 .Include(v => v.Color)
+                 .Include(v => v.Size)
                  .Where(v => !v.IsDelete && v.Status == VariantStatus.Public).AsQueryable();
 
             if (!tracked)

@@ -13,6 +13,7 @@ namespace Shop.Application.Services.Abstracts
     {
         Task<OrderDto> AddAsync(OrderAddDto dto);
         Task<OrderDto> GetAsync(Expression<Func<Order, bool>> expression, bool tracked = false);
+        Task<bool> CheckOrderItems(OrderAddDto order);
         Task<List<OrderDto>> GetOrdersByUserIdAsync(string userId);
         Task<decimal> GetTotalRevenueByDateAsync(DateTime date);
         Task<decimal> GetTotalRevenueByMonthAsync(int year, int month);

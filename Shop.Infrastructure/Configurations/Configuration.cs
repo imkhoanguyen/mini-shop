@@ -43,7 +43,6 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ISizeService, SizeService>();
             services.AddScoped<IColorService, ColorService>();
-            services.AddScoped<IOrderItemsService, OrderItemsService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IShippingMethodService, ShippingMethodService>();

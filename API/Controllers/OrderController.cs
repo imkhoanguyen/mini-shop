@@ -1,4 +1,4 @@
-using API.Extensions;
+﻿using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
@@ -10,15 +10,20 @@ namespace API.Controllers
     public class OrderController : BaseApiController
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IProductService _productService;
+
+        public OrderController(IOrderService orderService, IProductService productService)
         {
             _orderService = orderService;
+            _productService = productService;
         }
 
         [HttpPost]
         public async Task<ActionResult> Add([FromBody]OrderAddDto dto)
         {
             dto.UserId = ClaimsPrincipleExtensions.GetUserId(User);
+            if (!await _orderService.CheckOrderItems(dto))
+                throw new BadRequestException("Lỗi số lượng sản phẩm");
             var orderToReturn = await _orderService.AddAsync(dto);
             return Ok(dto);
         }
