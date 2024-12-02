@@ -26,7 +26,7 @@ namespace Shop.Domain.Entities
 
         // order information
         public decimal SubTotal { get; set; } // gía tất cả sản phẩm
-        public OrderStatus Status { get; set; } = OrderStatus.Pending;
+        public OrderStatus Status { get; set; } = OrderStatus.Unconfirmed;
         public DateTime Created { get; set; } = DateTime.UtcNow;
         public DateTime Updated { get; set; }
         public List<OrderItems> OrderItems { get; set; } = new List<OrderItems>();
@@ -34,6 +34,8 @@ namespace Shop.Domain.Entities
 
         //payment method
         public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Offline;
+        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+
         public string? StripeSessionId { get; set; }
 
         public decimal GetTotal()

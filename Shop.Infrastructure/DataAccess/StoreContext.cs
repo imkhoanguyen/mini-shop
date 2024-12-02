@@ -26,9 +26,6 @@ namespace Shop.Infrastructure.DataAccess
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
-
-        public DbSet<Voucher> Vouchers { get; set; }
-        public DbSet<Product_Voucher> Product_Vouchers { get; set; }
         public DbSet<Discount> Discounts { get; set; }
 
 

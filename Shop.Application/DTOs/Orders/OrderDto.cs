@@ -26,11 +26,12 @@ namespace Shop.Application.DTOs.Orders
         public decimal SubTotal { get; set; }
         public DateTime Created { get; set; }
         public DateTime Updated { get; set; }
-        public string? Status { get; set; }
+        public required string Status { get; set; }
         public string? Description { get; set; }
-        public List<OrderItemsDto> OrderItems { get; set; } = new List<OrderItemsDto>();
+        public List<OrderItemsDto> OrderItems { get; set; } = [];
 
         // payment method
-        public string? PaymentMethod { get; set; }
+        public required string PaymentMethod { get; set; }
+        public required string PaymentStatus { get; set; }
     }
 }

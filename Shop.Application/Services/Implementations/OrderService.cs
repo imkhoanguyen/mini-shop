@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
 using Shop.Domain.Entities;
@@ -9,6 +5,8 @@ using Shop.Application.DTOs.Orders;
 using Shop.Application.Mappers;
 using Shop.Domain.Exceptions;
 using System.Linq.Expressions;
+using Shop.Application.Ultilities;
+using Shop.Application.Parameters;
 
 namespace Shop.Application.Services.Implementations
 {
@@ -59,6 +57,14 @@ namespace Shop.Application.Services.Implementations
             }
 
             throw new BadRequestException("Có lỗi xảy ra khi thêm order.");
+        }
+
+        public async Task<PagedList<OrderDto>> GetAllAsync(OrderParams prm, bool tracked = false)
+        {
+            var orders = await _unitOfWork.OrderRepository.GetAllAsync(prm, tracked);
+            var orderDtos = orders.Select(OrderMapper.FromEntityToDto).ToList();
+
+            return new PagedList<OrderDto>(orderDtos, orders.TotalCount, orders.CurrentPage, orders.PageSize);
         }
 
         public async Task<bool> CheckOrderItems(OrderAddDto order)
@@ -152,7 +158,5 @@ namespace Shop.Application.Services.Implementations
 
             return OrderMapper.FromEntityToDto(order);
         }
-
-        
     }
 }

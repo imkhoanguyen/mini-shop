@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
+using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
 using Shop.Domain.Exceptions;
 
@@ -16,6 +17,14 @@ namespace API.Controllers
         {
             _orderService = orderService;
             _productService = productService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrders([FromQuery] OrderParams prm)
+        {
+            var pagedList = await _orderService.GetAllAsync(prm, false);
+            Response.AddPaginationHeader(pagedList);
+            return Ok(pagedList);
         }
 
         [HttpPost]

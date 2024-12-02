@@ -49,6 +49,7 @@ namespace Shop.Application.Mappers
                 Id = order.Id,
                 SubTotal = order.SubTotal,
                 PaymentMethod = order.PaymentMethod.ToString(),
+                PaymentStatus = order.PaymentStatus.ToString(),
                 OrderItems = order.OrderItems.Select(item => new OrderItemsDto
                 {
                     ProductId = item.ProductId,

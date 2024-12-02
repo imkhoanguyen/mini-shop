@@ -101,7 +101,7 @@ namespace API.Controllers
             if (int.TryParse(orderId, out int parsedOrderId))
             {
                 var order = await _unit.OrderRepository.GetAsync(o => o.Id == parsedOrderId, true);
-                order.Status = Shop.Domain.Enum.OrderStatus.PaymentReceived;
+                order.PaymentStatus = Shop.Domain.Enum.PaymentStatus.Paid;
                 await _unit.CompleteAsync();
             }
             else

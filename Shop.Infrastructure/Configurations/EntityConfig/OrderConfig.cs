@@ -20,6 +20,10 @@ namespace Shop.Infrastructure.Configurations.EntityConfig
             builder.Property(x => x.PaymentMethod).HasConversion(
                 o => o.ToString(),
                 o => (PaymentMethod)Enum.Parse(typeof(PaymentMethod), o));
+
+            builder.Property(x => x.PaymentStatus).HasConversion(
+                o => o.ToString(),
+                o => (PaymentStatus)Enum.Parse(typeof(PaymentStatus), o));
         }
     }
 }
