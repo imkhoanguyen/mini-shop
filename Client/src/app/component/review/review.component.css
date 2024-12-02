@@ -9,3 +9,7 @@
   overflow: hidden; /* Ẩn các phần video thừa */
   border-radius: 5px; /* Góc bo tròn cho video */
 }
+
+button {
+  border-radius: 0 !important;
+}

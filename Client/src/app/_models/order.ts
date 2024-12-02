@@ -9,8 +9,8 @@ export interface Order {
   shippingMethodId: number;
   shippingMethodDescription: string;
   shippingName: string;
-  create: string;
-  update: string;
+  created: string;
+  updated: string;
   userId: string;
   discountId?: number;
   discountPrice?: number;
@@ -19,6 +19,7 @@ export interface Order {
   description: string;
   strippeSessionId: string;
   status: string;
+  paymentStatus: string;
 }
 
 export interface OrderAdd {
@@ -50,4 +51,16 @@ export interface OrderItem {
   colorName: number;
   orderId: number;
   productImage: string;
+}
+
+export class OrderParams {
+  pageNumber: number = 1;
+  pageSize: number = 5;
+  search: string = '';
+  orderBy: string = 'id_desc';
+  selectedPaymentStatus: string = '';
+  selectedStatus: string = '';
+  userId: string = '';
+  startDate: string = '';
+  endDate: string = '';
 }

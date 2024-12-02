@@ -12,6 +12,7 @@
   word-wrap: break-word; /* Ngắt từ nếu quá dài */
   overflow-wrap: break-word; /* Đảm bảo tương thích */
   font-weight: bold;
+  cursor: pointer;
 }
 
 .product-price {

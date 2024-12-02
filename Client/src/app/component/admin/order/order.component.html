@@ -1,73 +1,64 @@
-<h1 class="mb-4">Danh sách đơn hàng</h1>
-<div class="row align-items-center mb-3">
-    <div class="row">
-      <div class="mb-3 col-3">
-        <label>Từ ngày:</label>
-        <p-calendar
-          [(ngModel)]="startDate"
-          placeholder="dd/mm/yyyy"
-          dateFormat="dd/mm/yyyy"
-          showIcon="true"
-          readonlyInput="true"
-          class="form-control"
-        ></p-calendar>
-      </div>
-      <div class=" mb-3 col-3">
-        <label>Đến ngày:</label>
-        <p-calendar
-          [(ngModel)]="endDate"
-          placeholder="dd/mm/yyyy"
-          dateFormat="dd/mm/yyyy"
-          showIcon="true"
-          readonlyInput="true"
-          class="form-control"
-        ></p-calendar>
-      </div>
-    </div>
+<h1 class="mb-4">Quản lý đơn hàng</h1>
+<div class="d-flex mb-3">
+  <form (submit)="onSearch()">
+    <input
+      class="form-control"
+      placeholder="Nhập id đơn hàng, sđt, tên người nhận hoặc địa chỉ người nhận"
+      [(ngModel)]="prm.search"
+      name="search"
+    />
+  </form>
 </div>
-<p-table
-  dataKey=""
 
->
+<!-- list order -->
+<p-confirmPopup />
+<p-table [value]="orders" [tableStyle]="{ 'min-width': '60rem' }">
   <ng-template pTemplate="header">
     <tr>
-      <th style="width: 5rem;padding: 1rem;"></th>
-      <th pSortableColumn="fullname" class="px-3 py-2">Tên khách hàng</th>
-      <th pSortableColumn="address" class="px-3 py-2">Địa chỉ</th>
-      <th pSortableColumn="quantity" class="px-3 py-2">Số lượng sản phẩm</th>
-      <th pSortableColumn="price" class="px-3 py-2">Tổng giá</th>
-      <th pSortableColumn="created" class="px-3 py-2">Ngày đặt</th>
-      <th pSortableColumn="status" class="px-3 py-2">Trạng thái</th>
-      <th class="px-3 py-2">Action</th>
-
+      <th pSortableColumn="id">Id <p-sortIcon field="Id" /></th>
+      <th pSortableColumn="name">Tên người nhận <p-sortIcon field="name" /></th>
+      <th pSortableColumn="name">Phương thức <p-sortIcon field="name" /></th>
+      <th pSortableColumn="name">Thanh toán <p-sortIcon field="name" /></th>
+      <th pSortableColumn="name">Thời gian <p-sortIcon field="name" /></th>
+      <th pSortableColumn="created">
+        Trạng thái <p-sortIcon field="created" />
+      </th>
+      <th pSortableColumn="description">
+        Tổng cộng <p-sortIcon field="description" />
+      </th>
+      <th style="width: 5%"></th>
     </tr>
-   
   </ng-template>
-  <ng-template pTemplate="body">
+  <ng-template pTemplate="body" let-order>
     <tr>
-      <td>
-        <p-button 
-          tyoe="button" 
-          pRipple [text]="true"
-          [rounded]="true"
-          [icon]="expanded ? 'pi pi-chevron-down' :'pi pi-chevron-right'"
-          ></p-button>
-      </td>
-      <td> Luan</td>
-      <td>127/18 p7,q5</td>
-      <td>7</td>
-      <td>1234000</td>
-      <td>10/10/2020</td>
-      <td>Not Accept</td>
-      <td>
-        <p-button
-        icon="pi pi-file-edit"
-        [rounded]="true"
-        severity="info"
-        class="mr-1 p-button-rounded"
-        ></p-button>
+      <td>{{ order.id }}</td>
+      <td>{{ order.fullName }}</td>
+      <td>{{ order.shippingName }}</td>
+      <td>{{ order.paymentStatus }}</td>
+      <td>{{ order.created }}</td>
+      <td>{{ order.status }}</td>
+      <td>${{ calTotal(order) }}</td>
+      <td class="d-flex gap-1 align-items-center justify-content-center">
+        <button class="btn" (click)="openOrderDetail(order.id)">
+          <i class="pi pi-pen-to-square"></i>
+        </button>
+        <button class="btn" (click)="deleteConfirmPopup($event, order.id)">
+          <i class="pi pi-trash"></i>
+        </button>
       </td>
     </tr>
   </ng-template>
-  
 </p-table>
+<!-- paginator ngprime -->
+@if(pagination) {
+<div class="card flex justify-content-center mt-3">
+  <p-paginator
+    [first]="(pagination.currentPage - 1) * prm.pageSize || 0"
+    [rows]="prm.pageSize"
+    [totalRecords]="pagination.totalItems || 0"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    (onPageChange)="onPageChange($event)"
+  >
+  </p-paginator>
+</div>
+}

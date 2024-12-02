@@ -38,11 +38,6 @@ export class SidebarComponent {
       label: 'Sản phẩm',
     },
     {
-      routerLink: 'voucher',
-      icon: 'pi pi-gift',
-      label: 'Voucher',
-    },
-    {
       routerLink: 'chat',
       icon: 'pi pi-comments',
       label: 'Chat',
@@ -57,12 +52,6 @@ export class SidebarComponent {
       icon: 'pi pi-key',
       label: 'Quyền',
     },
-    {
-      routerLink: 'courter', // Đúng: 'routerLink'
-      icon: 'pi pi-shopping-cart',
-      label: 'Bán hàng tại quầy',
-    },
-
     {
       routerLink: 'order',
       icon: 'pi pi-check-square',
@@ -80,14 +69,14 @@ export class SidebarComponent {
       label: 'Thống kê',
     },
     {
-      routerLink:'shippingmethod',
-      icon:'pi pi-check-square',
-      label:'Quản lý phương thức Ship'
+      routerLink: 'shippingmethod',
+      icon: 'pi pi-check-square',
+      label: 'Quản lý phương thức Ship',
     },
     {
-      routerLink:'discount',
-      icon:'pi pi-check-square',
-      label:'Quản lý Mã giảm giá'
+      routerLink: 'discount',
+      icon: 'pi pi-check-square',
+      label: 'Quản lý Mã giảm giá',
     },
   ];
 

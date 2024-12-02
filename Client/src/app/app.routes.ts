@@ -11,8 +11,6 @@ import { RolePermissionComponent } from './component/admin/role-permission/role-
 import { ForgotpasswordComponent } from './component/forgotpassword/forgotpassword.component';
 import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
 
-import { VoucherComponent } from './component/admin/voucher/voucher.component';
-import { AddVoucherComponent } from './component/admin/voucher/add-voucher/add-voucher.component';
 import { HomeComponent } from './component/home/home.component';
 // import { NotFoundComponent } from './component/errors/not-found/not-found.component';
 import { ServerErrorComponent } from './component/errors/server-error/server-error.component';
@@ -33,6 +31,7 @@ import { UserProfileComponent } from './component/client/user-profile/user-profi
 import { CheckoutSuccessComponent } from './component/client/checkout-success/checkout-success.component';
 import { CheckoutCancelComponent } from './component/client/checkout-cancel/checkout-cancel.component';
 import { ProductDetailComponent } from './component/client/product-detail/product-detail.component';
+import { OrderComponent } from './component/admin/order/order.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -47,9 +46,6 @@ export const routes: Routes = [
       { path: 'product/add', component: ProductFormComponent },
       { path: 'product/edit/:id', component: ProductFormComponent },
       { path: 'product', component: ProductComponent },
-      { path: 'voucher', component: VoucherComponent },
-      { path: 'voucher/new', component: AddVoucherComponent },
-      { path: 'voucher/edit/:id', component: AddVoucherComponent },
       { path: 'chat', component: ChatComponent },
       { path: 'role', component: RoleComponent },
       { path: 'role/permission/:id', component: RolePermissionComponent },
@@ -58,6 +54,7 @@ export const routes: Routes = [
       { path: 'statistic', component: StatisticComponent },
       { path: 'shippingmethod', component: ShippingMethodComponent },
       { path: 'discount', component: DiscountComponent },
+      { path: 'order', component: OrderComponent },
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],
