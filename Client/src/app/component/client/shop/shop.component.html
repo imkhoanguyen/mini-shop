@@ -159,19 +159,16 @@
       </div>
 
       <div class="product">
-        <div class="product-title">
+        <a (click)="goProductDetail(product.id)" class="product-title">
           {{ product.name }}
-          <div class="wishlist-icon">
-            <i class="far fa-heart"></i>
-          </div>
-        </div>
+        </a>
       </div>
 
       <div class="d-flex gap-2 align-items-center">
         <div class="product-price-sell">
-          {{ product.variants[0].priceSell }}đ
+          ${{ product.variants[0].priceSell }}
         </div>
-        <div class="product-price">{{ product.variants[0].price }}đ</div>
+        <div class="product-price">${{ product.variants[0].price }}</div>
       </div>
     </div>
     }

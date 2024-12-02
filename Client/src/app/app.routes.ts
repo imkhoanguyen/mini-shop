@@ -32,6 +32,7 @@ import { DiscountComponent } from './component/admin/discount/discount.component
 import { UserProfileComponent } from './component/client/user-profile/user-profile.component';
 import { CheckoutSuccessComponent } from './component/client/checkout-success/checkout-success.component';
 import { CheckoutCancelComponent } from './component/client/checkout-cancel/checkout-cancel.component';
+import { ProductDetailComponent } from './component/client/product-detail/product-detail.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -71,6 +72,7 @@ export const routes: Routes = [
   // { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
   { path: 'shop', component: ShopComponent },
+  { path: 'shop/product-detail/:productId', component: ProductDetailComponent },
   { path: 'cart', component: CartComponent },
   { path: 'user-profile', component: UserProfileComponent },
   {

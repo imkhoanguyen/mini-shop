@@ -20,6 +20,7 @@ import { ColorService } from '../../../_services/color.service';
 import { Color } from '../../../_models/color.module';
 import { CategoryService } from '../../../_services/category.service';
 import { CategoryDto } from '../../../_models/category.module';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-shop',
@@ -46,6 +47,7 @@ export class ShopComponent implements OnInit {
   private sizeService = inject(SizeService);
   private colorService = inject(ColorService);
   private categoryService = inject(CategoryService);
+  private router = inject(Router);
 
   products: ProductDto[] = [];
 
@@ -67,6 +69,7 @@ export class ShopComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadListProduct();
+    // breadcrumb items
     this.items = [
       { label: 'Trang chủ', routerLink: '/home' },
       { label: 'Sản phẩm', routerLink: '/shop' },
@@ -229,5 +232,9 @@ export class ShopComponent implements OnInit {
     this.selectedSizes = [];
     this.orderBy = null;
     this.loadListProduct();
+  }
+
+  goProductDetail(productId: number) {
+    this.router.navigate(['/shop/product-detail', productId]);
   }
 }
