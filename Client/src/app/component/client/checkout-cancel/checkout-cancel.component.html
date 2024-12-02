@@ -1,1 +1,12 @@
-<p>checkout-cancel works!</p>
+<div
+  class="container min-vh-100 d-flex align-items-center justify-content-center"
+>
+  <div class="card p-5">
+    <h1 class="fw-bold" style="color: red">
+      Đơn hàng có mã là #{{ orderId }} của bạn bị hủy do thanh toán thất bại
+    </h1>
+    <div class="mt-4 d-flex align-items-center justify-content-center">
+      <p-button routerLink="/cart" label="Trở lại giỏ hàng" />
+    </div>
+  </div>
+</div>

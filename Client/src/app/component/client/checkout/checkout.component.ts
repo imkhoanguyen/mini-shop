@@ -180,15 +180,17 @@ export class CheckoutComponent implements OnInit {
       });
     } else if (this.selectedPaymentMethod === 1) {
       orderAdd.paymentMethod = this.utilService.PAYMENT_ONLINE;
-      this.paymentService.createSessionCheckout(orderAdd).subscribe({
-        next: (res: any) => {
-          window.location.href = res.url;
-        },
-        error: (er) => {
-          this.validationErrors = er;
-          console.log(er);
-        },
-      });
+      this.paymentService
+        .createSessionCheckout(orderAdd, this.cartService.cart()?.id ?? '')
+        .subscribe({
+          next: (res: any) => {
+            window.location.href = res.url;
+          },
+          error: (er) => {
+            this.validationErrors = er;
+            console.log(er);
+          },
+        });
     }
   }
 }

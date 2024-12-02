@@ -1,9 +1,11 @@
 ﻿using API.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
 using Shop.Application.Interfaces;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
+using Shop.Domain.Exceptions;
 using Stripe;
 using Stripe.Checkout;
 
@@ -14,24 +16,29 @@ namespace API.Controllers
         private readonly IPaymentService _paymentService;
         private readonly ILogger<PaymentController> _logger;
         private readonly IConfiguration _config;
-        private readonly IProductService _productService;
         private readonly IUnitOfWork _unit;
+        private readonly ICartService _cartService;
         private readonly string _whSecret;
 
-        public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger, IConfiguration config, IUnitOfWork unit)
+        public PaymentController(IPaymentService paymentService, ILogger<PaymentController> logger, IConfiguration config, IUnitOfWork unit, ICartService cartService)
         {
             _paymentService = paymentService;
             _logger = logger;
             _config = config;
             _unit = unit;
+            _cartService = cartService;
             _whSecret = config["StripeSettings:WhSecret"]!;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateSessionCheckout([FromBody] OrderAddDto dto)
+        public async Task<IActionResult> CreateSessionCheckout([FromBody] CreateSessionCheckoutDto dto)
         {
-            dto.UserId = ClaimsPrincipleExtensions.GetUserId(User);
-            var paymentUrl = await _paymentService.CreateCheckoutSessionAsync(dto);
+            if(dto.CartId.IsNullOrEmpty())
+            {
+                throw new BadRequestException("Không tìm thấy giỏ hàng");
+            }
+            dto.Order.UserId = ClaimsPrincipleExtensions.GetUserId(User);
+            var paymentUrl = await _paymentService.CreateCheckoutSessionAsync(dto.Order, dto.CartId);
             return Ok(new { Url = paymentUrl });
         }
 
@@ -42,29 +49,34 @@ namespace API.Controllers
 
             try
             {
-                // Phân tích dữ liệu JSON từ webhook và tạo Event
                 var stripeEvent = ConstructStripeEvent(json);
 
-                // Kiểm tra loại sự kiện
                 switch (stripeEvent.Type)
                 {
-                    // Khi thanh toán hoàn thành
                     case "checkout.session.completed":
                         var session = stripeEvent.Data.Object as Session;
 
                         if (session != null)
                         {
-                            // Truy xuất metadata từ session
                             var metadata = session.Metadata;
                             var orderId = metadata.ContainsKey("order_id") ? metadata["order_id"] : null;
+                            var cartId = metadata.ContainsKey("cart_id") ? metadata["cart_id"] : null;
 
                             if (orderId != null)
                             {
-                                await HandlePaymentSucceeded(orderId);
+                                await HandlePaymentSucceeded(orderId); // update status 
                             }
                             else
                             {
                                 _logger.LogError("Checkout session metadata does not contain 'order_id'.");
+                            }
+
+                            // remove cart if checkout success
+                            if(cartId != null)
+                            {
+                                await _cartService.DeleteCartAsync(cartId);
+                            } else {
+                                _logger.LogError("Checkout session metadata does not contain 'cart_id'.");
                             }
                         }
                         break;
@@ -74,11 +86,10 @@ namespace API.Controllers
                         break;
                 }
 
-                return Ok(); // Trả về OK khi xử lý xong sự kiện
+                return Ok(); 
             }
             catch (Exception ex)
             {
-                // Log lỗi nếu có vấn đề trong quá trình xử lý
                 _logger.LogError(ex, "Error processing Stripe webhook.");
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -95,7 +106,6 @@ namespace API.Controllers
             }
             else
             {
-                // Xử lý nếu không thể chuyển đổi orderId thành int (ví dụ: log lỗi)
                 _logger.LogError($"Invalid orderId: {orderId}");
             }
         }

@@ -11,7 +11,7 @@ export class PaymentService {
   private baseUrl = environment.apiUrl;
   private http = inject(HttpClient);
 
-  createSessionCheckout(order: OrderAdd) {
-    return this.http.post<string>(this.baseUrl + '/payment', order);
+  createSessionCheckout(order: OrderAdd, cartId: string) {
+    return this.http.post<string>(this.baseUrl + '/payment', { order, cartId });
   }
 }

@@ -15,6 +15,10 @@ export class OrderService {
     return this.http.post<OrderAdd>(this.apiUrl + '/order', order);
   }
 
+  deleteOrder(orderId: number) {
+    return this.http.delete(this.apiUrl + `/order/${orderId}`);
+  }
+
   getOrderByStripeSessionId(stripeSessionId: string) {
     return this.http.get<Order>(
       `${this.apiUrl}/Order/stripeSessionId/${stripeSessionId}`

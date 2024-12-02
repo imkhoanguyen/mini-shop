@@ -27,7 +27,7 @@ namespace Shop.Infrastructure.Services
             _cancelUrl = config["StripeSettings:CancelUrl"]!;
         }
 
-        public async Task<string> CreateCheckoutSessionAsync(OrderAddDto dto)
+        public async Task<string> CreateCheckoutSessionAsync(OrderAddDto dto, string cartId)
         {
 
             var order = await _orderService.AddAsync(dto);
@@ -36,12 +36,13 @@ namespace Shop.Infrastructure.Services
                 var options = new SessionCreateOptions
                 {
                     SuccessUrl = $"{_successUrl}?session_id={{CHECKOUT_SESSION_ID}}",
-                    CancelUrl = _cancelUrl,
+                    CancelUrl = $"{_cancelUrl}?order_id={order.Id}",
                     LineItems = new List<SessionLineItemOptions>(),
                     Mode = "payment",
                     Metadata = new Dictionary<string, string>
                     {
-                        {"order_id", order.Id.ToString() } 
+                        {"order_id", order.Id.ToString() },
+                        {"cart_id", cartId }
                     },
                 };
 

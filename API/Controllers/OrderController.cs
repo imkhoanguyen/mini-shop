@@ -28,6 +28,13 @@ namespace API.Controllers
             return Ok(dto);
         }
 
+        [HttpDelete("{orderId:int}")]
+        public async Task<IActionResult> Delete(int orderId)
+        {
+            await _orderService.DeleteOrderAsync(o => o.Id == orderId);
+            return Ok();
+        }
+
         [HttpGet("stripeSessionId/{stripeSessionId}")]
         public async Task<ActionResult<OrderDto>> GetByStripeSessionId(string stripeSessionId)
         {

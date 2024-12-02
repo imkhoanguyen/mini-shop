@@ -4,6 +4,6 @@ namespace Shop.Application.Interfaces
 {
     public interface IPaymentService
     {
-        Task<string> CreateCheckoutSessionAsync(OrderAddDto dto);
+        Task<string> CreateCheckoutSessionAsync(OrderAddDto dto, string cartId);
     }
 }

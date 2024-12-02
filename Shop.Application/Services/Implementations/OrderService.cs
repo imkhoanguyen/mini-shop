@@ -61,6 +61,43 @@ namespace Shop.Application.Services.Implementations
             throw new BadRequestException("Có lỗi xảy ra khi thêm order.");
         }
 
+        public async Task<bool> CheckOrderItems(OrderAddDto order)
+        {
+            foreach (var item in order.Items)
+            {
+                // check quantity
+                var variantOfProduct = await _unitOfWork.VariantRepository.GetAsync(v => v.ProductId == item.ProductId
+                && v.Color.Name == item.ColorName && v.Size.Name == item.SizeName && v.Status == Domain.Enum.VariantStatus.Public
+                );
+
+                if (variantOfProduct == null)
+                {
+                    throw new BadRequestException($"Không tìm thấy loại sản phẩm có tên {item.ProductName}. Vui lòng xóa khỏi giỏ hàng và kiểm tra lại");
+                }
+
+                if (item.Quantity > variantOfProduct.Quantity)
+                {
+                    throw new BadRequestException($"Số lượng sản phẩm có tên {item.ProductName} chỉ còn lại {variantOfProduct.Quantity}. Vui lòng điều chỉnh lại số lượng sản phẩm");
+                }
+            }
+            return true;
+        }
+
+        public async Task DeleteOrderAsync(Expression<Func<Order, bool>> expression)
+        {
+            var order = await _unitOfWork.OrderRepository.GetAsync(expression);
+            if (order == null)
+            {
+                throw new BadRequestException("Không tìm thấy order");
+            }
+            _unitOfWork.OrderRepository.Remove(order);
+
+            if (!await _unitOfWork.CompleteAsync())
+            {
+                throw new BadRequestException("Problem remove order");
+            }
+        }
+
 
         public async Task<List<OrderDto>> GetOrdersByUserIdAsync(string userId)
         {
@@ -116,26 +153,6 @@ namespace Shop.Application.Services.Implementations
             return OrderMapper.FromEntityToDto(order);
         }
 
-        public async Task<bool> CheckOrderItems(OrderAddDto order)
-        {
-            foreach(var item in order.Items)
-            {
-                // check quantity
-                var variantOfProduct = await _unitOfWork.VariantRepository.GetAsync(v => v.ProductId == item.ProductId
-                && v.Color.Name == item.ColorName && v.Size.Name == item.SizeName && v.Status == Domain.Enum.VariantStatus.Public
-                );
-
-                if(variantOfProduct == null)
-                {
-                    throw new BadRequestException($"Không tìm thấy loại sản phẩm có tên {item.ProductName}. Vui lòng xóa khỏi giỏ hàng và kiểm tra lại");
-                }
-
-                if(item.Quantity > variantOfProduct.Quantity)
-                {
-                    throw new BadRequestException($"Số lượng sản phẩm có tên {item.ProductName} chỉ còn lại {variantOfProduct.Quantity}. Vui lòng điều chỉnh lại số lượng sản phẩm");
-                }
-            }
-            return true;
-        }
+        
     }
 }
