@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
+using Shop.Application.DTOs.Users;
 using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
 using Shop.Domain.Exceptions;
@@ -88,7 +89,8 @@ namespace API.Controllers
             { 
                 date = today.Date, 
                 totalRevenue = revenue,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
             });
         }
 
@@ -106,7 +108,8 @@ namespace API.Controllers
             {
                 date = date.Date,
                 totalRevenue = revenue,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
             });
         }
 
@@ -125,7 +128,8 @@ namespace API.Controllers
                 year,
                 month,
                 totalRevenue = revenue,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
             });
         }
 
@@ -142,7 +146,8 @@ namespace API.Controllers
             {
                 year,
                 totalRevenue = revenue,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
             });
         }
 
@@ -172,7 +177,9 @@ namespace API.Controllers
             {
                 date = DateTime.UtcNow.Date,
                 count,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
+                
             });
         }
         [HttpGet("count-orders/by-date")]
@@ -189,7 +196,8 @@ namespace API.Controllers
             {
                 date = date.Date,
                 count,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
             });
         }
         [HttpGet("count-monthly")]
@@ -206,7 +214,8 @@ namespace API.Controllers
                 year,
                 month,
                 count,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
             });
         }
         [HttpGet("count-yearly")]
@@ -222,7 +231,88 @@ namespace API.Controllers
             {
                 year,
                 count,
-                status = "PaymentReceived"
+                status = "Confirmed",
+                paymentStatus="Paid"
+            });
+        }
+        [HttpGet("year/{year}")]
+        public async Task<IActionResult> GetOrdersByYear(int year)
+        {
+            try
+            {
+                // Gọi service để lấy danh sách OrderDto
+                var orders = await _orderService.GetOrdersByYearAsync(year);
+
+                // Kiểm tra nếu không có order nào
+                if (orders == null || orders.Count == 0)
+                {
+                    return NotFound($"No orders found for the year {year}.");
+                }
+
+                // Trả về danh sách order
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi (nếu có logger)
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpGet("highest-total/today")]
+        public async Task<IActionResult> GetUserWithHighestTotalForToday()
+        {
+            var result = await _orderService.GetUserWithHighestTotalForTodayAsync();
+
+            if (result.User == null)
+                return NotFound(new { message = "No orders found for today." });
+
+            return Ok(new
+            {
+                User = result.User,
+                TotalAmount = result.TotalAmount
+            });
+        }
+        [HttpGet("highest-total-date")]
+        public async Task<IActionResult> GetUserWithHighestTotalForDate([FromQuery] DateTime? date)
+        {
+            var result = await _orderService.GetUserWithHighestTotalForDateAsync(date);
+
+            if (result.User == null)
+                return NotFound(new { message = "No orders found for the selected date." });
+
+            return Ok(new
+            {
+                User = result.User,
+                TotalAmount = result.TotalAmount
+            });
+        }
+        [HttpGet("highest-total-month")]
+        public async Task<IActionResult> GetUserWithHighestTotalForMonth([FromQuery] int month, [FromQuery] int year)
+        {
+            var result = await _orderService.GetUserWithHighestTotalForMonthAsync(month, year);
+
+            if (result.User == null)
+                return NotFound(new { message = "No orders found for the selected month and year." });
+
+            return Ok(new
+            {
+                User = result.User,
+                TotalAmount = result.TotalAmount
+            });
+        }
+
+        [HttpGet("highest-total-year")]
+        public async Task<IActionResult> GetUserWithHighestTotalForYear([FromQuery] int year)
+        {
+            var result = await _orderService.GetUserWithHighestTotalForYearAsync(year);
+
+            if (result.User == null)
+                return NotFound(new { message = "No orders found for the selected year." });
+
+            return Ok(new
+            {
+                User = result.User,
+                TotalAmount = result.TotalAmount
             });
         }
     }

@@ -7,6 +7,7 @@ using Shop.Application.DTOs.Orders;
 using System.Linq.Expressions;
 using Shop.Application.Ultilities;
 using Shop.Application.Parameters;
+using Shop.Application.DTOs.Users;
 
 
 namespace Shop.Application.Services.Abstracts
@@ -26,5 +27,10 @@ namespace Shop.Application.Services.Abstracts
         Task<int> CountOrdersByDateAsync(DateTime date);
         Task<int> CountOrdersByMonthAsync(int year, int month);
         Task<int> CountOrdersByYearAsync(int year);
+        Task<List<OrderDto>> GetOrdersByYearAsync(int year);
+        Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForTodayAsync();
+        Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForDateAsync(DateTime? date);
+        Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForMonthAsync(int month, int year);
+        Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForYearAsync(int year);
     }
 }

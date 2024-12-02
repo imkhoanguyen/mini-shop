@@ -7,6 +7,7 @@ using Shop.Domain.Exceptions;
 using System.Linq.Expressions;
 using Shop.Application.Ultilities;
 using Shop.Application.Parameters;
+using Shop.Application.DTOs.Users;
 
 namespace Shop.Application.Services.Implementations
 {
@@ -157,6 +158,87 @@ namespace Shop.Application.Services.Implementations
                 throw new NotFoundException("Không tìm thấy đơn hàng");
 
             return OrderMapper.FromEntityToDto(order);
+        }
+        public async Task<List<OrderDto>> GetOrdersByYearAsync(int year)
+        {
+            var orders = await _unitOfWork.OrderRepository.GetOrdersByYearAsync(year);
+
+            // Ánh xạ từ Order sang OrderDto
+            return orders.Select(OrderMapper.FromEntityToDto).ToList();
+        }
+
+        public async Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForTodayAsync()
+        {
+            var result = await _unitOfWork.OrderRepository.GetUserWithHighestTotalForTodayAsync();
+
+            if (result.User == null)
+                return (null, 0);
+
+            var userDto = new UserDto
+            {
+                Id = result.User.Id,
+                FullName = result.User.FullName,
+                UserName = result.User.UserName,
+                Email = result.User.Email,
+                Avatar = result.User.Avatar,
+            };
+
+            return (userDto, result.TotalAmount);
+        }
+        public async Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForDateAsync(DateTime? date)
+        {
+            var result = await _unitOfWork.OrderRepository.GetUserWithHighestTotalForDateAsync(date);
+
+            if (result.User == null)
+                return (null, 0);
+
+            var userDto = new UserDto
+            {
+                Id = result.User.Id,
+                FullName = result.User.FullName,
+                UserName = result.User.UserName,
+                Email = result.User.Email,
+                Avatar = result.User.Avatar,
+            };
+
+            return (userDto, result.TotalAmount);
+        }
+
+        public async Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForMonthAsync(int month, int year)
+        {
+            var result = await _unitOfWork.OrderRepository.GetUserWithHighestTotalForMonthAsync(month, year);
+
+            if (result.User == null)
+                return (null, 0);
+
+            var userDto = new UserDto
+            {
+                Id = result.User.Id,
+                FullName = result.User.FullName,
+                UserName = result.User.UserName,
+                Email = result.User.Email,
+                Avatar = result.User.Avatar,
+            };
+
+            return (userDto, result.TotalAmount);
+        }
+        public async Task<(UserDto? User, decimal TotalAmount)> GetUserWithHighestTotalForYearAsync(int year)
+        {
+            var result = await _unitOfWork.OrderRepository.GetUserWithHighestTotalForYearAsync(year);
+
+            if (result.User == null)
+                return (null, 0);
+
+            var userDto = new UserDto
+            {
+                Id = result.User.Id,
+                FullName = result.User.FullName,
+                UserName = result.User.UserName,
+                Email = result.User.Email,
+                Avatar = result.User.Avatar,
+            };
+
+            return (userDto, result.TotalAmount);
         }
     }
 }
