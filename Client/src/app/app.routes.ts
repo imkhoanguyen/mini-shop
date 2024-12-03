@@ -32,6 +32,7 @@ import { CheckoutSuccessComponent } from './component/client/checkout-success/ch
 import { CheckoutCancelComponent } from './component/client/checkout-cancel/checkout-cancel.component';
 import { ProductDetailComponent } from './component/client/product-detail/product-detail.component';
 import { OrderComponent } from './component/admin/order/order.component';
+import { OrderDetailComponent } from './component/admin/order-detail/order-detail.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -55,6 +56,8 @@ export const routes: Routes = [
       { path: 'shippingmethod', component: ShippingMethodComponent },
       { path: 'discount', component: DiscountComponent },
       { path: 'order', component: OrderComponent },
+      { path: 'order/:id', component: OrderDetailComponent },
+
       // { path: 'blog/new', component: AddBlogComponent },
       // { path: 'blog/edit/:id', component: AddBlogComponent },
     ],

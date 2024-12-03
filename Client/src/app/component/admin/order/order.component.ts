@@ -10,6 +10,13 @@ import { Pagination } from '../../../_models/pagination';
 import { ToastrService } from '../../../_services/toastr.service';
 import { ConfirmationService } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
+import { UtilityService } from '../../../_services/utility.service';
+import { CalendarModule } from 'primeng/calendar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-order',
@@ -21,6 +28,11 @@ import { DropdownModule } from 'primeng/dropdown';
     TableModule,
     CommonModule,
     DropdownModule,
+    CalendarModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
+    ButtonModule,
   ],
   templateUrl: './order.component.html',
   styleUrl: './order.component.css',
@@ -29,10 +41,16 @@ import { DropdownModule } from 'primeng/dropdown';
 export class OrderComponent implements OnInit {
   private orderService = inject(OrderService);
   private toastrService = inject(ToastrService);
+  private router = inject(Router);
+  utilService = inject(UtilityService);
   constructor(private confirmationService: ConfirmationService) {}
   orders: Order[] = [];
   prm = new OrderParams();
   pagination: Pagination | undefined;
+  selectedPaymentStatus = '';
+  selectedStatus = '';
+  rangeDates: Date[] | undefined;
+
   ngOnInit(): void {
     this.loadOrders();
   }
@@ -69,7 +87,7 @@ export class OrderComponent implements OnInit {
       acceptButtonStyleClass: 'p-button-danger p-button-sm',
       accept: () => {
         if (orderId < 1) {
-          this.toastrService.error('Không tìm thấy roleId');
+          this.toastrService.error('Không tìm thấy orderId');
           return;
         }
         this.orderService.deleteOrder(orderId).subscribe({
@@ -88,5 +106,53 @@ export class OrderComponent implements OnInit {
       },
     });
   }
-  openOrderDetail(orderId: number) {}
+
+  onReset() {
+    this.prm.selectedStatus = '';
+    this.prm.selectedPaymentStatus = '';
+    this.prm.endDate = '';
+    this.prm.startDate = '';
+    this.rangeDates = undefined;
+    this.prm.pageNumber = 1;
+    this.loadOrders();
+  }
+
+  onApply() {
+    if (this.selectedPaymentStatus) {
+      this.prm.selectedPaymentStatus = this.selectedPaymentStatus;
+    }
+
+    if (this.selectedStatus) {
+      this.prm.selectedStatus = this.selectedStatus;
+    }
+
+    // Xử lý rangeDates
+    if (this.rangeDates && this.rangeDates.length === 2) {
+      const [start, end] = this.rangeDates;
+
+      // Format ngày thành chuỗi dạng yyyy-MM-dd HH:mm:ss
+      this.prm.startDate = start ? this.formatDateToStringWithTime(start) : '';
+      this.prm.endDate = end ? this.formatDateToStringWithTime(end) : '';
+    } else {
+      this.prm.startDate = '';
+      this.prm.endDate = '';
+    }
+
+    this.loadOrders();
+  }
+
+  private formatDateToStringWithTime(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  openOrderDetail(orderId: number) {
+    console.log(orderId);
+    this.router.navigate(['/admin/order', orderId]);
+  }
 }

@@ -55,12 +55,32 @@ export class OrderService {
       );
   }
 
+  getOrderById(id: number) {
+    return this.http.get<Order>(`${this.apiUrl}/Order/id/${id}`);
+  }
+
   addOrder(order: OrderAdd) {
     return this.http.post<OrderAdd>(this.apiUrl + '/order', order);
   }
 
   deleteOrder(orderId: number) {
     return this.http.delete(this.apiUrl + `/order/${orderId}`);
+  }
+
+  updateOrderStatus(id: number, status: string) {
+    return this.http.put<Order>(
+      `${this.apiUrl}/order/${id}/status`,
+      JSON.stringify(status),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  updatePaymentStatus(id: number, paymentStatus: string) {
+    return this.http.put<Order>(
+      `${this.apiUrl}/order/${id}/payment-status`,
+      JSON.stringify(paymentStatus),
+      { headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
   getOrderByStripeSessionId(stripeSessionId: string) {

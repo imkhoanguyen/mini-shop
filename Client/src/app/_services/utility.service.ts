@@ -18,7 +18,6 @@ export class UtilityService {
   ];
   public readonly LIST_ORDER_STATUS = [
     this.ORDER_STATUS_CANCELED,
-    this,
     this.ORDER_STATUS_UNCONFIRMED,
     this.ORDER_STATUS_CONFIRMED,
   ];
@@ -26,4 +25,24 @@ export class UtilityService {
     this.PAYMENT_STATUS_PENDING,
     this.PAYMENT_STATUS_PAID,
   ];
+
+  // format date vietnam
+  private readonly defaultDate = '0001-01-01T00:00:00';
+  getFormattedDate(date: string | null): string {
+    if (!date || date === this.defaultDate) {
+      return 'Chưa cập nhật';
+    }
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    };
+
+    return new Date(date).toLocaleString('vi-VN', options);
+  }
 }
