@@ -1,0 +1,12 @@
+::ng-deep .p-inputtext {
+  width: 100%;
+}
+::ng-deep .p-dropdown-items,
+::ng-deep .p-multiselect-items {
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+::ng-deep .p-calendar .p-inputtext {
+  min-width: 300px;
+}

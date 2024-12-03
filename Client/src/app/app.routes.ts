@@ -34,6 +34,8 @@ import { ProductDetailComponent } from './component/client/product-detail/produc
 import { OrderComponent } from './component/admin/order/order.component';
 import { OrderDetailComponent } from './component/admin/order-detail/order-detail.component';
 import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
+import { OrderClientComponent } from './component/client/order-client/order-client.component';
+import { OrderDetailClientComponent } from './component/client/order-detail-client/order-detail-client.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -81,4 +83,6 @@ export const routes: Routes = [
   },
 
   { path: 'cart/checkout/cancel', component: CheckoutCancelComponent },
+  { path: 'order', component: OrderClientComponent },
+  { path: 'order/:id', component: OrderDetailClientComponent },
 ];
