@@ -17,6 +17,7 @@ namespace Shop.Infrastructure.DataAccess.Seed
                 new Discount { Name = "Flash Sale", AmountOff = null, PercentOff = 10, PromotionCode = "FLASH10" }
             };
             await context.Discounts.AddRangeAsync(discounts);
+            await context.SaveChangesAsync();
         }
     }
 }
