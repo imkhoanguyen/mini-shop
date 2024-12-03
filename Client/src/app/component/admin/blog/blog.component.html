@@ -56,7 +56,10 @@
         <td>{{ blog.category }}</td>
         <td class="d-flex gap-1 align-items-center justify-content-center">
           <button
+            pButton
             class="btn"
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-info mr-2"
             [routerLink]="['/admin/blog/edit', blog.id]"
             routerLinkActive="active"
           ></button>
