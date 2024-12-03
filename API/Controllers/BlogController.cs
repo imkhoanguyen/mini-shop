@@ -7,6 +7,7 @@ using Shop.Application.DTOs.Blog;
 using Shop.Application.Mappers;
 using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
+using Shop.Domain.Exceptions;
 
 namespace API.Controllers
 {
@@ -48,14 +49,28 @@ namespace API.Controllers
         public async Task<ActionResult> UpdateBlog(int id, BlogAddDto blogAddDto)
         {
             var blog = await _blogService.GetBlogsById(id);
-            var blogUpdate = BlogMapper.BlogAddDtoToEntity(blogAddDto);
-            blog.Create = blogUpdate.Create;
-            blog.Update = blogUpdate.Update;
-            blog.Content = blogUpdate.Content;
-            blog.Title = blogUpdate.Title;
-            await _blogService.UpdateAsync(blog);
+            blog.Create = blogAddDto.Create;
+            blog.Update = blogAddDto.Update;
+            blog.Content = blogAddDto.Content;
+            blog.Title = blogAddDto.Title;
+            await _blogService.UpdateBlogAsync(blog);
 
-            return Ok(new { message = "Sua blog thanh cong" });
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            await _blogService.UpdateBlogAsync(blog);
+            return Ok(blog);
+        }
+
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult> DeleteBlog(int id)
+        {
+            var blog = await _blogService.GetBlogsById(id);
+            if (blog == null) throw new NotFoundException("Không tìm thấy blog");
+
+            await _blogService.DeleteAsync(blog);
+
+            return Ok(new { message = "xoa thanh cong" });
         }
     }
 }

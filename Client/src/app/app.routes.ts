@@ -59,6 +59,8 @@ export const routes: Routes = [
       { path: 'shippingmethod', component: ShippingMethodComponent },
       { path: 'discount', component: DiscountComponent },
       { path: 'order', component: OrderComponent },
+      { path: 'blog/new', component: AddBlogComponent },
+      { path: 'blog/edit/:id', component: AddBlogComponent },
       { path: 'order/:id', component: OrderDetailComponent },
       { path: 'blog/new', component: AddBlogComponent },
       { path: 'blog/edit/:id', component: AddBlogComponent },

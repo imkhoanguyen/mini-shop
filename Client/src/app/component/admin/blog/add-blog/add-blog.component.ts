@@ -14,6 +14,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { Blog } from '../../../../_models/types';
 import { EditorModule } from '@tinymce/tinymce-angular';
+import { AccountService } from '../../../../_services/account.service';
 
 @Component({
   selector: 'app-add-blog',
@@ -40,16 +41,15 @@ export class AddBlogComponent implements OnInit {
     private formBuilder: FormBuilder,
     private blogService: BlogService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private accountService: AccountService
   ) {
     this.currentUrl = this.router.url;
     this.blogForm = this.formBuilder.group({
       title: ['', Validators.required],
       content: ['', Validators.required],
       category: ['', Validators.required],
-      userId: ['', Validators.required],
-      create: ['', Validators.required],
-      update: ['', Validators.required],
+      userId: this.accountService.getCurrentUser()?.id,
     });
   }
 

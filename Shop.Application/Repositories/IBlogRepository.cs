@@ -11,5 +11,6 @@ namespace Shop.Application.Repositories
         Task DeleteAsync(Blog blog);
         Task<IEnumerable<Blog>> GetAllAsync(bool tracked);
         Task<Blog?> getById(int id);
+        Task UpdateBlogAsync(Blog blog);
     }
 }

@@ -12,37 +12,21 @@
       <div class="main-articles">
         <div class="article-image-round">
           <a href="#">
-            <img
-              src="../../../assets/images/alexandra-gorn-485551-unsplash.jpg"
-              alt="interior-room"
-            />
             <h3>Nullam dictum felis</h3>
           </a>
         </div>
         <div class="article-image-round">
           <a href="#">
-            <img
-              src="../../../assets/images/daniil-silantev-574962-unsplash.jpg"
-              alt="chair-interior"
-            />
             <h3>Dis parturient montes</h3>
           </a>
         </div>
         <div class="article-image-round">
           <a href="#">
-            <img
-              src="../../../assets/images/daniil-silantev-574966-unsplash.jpg"
-              alt="dinner-table-interior"
-            />
             <h3>Curabitur ullamcorper</h3>
           </a>
         </div>
         <div class="article-image-round">
           <a href="#">
-            <img
-              src="../../../assets/images/jonny-caspari-483355-unsplash.jpg"
-              alt="images-on-wall"
-            />
             <h3>Sed fringilla mauris</h3>
           </a>
         </div>
@@ -55,10 +39,6 @@
           <div class="article-content">
             <h2>{{ blog.title }}</h2>
             <p class="article-date">{{ formatDate(blog.create) }}</p>
-            <img
-              src="../../../assets/images/kaylah-otto-491988-unsplash.jpg"
-              alt="interior-room"
-            />
             <p class="article-text" [innerHTML]="blog.content | safeHtml">
               {{ blog.content }}
             </p>

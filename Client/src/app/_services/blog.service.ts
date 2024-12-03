@@ -35,8 +35,8 @@ export class BlogService {
     });
   }
 
-  deleteBlog(data: Blog): Observable<any> {
-    return this.http.delete(this.apiUrl + '/Blog/Delete/', { body: data });
+  deleteBlog(id: Number) {
+    return this.http.delete(this.apiUrl + '/Blog/Delete/' + id);
   }
   getBlogById(id: Number) {
     return this.http.get<Blog>(this.apiUrl + '/Blog/GetById/' + id);
