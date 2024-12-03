@@ -55,7 +55,7 @@ Mô hình phân lớp rõ ràng với các lớp Domain, Application, Infrastruc
 
 * .NET 8.0
 * Entity Framework Core cho quản lý cơ sở dữ liệu
-* Swagger để tài liệu hóa API
+* Swagger 
 ### Frontend (Client)
 Angular Framework:
 Ứng dụng SPA hiện đại với giao diện người dùng thân thiện.
