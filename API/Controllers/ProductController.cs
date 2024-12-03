@@ -1,4 +1,4 @@
-using API.Controllers;
+﻿using API.Controllers;
 using API.Extensions;
 using API.Helpers;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +6,7 @@ using Shop.Application.DTOs.Products;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Services.Implementations;
 using Shop.Application.Ultilities;
+using Shop.Domain.Exceptions;
 
 namespace api.Controllers
 {
@@ -85,6 +86,18 @@ namespace api.Controllers
         {
             await _productService.RemoveImageAsync(productId, imageId);
             var product = await _productService.GetAsync(r => r.Id == productId);
+            return NoContent();
+        }
+
+        [HttpPut("revert-quantity/{orderId}")]
+        public async Task<IActionResult> RevertQuantityProduct(int orderId)
+        {
+            if(orderId < 1)
+            {
+                throw new BadRequestException("order id phải lớn hơn 0");
+            }
+
+            await _productService.RevertQuantityProductAsync(orderId);
             return NoContent();
         }
 

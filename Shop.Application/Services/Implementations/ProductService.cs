@@ -79,7 +79,7 @@ namespace Shop.Application.Services.Implementations
                 PublicId = uploadResult.PublicId,
             };
             product.Image = image;
-        
+
 
             if (await _unit.CompleteAsync())
             {
@@ -148,7 +148,7 @@ namespace Shop.Application.Services.Implementations
         {
             var products = await _unit.ProductRepository.GetProductsAsync(p =>
                 p.ProductCategories.Any(pc => pc.CategoryId == categoryId), false);
-        
+
             if (products is null) throw new NotFoundException("Sản phẩm không tồn tại");
             foreach (var product in products)
             {
@@ -187,6 +187,27 @@ namespace Shop.Application.Services.Implementations
             {
                 throw new BadRequestException("Problem remove image product");
             }
+        }
+
+        public async Task<bool> RevertQuantityProductAsync(int orderId)
+        {
+            var order = await _unit.OrderRepository.GetAsync(o => o.Id == orderId);
+            foreach (var item in order.OrderItems)
+            {
+                
+                var variantOfProduct = await _unit.VariantRepository.GetAsync(v => v.ProductId == item.ProductId
+                && v.Color.Name == item.ColorName && v.Size.Name == item.SizeName, true);
+
+                // update
+                variantOfProduct.Quantity += item.Quantity;
+            }
+
+            if (await _unit.CompleteAsync())
+            {
+                return true;
+            }
+            throw new BadRequestException("Cập nhật số lượng sản phẩm thất bại");
+
         }
 
         public async Task<ProductDto> UpdateAsync(ProductUpdate productUpdate)
@@ -230,34 +251,36 @@ namespace Shop.Application.Services.Implementations
                 : throw new BadRequestException("Cập nhật sản phẩm thất bại");
         }
 
-            public async Task<bool> UpdateQuantityProductAsync(Order order)
+        public async Task<bool> UpdateQuantityProductAsync(Order order)
+        {
+            foreach (var item in order.OrderItems)
             {
-                foreach (var item in order.OrderItems)
-                {
-                    // check quantity
-                    var variantOfProduct = await _unit.VariantRepository.GetAsync(v => v.ProductId == item.ProductId
-                    && v.Color.Name == item.ColorName && v.Size.Name == item.SizeName, true);
+                // check quantity
+                var variantOfProduct = await _unit.VariantRepository.GetAsync(v => v.ProductId == item.ProductId
+                && v.Color.Name == item.ColorName && v.Size.Name == item.SizeName, true);
 
-                    if (variantOfProduct == null)
-                    {
-                        throw new BadRequestException($"Không tìm thấy loại sản phẩm có tên {item.ProductName}. Vui lòng xóa khỏi giỏ hàng và kiểm tra lại");
-                    }
+                if (variantOfProduct == null)
+                {
+                    throw new BadRequestException($"Không tìm thấy loại sản phẩm có tên {item.ProductName}. Vui lòng xóa khỏi giỏ hàng và kiểm tra lại");
+                }
 
                 if (item.Quantity > variantOfProduct.Quantity)
                 {
-                        throw new BadRequestException($"Số lượng sản phẩm có tên {item.ProductName} chỉ còn lại {variantOfProduct.Quantity}. Vui lòng điều chỉnh lại số lượng sản phẩm");
-                    }
-
-                    // update
-                    variantOfProduct.Quantity -= item.Quantity;
+                    throw new BadRequestException($"Số lượng sản phẩm có tên {item.ProductName} chỉ còn lại {variantOfProduct.Quantity}. Vui lòng điều chỉnh lại số lượng sản phẩm");
                 }
 
-                if (await _unit.CompleteAsync())
-                {
-                    return true;
-                }
-                throw new BadRequestException("Cập nhật số lượng sản phẩm thất bại");
-
+                // update
+                variantOfProduct.Quantity -= item.Quantity;
             }
+
+            if (await _unit.CompleteAsync())
+            {
+                return true;
+            }
+            throw new BadRequestException("Cập nhật số lượng sản phẩm thất bại");
+
+        }
+
+
     }
 }

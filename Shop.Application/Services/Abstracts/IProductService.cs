@@ -19,5 +19,6 @@ namespace Shop.Application.Services.Abstracts
         Task<IEnumerable<ProductDto>> GetProductsByCategoryId(int categoryId);
         Task<ProductDto?> GetAsync(Expression<Func<Product, bool>> expression);
         Task<bool> UpdateQuantityProductAsync(Order order);
+        Task<bool> RevertQuantityProductAsync(int orderId);
     }
 }
