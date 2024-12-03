@@ -43,6 +43,8 @@ export class CheckoutSuccessComponent implements OnInit {
     this.orderService.getOrderByStripeSessionId(this.sessionId!).subscribe({
       next: (res) => {
         this.order = res;
+        console.log(res);
+        console.log(this.order);
       },
       error: (er) => {
         console.log(er);

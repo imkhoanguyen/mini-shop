@@ -26,13 +26,21 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAllOrders([FromQuery] OrderParams prm)
         {
+            if (!prm.UserId.IsNullOrEmpty())
+            {
+                var userId = ClaimsPrincipleExtensions.GetUserId(User);
+                if (userId != prm.UserId)
+                {
+                    throw new BadRequestException("Tài khoản của người dùng không khớp vui lòng đăng nhập lại");
+                }
+            }
             var pagedList = await _orderService.GetAllAsync(prm, false);
             Response.AddPaginationHeader(pagedList);
             return Ok(pagedList);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Add([FromBody]OrderAddDto dto)
+        public async Task<ActionResult> Add([FromBody] OrderAddDto dto)
         {
             dto.UserId = ClaimsPrincipleExtensions.GetUserId(User);
             if (!await _orderService.CheckOrderItems(dto))
@@ -120,12 +128,12 @@ namespace API.Controllers
         {
             var today = DateTime.UtcNow;
             var revenue = await _orderService.GetTotalRevenueByDateAsync(today);
-            return Ok(new 
-            { 
-                date = today.Date, 
+            return Ok(new
+            {
+                date = today.Date,
                 totalRevenue = revenue,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
 
@@ -144,7 +152,7 @@ namespace API.Controllers
                 date = date.Date,
                 totalRevenue = revenue,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
 
@@ -164,7 +172,7 @@ namespace API.Controllers
                 month,
                 totalRevenue = revenue,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
 
@@ -182,7 +190,7 @@ namespace API.Controllers
                 year,
                 totalRevenue = revenue,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
 
@@ -213,8 +221,8 @@ namespace API.Controllers
                 date = DateTime.UtcNow.Date,
                 count,
                 status = "Confirmed",
-                paymentStatus="Paid"
-                
+                paymentStatus = "Paid"
+
             });
         }
         [HttpGet("count-orders/by-date")]
@@ -232,7 +240,7 @@ namespace API.Controllers
                 date = date.Date,
                 count,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
         [HttpGet("count-monthly")]
@@ -250,7 +258,7 @@ namespace API.Controllers
                 month,
                 count,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
         [HttpGet("count-yearly")]
@@ -267,7 +275,7 @@ namespace API.Controllers
                 year,
                 count,
                 status = "Confirmed",
-                paymentStatus="Paid"
+                paymentStatus = "Paid"
             });
         }
         [HttpGet("year/{year}")]
