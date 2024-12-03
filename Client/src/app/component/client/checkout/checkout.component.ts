@@ -113,6 +113,7 @@ export class CheckoutComponent implements OnInit {
     this.discountService.getDiscountByCode(this.discountCode).subscribe({
       next: (res) => {
         this.currentDiscount = res.body;
+        console.log(res);
       },
       error: (er) => console.log(er),
     });
@@ -172,6 +173,7 @@ export class CheckoutComponent implements OnInit {
         next: (res) => {
           console.log(res);
           this.toastrService.success('Đặt hàng thành công');
+          this.cartService.deleteCart();
           this.router.navigate(['cart/checkout/success'], {
             queryParams: {
               order_id: res.id,

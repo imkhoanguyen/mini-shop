@@ -211,25 +211,39 @@
                 <tr *ngIf="currentDiscount != null" style="font-size: 16px">
                   <th scope="row" colspan="2">
                     <span
-                      *ngIf="currentDiscount.amountOff !== 0"
+                      *ngIf="
+                        currentDiscount.amountOff !== 0 &&
+                        currentDiscount.amountOff != null
+                      "
                       class="fw-bold"
                       >Khuyến mãi (giá)</span
                     >
                     <span
-                      *ngIf="currentDiscount.percentOff !== 0"
+                      *ngIf="
+                        currentDiscount.percentOff !== 0 &&
+                        currentDiscount.percentOff != null
+                      "
                       class="fw-bold"
                       >Khuyến mãi ({{ currentDiscount.percentOff }}%)</span
                     >
                   </th>
                   <td class="text-end">
                     <span
-                      *ngIf="currentDiscount.amountOff !== 0"
+                      *ngIf="
+                        currentDiscount.amountOff !== 0 &&
+                        currentDiscount.amountOff != null
+                      "
                       class="fw-bold"
                       >-${{ calDiscountPrice() }}</span
                     >
                   </td>
                   <td class="text-end">
-                    <span *ngIf="currentDiscount.percentOff" class="fw-bold"
+                    <span
+                      *ngIf="
+                        currentDiscount.percentOff &&
+                        currentDiscount.percentOff != null
+                      "
+                      class="fw-bold"
                       >-${{ calDiscountPrice() }}</span
                     >
                   </td>
@@ -241,13 +255,19 @@
                   </th>
                   <td class="text-end">
                     <span
-                      *ngIf="currentDiscount.amountOff !== 0"
+                      *ngIf="
+                        currentDiscount.amountOff !== 0 &&
+                        currentDiscount.amountOff != null
+                      "
                       class="fw-bold"
-                      >${{ calTotal() }}đ</span
+                      >${{ calTotal() }}</span
                     >
 
                     <span
-                      *ngIf="currentDiscount.percentOff !== 0"
+                      *ngIf="
+                        currentDiscount.percentOff !== 0 &&
+                        currentDiscount.percentOff != null
+                      "
                       class="fw-bold"
                       >${{ calTotal() }}</span
                     >
