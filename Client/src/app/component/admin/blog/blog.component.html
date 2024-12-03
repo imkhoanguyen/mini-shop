@@ -1,25 +1,28 @@
-<div class="container">
-  <h2>Danh sách Blog</h2>
+<h1>Quản lý bài viết</h1>
+<div class="container p-4" style="background-color: #fff">
+  <div class="d-flex gap-3 mb-3">
+    <!-- Tìm kiếm -->
+    <div class="w-100">
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input
+          type="text"
+          pInputText
+          placeholder="Search"
+          pInputText
+          [(ngModel)]="searchQuery"
+        />
+      </p-iconField>
+    </div>
 
-  <!-- Nút thêm mới Blog -->
-  <button
-    pButton
-    label="Thêm mới"
-    icon="pi pi-plus"
-    class="p-button-success mb-2"
-    [routerLink]="['new']"
-    routerLinkActive="active"
-  ></button>
-
-  <!-- Tìm kiếm -->
-  <div class="mb-2 search-container">
-    <i class="pi pi-search search-icon"></i>
-    <input
-      type="text"
-      pInputText
-      [(ngModel)]="searchQuery"
-      placeholder="search title"
-    />
+    <!-- Nút thêm mới Blog -->
+    <p-button
+      label="Thêm mới"
+      icon="pi pi-plus"
+      [routerLink]="['new']"
+      routerLinkActive="active"
+      class="btn-add"
+    ></p-button>
   </div>
 
   <!-- Bảng hiển thị danh sách Blog -->
@@ -43,7 +46,7 @@
         <th pSortableColumn="Category">
           Category <p-sortIcon [field]="'Category'"></p-sortIcon>
         </th>
-        <th>Actions</th>
+        <th style="width: 5%"></th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-blog let-i="index">
@@ -54,14 +57,17 @@
         <td>{{ blog.title }}</td>
         <td>{{ blog.userId }}</td>
         <td>{{ blog.category }}</td>
-        <td>
+        <td class="d-flex gap-1 align-items-center justify-content-center">
           <button
-            pButton
-            icon="pi pi-pencil"
-            class="p-button-rounded p-button-info mr-2"
+            class="btn"
             [routerLink]="['/admin/blog/edit', blog.id]"
             routerLinkActive="active"
-          ></button>
+          >
+            <i class="pi pi-pen-to-square"></i>
+          </button>
+          <button class="btn">
+            <i class="pi pi-trash"></i>
+          </button>
         </td>
       </tr>
     </ng-template>

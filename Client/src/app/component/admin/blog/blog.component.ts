@@ -18,6 +18,9 @@ import { RouterModule } from '@angular/router';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { Blog } from '../../../_models/types';
 import { BlogService } from '../../../_services/blog.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
 @Component({
   selector: 'app-Blog',
   standalone: true,
@@ -33,6 +36,9 @@ import { BlogService } from '../../../_services/blog.service';
     FormsModule,
     RouterModule,
     InputSwitchModule,
+    IconFieldModule,
+    InputIconModule,
+    InputTextModule,
   ],
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.css'],
