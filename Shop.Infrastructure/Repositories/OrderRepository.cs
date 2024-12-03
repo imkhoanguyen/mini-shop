@@ -34,15 +34,22 @@ namespace Shop.Infrastructure.Repositories
                 || o.Address.ToLower().Contains(prm.Search.ToLower()) || o.FullName.ToLower().Contains(prm.Search.ToLower()));
             }
 
-            if(!prm.SelectedStatus.IsNullOrEmpty())
+            if (!prm.SelectedStatus.IsNullOrEmpty())
             {
-                query = query.Where(o => o.Status.ToString() == prm.SelectedStatus);
+                if (Enum.TryParse(typeof(OrderStatus), prm.SelectedStatus, out var status))
+                {
+                    query = query.Where(o => o.Status == (OrderStatus)status);
+                }
             }
 
             if (!prm.SelectedPaymentStatus.IsNullOrEmpty())
             {
-                query = query.Where(o => o.PaymentMethod.ToString() == prm.SelectedPaymentStatus);
+                if (Enum.TryParse(typeof(PaymentStatus), prm.SelectedPaymentStatus, out var paymentStatus))
+                {
+                    query = query.Where(o => o.PaymentStatus == (PaymentStatus)paymentStatus);
+                }
             }
+
 
             if (prm.StartDate.HasValue && prm.EndDate.HasValue)
             {
