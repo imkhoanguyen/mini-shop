@@ -12,7 +12,6 @@ namespace Shop.Infrastructure.DataAccess.Seed
                 return;
             }
             var customerUser = await userManager.FindByNameAsync("Customer");
-            var appUserId = customerUser.Id;
 
             var addresses = new List<Address>{
                 new Address
@@ -22,7 +21,6 @@ namespace Shop.Infrastructure.DataAccess.Seed
                     City = "Tp.HCM",
                     fullName = "Nguyễn Hữu Việt", 
                     phone = "0456827333", 
-                    AppUserId = appUserId
                 },
                 new Address
                 {
@@ -31,10 +29,11 @@ namespace Shop.Infrastructure.DataAccess.Seed
                     City = "Tp.HCM",
                     fullName = "Nguyễn Anh Luân",
                     phone = "075766693",
-                    AppUserId = appUserId
                 }
             };
-            await context.Addresses.AddRangeAsync(addresses);
+
+            customerUser.Address.AddRange(addresses);
+            await context.SaveChangesAsync();
         }
     }
 }

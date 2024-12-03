@@ -242,7 +242,7 @@ namespace Shop.Application.Ultilities
                 GroupName = "Quyền truy cập",
                 Permissions = new List<PermissionItemDto>
                 {
-                    new PermissionItemDto {Name = "Quản lý danh mục", ClaimValue = Access_Admin},
+                    new PermissionItemDto {Name = "Trang Admin", ClaimValue = Access_Admin},
 
                 }
             },
