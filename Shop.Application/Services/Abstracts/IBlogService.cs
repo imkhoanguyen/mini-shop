@@ -14,7 +14,7 @@ namespace Shop.Application.Services.Abstracts
         Task<PagedList<Blog>> GetAllBlogsAsync(BlogParams blogParams, bool tracked = false);
         Task<Blog?> GetBlogsById(int id);
         Task DeleteAsync(Blog blog);
-        Task UpdateAsync(Blog blog);
+        Task UpdateBlogAsync(Blog blog);
 
         Task AddAsync(Blog blog);
     }
