@@ -2,3 +2,18 @@ thead tr td {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
+
+::ng-deep .p-inputtext {
+  width: 100%;
+  border-radius: 0;
+}
+
+::ng-deep .p-dropdown-items,
+::ng-deep .p-multiselect-items {
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+::ng-deep .btn-add button {
+  min-width: 164px;
+}

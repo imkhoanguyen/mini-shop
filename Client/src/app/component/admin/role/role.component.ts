@@ -4,22 +4,26 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { Table, TableModule } from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Role } from '../../../_models/role';
 import { Pagination } from '../../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../_services/auth.service';
 import { ToastrService } from '../../../_services/toastr.service';
+import { UtilityService } from '../../../_services/utility.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-role',
@@ -29,11 +33,14 @@ import { ToastrService } from '../../../_services/toastr.service';
     ToastModule,
     FormsModule,
     ReactiveFormsModule,
-    DatePipe,
     ConfirmPopupModule,
     PaginatorModule,
     TableModule,
     CommonModule,
+    IconFieldModule,
+    InputTextModule,
+    InputIconModule,
+    ButtonModule,
   ],
   templateUrl: './role.component.html',
   styleUrl: './role.component.css',
@@ -44,6 +51,7 @@ export class RoleComponent implements OnInit {
   roles: Role[] = [];
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  utilService = inject(UtilityService);
   frm: FormGroup = new FormGroup({});
   visible: boolean = false;
   edit = false;
