@@ -7,6 +7,7 @@ using Shop.Domain.Exceptions;
 using System.Linq.Expressions;
 using Shop.Application.Ultilities;
 using Shop.Application.Parameters;
+using Shop.Domain.Enum;
 
 namespace Shop.Application.Services.Implementations
 {
@@ -157,6 +158,44 @@ namespace Shop.Application.Services.Implementations
                 throw new NotFoundException("Không tìm thấy đơn hàng");
 
             return OrderMapper.FromEntityToDto(order);
+        }
+
+        public async Task<OrderDto> UpdateStatus(int id, string status)
+        {
+            var order = await _unitOfWork.OrderRepository.GetAsync(o => o.Id == id, true);
+            if (Enum.TryParse<OrderStatus>(status, true, out var statusEnum))
+            {
+                order.Status = statusEnum;
+
+                if(await _unitOfWork.CompleteAsync())
+                {
+                    return OrderMapper.FromEntityToDto(order);
+                }
+                throw new BadRequestException("Problem update order status");
+            }
+            else
+            {
+                throw new BadRequestException("Invalid status value");
+            }
+        }
+
+        public async Task<OrderDto> UpdatePaymentStatus(int id, string status)
+        {
+            var order = await _unitOfWork.OrderRepository.GetAsync(o => o.Id == id, true);
+            if (Enum.TryParse<PaymentStatus>(status, true, out var statusEnum))
+            {
+                order.PaymentStatus = statusEnum;
+
+                if (await _unitOfWork.CompleteAsync())
+                {
+                    return OrderMapper.FromEntityToDto(order);
+                }
+                throw new BadRequestException("Problem update payment status");
+            }
+            else
+            {
+                throw new BadRequestException("Invalid status value");
+            }
         }
     }
 }

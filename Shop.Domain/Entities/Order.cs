@@ -27,7 +27,7 @@ namespace Shop.Domain.Entities
         // order information
         public decimal SubTotal { get; set; } // gía tất cả sản phẩm
         public OrderStatus Status { get; set; } = OrderStatus.Unconfirmed;
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime Created { get; set; } = DateTime.Now;
         public DateTime Updated { get; set; }
         public List<OrderItems> OrderItems { get; set; } = new List<OrderItems>();
         public string? Description { get; set; }

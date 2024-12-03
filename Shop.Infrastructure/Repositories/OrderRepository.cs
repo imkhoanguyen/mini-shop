@@ -72,7 +72,7 @@ namespace Shop.Infrastructure.Repositories
         {
             var query = tracked ? _context.Orders.AsQueryable() : _context.Orders.AsNoTracking().AsQueryable();
 
-            return await query.Include(o => o.OrderItems)
+            return await query.Include(o => o.AppUser).Include(o => o.OrderItems)
                 .Include(o => o.ShippingMethod)
                 .Include(o => o.Discount).FirstOrDefaultAsync(expression);
         }

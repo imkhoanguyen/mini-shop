@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
 using Shop.Application.Parameters;
+using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
 using Shop.Domain.Exceptions;
 
@@ -34,7 +35,7 @@ namespace API.Controllers
             if (!await _orderService.CheckOrderItems(dto))
                 throw new BadRequestException("Lỗi số lượng sản phẩm");
             var orderToReturn = await _orderService.AddAsync(dto);
-            return Ok(dto);
+            return Ok(orderToReturn);
         }
 
         [HttpDelete("{orderId:int}")]
@@ -52,6 +53,36 @@ namespace API.Controllers
 
             return await _orderService.GetAsync(o => o.StripeSessionId == stripeSessionId);
         }
+
+        [HttpGet("id/{id}")]
+        public async Task<ActionResult<OrderDto>> GetById(int id)
+        {
+            if (id < 1)
+                throw new BadRequestException("id phải lớn hơn 0");
+
+            return await _orderService.GetAsync(o => o.Id == id);
+        }
+
+        [HttpPut("{id}/status")]
+        public async Task<ActionResult<OrderDto>> UpdateStatus(int id, [FromBody] string status)
+        {
+            if (id < 1)
+                throw new BadRequestException("id phải lớn hơn 0");
+
+            var order = await _orderService.UpdateStatus(id, status);
+            return Ok(order);
+        }
+
+        [HttpPut("{id}/payment-status")]
+        public async Task<ActionResult<OrderDto>> UpdatePaymentStatus(int id, [FromBody] string paymentStatus)
+        {
+            if (id < 1)
+                throw new BadRequestException("id phải lớn hơn 0");
+
+            var order = await _orderService.UpdatePaymentStatus(id, paymentStatus);
+            return Ok(order);
+        }
+
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetOrdersByUserId(string userId)
