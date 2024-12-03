@@ -172,6 +172,11 @@ export class CheckoutComponent implements OnInit {
         next: (res) => {
           console.log(res);
           this.toastrService.success('Đặt hàng thành công');
+          this.router.navigate(['cart/checkout/success'], {
+            queryParams: {
+              order_id: res.id,
+            },
+          });
         },
         error: (er) => {
           this.validationErrors = er;

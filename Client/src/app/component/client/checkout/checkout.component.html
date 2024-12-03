@@ -93,7 +93,7 @@
               <strong>{{ item.name }}</strong> <br />
               <small
                 ><small *ngIf="item.cost === 0">FREE</small>
-                <small *ngIf="item.cost !== 0">{{ item.cost }}</small> VNĐ
+                <small *ngIf="item.cost !== 0">{{ item.cost }}</small> USD
                 {{ item.estimatedDeliveryTime }}</small
               >
             </div>
@@ -177,7 +177,7 @@
                     </div>
                   </td>
                   <td class="text-end">
-                    <span class="fw-bold">{{ item.price }}đ</span>
+                    <span class="fw-bold">${{ item.price }}</span>
                   </td>
                 </tr>
                 }
@@ -186,7 +186,7 @@
                     <span class="fw-bold">Giá sản phẩm</span>
                   </th>
                   <td class="text-end">
-                    <span class="fw-bold">{{ cartService.totals() }}đ</span>
+                    <span class="fw-bold">${{ cartService.totals() }}</span>
                   </td>
                 </tr>
                 <tr style="font-size: 16px">
@@ -194,7 +194,7 @@
                     <span class="fw-bold">Phí giao hàng</span>
                   </th>
                   <td class="text-end">
-                    <span class="fw-bold">{{ order.shippingFee }}đ</span>
+                    <span class="fw-bold">${{ order.shippingFee }}</span>
                   </td>
                 </tr>
                 <tr style="font-size: 16px">
@@ -203,7 +203,7 @@
                   </th>
                   <td class="text-end">
                     <span class="fw-bold"
-                      >{{ cartService.totals() + order.shippingFee }}đ</span
+                      >${{ cartService.totals() + order.shippingFee }}</span
                     >
                   </td>
                 </tr>
@@ -225,12 +225,12 @@
                     <span
                       *ngIf="currentDiscount.amountOff !== 0"
                       class="fw-bold"
-                      >-{{ calDiscountPrice() }}đ</span
+                      >-${{ calDiscountPrice() }}</span
                     >
                   </td>
                   <td class="text-end">
                     <span *ngIf="currentDiscount.percentOff" class="fw-bold"
-                      >-{{ calDiscountPrice() }}đ</span
+                      >-${{ calDiscountPrice() }}</span
                     >
                   </td>
                 </tr>
@@ -243,13 +243,13 @@
                     <span
                       *ngIf="currentDiscount.amountOff !== 0"
                       class="fw-bold"
-                      >{{ calTotal() }}đ</span
+                      >${{ calTotal() }}đ</span
                     >
 
                     <span
                       *ngIf="currentDiscount.percentOff !== 0"
                       class="fw-bold"
-                      >{{ calTotal() }}đ</span
+                      >${{ calTotal() }}</span
                     >
                   </td>
                 </tr>

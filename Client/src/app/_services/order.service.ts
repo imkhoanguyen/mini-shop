@@ -60,7 +60,7 @@ export class OrderService {
   }
 
   addOrder(order: OrderAdd) {
-    return this.http.post<OrderAdd>(this.apiUrl + '/order', order);
+    return this.http.post<Order>(this.apiUrl + '/order', order);
   }
 
   deleteOrder(orderId: number) {

@@ -79,5 +79,6 @@ export const routes: Routes = [
     path: 'cart/checkout/success',
     component: CheckoutSuccessComponent,
   },
+
   { path: 'cart/checkout/cancel', component: CheckoutCancelComponent },
 ];

@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class CheckoutSuccessComponent implements OnInit {
   sessionId: string | null = null;
+  orderId: number = 0;
   private orderService = inject(OrderService);
 
   constructor(private route: ActivatedRoute) {}
@@ -24,13 +25,33 @@ export class CheckoutSuccessComponent implements OnInit {
       this.sessionId = params['session_id'];
     });
 
+    this.route.queryParamMap.subscribe((param) => {
+      const orderIdValue = param.get('order_id'); // 'order_id' is string | null
+      this.orderId = orderIdValue ? +orderIdValue : 0; // Convert to number if not null
+    });
+
+    if (this.orderId > 0) {
+      this.getOrderByOrderId();
+    }
+
     if (this.sessionId) {
-      this.getOrder();
+      this.getOrderBySessionId();
     }
   }
 
-  getOrder() {
+  getOrderBySessionId() {
     this.orderService.getOrderByStripeSessionId(this.sessionId!).subscribe({
+      next: (res) => {
+        this.order = res;
+      },
+      error: (er) => {
+        console.log(er);
+      },
+    });
+  }
+
+  getOrderByOrderId() {
+    this.orderService.getOrderById(this.orderId).subscribe({
       next: (res) => {
         this.order = res;
       },
