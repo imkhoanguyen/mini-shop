@@ -1,21 +1,21 @@
-<!-- Toast và Confirm Dialog -->
-<div class="toast-container">
-    <p-toast></p-toast>
-  </div>
+<h1>Quản lý mã giảm giá</h1>
+<div class="container p-4" style="background-color: #fff">
+  <!-- Toast và Confirm Dialog -->
   <p-confirmDialog></p-confirmDialog>
-  
-  <h1 class="mb-4">Quản lý Mã Giảm Giá</h1>
-  
+
   <!-- Thanh công cụ tìm kiếm và Thêm -->
   <div class="row align-items-center mb-3">
     <div class="col">
-      <input
-        type="text"
-        [(ngModel)]="searchString"
-        (input)="onSearch()"
-        class="form-control"
-        placeholder="Tìm kiếm mã giảm giá..."
-      />
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="searchString"
+          (input)="onSearch()"
+          placeholder="Tìm kiếm mã giảm giá..."
+        />
+      </p-iconField>
     </div>
     <div class="col-auto">
       <select
@@ -29,12 +29,15 @@
       </select>
     </div>
     <div class="col-auto">
-      <button class="btn btn-success" (click)="openDialog()">
-        <i class="pi pi-plus"></i> Thêm Mã Giảm Giá
-      </button>
+      <p-button
+        label="Thêm mã giảm giá "
+        icon="pi pi-plus"
+        (click)="openDialog()"
+        class="btn-add"
+      ></p-button>
     </div>
   </div>
-  
+
   <!-- Dialog Thêm/Sửa Mã Giảm Giá -->
   <p-dialog
     [header]="headerText"
@@ -52,7 +55,12 @@
           formControlName="name"
           autocomplete="off"
         />
-        <div *ngIf="discountForm.get('name')?.invalid && discountForm.get('name')?.touched">
+        <div
+          *ngIf="
+            discountForm.get('name')?.invalid &&
+            discountForm.get('name')?.touched
+          "
+        >
           <small class="text-danger">Tên mã giảm giá không được để trống</small>
         </div>
       </div>
@@ -77,19 +85,34 @@
           formControlName="percentOff"
         />
       </div>
-      <div class="mb-3" *ngIf="isUpdate"> 
+      <div class="mb-3" *ngIf="isUpdate">
         <label for="promotionCode" class="form-label">Code kích hoạt:</label>
-        <span id="promotionCode" class="form-control" [textContent]="discountForm.get('promotionCode')?.value"
+        <span
+          id="promotionCode"
+          class="form-control"
+          [textContent]="discountForm.get('promotionCode')?.value"
         >
         </span>
       </div>
       <div class="d-flex justify-content-end">
-        <button class="btn btn-secondary me-2" type="button" (click)="visible = false">Hủy</button>
-        <button class="btn btn-primary" type="submit" [disabled]="discountForm.invalid">{{ btnText }}</button>
+        <button
+          class="btn btn-secondary me-2"
+          type="button"
+          (click)="visible = false"
+        >
+          Hủy
+        </button>
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="discountForm.invalid"
+        >
+          {{ btnText }}
+        </button>
       </div>
     </form>
   </p-dialog>
-  
+
   <!-- Bảng Mã Giảm Giá -->
   <div class="table-responsive">
     <p-table
@@ -103,24 +126,24 @@
           <th>Id</th>
           <th>Tên Mã Giảm Giá</th>
           <th>Giá giảm</th>
-          <th>% giảm </th>
+          <th>% giảm</th>
           <th>Code kích hoạt</th>
-          <th>Hành động</th>
+          <th style="width: 5%"></th>
         </tr>
       </ng-template>
-  
+
       <ng-template pTemplate="body" let-discount>
         <tr>
           <td>{{ discount.id }}</td>
           <td>{{ discount.name }}</td>
-          <td>{{ discount.amountOff ?? 0}}đ</td>
-          <td>{{ discount.percentOff ?? 0}}%</td>
+          <td>${{ discount.amountOff ?? 0 }}</td>
+          <td>{{ discount.percentOff ?? 0 }}%</td>
           <td>{{ discount.promotionCode }}</td>
-          <td>
-            <button class="btn btn-info" (click)="openDialog(discount)" tooltip="Chỉnh sửa">
-              <i class="pi pi-pencil"></i>
+          <td class="d-flex gap-1 align-items-center justify-content-center">
+            <button class="btn" (click)="openDialog(discount)">
+              <i class="pi pi-pen-to-square"></i>
             </button>
-            <button class="btn btn-danger" (click)="confirmDelete(discount)" tooltip="Xóa">
+            <button class="btn" (click)="confirmDelete(discount)">
               <i class="pi pi-trash"></i>
             </button>
           </td>
@@ -128,7 +151,7 @@
       </ng-template>
     </p-table>
   </div>
-  
+
   <!-- Phân trang -->
   <p-paginator
     (onPageChange)="onPageChange($event)"
@@ -136,4 +159,4 @@
     [rows]="pageSize"
     [totalRecords]="totalRecords"
   ></p-paginator>
-  
+</div>

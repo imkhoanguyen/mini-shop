@@ -8,7 +8,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
@@ -16,11 +21,11 @@ import { Subscription } from 'rxjs';
 import { ShippingMethodDto } from '../../../_models/shippingMethod.module';
 import { ToastrService } from '../../../_services/toastr.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import {  Pagination } from '../../../_models/pagination';
+import { Pagination } from '../../../_models/pagination';
 import { switchMap } from 'rxjs/operators';
 import { CalendarModule } from 'primeng/calendar';
-import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
-
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 @Component({
   selector: 'app-shippingmethod',
   standalone: true,
@@ -37,7 +42,9 @@ import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
     PaginatorModule,
     ConfirmDialogModule,
     ProgressSpinnerModule,
-    CalendarModule
+    CalendarModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   providers: [ConfirmationService],
   templateUrl: './shippingmethod.component.html',
@@ -57,11 +64,16 @@ export class ShippingMethodComponent implements OnInit, OnDestroy {
   ];
 
   first: number = 0;
-  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+  pagination: Pagination = {
+    currentPage: 1,
+    itemPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
   totalRecords: number = 0;
   pageSize: number = 5;
   pageNumber: number = 1;
-  searchString: string = "";
+  searchString: string = '';
 
   private subscriptions: Subscription = new Subscription();
 
@@ -69,7 +81,7 @@ export class ShippingMethodComponent implements OnInit, OnDestroy {
     private builder: FormBuilder,
     private shippingMethodService: ShippingMethodService,
     private confirmationService: ConfirmationService,
-    private toastService: ToastrService,
+    private toastService: ToastrService
   ) {
     this.shippingMethodForm = this.initializeForm();
   }
@@ -100,14 +112,21 @@ export class ShippingMethodComponent implements OnInit, OnDestroy {
     const params = {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
-      search: this.searchString
+      search: this.searchString,
     };
-    this.shippingMethodService.getShippingMethodsPagedList(params).subscribe((result) => {
-      this.selectedShippingMethods = result.items || [];
-      this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
-      this.totalRecords = this.pagination.totalItems;
-      this.first = (this.pageNumber - 1) * this.pageSize;
-    });
+    this.shippingMethodService
+      .getShippingMethodsPagedList(params)
+      .subscribe((result) => {
+        this.selectedShippingMethods = result.items || [];
+        this.pagination = result.pagination ?? {
+          currentPage: 1,
+          itemPerPage: 10,
+          totalItems: 0,
+          totalPages: 1,
+        };
+        this.totalRecords = this.pagination.totalItems;
+        this.first = (this.pageNumber - 1) * this.pageSize;
+      });
   }
 
   onPageChange(event: any): void {
@@ -117,20 +136,19 @@ export class ShippingMethodComponent implements OnInit, OnDestroy {
 
     this.loadShippingMethods();
   }
-  
+
   onPageSizeChange(newPageSize: Event): void {
-    const target=newPageSize.target as HTMLSelectElement;
-    if (target)
-    {
+    const target = newPageSize.target as HTMLSelectElement;
+    if (target) {
       this.pageSize = +target.value;
-    this.pageNumber = 1;
-    this.loadShippingMethods();
+      this.pageNumber = 1;
+      this.loadShippingMethods();
     }
   }
 
   onSearch(): void {
     this.pageNumber = 1;
-    console.log("search", this.searchString)
+    console.log('search', this.searchString);
     this.loadShippingMethods();
   }
 
@@ -153,37 +171,65 @@ export class ShippingMethodComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const shippingMethodData = { ...this.shippingMethodForm.value, id: this.shippingMethodForm.value.id || 0 };
+    const shippingMethodData = {
+      ...this.shippingMethodForm.value,
+      id: this.shippingMethodForm.value.id || 0,
+    };
 
-    const subscription = shippingMethodData.id === 0
-      ? this.shippingMethodService.addShippingMethod(shippingMethodData).pipe(
-          switchMap(() => this.shippingMethodService.getShippingMethodsPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedShippingMethods = result.items || [];
-            this.toastService.success('Phương thức đã được thêm thành công.');
-            this.visible = false;
-            this.loadShippingMethods();
-          },
-          error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi thêm phương thức.');
-            console.error(err);
-          }
-        })
-      : this.shippingMethodService.updateShippingMethod(shippingMethodData).pipe(
-          switchMap(() => this.shippingMethodService.getShippingMethodsPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedShippingMethods = Array.isArray(result.items) ? result.items : [];
-            this.toastService.success('Phương thức đã được cập nhật thành công.');
-            this.visible = false;
-            this.loadShippingMethods();
-          },
-          error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi cập nhật phương thức.');
-            console.error(err);
-          }
-        });
+    const subscription =
+      shippingMethodData.id === 0
+        ? this.shippingMethodService
+            .addShippingMethod(shippingMethodData)
+            .pipe(
+              switchMap(() =>
+                this.shippingMethodService.getShippingMethodsPagedList({
+                  pageNumber: this.pageNumber,
+                  pageSize: this.pageSize,
+                })
+              )
+            )
+            .subscribe({
+              next: (result) => {
+                this.selectedShippingMethods = result.items || [];
+                this.toastService.success(
+                  'Phương thức đã được thêm thành công.'
+                );
+                this.visible = false;
+                this.loadShippingMethods();
+              },
+              error: (err) => {
+                this.toastService.error('Có lỗi xảy ra khi thêm phương thức.');
+                console.error(err);
+              },
+            })
+        : this.shippingMethodService
+            .updateShippingMethod(shippingMethodData)
+            .pipe(
+              switchMap(() =>
+                this.shippingMethodService.getShippingMethodsPagedList({
+                  pageNumber: this.pageNumber,
+                  pageSize: this.pageSize,
+                })
+              )
+            )
+            .subscribe({
+              next: (result) => {
+                this.selectedShippingMethods = Array.isArray(result.items)
+                  ? result.items
+                  : [];
+                this.toastService.success(
+                  'Phương thức đã được cập nhật thành công.'
+                );
+                this.visible = false;
+                this.loadShippingMethods();
+              },
+              error: (err) => {
+                this.toastService.error(
+                  'Có lỗi xảy ra khi cập nhật phương thức.'
+                );
+                console.error(err);
+              },
+            });
 
     this.subscriptions.add(subscription);
   }
@@ -192,22 +238,32 @@ export class ShippingMethodComponent implements OnInit, OnDestroy {
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa phương thức này?',
       accept: () => {
-        const subscription = this.shippingMethodService.deleteShippingMethod(shippingMethod.id).pipe(
-          switchMap(() => this.shippingMethodService.getShippingMethodsPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedShippingMethods= Array.isArray(result.items) ? result.items : [];
-            this.toastService.success('Phương thức đã được xóa thành công.');
-            this.loadShippingMethods();
-          },
-          error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi xóa phương thức.');
-            console.error(err);
-          }
-        });
+        const subscription = this.shippingMethodService
+          .deleteShippingMethod(shippingMethod.id)
+          .pipe(
+            switchMap(() =>
+              this.shippingMethodService.getShippingMethodsPagedList({
+                pageNumber: this.pageNumber,
+                pageSize: this.pageSize,
+              })
+            )
+          )
+          .subscribe({
+            next: (result) => {
+              this.selectedShippingMethods = Array.isArray(result.items)
+                ? result.items
+                : [];
+              this.toastService.success('Phương thức đã được xóa thành công.');
+              this.loadShippingMethods();
+            },
+            error: (err) => {
+              this.toastService.error('Có lỗi xảy ra khi xóa phương thức.');
+              console.error(err);
+            },
+          });
 
         this.subscriptions.add(subscription);
-      }
+      },
     });
   }
 }

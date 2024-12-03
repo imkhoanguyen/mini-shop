@@ -8,7 +8,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PaginatorModule } from 'primeng/paginator';
@@ -19,6 +24,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Pagination } from '../../../_models/pagination';
 import { switchMap } from 'rxjs/operators';
 import { CalendarModule } from 'primeng/calendar';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-discount',
@@ -36,14 +43,16 @@ import { CalendarModule } from 'primeng/calendar';
     PaginatorModule,
     ConfirmDialogModule,
     ProgressSpinnerModule,
-    CalendarModule
+    CalendarModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   providers: [ConfirmationService],
   templateUrl: './discount.component.html',
   styleUrls: ['./discount.component.css'],
 })
 export class DiscountComponent implements OnInit, OnDestroy {
-  isUpdate:boolean=false;
+  isUpdate: boolean = false;
   selectedDiscounts: DiscountDto[] = [];
   visible: boolean = false;
   btnText: string = 'Thêm';
@@ -57,11 +66,16 @@ export class DiscountComponent implements OnInit, OnDestroy {
   ];
 
   first: number = 0;
-  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+  pagination: Pagination = {
+    currentPage: 1,
+    itemPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
   totalRecords: number = 0;
   pageSize: number = 5;
   pageNumber: number = 1;
-  searchString: string = "";
+  searchString: string = '';
 
   private subscriptions: Subscription = new Subscription();
 
@@ -69,11 +83,10 @@ export class DiscountComponent implements OnInit, OnDestroy {
     private builder: FormBuilder,
     private discountService: DiscountService,
     private confirmationService: ConfirmationService,
-    private toastService: ToastrService,
+    private toastService: ToastrService
   ) {
     this.discountForm = this.initializeForm();
   }
-
 
   ngOnInit(): void {
     this.loadDiscounts();
@@ -87,8 +100,8 @@ export class DiscountComponent implements OnInit, OnDestroy {
     return this.builder.group({
       id: [0],
       name: ['', Validators.required],
-      amountOff: ['', [ Validators.min(0)]],
-      percentOff: ['', [ Validators.min(0)]],
+      amountOff: ['', [Validators.min(0)]],
+      percentOff: ['', [Validators.min(0)]],
       promotionCode: [''],
     });
   }
@@ -97,11 +110,16 @@ export class DiscountComponent implements OnInit, OnDestroy {
     const params = {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
-      search: this.searchString
+      search: this.searchString,
     };
     this.discountService.getDiscountsPagedList(params).subscribe((result) => {
       this.selectedDiscounts = result.items || [];
-      this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+      this.pagination = result.pagination ?? {
+        currentPage: 1,
+        itemPerPage: 10,
+        totalItems: 0,
+        totalPages: 1,
+      };
       this.totalRecords = this.pagination.totalItems;
       this.first = (this.pageNumber - 1) * this.pageSize;
     });
@@ -132,67 +150,95 @@ export class DiscountComponent implements OnInit, OnDestroy {
   openDialog(discount?: DiscountDto): void {
     this.visible = true;
     if (discount) {
-      this.isUpdate=true;
+      this.isUpdate = true;
       this.discountForm.patchValue(discount);
       this.btnText = 'Cập nhật';
       this.headerText = 'Cập nhật Mã Giảm Giá';
     } else {
-      this.isUpdate=false;
+      this.isUpdate = false;
       this.discountForm.reset();
       this.btnText = 'Thêm';
       this.headerText = 'Thêm Mã Giảm Giá';
-      
     }
   }
-  generateCode(name: string):string{
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const length=8;
+  generateCode(name: string): string {
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const length = 8;
     let code = '';
     for (let i = 0; i < length; i++) {
       code += characters.charAt(Math.floor(Math.random() * characters.length));
     }
-    return code+name;
+    return code + name;
   }
   onSubmit(): void {
     if (this.discountForm.invalid) {
       this.toastService.error('Vui lòng điền đầy đủ thông tin.');
       return;
     }
-    
-    const discountData = { ...this.discountForm.value, id: this.discountForm.value.id || 0 };
-    discountData.promotionCode=this.generateCode(discountData.name);
-    const subscription = discountData.id === 0
-      ? this.discountService.addDiscount(discountData).pipe(
-          switchMap(() => this.discountService.getDiscountsPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            discountData.promotionCode = this.generateCode(discountData.id);
-            this.selectedDiscounts = result.items || [];
-            console.log(this.selectedDiscounts)
-            console.log(discountData.id)
-            this.toastService.success('Mã giảm giá đã được thêm thành công.');
-            this.visible = false;
-            this.loadDiscounts();
-          },
-          error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi thêm mã giảm giá.');
-            console.error(err);
-          }
-        })
-      : this.discountService.updateDiscount(discountData).pipe(
-          switchMap(() => this.discountService.getDiscountsPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedDiscounts = Array.isArray(result.items) ? result.items : [];
-            this.toastService.success('Mã giảm giá đã được cập nhật thành công.');
-            this.visible = false;
-            this.loadDiscounts();
-          },
-          error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi cập nhật mã giảm giá.');
-            console.error(err);
-          }
-        });
+
+    const discountData = {
+      ...this.discountForm.value,
+      id: this.discountForm.value.id || 0,
+    };
+    discountData.promotionCode = this.generateCode(discountData.name);
+    const subscription =
+      discountData.id === 0
+        ? this.discountService
+            .addDiscount(discountData)
+            .pipe(
+              switchMap(() =>
+                this.discountService.getDiscountsPagedList({
+                  pageNumber: this.pageNumber,
+                  pageSize: this.pageSize,
+                })
+              )
+            )
+            .subscribe({
+              next: (result) => {
+                discountData.promotionCode = this.generateCode(discountData.id);
+                this.selectedDiscounts = result.items || [];
+                console.log(this.selectedDiscounts);
+                console.log(discountData.id);
+                this.toastService.success(
+                  'Mã giảm giá đã được thêm thành công.'
+                );
+                this.visible = false;
+                this.loadDiscounts();
+              },
+              error: (err) => {
+                this.toastService.error('Có lỗi xảy ra khi thêm mã giảm giá.');
+                console.error(err);
+              },
+            })
+        : this.discountService
+            .updateDiscount(discountData)
+            .pipe(
+              switchMap(() =>
+                this.discountService.getDiscountsPagedList({
+                  pageNumber: this.pageNumber,
+                  pageSize: this.pageSize,
+                })
+              )
+            )
+            .subscribe({
+              next: (result) => {
+                this.selectedDiscounts = Array.isArray(result.items)
+                  ? result.items
+                  : [];
+                this.toastService.success(
+                  'Mã giảm giá đã được cập nhật thành công.'
+                );
+                this.visible = false;
+                this.loadDiscounts();
+              },
+              error: (err) => {
+                this.toastService.error(
+                  'Có lỗi xảy ra khi cập nhật mã giảm giá.'
+                );
+                console.error(err);
+              },
+            });
 
     this.subscriptions.add(subscription);
   }
@@ -201,24 +247,32 @@ export class DiscountComponent implements OnInit, OnDestroy {
     this.confirmationService.confirm({
       message: 'Bạn có chắc chắn muốn xóa mã giảm giá này?',
       accept: () => {
-        const subscription = this.discountService.deleteDiscount(discount.id).pipe(
-          switchMap(() => this.discountService.getDiscountsPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-        ).subscribe({
-          next: (result) => {
-            this.selectedDiscounts = Array.isArray(result.items) ? result.items : [];
-            this.toastService.success('Mã giảm giá đã được xóa thành công.');
-            this.loadDiscounts();
-          },
-          error: (err) => {
-            this.toastService.error('Có lỗi xảy ra khi xóa mã giảm giá.');
-            console.error(err);
-          }
-        });
+        const subscription = this.discountService
+          .deleteDiscount(discount.id)
+          .pipe(
+            switchMap(() =>
+              this.discountService.getDiscountsPagedList({
+                pageNumber: this.pageNumber,
+                pageSize: this.pageSize,
+              })
+            )
+          )
+          .subscribe({
+            next: (result) => {
+              this.selectedDiscounts = Array.isArray(result.items)
+                ? result.items
+                : [];
+              this.toastService.success('Mã giảm giá đã được xóa thành công.');
+              this.loadDiscounts();
+            },
+            error: (err) => {
+              this.toastService.error('Có lỗi xảy ra khi xóa mã giảm giá.');
+              console.error(err);
+            },
+          });
 
         this.subscriptions.add(subscription);
-    }
-  });
+      },
+    });
+  }
 }
-
-}
-
