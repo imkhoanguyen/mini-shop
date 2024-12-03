@@ -12,11 +12,11 @@ namespace Shop.Infrastructure.DataAccess.Seed
             }
             var sizes = new List<Size>
             {
-                new Size { Name = "S" },
-                new Size { Name = "M" },
-                new Size { Name = "L" },
-                new Size { Name = "XL" },
-                new Size { Name = "XXL" }
+                new Size { Name = "S" }, //1
+                new Size { Name = "M" }, //2
+                new Size { Name = "L" },//3
+                new Size { Name = "XL" },//4
+                new Size { Name = "XXL" }//5
             };
 
             await context.Sizes.AddRangeAsync(sizes);

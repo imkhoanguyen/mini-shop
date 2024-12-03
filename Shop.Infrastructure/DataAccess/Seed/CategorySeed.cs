@@ -11,14 +11,13 @@ namespace Shop.Infrastructure.DataAccess.Seed
                 return;
             }
             var categories = new List<Category>{
-                new Category { Name = "Tiểu thuyết" },
-                new Category { Name = "Trinh thám" },
-                new Category { Name = "Khoa học viễn tưởng" },
-                new Category { Name = "Giả tưởng" },
-                new Category { Name = "Lịch sử" },
-                new Category { Name = "Thơ ca" },
-                new Category { Name = "Sách giáo khoa" },
-                new Category { Name = "Sách thiếu nhi" },
+                new Category { Name = "T-Shirt" },
+                new Category { Name = "Jacket" },
+                new Category { Name = "Sweater" },
+                new Category { Name = "Blouse" },
+                new Category { Name = "Suits & Blazers" },
+                new Category { Name = "Outerwear" },
+                new Category { Name = "Cardigans" },
             };
             await context.Categories.AddRangeAsync(categories);
         }

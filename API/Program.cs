@@ -102,6 +102,7 @@ try
     await RoleClaimSeed.SeedAsync(context, roleManager);
     await UserSeed.SeedAsync(userManager, roleManager);
     await UserRoleSeed.SeedAsync(userManager, context);
+    await AddressSeed.SeedAsync(context, userManager);
     await ShippingMethodSeed.SeedAsync(context);
     await DiscountSeed.SeedAsync(context);
 

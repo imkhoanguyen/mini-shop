@@ -174,7 +174,7 @@ export class ProductFormComponent implements OnInit {
         const variantGroup = this.fb.group({
           id: [variant.id || null],
           price: [variant.price, Validators.required],
-          priceSell: [variant.priceSell || null],
+          priceSell: [variant.priceSell, Validators.required],
           quantity: [variant.quantity, Validators.required],
           colorId: [variant.color.id, Validators.required],
           sizeId: [variant.size.id, Validators.required],

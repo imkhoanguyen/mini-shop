@@ -128,21 +128,15 @@
                     />
                   </ng-container>
                 </td>
-                <td>{{ variant.price | currency: 'VND' }}</td>
-                <td>{{ variant.priceSell | currency: 'VND' }}</td>
+                <td>{{ variant.price | currency: 'USD' }}</td>
+                <td>{{ variant.priceSell | currency: 'USD' }}</td>
                 <td>{{ variant.quantity }}</td>
                 <td>{{ variant.size.name }}</td>
                 <td>
                   <button class="btn btn-lg color-btn" [style.backgroundColor]="variant.color.code"></button>
 
                 </td>
-                <td>
-                  <p-button
-                    type="button"
-                    icon="pi pi-search"
-                    class="p-button-sm"
-                  ></p-button>
-                </td>
+
               </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
