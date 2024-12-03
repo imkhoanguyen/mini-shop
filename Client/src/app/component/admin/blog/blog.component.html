@@ -3,16 +3,13 @@
   <div class="d-flex gap-3 mb-3">
     <!-- Tìm kiếm -->
     <div class="w-100">
-      <p-iconField iconPosition="left">
-        <p-inputIcon styleClass="pi pi-search" />
-        <input
-          type="text"
-          pInputText
-          placeholder="Search"
-          pInputText
-          [(ngModel)]="searchQuery"
-        />
-      </p-iconField>
+      <input
+        type="text"
+        pInputText
+        placeholder="Search"
+        pInputText
+        [(ngModel)]="searchQuery"
+      />
     </div>
 
     <!-- Nút thêm mới Blog -->

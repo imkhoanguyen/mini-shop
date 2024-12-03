@@ -34,7 +34,6 @@ import { ProductDetailComponent } from './component/client/product-detail/produc
 import { OrderComponent } from './component/admin/order/order.component';
 import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { OrderDetailComponent } from './component/admin/order-detail/order-detail.component';
-import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {

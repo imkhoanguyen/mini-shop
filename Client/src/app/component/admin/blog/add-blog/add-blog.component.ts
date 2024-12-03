@@ -14,8 +14,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { Blog } from '../../../../_models/types';
 import { EditorModule } from '@tinymce/tinymce-angular';
-import { User } from '../../../../_models/user.module';
-import { productUserService } from '../../../../_services/productUser.service';
 import { AccountService } from '../../../../_services/account.service';
 
 @Component({
