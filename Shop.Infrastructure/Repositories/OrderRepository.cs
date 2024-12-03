@@ -95,7 +95,8 @@ namespace Shop.Infrastructure.Repositories
 
             // Lấy danh sách các Order trong ngày với trạng thái PaymentReceived
             var orders = await _context.Orders
-                .Where(o => o.Created >= startOfDay && o.Created <= endOfDay && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created >= startOfDay && o.Created <= endOfDay && o.Status == OrderStatus.Confirmed
+                && o.PaymentStatus == PaymentStatus.Paid)
                 .ToListAsync();
 
             // Tính tổng doanh thu bằng GetTotal()
@@ -111,7 +112,8 @@ namespace Shop.Infrastructure.Repositories
 
             // Lọc các Order theo tháng, năm và trạng thái PaymentReceived
             var orders = await _context.Orders
-                .Where(o => o.Created >= startOfMonth && o.Created <= endOfMonth && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created >= startOfMonth && o.Created <= endOfMonth && o.Status == OrderStatus.Confirmed
+                    && o.PaymentStatus == PaymentStatus.Paid)
                 .ToListAsync();
 
             // Tính tổng doanh thu
@@ -126,7 +128,8 @@ namespace Shop.Infrastructure.Repositories
 
             // Lọc các Order theo năm và trạng thái PaymentReceived
             var orders = await _context.Orders
-                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear && o.Status == OrderStatus.Confirmed
+                && o.PaymentStatus == PaymentStatus.Paid)
                 .ToListAsync();
 
             // Tính tổng doanh thu
@@ -137,7 +140,8 @@ namespace Shop.Infrastructure.Repositories
         {
             var today = DateTime.UtcNow.Date;
             return await _context.Orders
-                .Where(o => o.Created.Date == today && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created.Date == today && o.Status == OrderStatus.Confirmed
+                && o.PaymentStatus == PaymentStatus.Paid)
                 .CountAsync();
         }
         public async Task<int> CountOrdersByDateAsync(DateTime date)
@@ -147,7 +151,8 @@ namespace Shop.Infrastructure.Repositories
 
             // Count Orders for the selected date with PaymentReceived status
             return await _context.Orders
-                .Where(o => o.Created >= startOfDay && o.Created <= endOfDay && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created >= startOfDay && o.Created <= endOfDay 
+                && o.Status == OrderStatus.Confirmed && o.PaymentStatus == PaymentStatus.Paid)
                 .CountAsync();
         }
         public async Task<int> CountOrdersByMonthAsync(int year, int month)
@@ -156,7 +161,8 @@ namespace Shop.Infrastructure.Repositories
             var endOfMonth = startOfMonth.AddMonths(1).AddTicks(-1);
 
             return await _context.Orders
-                .Where(o => o.Created >= startOfMonth && o.Created <= endOfMonth && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created >= startOfMonth && o.Created <= endOfMonth 
+                && o.Status == OrderStatus.Confirmed && o.PaymentStatus == PaymentStatus.Paid)
                 .CountAsync();
         }
 
@@ -166,10 +172,118 @@ namespace Shop.Infrastructure.Repositories
             var endOfYear = startOfYear.AddYears(1).AddTicks(-1);
 
             return await _context.Orders
-                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear && o.Status == OrderStatus.Confirmed)
+                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear 
+                        && o.Status == OrderStatus.Confirmed
+                        && o.PaymentStatus == PaymentStatus.Paid)
                 .CountAsync();
         }
 
-        
+        public async Task<List<Order>> GetOrdersByYearAsync(int year)
+        {
+            var startOfYear = new DateTime(year, 1, 1);
+            var endOfYear = startOfYear.AddYears(1).AddTicks(-1);
+
+            var orders = await _context.Orders
+                .Where(o => o.Created >= startOfYear && o.Created <= endOfYear && o.Status == OrderStatus.Confirmed)
+                .Include(o => o.OrderItems)
+                .Include(o => o.ShippingMethod) 
+                .Include(o => o.Discount) 
+                .ToListAsync();
+
+            return orders;
+        }
+
+        public async Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForTodayAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+
+            // Lấy danh sách đơn hàng với thông tin người dùng
+            var orders = await _context.Orders
+                .Include(o => o.AppUser) // Bao gồm thông tin người dùng
+                .Where(o => o.Status == OrderStatus.Confirmed &&
+                            o.PaymentStatus == PaymentStatus.Paid &&
+                            o.Created.Date == today)
+                .ToListAsync(); // Chuyển sang phía client để xử lý
+
+            // Nhóm theo AppUser và tính tổng trên client
+            var result = orders
+                .GroupBy(o => o.AppUser)
+                .Select(g => new
+                {
+                    User = g.Key,
+                    TotalAmount = g.Sum(o => o.GetTotal())
+                })
+                .OrderByDescending(x => x.TotalAmount)
+                .FirstOrDefault();
+
+            return (result?.User, result?.TotalAmount ?? 0);
+        }
+
+        public async Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForDateAsync(DateTime? date)
+        {
+            var targetDate = date?.Date ?? DateTime.UtcNow.Date;
+
+            var orders = await _context.Orders
+                .Include(o => o.AppUser) // Bao gồm thông tin người dùng
+                .Where(o => o.Status == OrderStatus.Confirmed &&
+                            o.PaymentStatus == PaymentStatus.Paid &&
+                            o.Created.Date == targetDate)
+                .ToListAsync(); // Chuyển sang phía client để xử lý
+
+            var result = orders
+                .GroupBy(o => o.AppUser)
+                .Select(g => new
+                {
+                    User = g.Key,
+                    TotalAmount = g.Sum(o => o.GetTotal())
+                })
+                .OrderByDescending(x => x.TotalAmount)
+                .FirstOrDefault();
+
+            return (result?.User, result?.TotalAmount ?? 0);
+        }
+        public async Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForMonthAsync(int month, int year)
+        {
+            var orders = await _context.Orders
+                .Include(o => o.AppUser)
+                .Where(o => o.Status == OrderStatus.Confirmed &&
+                            o.PaymentStatus == PaymentStatus.Paid &&
+                            o.Created.Year == year &&
+                            o.Created.Month == month)
+                .ToListAsync();
+
+            var result = orders
+                .GroupBy(o => o.AppUser)
+                .Select(g => new
+                {
+                    User = g.Key,
+                    TotalAmount = g.Sum(o => o.GetTotal())
+                })
+                .OrderByDescending(x => x.TotalAmount)
+                .FirstOrDefault();
+
+            return (result?.User, result?.TotalAmount ?? 0);
+        }
+        public async Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForYearAsync(int year)
+        {
+            var orders = await _context.Orders
+                .Include(o => o.AppUser)
+                .Where(o => o.Status == OrderStatus.Confirmed &&
+                            o.PaymentStatus == PaymentStatus.Paid &&
+                            o.Created.Year == year)
+                .ToListAsync();
+
+            var result = orders
+                .GroupBy(o => o.AppUser)
+                .Select(g => new
+                {
+                    User = g.Key,
+                    TotalAmount = g.Sum(o => o.GetTotal())
+                })
+                .OrderByDescending(x => x.TotalAmount)
+                .FirstOrDefault();
+
+            return (result?.User, result?.TotalAmount ?? 0);
+        }
     }
 }

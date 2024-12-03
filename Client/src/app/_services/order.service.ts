@@ -132,4 +132,25 @@ export class OrderService {
   getCountOrderYear(year: number) {
     return this.http.get<any>(`${this.apiUrl}/Order/count-yearly?year=${year}`);
   }
+
+  getOrderByYear(year:number): Observable<Order> {
+    return this.http.get<Order>(`${this.apiUrl}/Order/year/${year}`);
+  }
+
+  getUserHighestOrderToday() {
+    return this.http.get<any>(`${this.apiUrl}/Order/highest-total/today`);
+  }
+  getUserHighestOrderDate(Date: string) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/highest-total-date?date=${Date}`
+    );
+  }
+  getUserHighestOrderMonth(year: number, month: number) {
+    return this.http.get<any>(
+      `${this.apiUrl}/Order/highest-total-month?month=${month}&year=${year}`
+    );
+  }
+  getUserHighestOrderYear(year: number) {
+    return this.http.get<any>(`${this.apiUrl}/Order/highest-total-year?year=${year}`);
+  }
 }

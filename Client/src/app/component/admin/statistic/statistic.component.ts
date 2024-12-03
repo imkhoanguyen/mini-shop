@@ -6,6 +6,9 @@ import { ChartModule } from 'primeng/chart';
 import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { CommonModule } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { TableModule } from 'primeng/table';
+import { User } from '../../../_models/user.module';
 
 @Component({
   selector: 'app-statistic',
@@ -16,7 +19,9 @@ import { CommonModule } from '@angular/common';
     ChartModule,
     CalendarModule,
     FormsModule ,
-    CommonModule
+    CommonModule,
+    DialogModule,
+    TableModule
   ],
   templateUrl: './statistic.component.html',
   styleUrl: './statistic.component.css',
@@ -40,7 +45,12 @@ export class StatisticComponent implements OnInit{
 
   revenueOrder:string='';
   countOrder:string='';
-
+  dialogVisible: boolean = false;
+  orders: any[] = [];
+  
+  
+  hightestUser:string='';
+  total:number=0;
   constructor(
     private orderService: OrderService,
   ) {}
@@ -50,6 +60,7 @@ export class StatisticComponent implements OnInit{
     this.loadChartRevenueByYear(this.selectedDate.getFullYear())
     this.loadRevenueToday()
     this.loadCountOrderToday()
+    this.loadUserHighestOrderToday()
 
   }
   createChart(){
@@ -77,19 +88,23 @@ export class StatisticComponent implements OnInit{
       if (selectedTimeOption === '1') {
         this.loadRevenueDate(selectedDateValue)
         this.loadCountOrderDate(selectedDateValue)
+        this.loadUserHighestOrderDate(selectedDateValue)
       } 
       else if (selectedTimeOption === '2') {
         this.loadRevenueMonth(selectedDateValue.getFullYear(),selectedDateValue.getMonth() + 1)
         this.loadCountOrderMonth(selectedDateValue.getFullYear(),selectedDateValue.getMonth() + 1)
+        this.loadUserHighestOrderMonth(selectedDateValue.getFullYear(),selectedDateValue.getMonth() + 1)
       }
       else if (selectedTimeOption === '3') {
         this.loadChartRevenueByYear(selectedDateValue.getFullYear())
         this.loadRevenueYear(selectedDateValue.getFullYear())
         this.loadCountOrderYear(selectedDateValue.getFullYear())
+        this.loadUserHighestOrderYear(selectedDateValue.getFullYear())
       }
       else{
         this.loadRevenueToday()
         this.loadCountOrderToday()
+        this.loadUserHighestOrderToday()
       }
     }
   }
@@ -146,7 +161,7 @@ export class StatisticComponent implements OnInit{
     this.orderService.getRevenueOrderToday().subscribe(
       (response: any) => {
         this.revenueOrder=response.totalRevenue
-        console.log(this.revenueOrder)
+        // console.log(this.revenueOrder)
       },
       (error) => {
         console.log('error load routes', error);
@@ -157,20 +172,34 @@ export class StatisticComponent implements OnInit{
     this.orderService.getCountOrderToday().subscribe(
       (response: any) => {
         this.countOrder=response.count;
-        console.log(this.countOrder)
+        // console.log(this.countOrder)
       },
       (error) => {
         console.log('error load routes', error);
       }
     );
   }
+  loadUserHighestOrderToday(){
+    this.orderService.getUserHighestOrderToday().subscribe(
+      (response: any) => {
+        this.hightestUser=response.user.fullName
+        this.total=response.totalAmount
+      },
+      (error) => {
+        console.log('error load routes', error);
+        this.hightestUser = "Không có";
+        this.total = 0;
+      }
+    );
+  }
+
 
   loadRevenueDate(date:any){
     this.formattedDate(date)
     this.orderService.getRevenueOrderDate(this.newDate).subscribe(
       (response: any) => {
         this.revenueOrder=response.totalRevenue
-        console.log(this.revenueOrder)
+        // console.log(this.revenueOrder)
       },
       (error) => {
         console.log('error load routes', error);
@@ -183,10 +212,25 @@ export class StatisticComponent implements OnInit{
     this.orderService.getCountOrderDate(this.newDate).subscribe(
       (response: any) => {
         this.countOrder=response.count;
-        console.log(this.countOrder)
+        // console.log(this.countOrder)
       },
       (error) => {
         console.log('error load routes', error);
+      }
+    );
+  }
+  loadUserHighestOrderDate(date:any){
+    this.formattedDate(date)
+    console.log(this.newDate)
+    this.orderService.getUserHighestOrderDate(this.newDate).subscribe(
+      (response: any) => {
+        this.hightestUser=response.user.fullName
+        this.total=response.totalAmount
+      },
+      (error) => {
+        console.log('error load routes', error);
+        this.hightestUser = "Không có";
+        this.total = 0;
       }
     );
   }
@@ -195,7 +239,7 @@ export class StatisticComponent implements OnInit{
     this.orderService.getRevenueOrderMonth(year,month).subscribe(
       (response: any) => {
         this.revenueOrder=response.totalRevenue
-        console.log(this.revenueOrder)
+        // console.log(this.revenueOrder)
       },
       (error) => {
         console.log('error load routes', error);
@@ -206,10 +250,22 @@ export class StatisticComponent implements OnInit{
     this.orderService.getCountOrderMonth(year,month).subscribe(
       (response: any) => {
         this.countOrder=response.count;
-        console.log(this.countOrder)
+        // console.log(this.countOrder)
       },
       (error) => {
         console.log('error load routes', error);
+      }
+    );
+  }
+  loadUserHighestOrderMonth(year:number, month:number){
+    this.orderService.getUserHighestOrderMonth(year,month).subscribe(
+      (response: any) => {
+        console.log(response)
+      },
+      (error) => {
+        console.log('error load routes', error);
+        this.hightestUser = "Không có";
+        this.total = 0;
       }
     );
   }
@@ -218,24 +274,58 @@ export class StatisticComponent implements OnInit{
     this.orderService.getRevenueOrderYear(year).subscribe(
       (response: any) => {
         this.revenueOrder=response.totalRevenue
-        console.log(this.revenueOrder)
+        // console.log(this.revenueOrder)
       },
       (error) => {
         console.log('error load routes', error);
       }
     );
-  }
+  } 
   loadCountOrderYear(year:number){
     this.orderService.getCountOrderYear(year).subscribe(
       (response: any) => {
         this.countOrder=response.count;
-        console.log(this.countOrder)
+        // console.log(this.countOrder)
       },
       (error) => {
         console.log('error load routes', error);
       }
     );
   }
+  loadUserHighestOrderYear(year: number) {
+    this.orderService.getUserHighestOrderYear(year).subscribe(
+      (response: any) => {
+          this.hightestUser = response.user.fullName;
+          this.total = response.totalAmount;
+      },
+      (error) => {
+        console.log('error load routes', error);
+        this.hightestUser = "Không có";
+        this.total = 0;
+      }
+    );
+  }
+
   
+  showTable() {
+    this.dialogVisible = true;
+    if (this.selectedDate) {
+      this.orderService.getOrderByYear(this.selectedDate.getFullYear()).subscribe(
+        (response: any) => {
+          this.orders=response;
+          this.orders = this.orders.map(order => ({
+            ...order,
+            total: order.subTotal + order.shippingFee - order.discountPrice // Tính toán tổng tiền
+          }));
+          console.log(this.orders);
+        },
+        (error) => {
+          console.log('Error loading revenue data:', error);
+        }
+      );
+    } else {
+      console.error('Selected date is null or undefined.');
+    }
+  }
 
 }

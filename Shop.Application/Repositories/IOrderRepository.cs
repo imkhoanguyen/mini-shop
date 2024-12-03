@@ -15,5 +15,11 @@ namespace Shop.Application.Repositories
         Task<int> CountOrdersByDateAsync(DateTime date);
         Task<int> CountOrdersByMonthAsync(int year, int month);
         Task<int> CountOrdersByYearAsync(int year);
+        Task<List<Order>> GetOrdersByYearAsync(int year);
+
+        Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForTodayAsync();
+        Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForDateAsync(DateTime? date);
+        Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForMonthAsync(int month, int year);
+        Task<(AppUser? User, decimal TotalAmount)> GetUserWithHighestTotalForYearAsync(int year);
     }
 }
