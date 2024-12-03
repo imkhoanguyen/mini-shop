@@ -24,6 +24,7 @@ namespace Shop.Infrastructure.Repositories
             {
                 _context.Remove(blogDb);
             }
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Blog>> GetAllAsync(bool tracked)
@@ -36,6 +37,21 @@ namespace Shop.Infrastructure.Repositories
         public async Task<Blog?> getById(int id)
         {
             return await _context.Blogs.FindAsync(id);
+        }
+
+        public async Task UpdateBlogAsync(Blog blog)
+        {
+            var blogDb = await _context.Blogs.FirstOrDefaultAsync(b => b.Id == blog.Id);
+            if (blogDb is not null)
+            {
+                blogDb.Update = DateTime.UtcNow;
+                blogDb.Category = blog.Category;
+                blogDb.Content = blog.Content;
+                blogDb.Title = blog.Title;
+            }
+
+            await _context.SaveChangesAsync();
+
         }
 
     }
