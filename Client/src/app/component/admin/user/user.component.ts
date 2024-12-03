@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -20,10 +25,13 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Role } from '../../../_models/role';
 import { AuthService } from '../../../_services/auth.service';
 import { TagModule } from 'primeng/tag';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 @Component({
   selector: 'app-user',
   standalone: true,
-  imports: [ButtonModule,
+  imports: [
+    ButtonModule,
     CheckboxModule,
     CommonModule,
     TableModule,
@@ -35,9 +43,12 @@ import { TagModule } from 'primeng/tag';
     PaginatorModule,
     ConfirmDialogModule,
     TooltipModule,
-    TagModule],
+    TagModule,
+    InputIconModule,
+    IconFieldModule,
+  ],
   templateUrl: './user.component.html',
-  styleUrl: './user.component.css'
+  styleUrl: './user.component.css',
 })
 export class UserComponent {
   selectedUsers!: User[];
@@ -58,12 +69,17 @@ export class UserComponent {
   ];
 
   first: number = 0;
-  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+  pagination: Pagination = {
+    currentPage: 1,
+    itemPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
   totalRecords: number = 0;
   pageSize: number = 5;
   pageNumber: number = 1;
-  searchString: string = "";
-  selectedFile: { src: string; file: File; } | undefined;
+  searchString: string = '';
+  selectedFile: { src: string; file: File } | undefined;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -112,15 +128,20 @@ export class UserComponent {
     const params = {
       pageNumber: this.pageNumber,
       pageSize: this.pageSize,
-      search: this.searchString
+      search: this.searchString,
     };
     this.accountService.getUsersPagedList(params).subscribe((result) => {
       this.selectedUsers = result.items || [];
       this.selectedUsers.forEach((user) => {
         user.role = this.authService.getRoleFromToken(user.token);
-      })
-      console.log("selectedUsers", this.selectedUsers)
-      this.pagination = result.pagination ?? { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+      });
+      console.log('selectedUsers', this.selectedUsers);
+      this.pagination = result.pagination ?? {
+        currentPage: 1,
+        itemPerPage: 10,
+        totalItems: 0,
+        totalPages: 1,
+      };
 
       this.totalRecords = this.pagination.totalItems;
       this.first = (this.pageNumber - 1) * this.pageSize;
@@ -137,7 +158,6 @@ export class UserComponent {
     this.pageNumber = event.page + 1;
     this.pageSize = event.rows;
 
-
     this.loadUsers();
   }
 
@@ -152,7 +172,7 @@ export class UserComponent {
 
   onSearch(): void {
     this.pageNumber = 1;
-    console.log("search", this.searchString)
+    console.log('search', this.searchString);
     this.loadUsers();
   }
 
@@ -164,7 +184,6 @@ export class UserComponent {
     if (user) {
       this.userForm.reset();
       this.userForm.patchValue(user);
-
     } else {
       this.userForm.reset();
       this.btnText = 'Thêm';
@@ -179,7 +198,7 @@ export class UserComponent {
       minutes: null,
       hours: null,
       days: null,
-    })
+    });
   }
 
   closeDialog(): void {
@@ -212,54 +231,86 @@ export class UserComponent {
       if (this.selectedFile?.file) {
         formData.append('avatar', this.selectedFile.file);
       }
-      console.log("idddd", this.userForm.get('id')?.value);
+      console.log('idddd', this.userForm.get('id')?.value);
 
-      const subscription = this.userForm.get('id')?.value === null
-        ? this.accountService.addUser(formData).pipe(
-            switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-          ).subscribe({
-            next: (result) => {
-              this.selectedUsers = result.items || [];
-              this.toastService.success('Người dùng đã được thêm thành công.');
-              this.loadUsers();
-              this.visible = false;
-            },
-            error: (err) => {
-              if (err.status === 400 && err.error) {
-                const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi thêm.';
-                this.toastService.error(errorMessage);
-              } else {
-                this.toastService.error('Có lỗi xảy ra khi thêm người dùng.');
-              }
-              console.error(err);
-            }
-          })
-        : this.accountService.updateUser(formData).pipe(
-            switchMap(() => this.accountService.getUsersPagedList({ pageNumber: this.pageNumber, pageSize: this.pageSize }))
-          ).subscribe({
-            next: (result) => {
-              this.selectedUsers = Array.isArray(result.items) ? result.items : [];
-              this.toastService.success('Người dùng đã được cập nhật thành công.');
-              this.loadUsers();
-              this.visible = false;
-            },
-            error: (err) => {
-              if (err.status === 400 && err.error) {
-                const errorMessage = typeof err.error === 'string' ? err.error : 'Có lỗi xảy ra khi cập nhật.';
-                this.toastService.error(errorMessage);
-              } else {
-                this.toastService.error('Có lỗi xảy ra khi cập nhật người dùng.');
-              }
-              console.error(err);
-            }
-          });
-        this.subscriptions.add(subscription);
-      }
+      const subscription =
+        this.userForm.get('id')?.value === null
+          ? this.accountService
+              .addUser(formData)
+              .pipe(
+                switchMap(() =>
+                  this.accountService.getUsersPagedList({
+                    pageNumber: this.pageNumber,
+                    pageSize: this.pageSize,
+                  })
+                )
+              )
+              .subscribe({
+                next: (result) => {
+                  this.selectedUsers = result.items || [];
+                  this.toastService.success(
+                    'Người dùng đã được thêm thành công.'
+                  );
+                  this.loadUsers();
+                  this.visible = false;
+                },
+                error: (err) => {
+                  if (err.status === 400 && err.error) {
+                    const errorMessage =
+                      typeof err.error === 'string'
+                        ? err.error
+                        : 'Có lỗi xảy ra khi thêm.';
+                    this.toastService.error(errorMessage);
+                  } else {
+                    this.toastService.error(
+                      'Có lỗi xảy ra khi thêm người dùng.'
+                    );
+                  }
+                  console.error(err);
+                },
+              })
+          : this.accountService
+              .updateUser(formData)
+              .pipe(
+                switchMap(() =>
+                  this.accountService.getUsersPagedList({
+                    pageNumber: this.pageNumber,
+                    pageSize: this.pageSize,
+                  })
+                )
+              )
+              .subscribe({
+                next: (result) => {
+                  this.selectedUsers = Array.isArray(result.items)
+                    ? result.items
+                    : [];
+                  this.toastService.success(
+                    'Người dùng đã được cập nhật thành công.'
+                  );
+                  this.loadUsers();
+                  this.visible = false;
+                },
+                error: (err) => {
+                  if (err.status === 400 && err.error) {
+                    const errorMessage =
+                      typeof err.error === 'string'
+                        ? err.error
+                        : 'Có lỗi xảy ra khi cập nhật.';
+                    this.toastService.error(errorMessage);
+                  } else {
+                    this.toastService.error(
+                      'Có lỗi xảy ra khi cập nhật người dùng.'
+                    );
+                  }
+                  console.error(err);
+                },
+              });
+      this.subscriptions.add(subscription);
+    }
   }
 
   onSubmit(): void {
-
-    if(this.lockUserForm.valid){
+    if (this.lockUserForm.valid) {
       const formValue = this.lockUserForm.value;
       const lockStatus = Boolean(formValue.lockStatus);
 
@@ -298,7 +349,7 @@ export class UserComponent {
       } else {
         console.error('Giá trị lockStatus không hợp lệ:', lockStatus);
       }
-    }else{
+    } else {
       this.toastService.error('Vui lòng kiểm tra lại thông tin');
     }
   }
@@ -306,9 +357,4 @@ export class UserComponent {
   // removeImage(index: number) {
   //   this.selectedFile.splice(index, 1);
   // }
-
-
-
 }
-
-

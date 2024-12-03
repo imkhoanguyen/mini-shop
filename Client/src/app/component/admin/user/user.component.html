@@ -1,93 +1,95 @@
-<p-toast></p-toast>
-
-<!-- Search and Pagination Controls -->
-<div class="row align-items-center mb-3">
-  <div class="col">
-    <input
-      type="text"
-      [(ngModel)]="searchString"
-      (input)="onSearch()"
-      class="form-control"
-      placeholder="Tìm kiếm..."
-    />
+<h1>Quản lý người dùng</h1>
+<div class="container p-4" style="background-color: #fff">
+  <!-- Search and Pagination Controls -->
+  <div class="row align-items-center mb-3">
+    <div class="col w-100">
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="searchString"
+          (input)="onSearch()"
+          placeholder="Tìm kiếm..."
+        />
+      </p-iconField>
+    </div>
+    <div class="col-auto">
+      <select
+        class="form-select"
+        [(ngModel)]="pageSize"
+        (change)="onPageSizeChange($event)"
+      >
+        <option *ngFor="let option of pageSizeOptions" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+    <div class="col-auto">
+      <p-button
+        label="Thêm người dùng"
+        icon="pi pi-plus"
+        (click)="openDialog()"
+        class="btn-add"
+      ></p-button>
+    </div>
   </div>
-  <div class="col-auto">
-    <select
-      class="form-select"
-      [(ngModel)]="pageSize"
-      (change)="onPageSizeChange($event)"
+
+  <!-- Categories Table -->
+  <div class="table-responsive">
+    <p-table
+      [value]="selectedUsers"
+      [(selection)]="selectedUsers"
+      dataKey="id"
+      [tableStyle]="{ 'min-width': '50rem' }"
     >
-      <option *ngFor="let option of pageSizeOptions" [value]="option.value">
-        {{ option.label }}
-      </option>
-    </select>
-  </div>
-  <div class="col-auto">
-    <button
-      class="btn btn-success"
-      (click)="openDialog()"
-    >
-      <i class="pi pi-plus"></i> Thêm Người dùng
-    </button>
-  </div>
-</div>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Ảnh</th>
+          <th>Tên</th>
+          <th>Tài khoản</th>
+          <th>Email</th>
+          <th>Quyền</th>
+          <th>Trạng thái</th>
+          <th style="width: 5%"></th>
+        </tr>
+      </ng-template>
 
+      <ng-template pTemplate="body" let-user>
+        <tr>
+          <td>
+            <img
+              class="avatar"
+              [src]="
+                user.avatar === 'user.jpg'
+                  ? 'http://localhost:5000/avatar/user.jpg'
+                  : user.avatar
+              "
+              alt="Avatar"
+              height="40"
+              width="40"
+            />
+          </td>
+          <td>{{ user.fullName }}</td>
+          <td>{{ user.userName }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td style="cursor: pointer">
+            <div (click)="showDialog(user)">
+              <p-tag
+                [severity]="user.isLocked ? 'danger' : 'success'"
+                [value]="user.isLocked ? 'Đang bị khóa' : 'Bình thường'"
+                [rounded]="true"
+              >
+              </p-tag>
+            </div>
+          </td>
 
-
-<!-- Categories Table -->
-<div class="table-responsive">
-  <p-table
-    [value]="selectedUsers"
-    [(selection)]="selectedUsers"
-    dataKey="id"
-    [tableStyle]="{ 'min-width': '50rem' }"
-  >
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Ảnh</th>
-        <th>Tên</th>
-        <th>Tài khoản</th>
-        <th>Email</th>
-        <th>Quyền</th>
-        <th>Trạng thái</th>
-        <th>Hành Động</th>
-      </tr>
-    </ng-template>
-
-    <ng-template pTemplate="body" let-user>
-      <tr>
-        <td>
-          <img class="avatar"
-            [src]="user.avatar === 'user.jpg' ? 'http://localhost:5000/avatar/user.jpg' : user.avatar"
-            alt="Avatar"
-            height="40"
-            width="40"
-          />
-        </td>
-        <td>{{ user.fullName }}</td>
-        <td>{{ user.userName }}</td>
-        <td>{{ user.email  }}</td>
-        <td>{{ user.role }}</td>
-        <td>
-          <div (click)="showDialog(user)">
-            <p-tag
-              [severity]="user.isLocked ? 'danger' : 'success'"
-              [value]="user.isLocked ? 'Đang bị khóa' : 'Bình thường'"
-              [rounded]="true">
-            </p-tag>
-          </div>
-        </td>
-
-        <td>
-          <button
-            class="btn btn-info"
-            (click)="openDialog(user)"
-            tooltip="Chỉnh sửa"
-            tooltipPosition="top"
-          >
-            <i class="pi pi-file-edit"></i>
-          </button>
-          <!-- <button
+          <td>
+            <button class="btn" (click)="openDialog(user)">
+              <i class="pi pi-pen-to-square"></i>
+            </button>
+            <!-- <button
             class="btn btn-danger"
             (click)="confirmDelete(user)"
             tooltip="Xóa"
@@ -95,141 +97,195 @@
           >
             <i class="pi pi-trash"></i>
           </button> -->
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 
-<!-- Paginator -->
-<p-paginator
-  (onPageChange)="onPageChange($event)"
-  [first]="first"
-  [rows]="pageSize"
-  [totalRecords]="totalRecords"
-></p-paginator>
+  <!-- Paginator -->
+  <p-paginator
+    (onPageChange)="onPageChange($event)"
+    [first]="first"
+    [rows]="pageSize"
+    [totalRecords]="totalRecords"
+  ></p-paginator>
 
-<!-- Dialog Add/Update user -->
-<p-dialog
-  [header]="headerText"
-  [(visible)]="visible"
-  [style]="{ width: '25rem' }"
-  [modal]="true"
->
-  <form [formGroup]="userForm" (ngSubmit)="submit()">
-    <div class="mb-3">
-      <label for="fullName" class="form-label">FullName:</label>
-      <input
-        pInputText
-        id="fullName"
-        class="form-control"
-        autocomplete="off"
-        formControlName="fullName"
-      />
-      <div *ngIf="userForm.get('fullName')?.invalid && userForm.get('fullName')?.touched">
-        <small class="text-danger">Tên không được để trống</small>
-      </div>
-      <label for="userName" class="form-label">UserName:</label>
-      <input
-        pInputText
-        id="userName"
-        class="form-control"
-        autocomplete="off"
-        formControlName="userName"
-      />
-      <div *ngIf="userForm.get('userName')?.invalid && userForm.get('userName')?.touched">
-        <small class="text-danger">UserName không được để trống</small>
-      </div>
-      <label for="email" class="form-label">Email:</label>
-      <input
-        pInputText
-        id="email"
-        class="form-control"
-        type="email"
-        autocomplete="off"
-        formControlName="email"
-      />
-      <div *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
-        <small class="text-danger">Email không được để trống</small>
-      </div>
+  <!-- Dialog Add/Update user -->
+  <p-dialog
+    [header]="headerText"
+    [(visible)]="visible"
+    [style]="{ width: '25rem' }"
+    [modal]="true"
+  >
+    <form [formGroup]="userForm" (ngSubmit)="submit()">
+      <div class="mb-3">
+        <label for="fullName" class="form-label">FullName:</label>
+        <input
+          pInputText
+          id="fullName"
+          class="form-control"
+          autocomplete="off"
+          formControlName="fullName"
+        />
+        <div
+          *ngIf="
+            userForm.get('fullName')?.invalid &&
+            userForm.get('fullName')?.touched
+          "
+        >
+          <small class="text-danger">Tên không được để trống</small>
+        </div>
+        <label for="userName" class="form-label">UserName:</label>
+        <input
+          pInputText
+          id="userName"
+          class="form-control"
+          autocomplete="off"
+          formControlName="userName"
+        />
+        <div
+          *ngIf="
+            userForm.get('userName')?.invalid &&
+            userForm.get('userName')?.touched
+          "
+        >
+          <small class="text-danger">UserName không được để trống</small>
+        </div>
+        <label for="email" class="form-label">Email:</label>
+        <input
+          pInputText
+          id="email"
+          class="form-control"
+          type="email"
+          autocomplete="off"
+          formControlName="email"
+        />
+        <div
+          *ngIf="
+            userForm.get('email')?.invalid && userForm.get('email')?.touched
+          "
+        >
+          <small class="text-danger">Email không được để trống</small>
+        </div>
 
-      <label for="password" class="form-label">Password:</label>
-      <input
-        pInputText
-        type="password"
-        id="password"
-        class="form-control"
-        autocomplete="off"
-        formControlName="password"
-      />
-      <div *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
-        <small class="text-danger">Password không được để trống</small>
-      </div>
-      <label for="avatar" class="form-label">Avatar:</label>
-      <div class="avatar-container">
-        <button class="btn btn-primary" type="button" (click)="fileInput.click()">Chọn Avatar</button>
-        <input #fileInput type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
-        <div class="image-container" *ngIf="selectedFile">
-          <div class="image-preview">
-            <img [src]="selectedFile.src" alt="Image Preview">
+        <label for="password" class="form-label">Password:</label>
+        <input
+          pInputText
+          type="password"
+          id="password"
+          class="form-control"
+          autocomplete="off"
+          formControlName="password"
+        />
+        <div
+          *ngIf="
+            userForm.get('password')?.invalid &&
+            userForm.get('password')?.touched
+          "
+        >
+          <small class="text-danger">Password không được để trống</small>
+        </div>
+        <label for="avatar" class="form-label">Avatar:</label>
+        <div class="avatar-container">
+          <button
+            class="btn btn-primary"
+            type="button"
+            (click)="fileInput.click()"
+          >
+            Chọn Avatar
+          </button>
+          <input
+            #fileInput
+            type="file"
+            id="fileInput"
+            (change)="onFileSelected($event)"
+            multiple
+            style="display: none"
+          />
+          <div class="image-container" *ngIf="selectedFile">
+            <div class="image-preview">
+              <img [src]="selectedFile.src" alt="Image Preview" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <label for="role" class="form-label">Chọn quyền:</label>
+          </div>
+          <div class="col-8">
+            <select class="form-select" formControlName="role">
+              <option *ngFor="let role of roles" [value]="role.name">
+                {{ role.name }}
+              </option>
+            </select>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-4">
-          <label for="role" class="form-label">Chọn quyền:</label>
-        </div>
-        <div class="col-8">
-          <select
-          class="form-select" formControlName="role"
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-secondary me-2" (click)="visible = false">
+          Hủy
+        </button>
+        <button class="btn btn-primary" type="submit">{{ btnText }}</button>
+      </div>
+    </form>
+  </p-dialog>
+  <p-dialog
+    header="Trạng thái Người dùng"
+    [(visible)]="displayDialog"
+    [modal]="true"
+    [responsive]="true"
+    [style]="{ width: '300px' }"
+  >
+    <form [formGroup]="lockUserForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="lockStatus">Trạng thái khóa:</label>
+        <select
+          id="lockStatus"
+          class="form-control"
+          formControlName="lockStatus"
         >
-          <option *ngFor="let role of roles" [value]="role.name">
-            {{ role.name }}
-          </option>
+          <option [ngValue]="true">Khóa</option>
+          <option [ngValue]="false">Mở khóa</option>
         </select>
+      </div>
+
+      <div
+        *ngIf="
+          lockUserForm.get('lockStatus')?.value === 'true' ||
+          lockUserForm.get('lockStatus')?.value === true
+        "
+      >
+        <div class="form-group">
+          <label for="minutes">Số phút:</label>
+          <input
+            id="minutes"
+            type="number"
+            class="form-control"
+            formControlName="minutes"
+          />
         </div>
-
+        <div class="form-group">
+          <label for="hours">Số giờ:</label>
+          <input
+            id="hours"
+            type="number"
+            class="form-control"
+            formControlName="hours"
+          />
+        </div>
+        <div class="form-group">
+          <label for="days">Số ngày:</label>
+          <input
+            id="days"
+            type="number"
+            class="form-control"
+            formControlName="days"
+          />
+        </div>
       </div>
 
-    </div>
-    <div class="d-flex justify-content-end">
-      <button class="btn btn-secondary me-2" (click)="visible = false">Hủy</button>
-      <button class="btn btn-primary" type="submit">{{ btnText }}</button>
-    </div>
-  </form>
-</p-dialog>
-<p-dialog
-  header="Trạng thái Người dùng"
-  [(visible)]="displayDialog"
-  [modal]="true"
-  [responsive]="true"
-  [style]="{ width: '300px' }"
->
-  <form [formGroup]="lockUserForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="lockStatus">Trạng thái khóa:</label>
-      <select id="lockStatus" class="form-control" formControlName="lockStatus">
-        <option [ngValue]="true">Khóa</option>
-        <option [ngValue]="false">Mở khóa</option>
-      </select>
-    </div>
-
-    <div *ngIf="lockUserForm.get('lockStatus')?.value === 'true' || lockUserForm.get('lockStatus')?.value === true">
-      <div class="form-group">
-        <label for="minutes">Số phút:</label>
-        <input id="minutes" type="number" class="form-control" formControlName="minutes" />
-      </div>
-      <div class="form-group">
-        <label for="hours">Số giờ:</label>
-        <input id="hours" type="number" class="form-control" formControlName="hours" />
-      </div>
-      <div class="form-group">
-        <label for="days">Số ngày:</label>
-        <input id="days" type="number" class="form-control" formControlName="days" />
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
-  </form>
-</p-dialog>
-
+      <button type="submit" class="btn btn-primary mt-3">Xác nhận</button>
+    </form>
+  </p-dialog>
+</div>
