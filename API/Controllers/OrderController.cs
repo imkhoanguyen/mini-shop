@@ -1,4 +1,5 @@
 ﻿using API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Orders;
@@ -6,6 +7,7 @@ using Shop.Application.DTOs.Users;
 using Shop.Application.Parameters;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 using Shop.Domain.Exceptions;
 
 namespace API.Controllers
@@ -65,6 +67,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}/status")]
+        [Authorize(Policy = ClaimStore.Order_Comfirm)]
         public async Task<ActionResult<OrderDto>> UpdateStatus(int id, [FromBody] string status)
         {
             if (id < 1)
@@ -75,6 +78,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}/payment-status")]
+        [Authorize(Policy = ClaimStore.Order_ComfirmPayment)]
         public async Task<ActionResult<OrderDto>> UpdatePaymentStatus(int id, [FromBody] string paymentStatus)
         {
             if (id < 1)

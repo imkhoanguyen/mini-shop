@@ -1,9 +1,11 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Colors;
 using Shop.Application.Mappers;
 using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 
 namespace API.Controllers
 {
@@ -48,6 +50,7 @@ namespace API.Controllers
 
         // POST api/color/Add
         [HttpPost("Add")]
+        [Authorize(Policy = ClaimStore.Color_Create)]
         public async Task<ActionResult> Addcolor(ColorAddDto colorAddDto)
         {
             var color = ColorMapper.ColorAddDtoToEntity(colorAddDto);
@@ -58,6 +61,7 @@ namespace API.Controllers
 
         // PUT api/color/Update
         [HttpPut("Update")]
+        [Authorize(Policy = ClaimStore.Color_Edit)]
         public async Task<IActionResult> Updatecolor(ColorDto colorDto)
         {
             var color = ColorMapper.ColorDtoToEntity(colorDto);
@@ -68,6 +72,7 @@ namespace API.Controllers
 
         // DELETE api/color/Delete
         [HttpDelete("Delete")]
+        [Authorize(Policy = ClaimStore.Color_Delete)]
         public async Task<IActionResult> Deletecolor(ColorDto colorDto)
         {
             var color = ColorMapper.ColorDtoToEntity(colorDto);

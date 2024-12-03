@@ -147,8 +147,7 @@ namespace Shop.Infrastructure.Configurations
                     policy.RequireClaim("Permission", ClaimStore.Order_ComfirmPayment));
                 options.AddPolicy(ClaimStore.Order_Comfirm, policy =>
                     policy.RequireClaim("Permission", ClaimStore.Order_Comfirm));
-                options.AddPolicy(ClaimStore.Order_Delete, policy =>
-                    policy.RequireClaim("Permission", ClaimStore.Order_Delete));
+                
 
 
                 // shipping
@@ -163,8 +162,12 @@ namespace Shop.Infrastructure.Configurations
                 // user management
                 options.AddPolicy(ClaimStore.User_UpdateUserRole, policy =>
                     policy.RequireClaim("Permission", ClaimStore.User_UpdateUserRole));
-                options.AddPolicy(ClaimStore.User_Lockout, policy =>
-                    policy.RequireClaim("Permission", ClaimStore.User_Lockout));
+                options.AddPolicy(ClaimStore.User_Lock, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.User_Lock));
+                options.AddPolicy(ClaimStore.User_Add, policy =>
+                   policy.RequireClaim("Permission", ClaimStore.User_Add));
+                options.AddPolicy(ClaimStore.User_Update, policy =>
+                   policy.RequireClaim("Permission", ClaimStore.User_Update));
 
 
                 // role management 
@@ -172,7 +175,26 @@ namespace Shop.Infrastructure.Configurations
                     policy.RequireClaim("Permission", ClaimStore.Role_Create));
                 options.AddPolicy(ClaimStore.Role_Edit, policy =>
                     policy.RequireClaim("Permission", ClaimStore.Role_Edit));
+                options.AddPolicy(ClaimStore.Role_Delete, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.Role_Delete));
+                options.AddPolicy(ClaimStore.Change_Permission, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.Change_Permission));
 
+                //message
+                options.AddPolicy(ClaimStore.Message_Reply, policy =>
+                   policy.RequireClaim("Permission", ClaimStore.Message_Reply));
+
+                //discount
+                options.AddPolicy(ClaimStore.Discount_Create, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.Discount_Create));
+                options.AddPolicy(ClaimStore.Discount_Delete, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.Discount_Delete));
+                options.AddPolicy(ClaimStore.Discount_Edit, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.Discount_Edit));
+
+                //access admin page
+                options.AddPolicy(ClaimStore.Access_Admin, policy =>
+                    policy.RequireClaim("Permission", ClaimStore.Access_Admin));
             });
         }
 

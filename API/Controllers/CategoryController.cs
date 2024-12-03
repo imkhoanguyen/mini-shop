@@ -1,5 +1,6 @@
 using API.Controllers;
 using API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Categories;
 using Shop.Application.Parameters;
@@ -41,6 +42,7 @@ namespace api.Controllers
         }
 
         [HttpPost("Add")]
+        [Authorize(Policy = ClaimStore.Category_Create)]
         public async Task<IActionResult> AddCategory( CategoryAdd categoryAdd)
         {
             if (!ModelState.IsValid)
@@ -51,6 +53,7 @@ namespace api.Controllers
         }
 
         [HttpPut("Update")]
+        [Authorize(Policy = ClaimStore.Category_Edit)]
         public async Task<IActionResult> UpdateCategory( CategoryUpdate categoryDto)
         {
             if (!ModelState.IsValid)
@@ -60,6 +63,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("Delete")]
+        [Authorize(Policy = ClaimStore.Category_Delete)]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             if (!ModelState.IsValid)
