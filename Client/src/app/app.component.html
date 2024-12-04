@@ -2,5 +2,6 @@
 <div *ngIf="!isAdminPage()">
   <app-header></app-header>
   <router-outlet></router-outlet>
+  <app-footer-client></app-footer-client>
 </div>
 <router-outlet *ngIf="isAdminPage()"></router-outlet>

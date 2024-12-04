@@ -6,9 +6,9 @@ import { MenuModule } from 'primeng/menu';
 import { BlogService } from '../../_services/blog.service';
 import { Blog } from '../../_models/types';
 import { CommonModule } from '@angular/common';
-import { TruncatePipe } from './truncate.pipe';
 import { SafeHtmlPipe } from '../../component/blog-user/safe-html.pipe';
 import { Router } from '@angular/router';
+import { TruncatePipe } from './truncate.pipe';
 
 @Component({
   selector: 'app-footer-client',
@@ -23,6 +23,7 @@ import { Router } from '@angular/router';
     SafeHtmlPipe,
   ],
   templateUrl: './footerClient.component.html',
+  styleUrl: './footerClient.component.css',
 })
 export class FooterClientComponent {
   constructor(private blogService: BlogService, private router: Router) {}

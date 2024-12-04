@@ -7,6 +7,7 @@ import { SidebarComponent } from './component/admin/sidebar/sidebar.component';
 import { ReviewComponent } from './component/review/review.component';
 import { ToastModule } from 'primeng/toast';
 import { CartService } from './_services/cart.service';
+import { FooterClientComponent } from "./layout/footerClient/footerClient.component";
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -18,7 +19,8 @@ import { CartService } from './_services/cart.service';
     MainComponent,
     ReviewComponent,
     ToastModule,
-  ],
+    FooterClientComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

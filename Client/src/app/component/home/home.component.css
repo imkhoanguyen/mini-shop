@@ -1,0 +1,283 @@
+/* - Section Padding
+--------------------------------------------------------------*/
+.padding-xsmall {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+}
+.padding-small {
+  padding-top: 2em;
+  padding-bottom: 2em;
+}
+.padding-medium {
+  padding-top: 4em;
+  padding-bottom: 4em;
+}
+.padding-large {
+  padding-top: 7em;
+  padding-bottom: 7em;
+}
+.padding-xlarge {
+  padding-top: 9.5em;
+  padding-bottom: 9.5em;
+}
+
+/* no padding */
+.no-padding-top {
+  padding-top: 0 !important;
+}
+.no-padding-right {
+  padding-right: 0 !important;
+}
+.no-padding-bottom {
+  padding-bottom: 0 !important;
+}
+.no-padding-left {
+  padding-left: 0 !important;
+}
+.no-padding-tb {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.no-padding-lr {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.no-gutter {
+  padding: 0 !important;
+}
+
+/* no padding and margin */
+.no-padding {
+  padding: 0 !important;
+}
+.no-margin {
+  margin: 0 !important;
+}
+
+/* - Section margin
+  --------------------------------------------------------------*/
+.margin-small {
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+.margin-medium {
+  margin-top: 5em;
+  margin-bottom: 5em;
+}
+.margin-large {
+  margin-top: 7em;
+  margin-bottom: 7em;
+}
+.margin-xlarge {
+  margin-top: 9em;
+  margin-bottom: 9em;
+}
+
+@media only screen and (max-width: 768px) {
+  .margin-small,
+  .margin-medium,
+  .margin-large {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+}
+/* - Section width
+--------------------------------------------------------------*/
+.u-full-width {
+  width: 100%;
+  border: none;
+}
+
+/* 2 SITE STRUCTURE  */
+/*----------------------------------------------*/
+
+/* 2. Billboard
+/*----------------------------------------------*/
+/*------------Swiper Arrow -----------*/
+#billboard .swiper-arrow {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+.swiper-icon.swiper-arrow svg {
+  fill: #d7dddf;
+}
+.swiper-icon.swiper-arrow:hover svg,
+.swiper-icon.swiper-arrow:focus svg {
+  fill: #0066d3;
+}
+#billboard .swiper-arrow.swiper-arrow-prev {
+  left: 0;
+}
+#billboard .swiper-arrow.swiper-arrow-next {
+  right: 0;
+}
+
+@media only screen and (max-width: 767px) {
+  #billboard .banner-content {
+    margin-top: 210px;
+  }
+  #billboard .image-holder {
+    margin-top: -390px;
+    opacity: 0.3;
+  }
+  #billboard .swiper-arrow {
+    top: 400px;
+  }
+}
+
+/* 3. Icon Box - Company Services
+/*----------------------------------------------*/
+.icon-box .icon-box-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: #0066d3;
+}
+
+@media only screen and (max-width: 991px) {
+  #company-services .icon-box {
+    flex-wrap: wrap;
+  }
+}
+
+/* 4. Product
+/*----------------------------------------------*/
+.product-store .product-card .cart-concern {
+  bottom: 75px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+}
+.product-store .product-card:hover .cart-concern {
+  bottom: 90px;
+  opacity: 1;
+}
+.product-card .cart-concern svg {
+  width: 16px;
+  height: 16px;
+  fill: #f8f9fa;
+  margin-left: 9px;
+}
+.product-card .card-detail span {
+  font-size: 1.5em;
+}
+
+@media only screen and (max-width: 575px) {
+  .product-store .product-card .card-detail {
+    padding: 10px;
+  }
+}
+
+/*------------Swiper Pagination -----------*/
+.product-store
+  .swiper-pagination.swiper-pagination-clickable.swiper-pagination-bullets.swiper-pagination-horizontal {
+  bottom: 35px;
+}
+.swiper-pagination span.swiper-pagination-bullet {
+  width: 15px;
+  height: 15px;
+}
+
+/* 5. Testimonial
+/*----------------------------------------------*/
+.review-item blockquote {
+  font-size: 2.5em;
+  font-weight: 300;
+  line-height: 1.2;
+}
+.rating svg.star {
+  width: 16px;
+  height: 16px;
+  fill: #0066d3;
+}
+#testimonials .swiper-arrow svg {
+  width: 45px;
+  height: 45px;
+  fill: #d7dddf;
+}
+.review-content .swiper-arrow {
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+}
+.review-content .swiper-arrow.swiper-arrow-next {
+  right: 0;
+}
+.review-content .quotation svg.quote {
+  color: #edf1f3;
+}
+
+@media only screen and (max-width: 767px) {
+  #testimonials blockquote {
+    font-size: 2em;
+  }
+  .review-content .swiper-arrow {
+    bottom: -420px;
+  }
+}
+
+/* 6. Subscribe
+/*----------------------------------------------*/
+.subscribe-content p {
+  color: #aeaeae;
+}
+
+@media only screen and (max-width: 1199px) {
+  .subscription-form input.form-control,
+  .subscription-form button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* 7. Instagram
+/*----------------------------------------------*/
+#instagram figure.instagram-item {
+  width: 20%;
+}
+figure.instagram-item img.insta-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.instagram-item .icon-overlay {
+  top: 30px;
+  left: 0;
+  width: 100%;
+  height: auto;
+  color: #f8f9fa;
+  opacity: 0;
+  transition: 0.9s ease-out;
+}
+.instagram-item:hover .icon-overlay {
+  top: 0;
+  opacity: 1;
+}
+.instagram-item .icon-overlay svg.instagram {
+  height: 50px;
+}
+
+@media only screen and (max-width: 767px) {
+  #instagram figure.instagram-item {
+    width: 30%;
+  }
+}
+
+@media only screen and (max-width: 501px) {
+  #instagram figure.instagram-item {
+    width: 100%;
+  }
+}
+
+/* fix */
+.chevron-left {
+  max-width: 150px;
+  max-height: 150px;
+}

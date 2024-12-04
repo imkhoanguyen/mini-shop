@@ -91,5 +91,4 @@ export const routes: Routes = [
   { path: 'cart/checkout/cancel', component: CheckoutCancelComponent },
   { path: 'order', component: OrderClientComponent },
   { path: 'order/:id', component: OrderDetailClientComponent },
-  { path: 'blog', component: BlogUserComponent },
 ];

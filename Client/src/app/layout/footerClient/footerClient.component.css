@@ -1,0 +1,54 @@
+/* 8. Footer
+/*----------------------------------------------*/
+/*------------ Social Icon -----------*/
+.social-links i {
+  width: 20px;
+  height: 20px;
+}
+
+.social-links li {
+  padding-right: 30px;
+}
+
+.social-links a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.social-links a:hover {
+  color: #007bff;
+}
+
+.social-links ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blog-item {
+  color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.blog-container {
+  max-height: 170px; /* Giới hạn chiều cao */
+  overflow-y: auto; /* Thêm thanh cuộn dọc */
+  scrollbar-width: thin; /* Thanh cuộn mỏng (Firefox) */
+  scrollbar-color: #aaa #f1f1f1; /* Màu sắc thanh cuộn (Firefox) */
+}
+
+/* Thêm kiểu thanh cuộn cho Webkit (Chrome, Edge, Safari) */
+.blog-container::-webkit-scrollbar {
+  width: 8px; /* Độ rộng thanh cuộn */
+}
+
+.blog-container::-webkit-scrollbar-thumb {
+  background-color: #aaa; /* Màu thanh cuộn */
+  border-radius: 4px; /* Góc bo tròn */
+}
+
+.blog-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Nền của thanh cuộn */
+}
