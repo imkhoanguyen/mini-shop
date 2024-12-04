@@ -99,7 +99,14 @@
           </div>
 
           <p-button label="ADD TO CART" type="button" (onClick)="addToCart()" />
-          <p-button label="LIKE" type="button" (onClick)="LikeProduct()" />
+          <p-button
+            class="mx-3"
+            severity="danger"
+            [outlined]="true"
+            label="LIKE"
+            type="button"
+            (onClick)="LikeProduct()"
+          />
         </div>
       </div>
     </div>
