@@ -1,0 +1,188 @@
+<main *ngIf="orderDetail" class="container my-5">
+  <div class="container-fluid p-0">
+    <h1 class="h3 mb-3">Chi tiết đơn hàng</h1>
+
+    <div class="row">
+      <!-- @* order imformation *@ -->
+      <div class="col-8">
+        <div class="card">
+          <div class="card-header fw-bold">
+            <div class="d-flex">
+              <h5 class="fw-bold">Thông tin đơn hàng #{{ orderDetail.id }}</h5>
+              <div class="ms-auto">
+                <i class="fa-sharp fa-solid fa-clock"></i>
+                {{ utilService.getFormattedDate(orderDetail.created) }}
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- @* desscription *@ -->
+            <h4 class="mb-3 fw-bold">Mô tả</h4>
+            <div class="alert alert-success mb-4" role="alert">
+              {{ orderDetail.description }}
+            </div>
+
+            <!-- @* product *@ -->
+            <h4 class="mb-3 fw-bold">Dánh sách sản phẩm</h4>
+            <div class="table-responsive mb-4">
+              <table class="table table-bordered">
+                <thead class="fw-bold align-middle">
+                  <tr>
+                    <td>Tên sản phẩm</td>
+                    <td>Kích thước</td>
+                    <td>Màu sắc</td>
+                    <td>Số lượng</td>
+                    <td>Đơn giá</td>
+                    <td>Thành tiền</td>
+                  </tr>
+                </thead>
+                <tbody class="align-middle table-border-bottom-0">
+                  @for (item of orderDetail.orderItems; track $index) {
+                  <tr>
+                    <td>
+                      <div class="d-flex gap-2 align-items-center">
+                        <img
+                          src="{{ item.productImage }}"
+                          alt="{{ item.productName }}"
+                          style="width: 80px; height: 80px; object-fit: cover"
+                        />
+                        <span>{{ item.productName }}</span>
+                      </div>
+                    </td>
+                    <td>{{ item.sizeName }}</td>
+                    <td>{{ item.colorName }}</td>
+                    <td class="fw-bold">{{ item.quantity }}</td>
+                    <td class="fw-bold">${{ item.price }}</td>
+                    <td class="fw-bold">${{ item.price * item.quantity }}</td>
+                  </tr>
+                  }
+                  <tr>
+                    <td colspan="5" class="fw-bold text-end">
+                      Tổng giá sản phẩm:
+                    </td>
+                    <td class="fw-bold">${{ orderDetail.subTotal }}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="5" class="fw-bold text-end">
+                      Phí vận chuyển:
+                    </td>
+                    <td class="fw-bold">${{ orderDetail.shippingFee }}</td>
+                  </tr>
+                  <tr>
+                    <td colspan="5" class="fw-bold text-end">Giảm giá:</td>
+                    <td class="fw-bold">
+                      ${{ orderDetail.discountPrice ?? 0 }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5" class="fw-bold text-end">Thành tiền:</td>
+                    <td class="fw-bold">${{ calTotal(orderDetail) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="d-flex">
+              <div class="d-flex gap-2 fs-5 text-uppercase align-items-center">
+                <ng-container
+                  *ngIf="
+                    orderDetail.status === utilService.ORDER_STATUS_CONFIRMED
+                  "
+                >
+                  <i class="fa-solid fa-check text-success"></i> đơn hàng đã
+                  được xác nhận
+                </ng-container>
+                <ng-container
+                  *ngIf="
+                    orderDetail.status === utilService.ORDER_STATUS_UNCONFIRMED
+                  "
+                >
+                  <i class="fa-solid fa-xmark fa-lg text-danger"></i> đơn hàng
+                  chưa được xác nhận
+                </ng-container>
+                <ng-container
+                  *ngIf="
+                    orderDetail.status !== utilService.ORDER_STATUS_CONFIRMED &&
+                    orderDetail.status !== utilService.ORDER_STATUS_UNCONFIRMED
+                  "
+                >
+                  <i class="fa-solid fa-check text-danger"></i> đơn hàng đã bị
+                  hủy
+                </ng-container>
+              </div>
+
+              <button
+                *ngIf="
+                  orderDetail.status === utilService.ORDER_STATUS_UNCONFIRMED
+                "
+                type="button"
+                (click)="cancelOrder()"
+                class="btn btn-danger px-3 py-2 text-uppercase ms-auto fw-bold"
+              >
+                hủy đơn
+              </button>
+            </div>
+            <hr />
+
+            <div class="d-flex align-items-center">
+              <div class="d-flex flex-column gap-2">
+                <div
+                  class="confirm-payment-container d-flex gap-2 fs-5 text-uppercase align-items-center"
+                >
+                  <ng-container
+                    *ngIf="
+                      orderDetail.paymentStatus ===
+                        utilService.PAYMENT_STATUS_PENDING;
+                      else confirmed
+                    "
+                  >
+                    <i class="fa-solid fa-xmark fa-lg text-danger"></i> Chưa
+                    thanh toán
+                  </ng-container>
+                  <ng-template #confirmed>
+                    <i class="fa-solid fa-check text-success"></i> Đã thanh toán
+                  </ng-template>
+                </div>
+                <div>
+                  {{
+                    orderDetail.paymentMethod === utilService.PAYMENT_OFFILINE
+                      ? "Thanh toán Offline"
+                      : "Thanh toán Online"
+                  }}
+                </div>
+              </div>
+            </div>
+
+            <hr />
+
+            <div class="d-flex gap-2 fs-5 text-uppercase align-items-center">
+              <i class="fa-solid fa-check text-success"></i> Phương thức giao
+              hàng
+            </div>
+            <div>Phương thức giao hàng: {{ orderDetail.shippingName }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- @* customer/shipping information *@ -->
+      <div class="col-4">
+        <div class="d-flex flex-column gap-3">
+          <!-- @* shipping info *@ -->
+          <div class="card w-100">
+            <div class="card-header">
+              <h5 class="fw-bold">Thông tin giao hàng</h5>
+            </div>
+            <div class="card-body">
+              <h4 class="fw-bold">{{ orderDetail.address }}</h4>
+              <hr />
+              <div class="mb-0 d-flex gap-2 align-items-center">
+                <i class="fa-sharp fa-solid fa-phone"></i
+                >{{ orderDetail.phone + " - " + orderDetail.fullName }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

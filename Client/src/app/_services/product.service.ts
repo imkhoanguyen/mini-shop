@@ -29,6 +29,18 @@ export class ProductService {
       httpParams = httpParams.set('pageSize', params.pageSize.toString());
     if (params.orderBy) httpParams = httpParams.set('orderBy', params.orderBy);
     if (params.search) httpParams = httpParams.set('search', params.search);
+    if (params.selectedColor)
+      httpParams = httpParams.set('selectedColor', params.selectedColor);
+    if (params.selectedSize && params.selectedSize.length > 0) {
+      params.selectedSize.forEach((size: string) => {
+        httpParams = httpParams.append('selectedSize', size);
+      });
+    }
+    if (params.selectedCategory && params.selectedCategory.length > 0) {
+      params.selectedCategory.forEach((category: string) => {
+        httpParams = httpParams.append('selectedCategory', category);
+      });
+    }
 
     return this.http
       .get<ProductDto[]>(this.apiUrl + '/Product/?tracked=' + tracked, {

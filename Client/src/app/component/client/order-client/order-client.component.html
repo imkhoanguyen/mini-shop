@@ -1,0 +1,145 @@
+<h1 class="text-center my-5">Các đơn đã đặt</h1>
+<div class="container card p-4">
+  <div class="row mb-3">
+    <form (submit)="onSearch()">
+      <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input
+          type="text"
+          [(ngModel)]="prm.search"
+          name="search"
+          pInputText
+          placeholder="Nhập id đơn hàng, sđt, tên người nhận hoặc địa chỉ người nhận"
+        />
+      </p-iconField>
+    </form>
+  </div>
+  <div class="row mb-4">
+    <div class="col-3">
+      <div class="d-flex flex-column gap-1">
+        <label class="form-label">Trạng thái thanh toán</label>
+        <p-dropdown
+          [options]="utilService.LIST_PAYMENT_STATUS"
+          [(ngModel)]="selectedPaymentStatus"
+          placeholder="Trạng thái thanh toán"
+        />
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="d-flex flex-column gap-1">
+        <label class="form-label">Trạng thái đơn hàng</label>
+        <p-dropdown
+          [options]="utilService.LIST_ORDER_STATUS"
+          [(ngModel)]="selectedStatus"
+          placeholder="Trạng thái đơn hàng"
+        />
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="d-flex flex-column gap-1 align-items-stretch">
+        <label class="form-label">Thời gian bắt đầu - Thời gian kết thúc</label>
+        <p-calendar
+          [(ngModel)]="rangeDates"
+          selectionMode="range"
+          [readonlyInput]="true"
+          [showTime]="true"
+        />
+      </div>
+    </div>
+    <div class="col-3 d-flex flex-column">
+      <div class="mt-auto ms-auto">
+        <div class="d-flex gap-2">
+          <p-button
+            [outlined]="true"
+            severity="secondary"
+            label="Reset"
+            (onClick)="onReset()"
+          ></p-button>
+          <p-button label="Apply" (onClick)="onApply()"></p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- list order -->
+  <p-confirmPopup />
+  <p-table [value]="orders" [tableStyle]="{ 'min-width': '60rem' }">
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="id">Id <p-sortIcon field="Id" /></th>
+        <th>Tên người nhận</th>
+        <th>Phương thức</th>
+        <th>Thanh toán</th>
+        <th>Thời gian</th>
+        <th>Trạng thái</th>
+        <th pSortableColumn="total">Tổng cộng <p-sortIcon field="total" /></th>
+        <th style="width: 5%"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-order>
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.fullName }}</td>
+        <td>{{ order.shippingName }}</td>
+        <td
+          style="color: #2abd8f"
+          *ngIf="order.paymentStatus === utilService.PAYMENT_STATUS_PAID"
+        >
+          <i class="pi pi-check-circle mx-2"></i>{{ order.paymentStatus }}
+        </td>
+        <td
+          style="color: #fbba35"
+          *ngIf="order.paymentStatus === utilService.PAYMENT_STATUS_PENDING"
+        >
+          <i class="pi pi-clock mx-2"></i>{{ order.paymentStatus }}
+        </td>
+        <td>{{ utilService.getFormattedDate(order.created) }}</td>
+        <td
+          class="fw-bold text-danger"
+          *ngIf="order.status === utilService.ORDER_STATUS_CANCELED"
+        >
+          {{ order.status }}
+        </td>
+        <td
+          class="fw-bold"
+          style="color: #2abd8f"
+          *ngIf="order.status === utilService.ORDER_STATUS_CONFIRMED"
+        >
+          {{ order.status }}
+        </td>
+        <td
+          class="fw-bold"
+          style="color: #fbba35"
+          *ngIf="order.status === utilService.ORDER_STATUS_UNCONFIRMED"
+        >
+          {{ order.status }}
+        </td>
+
+        <td>${{ calTotal(order) }}</td>
+        <td class="d-flex gap-1 align-items-center justify-content-center">
+          <button class="btn" (click)="openOrderDetail(order.id)">
+            <i class="pi pi-pen-to-square"></i>
+          </button>
+          <button class="btn" (click)="deleteConfirmPopup($event, order.id)">
+            <i class="pi pi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <!-- paginator ngprime -->
+  @if(pagination) {
+
+  <p-paginator
+    [first]="(pagination.currentPage - 1) * prm.pageSize || 0"
+    [rows]="prm.pageSize"
+    [totalRecords]="pagination.totalItems || 0"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    (onPageChange)="onPageChange($event)"
+  >
+  </p-paginator>
+
+  }
+</div>

@@ -12,6 +12,7 @@
         <option value="id">Sắp xếp: Cũ nhất</option>
       </select>
       <button
+        *ngIf="canReview === true"
         class="btn btn-primary"
         style="min-width: 100px"
         (click)="openFormCreateReview()"
@@ -100,9 +101,14 @@
         <div class="review-header d-flex gap-3 align-items-start">
           <div class="img-container">
             <img
-              alt="User profile picture"
+              alt="{{ review.userReview.fullName }}"
               height="80"
-              src="https://storage.googleapis.com/a1aa/image/NPDbclikWUbBCNCMqDanxYYtY8HJRcd3PR4VQyprAuMGT45E.jpg"
+              [src]="
+                review.userReview.imgUrl === 'user.jpg'
+                  ? 'http://localhost:5000/avatar/user.jpg'
+                  : review.userReview.imgUrl
+              "
+              alt="Avatar"
               width="80"
               style="border-radius: 50%"
             />
@@ -117,7 +123,7 @@
               [readonly]="true"
               [cancel]="false"
             ></p-rating>
-            <div>({{ review.created | date : "short" }})</div>
+            <div>{{ utilService.getFormattedDate(review.created) }}</div>
 
             <div class="review-body">
               {{ review.reviewText }}
@@ -151,7 +157,13 @@
                 >
                   {{ showReplies[review.id] ? "Hide" : "Show" }}
                 </a>
-                <div class="ms-auto">
+                <div
+                  *ngIf="
+                    currentUser?.id === review.userReview.id ||
+                    authService.hasClaim('Review.Reply')
+                  "
+                  class="ms-auto"
+                >
                   <div
                     class="position-relative"
                     (mouseenter)="showDropdown[review.id] = true"
@@ -173,6 +185,7 @@
                       style="position: absolute; z-index: 1000"
                     >
                       <button
+                        *ngIf="canReview === true"
                         class="dropdown-item"
                         type="button"
                         (click)="openFormCreateReply(review.id)"
@@ -181,6 +194,10 @@
                         <span style="margin-left: 10px">Phản hồi</span>
                       </button>
                       <button
+                        *ngIf="
+                          currentUser?.id === review.userReview.id ||
+                          authService.hasClaim('Review.Reply')
+                        "
                         class="dropdown-item"
                         type="button"
                         (click)="openFormEditReview(review.id)"
@@ -189,6 +206,10 @@
                         <span style="margin-left: 10px">Sửa</span>
                       </button>
                       <button
+                        *ngIf="
+                          currentUser?.id === review.userReview.id ||
+                          authService.hasClaim('Review.Reply')
+                        "
                         class="dropdown-item"
                         type="button"
                         (click)="onDeleteReview(review.id)"
@@ -201,7 +222,7 @@
                 </div>
               </div>
 
-              <!-- Hiển thị replies khi người dùng nhấn vào nút -->
+              <!-- list reply -->
               <div *ngIf="showReplies[review.id]" class="replies mt-3">
                 <div
                   *ngFor="let reply of review.replies"
@@ -214,9 +235,13 @@
                   >
                     <div class="img-container">
                       <img
-                        alt="User profile picture"
+                        alt="{{ review.userReview.fullName }}"
                         height="50"
-                        src="https://storage.googleapis.com/a1aa/image/ENT6P9CjrI7DP1KFwT7YzjD5PJzSZK0tUPD75QA4SddFT45E.jpg"
+                        [src]="
+                          reply.userReview.imgUrl === 'user.jpg'
+                            ? 'http://localhost:5000/avatar/user.jpg'
+                            : reply.userReview.imgUrl
+                        "
                         width="50"
                         style="border-radius: 50%"
                       />
@@ -226,7 +251,13 @@
                         <strong>{{ reply.userReview.fullName }}</strong>
 
                         <!-- Dropdown cho reply -->
-                        <div class="position-relative ms-auto pe-3">
+                        <div
+                          *ngIf="
+                            checkShowReply() ||
+                            authService.hasClaim('Review.Reply')
+                          "
+                          class="position-relative ms-auto pe-3"
+                        >
                           <a
                             class="text-dark fw-bold"
                             style="text-decoration: none; cursor: pointer"
@@ -264,7 +295,9 @@
                           </div>
                         </div>
                       </div>
-                      <div>({{ reply.created | date : "short" }})</div>
+                      <div>
+                        {{ utilService.getFormattedDate(reply.created) }}
+                      </div>
                       <div class="reply-body">
                         {{ reply.reviewText }}
                       </div>
@@ -283,7 +316,7 @@
 
   <!-- pagination -->
   @if(pagination) {
-  <div class="card flex justify-content-center mt-3">
+  <div class="mt-3">
     <p-paginator
       [first]="(pagination.currentPage - 1) * pageSize || 0"
       [rows]="pageSize"

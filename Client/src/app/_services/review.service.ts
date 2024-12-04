@@ -101,4 +101,8 @@ export class ReviewService {
   deleteReview(reviewId: number) {
     return this.http.delete(`${this.apiUrl}/review/${reviewId}`);
   }
+
+  canReview(productId: number) {
+    return this.http.get<boolean>(`${this.apiUrl}/review/check-permission/${productId}`);
+  }
 }

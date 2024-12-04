@@ -1,6 +1,7 @@
 export interface UserReview {
   id: string;
   fullName: string;
+  imgUrl: string;
 }
 
 export interface ReviewImage {

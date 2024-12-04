@@ -32,8 +32,10 @@ import { CheckoutSuccessComponent } from './component/client/checkout-success/ch
 import { CheckoutCancelComponent } from './component/client/checkout-cancel/checkout-cancel.component';
 import { ProductDetailComponent } from './component/client/product-detail/product-detail.component';
 import { OrderComponent } from './component/admin/order/order.component';
-import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { OrderDetailComponent } from './component/admin/order-detail/order-detail.component';
+import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
+import { OrderClientComponent } from './component/client/order-client/order-client.component';
+import { OrderDetailClientComponent } from './component/client/order-detail-client/order-detail-client.component';
 import { FooterClientComponent } from './layout/footerClient/footerClient.component';
 import { BlogListComponent } from './component/blog-list/blog-list.component';
 export const routes: Routes = [
@@ -87,4 +89,7 @@ export const routes: Routes = [
   },
 
   { path: 'cart/checkout/cancel', component: CheckoutCancelComponent },
+  { path: 'order', component: OrderClientComponent },
+  { path: 'order/:id', component: OrderDetailClientComponent },
+  { path: 'blog', component: BlogUserComponent },
 ];

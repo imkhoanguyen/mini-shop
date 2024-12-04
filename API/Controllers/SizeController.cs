@@ -1,11 +1,13 @@
 using API.Helpers;
 using API.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Size;
 using Shop.Application.Mappers;
 using Shop.Application.Repositories;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Services.Implementations;
+using Shop.Application.Ultilities;
 
 namespace API.Controllers
 {
@@ -45,6 +47,7 @@ namespace API.Controllers
 
         // POST api/size/Add
         [HttpPost("Add")]
+        [Authorize(Policy = ClaimStore.Size_Create)]
         public async Task<ActionResult> Addsize(SizeAddDto sizeAddDto)
         {
             var size = SizeMapper.SizeAddDtoToEntity(sizeAddDto);
@@ -56,6 +59,7 @@ namespace API.Controllers
 
         // PUT api/size/Update
         [HttpPut("Update")]
+        [Authorize(Policy = ClaimStore.Size_Edit)]
         public async Task<IActionResult> Updatesize(SizeDto sizeDto)
         {
             var size = SizeMapper.SizeDtoToEntity(sizeDto);
@@ -67,6 +71,7 @@ namespace API.Controllers
 
         // DELETE api/size/Delete
         [HttpDelete("Delete")]
+        [Authorize(Policy = ClaimStore.Size_Delete)]
         public async Task<IActionResult> Deletesize(SizeDto sizeDto)
         {
             var size = SizeMapper.SizeDtoToEntity(sizeDto);

@@ -5,6 +5,8 @@ using Shop.Application.Services.Abstracts;
 using Shop.Application.Parameters;
 using Shop.Application.DTOs.ShippingMethods;
 using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
+using Shop.Application.Ultilities;
 
 namespace API.Controllers
 {
@@ -36,6 +38,7 @@ namespace API.Controllers
             return Ok(method);
         }
         [HttpPost("Add")]
+        [Authorize(Policy = ClaimStore.Shipping_Create)]
         public async Task<ActionResult> AddShippingMethod(ShippingMethodAdd shippingMethodDto)
         {
             if (!ModelState.IsValid)
@@ -44,6 +47,7 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetAllShippingMethod),new {id=sm.Id},sm);
         }
         [HttpPut("Update")]
+        [Authorize(Policy = ClaimStore.Shipping_Edit)]
         public async Task<ActionResult> UpdateShippingMethod(ShippingMethodUpdate shippingMethodDto)
         {
             if (!ModelState.IsValid)
@@ -57,6 +61,7 @@ namespace API.Controllers
             return Ok(shippingMethods);
         }
         [HttpDelete("Delete")]
+        [Authorize(Policy = ClaimStore.Shipping_Delete)]
         public async Task<ActionResult> DeleteShippingMethod(int id)
         {
             if(!ModelState.IsValid)

@@ -27,6 +27,19 @@ namespace Shop.Application.Services.Implementations
             _cloudinaryService = cloudinaryService;
         }
 
+        public async Task<bool> AccceptReviewAsync(int productId, string userId)
+        {
+            var order = await _unit.OrderRepository.GetAsync(o =>
+            o.UserId == userId && o.OrderItems.Any(item => item.ProductId == productId));
+
+            if(order == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<ReviewDto> AddAsync(ReviewCreateDto dto)
         {
             var user = await _userManager.FindByIdAsync(dto.UserId);

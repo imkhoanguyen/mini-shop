@@ -6,6 +6,8 @@ using Shop.Application.Parameters;
 using Shop.Application.DTOs.Discounts;
 using CloudinaryDotNet.Actions;
 using Shop.Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using Shop.Application.Ultilities;
 
 namespace API.Controllers
 {
@@ -30,6 +32,7 @@ namespace API.Controllers
             return Ok(discount);
         }
         [HttpPost("Add")]
+        [Authorize(Policy = ClaimStore.Discount_Create)]
         public async Task<ActionResult> AddDiscount(DiscountAdd discountDto)
         {
             if (!ModelState.IsValid)
@@ -38,6 +41,7 @@ namespace API.Controllers
             return CreatedAtAction(nameof(GetAllDiscount), new { id = dc.Id }, dc);
         }
         [HttpPut("Update")]
+        [Authorize(Policy = ClaimStore.Discount_Edit)]
         public async Task<ActionResult> UpdateDiscount(DiscountUpdate discountDto)
         {
             if (!ModelState.IsValid)
@@ -52,6 +56,7 @@ namespace API.Controllers
             return Ok(discounts);
         }
         [HttpDelete("Delete")]
+        [Authorize(Policy = ClaimStore.Discount_Delete)]
         public async Task<ActionResult> DeleteDiscount(int id)
         {
             if (!ModelState.IsValid)

@@ -1,6 +1,7 @@
 ﻿using API.Controllers;
 using API.Extensions;
 using API.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Products;
 using Shop.Application.Services.Abstracts;
@@ -48,6 +49,7 @@ namespace api.Controllers
         }
 
         [HttpPost("Add")]
+        [Authorize(Policy = ClaimStore.Product_Create)]
         public async Task<IActionResult> AddProduct([FromForm] ProductAdd productAdd)
         {
             if (!ModelState.IsValid)
@@ -58,6 +60,7 @@ namespace api.Controllers
         }
 
         [HttpPut("Update")]
+        [Authorize(Policy = ClaimStore.Product_Edit)]
         public async Task<IActionResult> UpdateProduct([FromForm] ProductUpdate productDto)
         {
             if (!ModelState.IsValid)
@@ -67,6 +70,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("Delete")]
+        [Authorize(Policy = ClaimStore.Product_Delete)]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             if (!ModelState.IsValid)
@@ -75,6 +79,7 @@ namespace api.Controllers
             return NoContent();
         }
         [HttpPost("add-images/{productId:int}")]
+        [Authorize(Policy = ClaimStore.Product_Edit)]
         public async Task<IActionResult> AddImagesProduct([FromRoute] int productId, [FromForm] IFormFile imageFile)
         {
             var product = await _productService.AddImageAsync(productId, imageFile);
@@ -82,6 +87,7 @@ namespace api.Controllers
         }
 
         [HttpDelete("remove-image/{productId:int}")]
+        [Authorize(Policy = ClaimStore.Product_Edit)]
         public async Task<IActionResult> RemoveImagesProduct([FromRoute] int productId, int imageId)
         {
             await _productService.RemoveImageAsync(productId, imageId);

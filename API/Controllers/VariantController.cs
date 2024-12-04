@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Shop.Application.DTOs.Variants;
 using Shop.Application.Interfaces;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 
 
 namespace API.Controllers

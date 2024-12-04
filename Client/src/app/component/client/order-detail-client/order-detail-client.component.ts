@@ -1,23 +1,25 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
-import { Order } from '../../../_models/order';
-import { OrderService } from '../../../_services/order.service';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { OrderService } from '../../../_services/order.service';
 import { UtilityService } from '../../../_services/utility.service';
 import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from '../../../_services/toastr.service';
+import { Order } from '../../../_models/order';
+import { ProductService } from '../../../_services/product.service';
 
 @Component({
-  selector: 'app-order-detail',
+  selector: 'app-order-detail-client',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './order-detail.component.html',
-  styleUrl: './order-detail.component.css',
+  templateUrl: './order-detail-client.component.html',
+  styleUrl: './order-detail-client.component.css',
 })
-export class OrderDetailComponent implements OnInit {
+export class OrderDetailClientComponent {
   private orderService = inject(OrderService);
   utilService = inject(UtilityService);
   private route = inject(ActivatedRoute);
   private toastrService = inject(ToastrService);
+  private productService = inject(ProductService);
   orderId: number = 0;
   orderDetail!: Order | null;
 
@@ -44,13 +46,15 @@ export class OrderDetailComponent implements OnInit {
     return total;
   }
 
-  confirmPayment() {
+  cancelOrder() {
+    console.log('click');
     this.orderService
-      .updatePaymentStatus(this.orderId, this.utilService.PAYMENT_STATUS_PAID)
+      .updateOrderStatus(this.orderId, this.utilService.ORDER_STATUS_CANCELED)
       .subscribe({
         next: (res) => {
           this.orderDetail = res;
-          this.toastrService.success('Xác nhận thanh toán thành công');
+          this.toastrService.success('Hủy đơn hàng thành công');
+          this.revertQuantityProduct();
         },
         error: (er) => {
           console.log(er);
@@ -58,14 +62,12 @@ export class OrderDetailComponent implements OnInit {
       });
   }
 
-  confirmOrder() {
-    console.log('click');
-    this.orderService
-      .updateOrderStatus(this.orderId, this.utilService.ORDER_STATUS_CONFIRMED)
+  revertQuantityProduct() {
+    this.productService
+      .revertQuantityProduct(this.orderDetail?.id || 0)
       .subscribe({
-        next: (res) => {
-          this.orderDetail = res;
-          this.toastrService.success('Xác nhận đơn hàng thành công');
+        next: (_) => {
+          console.log('revert-quantity-success');
         },
         error: (er) => {
           console.log(er);

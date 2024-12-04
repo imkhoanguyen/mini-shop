@@ -105,7 +105,6 @@ try
     await AddressSeed.SeedAsync(context, userManager);
     await ShippingMethodSeed.SeedAsync(context);
     await DiscountSeed.SeedAsync(context);
-
 }
 catch (Exception ex)
 {

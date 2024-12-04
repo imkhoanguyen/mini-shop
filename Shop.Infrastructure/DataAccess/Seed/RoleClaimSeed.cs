@@ -20,6 +20,16 @@ namespace Shop.Infrastructure.DataAccess.Seed
 
             await context.RoleClaims.AddRangeAsync(adminClaims);
 
+            var customerRole = await roleManager.FindByNameAsync("Customer");
+            var customerClaims = new IdentityRoleClaim<string>
+            {
+                RoleId = customerRole.Id,
+                ClaimType = "Permission",
+                ClaimValue = ClaimStore.Order_Comfirm
+            };
+
+            await context.RoleClaims.AddAsync(customerClaims);
+
             await context.SaveChangesAsync();
         }
     }

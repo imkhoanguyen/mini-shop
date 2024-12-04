@@ -30,6 +30,7 @@ namespace Shop.Infrastructure.DataAccess.Seed
                 }
             };
             await context.ShippingMethods.AddRangeAsync(shippingMethods);
+            await context.SaveChangesAsync();
         }
     }
 }

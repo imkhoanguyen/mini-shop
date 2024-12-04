@@ -1,22 +1,23 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { OrderService } from '../../../_services/order.service';
-import { FormsModule } from '@angular/forms';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { PaginatorModule } from 'primeng/paginator';
-import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
-import { Order, OrderParams } from '../../../_models/order';
-import { Pagination } from '../../../_models/pagination';
-import { ToastrService } from '../../../_services/toastr.service';
+import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ConfirmationService } from 'primeng/api';
-import { DropdownModule } from 'primeng/dropdown';
-import { UtilityService } from '../../../_services/utility.service';
+import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { DropdownModule } from 'primeng/dropdown';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+import { PaginatorModule } from 'primeng/paginator';
+import { TableModule } from 'primeng/table';
+import { OrderService } from '../../../_services/order.service';
+import { ToastrService } from '../../../_services/toastr.service';
 import { Router } from '@angular/router';
+import { UtilityService } from '../../../_services/utility.service';
+import { Order, OrderParams } from '../../../_models/order';
+import { Pagination } from '../../../_models/pagination';
+import { AccountService } from '../../../_services/account.service';
 
 @Component({
   selector: 'app-order',
@@ -34,14 +35,15 @@ import { Router } from '@angular/router';
     InputTextModule,
     ButtonModule,
   ],
-  templateUrl: './order.component.html',
-  styleUrl: './order.component.css',
+  templateUrl: './order-client.component.html',
+  styleUrl: './order-client.component.css',
   providers: [ConfirmationService],
 })
-export class OrderComponent implements OnInit {
+export class OrderClientComponent {
   private orderService = inject(OrderService);
   private toastrService = inject(ToastrService);
   private router = inject(Router);
+  private accountService = inject(AccountService);
   utilService = inject(UtilityService);
   constructor(private confirmationService: ConfirmationService) {}
   orders: Order[] = [];
@@ -55,15 +57,21 @@ export class OrderComponent implements OnInit {
     this.loadOrders();
   }
   loadOrders() {
-    this.orderService.GetAllWithLimit(this.prm).subscribe({
-      next: (res) => {
-        if (res.items && res.pagination) {
-          this.orders = res.items;
-          this.pagination = res.pagination;
-        }
-        console.log(res);
-      },
-    });
+    this.prm.userId = this.accountService.getCurrentUser()?.id || '';
+
+    if (this.prm.userId) {
+      this.orderService.GetAllWithLimit(this.prm).subscribe({
+        next: (res) => {
+          if (res.items && res.pagination) {
+            this.orders = res.items;
+            this.pagination = res.pagination;
+          }
+          console.log(res);
+        },
+      });
+    } else {
+      this.toastrService.error('vui lòng đăng nhập lại');
+    }
   }
   calTotal(order: Order) {
     const discountPrice = Number(order.discountPrice) || 0;
@@ -156,6 +164,6 @@ export class OrderComponent implements OnInit {
 
   openOrderDetail(orderId: number) {
     console.log(orderId);
-    this.router.navigate(['/admin/order', orderId]);
+    this.router.navigate(['/order', orderId]);
   }
 }

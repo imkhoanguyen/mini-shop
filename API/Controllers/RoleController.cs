@@ -86,7 +86,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Policy = ClaimStore.Role_Create)]
+        [Authorize(Policy = ClaimStore.Role_Create)]
         public async Task<ActionResult<RoleDto>> CreateRole(RoleCreateDto roleCreateDto)
         {
             if (!ModelState.IsValid)
@@ -114,6 +114,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = ClaimStore.Role_Edit)]
         public async Task<ActionResult> UpdateRole(string id, RoleDto roleDto)
         {
             if (!ModelState.IsValid)
@@ -143,6 +144,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = ClaimStore.Role_Delete)]
         public async Task<ActionResult> DeleteRole(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
@@ -176,6 +178,7 @@ namespace API.Controllers
         }
 
         [HttpPut("update-claims/{roleId}")]
+        [Authorize(Policy = ClaimStore.Change_Permission)]
         public async Task<IActionResult> UpdateRoleClaims(string roleId, [FromBody] List<string> newRoleClaims)
         {
             var role = await _roleManager.FindByIdAsync(roleId);

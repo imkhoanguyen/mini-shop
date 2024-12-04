@@ -18,7 +18,10 @@
           <a class="nav-link" href="#">Trang chủ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/shop">Sản Phẩm</a>
+          <a class="nav-link" routerLink="/shop">Sản phẩm</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/blog">Bài viết</a>
         </li>
         <li class="nav-item" *ngIf="isLoggedIn && !isCustomer">
           <a class="btn btn-primary ms-2" routerLink="/admin">Admin</a>
@@ -83,18 +86,18 @@
           >
             <li>
               <a class="dropdown-item" [routerLink]="'/user-profile'"
-                ><i class="bi bi-person-bounding-box"></i>Profile</a
+                ><i class="bi bi-person-bounding-box me-2"></i>Thông tin</a
               >
             </li>
             <li>
-              <a class="dropdown-item" href="#"
-                ><i class="bi bi-gear"></i> Settings</a
+              <a class="dropdown-item" routerLink="/order"
+                ><i class="bi bi-bag me-2"></i> Đơn hàng</a
               >
             </li>
             <li><hr class="dropdown-divider" /></li>
             <li>
               <a class="dropdown-item" (click)="logout()"
-                ><i class="bi bi-box-arrow-right"></i> Logout</a
+                ><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a
               >
             </li>
           </ul>

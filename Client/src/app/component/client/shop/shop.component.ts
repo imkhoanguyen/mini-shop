@@ -53,7 +53,7 @@ export class ShopComponent implements OnInit {
 
   // define params
   params = {
-    pageSize: 3,
+    pageSize: 8,
     pageNumber: 1,
     search: '',
     selectedSize: [] as number[],
@@ -218,7 +218,7 @@ export class ShopComponent implements OnInit {
 
   refresh() {
     this.params = {
-      pageSize: 3,
+      pageSize: 8,
       pageNumber: 1,
       search: '',
       selectedSize: [] as number[],

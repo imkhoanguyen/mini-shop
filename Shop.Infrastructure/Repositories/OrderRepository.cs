@@ -34,6 +34,11 @@ namespace Shop.Infrastructure.Repositories
                 || o.Address.ToLower().Contains(prm.Search.ToLower()) || o.FullName.ToLower().Contains(prm.Search.ToLower()));
             }
 
+            if(!prm.UserId.IsNullOrEmpty())
+            {
+                query = query.Where(o => o.UserId ==  prm.UserId);
+            }
+
             if (!prm.SelectedStatus.IsNullOrEmpty())
             {
                 if (Enum.TryParse(typeof(OrderStatus), prm.SelectedStatus, out var status))

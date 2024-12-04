@@ -43,6 +43,8 @@ export class CheckoutSuccessComponent implements OnInit {
     this.orderService.getOrderByStripeSessionId(this.sessionId!).subscribe({
       next: (res) => {
         this.order = res;
+        console.log(res);
+        console.log(this.order);
       },
       error: (er) => {
         console.log(er);
@@ -65,6 +67,7 @@ export class CheckoutSuccessComponent implements OnInit {
     if (this.order) {
       const discountPrice = Number(this.order.discountPrice) || 0;
 
+      if (this.calTotal() - discountPrice < 0) return 0;
       return this.calTotal() - discountPrice;
     }
     return 0;
