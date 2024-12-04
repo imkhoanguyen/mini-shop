@@ -8,7 +8,7 @@ namespace Shop.Domain.ValidationAttributes
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             string phoneNumber = value.ToString();
-            string pattern = @"^(0|\+84)(3[2-9]|5[6|8|9]|7[0-9]|8[1-5]|9[0-9])[0-9]{7}$";
+            string pattern = @"^0\d{9}$";
 
             if (Regex.IsMatch(phoneNumber, pattern))
             {
