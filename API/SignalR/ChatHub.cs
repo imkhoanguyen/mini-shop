@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Shop.Application.DTOs.Messages;
 using System.Collections.Concurrent;
 namespace API.SignalR
@@ -43,16 +43,15 @@ namespace API.SignalR
             await Clients.Group(message.SenderId).SendAsync("ReceiveMessage", message);
             Console.WriteLine($"Message sent to sender: {message.SenderId}");
 
-            if (message.RecipientIds != null && message.RecipientIds.Any())
-            {
-                var tasks = message.RecipientIds
-                    .Select(recipientId =>
-                    {
-                        Console.WriteLine($"Sending message to recipient: {recipientId}");
-                        return Clients.Group(recipientId).SendAsync("ReceiveMessage", message);
-                    });
-                await Task.WhenAll(tasks);
-            }
+
+            var tasks = message.RecipientIds!.Distinct()
+                .Select(recipientId =>
+                {
+                    Console.WriteLine($"Sending message to recipient: {recipientId}");
+                    return Clients.Group(recipientId).SendAsync("ReceiveMessage", message);
+                });
+            await Task.WhenAll(tasks);
+            
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
