@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './layout/header/header.component';
 import { CommonModule } from '@angular/common';
@@ -25,13 +25,14 @@ export class AppComponent implements OnInit {
   title = 'Client';
   constructor(private router: Router) {}
   private cartService = inject(CartService);
-
+  private cdr = inject(ChangeDetectorRef);
   isLoading = false;
   private loadingService = inject(LoadingService);
 
   ngOnInit(): void {
     this.loadingService.loading$.subscribe((loading) => {
       this.isLoading = loading;
+      this.cdr.detectChanges();
     });
     this.setCurrentCart();
   }
