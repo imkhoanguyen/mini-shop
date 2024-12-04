@@ -1,0 +1,16 @@
+<h2>All Posts</h2>
+<div class="d-flex flex-column mb-3" *ngFor="let blog of blogs">
+  <div class="p-2">
+    <div class="card" (click)="navigateBlog(blog.id)">
+      <h5 class="card-header">{{ blog.title }}</h5>
+      <div class="card-body">
+        <h5
+          class="card-title"
+          *ngIf="blog.content"
+          [innerHTML]="blog.content | truncate : 200 | safeHtml"
+        ></h5>
+        <p *ngIf="!blog.content">No content available.</p>
+      </div>
+    </div>
+  </div>
+</div>
