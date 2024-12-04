@@ -18,7 +18,7 @@ import { MessageService } from '../../../_services/message.service';
 import { ChatService } from '../../../_services/chat.service';
 import { ToastrService } from '../../../_services/toastr.service';
 import { PaginatedResult, Pagination } from '../../../_models/pagination';
-import { Subscription } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -85,6 +85,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
     }
+      console.log('setupMessageCustomerReceived called');
+      this.chatService.messageReceived$
+      .pipe(distinctUntilChanged((prev, curr) => prev?.id === curr?.id))
+      .subscribe({
+        next: (message: MessageDto | null) => {
+
+          if (message && message.senderId !== this.user.id) { // Kiểm tra senderId
+            console.log('Message received from ...:', message);
+            this.messages.push(message);
+            this.scrollToBottom();
+          }
+        },
+        error: (err) => console.error('Error receiving message:', err),
+      });
 
     this.chatService.typingStatus$.subscribe({
       next: (status) => {
