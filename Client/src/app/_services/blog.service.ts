@@ -45,6 +45,11 @@ export class BlogService {
   getAllBlogs() {
     return this.http.get<Blog[]>(this.apiUrl + '/Blog/GetAll');
   }
+
+  get5Blog() {
+    return this.http.get<Blog[]>(this.apiUrl + '/Blog/List5Blog');
+  }
+
   getBlogNameById(BlogId: number) {
     return this.http.get(this.apiUrl + '/Blog/GetBlogNameById/' + BlogId);
   }

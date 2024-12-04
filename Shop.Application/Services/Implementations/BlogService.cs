@@ -32,9 +32,16 @@ namespace Shop.Application.Services.Implementations
             await _unitOfWork.BlogRepository.DeleteAsync(blog);
         }
 
+        public async Task<IEnumerable<Blog>> GetAll5BlogsAsync(bool tracked)
+        {
+            var blogs = await _unitOfWork.BlogRepository.GetAllAsync(tracked);
+            return blogs.OrderByDescending(b => b.Create).Take(5);
+        }
+
         public async Task<IEnumerable<Blog>> GetAllBlogsAsync(bool tracked)
         {
-            return await _unitOfWork.BlogRepository.GetAllAsync(tracked);
+            var blogs = await _unitOfWork.BlogRepository.GetAllAsync(tracked);
+            return blogs.OrderByDescending(b => b.Create);
         }
 
         public Task<PagedList<Blog>> GetAllBlogsAsync(BlogParams blogParams, bool tracked = false)

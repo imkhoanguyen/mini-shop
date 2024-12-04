@@ -36,6 +36,8 @@ import { OrderDetailComponent } from './component/admin/order-detail/order-detai
 import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
 import { OrderClientComponent } from './component/client/order-client/order-client.component';
 import { OrderDetailClientComponent } from './component/client/order-detail-client/order-detail-client.component';
+import { FooterClientComponent } from './layout/footerClient/footerClient.component';
+import { BlogListComponent } from './component/blog-list/blog-list.component';
 import { ProductUserLikedComponent } from './component/product-user-liked/product-user-liked.component';
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -80,6 +82,8 @@ export const routes: Routes = [
   { path: 'shop/product-detail/:productId', component: ProductDetailComponent },
   { path: 'cart', component: CartComponent },
   { path: 'user-profile', component: UserProfileComponent },
+  { path: 'footer', component: FooterClientComponent },
+  { path: 'blog-list', component: BlogListComponent },
   { path: 'user-liked', component: ProductUserLikedComponent },
   {
     path: 'cart/checkout/success',

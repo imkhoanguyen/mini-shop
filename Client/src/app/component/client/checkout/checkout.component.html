@@ -228,22 +228,7 @@
                     >
                   </th>
                   <td class="text-end">
-                    <span
-                      *ngIf="
-                        currentDiscount.amountOff !== 0 &&
-                        currentDiscount.amountOff != null
-                      "
-                      class="fw-bold"
-                      >-${{ calDiscountPrice() }}</span
-                    >
-                  </td>
-                  <td class="text-end">
-                    <span
-                      *ngIf="
-                        currentDiscount.percentOff &&
-                        currentDiscount.percentOff != null
-                      "
-                      class="fw-bold"
+                    <span *ngIf="calDiscountPrice()" class="fw-bold"
                       >-${{ calDiscountPrice() }}</span
                     >
                   </td>
@@ -254,23 +239,7 @@
                     <span class="fw-bold">Tổng cộng</span>
                   </th>
                   <td class="text-end">
-                    <span
-                      *ngIf="
-                        currentDiscount.amountOff !== 0 &&
-                        currentDiscount.amountOff != null
-                      "
-                      class="fw-bold"
-                      >${{ calTotal() }}</span
-                    >
-
-                    <span
-                      *ngIf="
-                        currentDiscount.percentOff !== 0 &&
-                        currentDiscount.percentOff != null
-                      "
-                      class="fw-bold"
-                      >${{ calTotal() }}</span
-                    >
+                    <span class="fw-bold">${{ calTotal() }}</span>
                   </td>
                 </tr>
               </tbody>

@@ -19,6 +19,7 @@ namespace Shop.Application.Services.Abstracts
         Task<ReviewDto> AddReplyAsync(ReplyCreateDto dto);
         Task RemoveReview(int reviewId);
         Task<ReviewDto> GetAsync(Expression<Func<Review, bool>> expression);
+        Task<bool> AccceptReviewAsync(int productId, string userId);
 
     }
 }

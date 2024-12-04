@@ -114,6 +114,7 @@ export class CheckoutComponent implements OnInit {
       next: (res) => {
         this.currentDiscount = res.body;
         console.log(res);
+        console.log(this.currentDiscount);
       },
       error: (er) => console.log(er),
     });
@@ -121,12 +122,19 @@ export class CheckoutComponent implements OnInit {
   }
 
   calDiscountPrice() {
+    console.log(this.currentDiscount);
     if (this.currentDiscount == null) return 0;
 
     let priceDiscount = 0;
-    if (this.currentDiscount.amountOff !== 0) {
+    if (
+      this.currentDiscount.amountOff !== 0 &&
+      this.currentDiscount.amountOff != null
+    ) {
       priceDiscount = this.currentDiscount.amountOff;
-    } else if (this.currentDiscount.percentOff !== 0) {
+    } else if (
+      this.currentDiscount.percentOff !== 0 &&
+      this.currentDiscount.percentOff != null
+    ) {
       priceDiscount =
         ((this.cartService.totals() + this.order.shippingFee) *
           this.currentDiscount.percentOff) /
@@ -137,11 +145,12 @@ export class CheckoutComponent implements OnInit {
   }
 
   calTotal() {
-    return (
+    let total =
       this.cartService.totals() +
       this.order.shippingFee -
-      this.calDiscountPrice()
-    );
+      this.calDiscountPrice();
+    if (total < 0) total = 0;
+    return total;
   }
 
   onAddOrderOrPayment() {
