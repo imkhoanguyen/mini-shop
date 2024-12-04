@@ -49,6 +49,8 @@ namespace Shop.Application.Ultilities
         public const string Change_Permission = "Role.ChangePermission";
 
         public const string Message_Reply = "Message.Reply";
+        public const string Review_Reply = "Review.Reply";
+
 
         //discount
         public const string Discount_Create = "Discount.Create";
@@ -118,6 +120,7 @@ namespace Shop.Application.Ultilities
 
             // message management
             new IdentityRoleClaim<string> {ClaimType="Permission", ClaimValue= Message_Reply},
+            new IdentityRoleClaim<string> {ClaimType="Permission", ClaimValue= Review_Reply},
 
             
 
@@ -230,10 +233,12 @@ namespace Shop.Application.Ultilities
 
             new PermissionGroupDto
             {
-                GroupName = "Quản lý tin nhắn",
+                GroupName = "Chăm sóc khách hàng",
                 Permissions = new List<PermissionItemDto>
                 {
                     new PermissionItemDto {Name = "Phản hồi tin nhắn từ khách hàng", ClaimValue = Message_Reply},
+                    new PermissionItemDto {Name = "Phản hồi đánh giá sản phẩm từ khách hàng", ClaimValue = Review_Reply},
+
                 }
             },
 

@@ -4,10 +4,13 @@ using API.SignalR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.IdentityModel.Tokens;
 using Shop.Application.DTOs.Reviews;
 using Shop.Application.Interfaces;
 using Shop.Application.Services.Abstracts;
+using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
+using Shop.Domain.Exceptions;
 
 namespace API.Controllers
 {
@@ -15,14 +18,19 @@ namespace API.Controllers
     {
         private readonly ICloudinaryService _cloudinaryService;
         private readonly IHubContext<ReviewHub> _hub;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<AppRole> _roleManager;
         private readonly IReviewService _reviewService;
 
         public ReviewController(IReviewService reviewService,
-            ICloudinaryService cloudinaryService, IHubContext<ReviewHub> hub)
+            ICloudinaryService cloudinaryService, IHubContext<ReviewHub> hub,
+            UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             _reviewService = reviewService;
             _cloudinaryService = cloudinaryService;
             _hub = hub;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpGet("{productId:int}")]
@@ -34,6 +42,40 @@ namespace API.Controllers
 
             return Ok(pagedList);
         }
+
+        [HttpGet("check-permission/{productId}")]
+        public async Task<ActionResult<bool>> CheckReviewPermission(int productId)
+        {
+            var userId = ClaimsPrincipleExtensions.GetUserId(User);
+            if (userId.IsNullOrEmpty())
+            {
+                return Ok(false);
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+
+            var roleClaims = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(userRoles[0]));
+
+            var hasReviewClaim = roleClaims.Any(c => c.Type == "Permission" && c.Value == ClaimStore.Review_Reply);
+            if (hasReviewClaim)
+            {
+                return Ok(true);
+            }
+
+            bool canReview = await _reviewService.AccceptReviewAsync(productId, userId);
+
+            if (canReview == false)
+            {
+                return Ok(false);
+            }
+
+            return Ok(true);
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> CreateReview([FromForm] ReviewCreateDto reviewCreateDto)
@@ -111,5 +153,7 @@ namespace API.Controllers
             await _hub.Clients.All.SendAsync("delete-review", reviewId);
             return NoContent();
         }
+
+
     }
 }

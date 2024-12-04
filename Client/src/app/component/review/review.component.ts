@@ -35,6 +35,8 @@ import { Subscription } from 'rxjs';
 import { Pagination } from '../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
 import { ToastrService } from '../../_services/toastr.service';
+import { AuthService } from '../../_services/auth.service';
+import { UtilityService } from '../../_services/utility.service';
 @Component({
   selector: 'app-review',
   standalone: true,
@@ -67,6 +69,8 @@ export class ReviewComponent implements OnInit, OnDestroy {
   videoUrl: string = '';
   private accountServices = inject(AccountService);
   currentUser = this.accountServices.getCurrentUser();
+  authService = inject(AuthService);
+  utilService = inject(UtilityService)
   private fb = inject(FormBuilder);
 
   private reviewServices = inject(ReviewService);
@@ -76,17 +80,40 @@ export class ReviewComponent implements OnInit, OnDestroy {
     this.subscription = new Subscription();
   }
 
+  canReview = false;
+
   pagination: Pagination | undefined;
   pageNumber = 1;
   pageSize = 5;
   prm: ReviewParams = new ReviewParams();
   totalRating: number = 0;
 
+  checkReview() {
+    this.reviewServices.canReview(this.productId).subscribe({
+      next: (res) => {
+        this.canReview = res;
+      },
+      error: (er) => {
+        console.log(er);
+      },
+    });
+  }
+
+  checkShowReply(): boolean {
+    const index = this.reviews.findIndex((r) =>
+      r.replies.some((rep) => rep.userReview.id === this.currentUser?.id)
+    );
+    if(index !== -1) return true;
+    return false;
+  }
+  
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
   ngOnInit(): void {
+    this.checkReview();
     this.loadReviews();
     this.initFormCreateView();
     this.initFrmEdit();
@@ -351,7 +378,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
 
     this.reviewServices.addReview(formData).subscribe({
       next: (response) => {
-        this.reviews.unshift(response);
+        // this.reviews.unshift(response);
         this.toastrService.success('Thêm dánh giá thành công');
         this.closeFormCreateReview();
       },
