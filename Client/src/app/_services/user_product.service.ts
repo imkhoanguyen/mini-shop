@@ -19,7 +19,9 @@ export class UserProductService {
 
   // Add a product to the liked list
   addLikedProduct(userId: string, productId: number): Observable<any> {
-    const dto: UserProduct = { AppUserId: userId, ProductId: productId };
+    const dto: UserProduct = { userId: userId, productId: productId };
+    console.log("Dữ liệu gửi đi:", dto);
+
     return this.http.post(`${this.apiUrl}/ProductUserLike/liked-products`, dto);
   }
 
