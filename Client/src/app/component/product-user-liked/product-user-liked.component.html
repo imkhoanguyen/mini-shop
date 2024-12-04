@@ -16,7 +16,7 @@
                 <p>Số lượng còn lại: {{ variant.quantity }}</p>
             </div>
             </div>
-            <button type="" >Thêm vào giỏ hàng</button>
+            <button type="" (click)="addToCart(product)">Thêm vào giỏ hàng</button>
             <button type="" (click)="DeleteProductLiked(product.id)">Xoá</button>         
         </div>
         

@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { UserProductService } from '../../_services/user_product.service';
 import { CommonModule } from '@angular/common';
+import { CartItem } from '../../_models/cart';
+import { CartService } from '../../_services/cart.service';
+import { ToastrService } from '../../_services/toastr.service';
 
 @Component({
   selector: 'app-product-user-liked',
@@ -16,6 +19,8 @@ export class ProductUserLikedComponent implements OnInit{
   userId:string="";
   constructor(
     private userProductService: UserProductService,
+    private cartService: CartService,
+    private toastrService:ToastrService
   ) {}
   ngOnInit(): void {
     const value = localStorage.getItem('user');
@@ -52,6 +57,29 @@ export class ProductUserLikedComponent implements OnInit{
         }
       );
     }
+  }
+  addToCart(product:any){
+    // console.log(product)
+    const cardItem: CartItem = {
+      productId: product.id, // Lấy id sản phẩm
+      colorName: product.variants[0]?.color.name || "", // Lấy tên màu từ variant đầu tiên (nếu có)
+      sizeName: product.variants[0]?.size.name || "", // Lấy tên kích thước từ variant đầu tiên (nếu có)
+      price: product.variants[0]?.price || 0, // Lấy giá từ variant đầu tiên (nếu có)
+      productImage: product.image?.imgUrl || "", // Lấy đường dẫn ảnh sản phẩm (nếu có)
+      quantity: 1, // Mặc định số lượng là 1
+      productName: product.name || "", // Lấy tên sản phẩm
+      variantId: product.variants[0]?.id || 0,
+    };
+    console.log(cardItem)
+    this.cartService
+      .addItemToCart(cardItem, cardItem.quantity)
+      .then((success) => {
+        if (success) {
+          this.toastrService.success('Thêm sản phẩm vào giỏ hành thành công!');
+        } else {
+          this.toastrService.error('Thêm sản phẩm vào giở hàng thất bại.');
+        }
+      });
   }
 
 }
