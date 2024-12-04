@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 @Injectable({
   providedIn: 'root',
 })
@@ -19,8 +19,8 @@ export class AuthService {
     }
     if (!token) return false;
     const decodedToken = this.decodeToken(token);
-    console.log(decodedToken);
-    console.log(decodedToken.Permission);
+    // console.log(decodedToken);
+    // console.log(decodedToken.Permission);
     return (
       decodedToken &&
       decodedToken.Permission &&
@@ -52,4 +52,3 @@ export class AuthService {
     }
   }
 }
-

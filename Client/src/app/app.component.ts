@@ -25,14 +25,14 @@ export class AppComponent implements OnInit {
   title = 'Client';
   constructor(private router: Router) {}
   private cartService = inject(CartService);
-  private cdr = inject(ChangeDetectorRef);
   isLoading = false;
   private loadingService = inject(LoadingService);
 
   ngOnInit(): void {
     this.loadingService.loading$.subscribe((loading) => {
-      this.isLoading = loading;
-      this.cdr.detectChanges();
+      Promise.resolve().then(() => {
+        this.isLoading = loading;
+      });
     });
     this.setCurrentCart();
   }
