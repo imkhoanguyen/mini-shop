@@ -28,10 +28,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             }
             break;
           case 401:
-            toastr.error('401' + ' - ' + 'Unauthorised');
+            toastr.error(error.error.statusCode + ' - ' + error.error.message);
+            break;
+          case 403:
+            toastr.error(
+              '403 - ' + 'Bạn không có quyền thực hiện chức năng này'
+            );
             break;
           case 404:
-            router.navigateByUrl('/not-found');
+            toastr.error(error.error.statusCode + ' - ' + error.error.message);
             break;
           case 500:
             const navigationExtras: NavigationExtras = {
