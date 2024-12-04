@@ -16,6 +16,7 @@ using Shop.Application.Parameters;
 using Shop.Application.Services.Abstracts;
 using Shop.Application.Ultilities;
 using Shop.Domain.Entities;
+using Shop.Domain.Exceptions;
 using System.Text;
 
 namespace API.Controllers
@@ -119,9 +120,14 @@ namespace API.Controllers
             var user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail!) ??
                        await _userManager.FindByNameAsync(loginDto.UserNameOrEmail!);
 
+            if(user == null)
+            {
+                throw new NotFoundException("Không tìm thấy tài khoản");
+            }
+
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (user == null || !signInResult.Succeeded)
-                return BadRequest("Đăng nhập không hợp lệ");
+                throw new BadRequestException("Đăng nhập không hợp lệ");
             
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
@@ -132,14 +138,14 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto registerDto)
         {
             if (!IsPasswordValid(registerDto.Password))
-                return BadRequest("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
+                throw new BadRequestException("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
             if (registerDto.UserName.Length < 6)
-                return BadRequest("UserName không được dưới 6 ký tự");
+                throw new BadRequestException("UserName không được dưới 6 ký tự");
             if (await CheckUsernameExistsAsync(registerDto.UserName))
-                return BadRequest("Username đã tồn tại");
+                throw new BadRequestException("Username đã tồn tại");
             if (await EmailExists(registerDto.Email))
             {
-                return BadRequest("Email đã tồn tại");
+                throw new BadRequestException("Email đã tồn tại");
             }
             var user = new AppUser
             {
@@ -151,7 +157,7 @@ namespace API.Controllers
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded)
-                return BadRequest("Đăng ký không thành công");
+                throw new BadRequestException("Đăng ký không thành công");
 
             await _userManager.AddToRoleAsync(user, "Customer");
             var userDto = UserMapper.EntityToUserDto(user);
@@ -170,14 +176,14 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> CreateUser([FromForm] UserAdd userAdd)
         {
             if (!IsPasswordValid(userAdd.Password))
-                return BadRequest("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
+                throw new BadRequestException("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
             if (userAdd.UserName.Length < 6)
-                return BadRequest("UserName không được dưới 6 ký tự");
+                throw new BadRequestException("UserName không được dưới 6 ký tự");
             if (await CheckUsernameExistsAsync(userAdd.UserName))
-                return BadRequest("Username đã tồn tại");
+                throw new BadRequestException("Username đã tồn tại");
             if (await EmailExists(userAdd.Email))
             {
-                return BadRequest("Email đã tồn tại");
+                throw new BadRequestException("Email đã tồn tại");
             }
             var user = new AppUser
             {
@@ -199,11 +205,11 @@ namespace API.Controllers
             var result = await _userManager.CreateAsync(user, userAdd.Password);
 
             if (!result.Succeeded)
-                return BadRequest("Không thể tạo tài khoản");
+                throw new BadRequestException("Không thể tạo tài khoản");
 
             var roleResult = await _userManager.AddToRoleAsync(user, userAdd.Role);
             if (!roleResult.Succeeded)
-                return BadRequest("Không thể gán quyền cho tài khoản");
+                throw new BadRequestException("Không thể gán quyền cho tài khoản");
 
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
@@ -214,21 +220,21 @@ namespace API.Controllers
         public async Task<ActionResult<UserDto>> UpdateUser([FromForm] UserUpdate userDto)
         {
             if (userDto == null)
-                return BadRequest("Dữ liệu không hợp lệ");
+                throw new BadRequestException("Dữ liệu không hợp lệ");
 
             if (await EmailExists(userDto.Email, userDto.Id))
             {
-                return BadRequest("Email đã tồn tại");
+                throw new BadRequestException("Email đã tồn tại");
             }
 
             var user = await _userManager.FindByIdAsync(userDto.Id);
             if (user == null)
-                return NotFound("User không tồn tại");
+                throw new NotFoundException("User không tồn tại");
 
             if (!string.IsNullOrEmpty(userDto.Password))
             {
                 if (!IsPasswordValid(userDto.Password))
-                    return BadRequest("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
+                    throw new BadRequestException("Mật khẩu phải dài ít nhất 6 ký tự, bao gồm một chữ hoa, một chữ thường, một số và một ký tự đặc biệt.");
 
                 var passwordHash = _userManager.PasswordHasher.HashPassword(user, userDto.Password);
                 user.PasswordHash = passwordHash;
@@ -245,7 +251,7 @@ namespace API.Controllers
 
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                return BadRequest("Cập nhật không thành công");
+                throw new BadRequestException("Cập nhật không thành công");
             var currentRoles = await _userManager.GetRolesAsync(user);
 
             // Kiểm tra nếu Role mới bằng null hoặc rỗng
@@ -262,17 +268,17 @@ namespace API.Controllers
                     {
                         var removeRoleResult = await _userManager.RemoveFromRoleAsync(user, currentRole);
                         if (!removeRoleResult.Succeeded)
-                            return BadRequest("Không thể xóa quyền cũ của tài khoản");
+                            throw new BadRequestException("Không thể xóa quyền cũ của tài khoản");
                         var addRoleResult = await _userManager.AddToRoleAsync(user, roleToUpdate);
                         if (!addRoleResult.Succeeded)
-                            return BadRequest("Không thể gán quyền mới cho tài khoản");
+                            throw new BadRequestException("Không thể gán quyền mới cho tài khoản");
                     }
                 }
                 else
                 {
                     var addRoleResult = await _userManager.AddToRoleAsync(user, roleToUpdate);
                     if (!addRoleResult.Succeeded)
-                        return BadRequest("Không thể gán quyền cho tài khoản");
+                        throw new BadRequestException("Không thể gán quyền cho tài khoản");
                 }
             }
 
@@ -344,7 +350,7 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return NotFound("User không tồn tại");
+                throw new NotFoundException("User không tồn tại");
 
             DateTimeOffset lockoutEnd;
             if (minutes.HasValue) lockoutEnd = DateTimeOffset.Now.AddMinutes(minutes.Value);
@@ -360,7 +366,7 @@ namespace API.Controllers
             }
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                return BadRequest("Lock user thất bại");
+                throw new BadRequestException("Lock user thất bại");
 
             return Ok(new { message = "Lock user thành công" });
         }
@@ -369,12 +375,12 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return NotFound("User không tồn tại");
+                throw new NotFoundException("User không tồn tại");
 
             user.LockoutEnd = null;
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
-                return BadRequest("Unlock user thất bại");
+                throw new BadRequestException("Unlock user thất bại");
 
             return Ok(new { message = "Unlock user thành công" });
         }
@@ -401,7 +407,7 @@ namespace API.Controllers
         public async Task<IActionResult> ForgetPassword(CancellationToken cancellationToken, string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null) return BadRequest("Email không tồn tại");
+            if (user == null) throw new BadRequestException("Email không tồn tại");
 
             string host = _configuration.GetValue<string>("ApplicationUrl");
 
@@ -428,10 +434,10 @@ namespace API.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
-            if (user == null) return BadRequest("Email không tồn tại");
+            if (user == null) throw new BadRequestException("Email không tồn tại");
 
             if (string.IsNullOrEmpty(resetPasswordDto.Token))
-                return BadRequest("Không có token");
+                throw new BadRequestException("Không có token");
 
             string decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordDto.Token));
 
@@ -443,7 +449,7 @@ namespace API.Controllers
             }
             else
             {
-                return BadRequest(identityResult.Errors.ToList()[0].Description);
+                throw new BadRequestException(identityResult.Errors.ToList()[0].Description);
             }
         }
 
