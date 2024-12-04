@@ -49,19 +49,30 @@ namespace API.Controllers
         public async Task<IActionResult> GoogleLogin([FromBody] TokenRequest tokenRequest)
         {
             var payload = await GoogleJsonWebSignature.ValidateAsync(tokenRequest.Token);
-            var user = await _userManager.FindByEmailAsync(payload.Email) ?? new AppUser
+            var user = await _userManager.FindByEmailAsync(payload.Email);
+
+            if (user == null)
             {
-                Email = payload.Email,
-                UserName = payload.Email,
-                FullName = payload.Name,
-                Avatar = payload.Picture
-            };
-            
-            await _userManager.CreateAsync(user);
-            await _userManager.AddToRoleAsync(user, "Customer");
+                user = new AppUser
+                {
+                    Email = payload.Email,
+                    UserName = payload.Email,
+                    FullName = payload.Name,
+                    Avatar = payload.Picture
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    return BadRequest(createResult.Errors);
+                }
+
+                await _userManager.AddToRoleAsync(user, "Customer");
+            }
 
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
+
             return Ok(userDto);
         }
         [HttpGet("validate-facebook-token")]
@@ -76,19 +87,30 @@ namespace API.Controllers
         {
             var payload = await ValidateFacebookToken(tokenRequest.Token!);
 
-            var user = await _userManager.FindByEmailAsync(payload.Email!) ?? new AppUser
-            {
-                Email = payload.Email,
-                UserName = payload.Email,
-                FullName = payload.Name,
-                Avatar = payload.Picture!.Data!.Url
-            };
+            var user = await _userManager.FindByEmailAsync(payload.Email!);
 
-            if (user.Id == null)
-                await _userManager.CreateAsync(user);
-            await _userManager.AddToRoleAsync(user, "Customer");
+            if (user == null)
+            {
+                user = new AppUser
+                {
+                    Email = payload.Email,
+                    UserName = payload.Email,
+                    FullName = payload.Name,
+                    Avatar = payload.Picture!.Data!.Url
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    return BadRequest(createResult.Errors); 
+                }
+                await _userManager.AddToRoleAsync(user, "Customer");
+                
+            }
+
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
+
             return Ok(userDto);
         }
         [HttpPost("login")]

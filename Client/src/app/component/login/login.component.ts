@@ -155,7 +155,7 @@ export class LoginComponent implements OnInit {
     this.accountService.googleLogin({ token: token }).subscribe(
       (user: User) => {
         localStorage.setItem('userInfo', JSON.stringify(user));
-        this.router.navigateByUrl('/');
+        window.location.href = '/';
       },
       () => {
         this.showMessage('error', 'Đăng nhập không thành công.');
@@ -196,7 +196,7 @@ export class LoginComponent implements OnInit {
     this.accountService.facebookLogin({token: token}).subscribe(
       (user: User) => {
         localStorage.setItem('userInfo', JSON.stringify(user));
-        this.router.navigateByUrl('/');
+        window.location.href = '/';
       },
       (error) => {
         this.showMessage('error', error);
