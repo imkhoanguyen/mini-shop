@@ -28,6 +28,15 @@ namespace API.Controllers
             return Ok(blogsDto);
         }
 
+        [HttpGet("List5Blog")]
+        public async Task<IActionResult> GetAll5BlogsAsync()
+        {
+            var blogs = await _blogService.GetAll5BlogsAsync(false);
+
+            var blogsDto = blogs.Select(b => BlogMapper.EntityToBlogDto(b)).ToList();
+            return Ok(blogsDto);
+        }
+
         [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetBlogsById(int id)
         {
