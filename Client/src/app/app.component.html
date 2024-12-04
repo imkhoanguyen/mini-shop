@@ -1,4 +1,10 @@
 <p-toast />
+<p-progressSpinner
+  *ngIf="isLoading"
+  styleClass="w-6rem h-6rem"
+  strokeWidth="5"
+  class="fullscreen-spinner"
+></p-progressSpinner>
 <div *ngIf="!isAdminPage()">
   <app-header></app-header>
   <router-outlet></router-outlet>
