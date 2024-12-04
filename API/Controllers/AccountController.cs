@@ -56,8 +56,10 @@ namespace API.Controllers
                 FullName = payload.Name,
                 Avatar = payload.Picture
             };
-            if (user.Id == null)
-                await _userManager.CreateAsync(user);
+            
+            await _userManager.CreateAsync(user);
+            await _userManager.AddToRoleAsync(user, "Customer");
+
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
             return Ok(userDto);
@@ -84,6 +86,7 @@ namespace API.Controllers
 
             if (user.Id == null)
                 await _userManager.CreateAsync(user);
+            await _userManager.AddToRoleAsync(user, "Customer");
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
             return Ok(userDto);
@@ -97,6 +100,7 @@ namespace API.Controllers
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
             if (user == null || !signInResult.Succeeded)
                 return BadRequest("Đăng nhập không hợp lệ");
+            
             var userDto = UserMapper.EntityToUserDto(user);
             userDto.Token = await _tokenService.CreateToken(user);
             return Ok(userDto);
