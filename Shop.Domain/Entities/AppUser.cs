@@ -15,6 +15,6 @@ namespace Shop.Domain.Entities
         public List<Message> MessageSent { get; set; } = new();
         public List<Message> MessageReceived { get; set; } = new();
 
-        
+        public ICollection<ProductUserLike> ProductUserLikes { get; set; } = new List<ProductUserLike>();
     }
 }

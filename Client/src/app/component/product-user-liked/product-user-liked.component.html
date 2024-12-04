@@ -1,0 +1,28 @@
+<div class="product-liked-container">
+    <h2>Sản phẩm yêu thích</h2>
+    <div *ngIf="productLiked.length > 0; else noProducts">
+        <div *ngFor="let product of productLiked" class="product-item">
+            <img [src]="product.image?.imgUrl || 'default-image.jpg'" alt="{{ product.name }}" class="product-image" />
+            <div>
+                <h3>{{ product.name }}</h3>
+                <p>Mô tả: {{ product.description }}</p>
+            </div>
+            <div *ngIf="product.variants.length > 0">
+            <div *ngFor="let variant of product.variants" class="variant-item">
+                <p>Màu sắc: {{ variant.color?.name }} (<span [style.color]="variant.color?.code">{{ variant.color?.code }}</span>)</p>
+                <p>Kích cỡ: {{ variant.size?.name }}</p>
+                <p>Giá gốc: {{ variant.price | currency:'VND' }}</p>
+                <p>Giá bán: {{ variant.priceSell | currency:'VND' }}</p>
+                <p>Số lượng còn lại: {{ variant.quantity }}</p>
+            </div>
+            </div>
+            <button type="" >Thêm vào giỏ hàng</button>
+            <button type="" (click)="DeleteProductLiked(product.id)">Xoá</button>         
+        </div>
+        
+    </div>
+    <ng-template #noProducts>
+      <p>Không có sản phẩm yêu thích nào.</p>
+    </ng-template>
+  </div>
+  

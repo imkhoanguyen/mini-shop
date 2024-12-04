@@ -27,7 +27,7 @@ namespace Shop.Infrastructure.DataAccess
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItems> OrderItems { get; set; }
         public DbSet<Discount> Discounts { get; set; }
-
+        public DbSet<ProductUserLike> ProductUserLikes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -48,6 +48,7 @@ namespace Shop.Infrastructure.Configurations
             services.AddScoped<IShippingMethodService, ShippingMethodService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<IDiscountService,DiscountService>();
+            services.AddScoped<IProductUserLikeService,ProductUserLikeService>();
             services.AddSignalR();
         }
 
