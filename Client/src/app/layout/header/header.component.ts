@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 import { User } from '../../_models/user.module';
 import { ChatComponent } from '../../component/chat/chat.component';
 import { CartService } from '../../_services/cart.service';
+import { AuthService } from '../../_services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -38,6 +39,7 @@ export class HeaderComponent implements OnInit {
   @ViewChild('sidebarRef') sidebarRef!: Sidebar;
   private router = inject(Router);
   accountService = inject(AccountService);
+  private authService = inject(AuthService);
   constructor() {
     const userJson = localStorage.getItem('user');
     if (userJson) {
@@ -55,9 +57,9 @@ export class HeaderComponent implements OnInit {
       this.accountService.setCurrentUser(user);
       this.isLoggedIn = true;
 
-      this.accountService.isCustomerRole().then((result) => {
-        this.isCustomer = result;
-      });
+      if (this.authService.hasClaim('Access.Admin')) {
+        this.isCustomer = true;
+      }
     } else {
       this.isLoggedIn = false;
       this.isCustomer = false;
