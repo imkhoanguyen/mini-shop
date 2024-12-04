@@ -55,6 +55,8 @@ Mô hình phân lớp rõ ràng với các lớp Domain, Application, Infrastruc
 
 * .NET 8.0
 * Entity Framework Core cho quản lý cơ sở dữ liệu
+* Redis
+* SignalR
 * Swagger 
 ### Frontend (Client)
 Angular Framework:
