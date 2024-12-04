@@ -38,7 +38,10 @@ export class OrderDetailComponent implements OnInit {
 
   calTotal(order: Order) {
     const discountPrice = Number(order.discountPrice) || 0;
-    return Number(order.subTotal) + Number(order.shippingFee) - discountPrice;
+    let total =
+      Number(order.subTotal) + Number(order.shippingFee) - discountPrice;
+    if (total < 0) total = 0;
+    return total;
   }
 
   confirmPayment() {
