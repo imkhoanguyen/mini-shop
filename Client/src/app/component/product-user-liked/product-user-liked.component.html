@@ -7,15 +7,10 @@
                 <h3>{{ product.name }}</h3>
                 <p>Mô tả: {{ product.description }}</p>
             </div>
-            <div *ngIf="product.variants.length > 0">
-            <div *ngFor="let variant of product.variants" class="variant-item">
-                <p>Màu sắc: {{ variant.color?.name }} (<span [style.color]="variant.color?.code">{{ variant.color?.code }}</span>)</p>
-                <p>Kích cỡ: {{ variant.size?.name }}</p>
-                <p>Giá gốc: {{ variant.price | currency:'VND' }}</p>
-                <p>Giá bán: {{ variant.priceSell | currency:'VND' }}</p>
-                <p>Số lượng còn lại: {{ variant.quantity }}</p>
-            </div>
-            </div>
+            <select (change)="onSizeColorChange($event, product.id)" [value]="selectedSizeColor[product.id]?.selectedValue || 'Chọn size và color'">
+                <option value="Chọn size và color" disabled>Chọn size và color</option>
+                <option *ngFor="let sizeColor of getSizeColorsForProduct(product.id)" [value]="sizeColor">{{ sizeColor }}</option>
+              </select>
             <button type="" (click)="addToCart(product)">Thêm vào giỏ hàng</button>
             <button type="" (click)="DeleteProductLiked(product.id)">Xoá</button>         
         </div>
@@ -25,4 +20,5 @@
       <p>Không có sản phẩm yêu thích nào.</p>
     </ng-template>
   </div>
+  
   
