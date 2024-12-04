@@ -1,0 +1,103 @@
+/* Container chính */
+.product-liked-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f7faff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    color: #333;
+  }
+  
+  /* Tiêu đề */
+  .product-liked-container h2 {
+    text-align: center;
+    color: #2c7edb;
+    margin-bottom: 20px;
+  }
+  
+  /* Sản phẩm */
+  .product-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Hình ảnh sản phẩm */
+  .product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  /* Thông tin sản phẩm */
+  .product-item h3 {
+    margin: 0;
+    color: #2c7edb;
+  }
+  
+  .product-item p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  /* Variant thông tin */
+  .variant-item {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+  }
+  
+  .variant-item p span {
+    font-weight: bold;
+  }
+  
+  /* Nút bấm */
+  button {
+    padding: 8px 12px;
+    margin: 10px 5px 0 0;
+    border: none;
+    border-radius: 8px;
+    background-color: #2c7edb;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+  }
+  
+  button:hover {
+    background-color: #1a5fbf;
+    transform: scale(1.05);
+  }
+  
+  button:active {
+    transform: scale(0.95);
+  }
+  
+  button:last-of-type {
+    background-color: #ff4d4f;
+  }
+  
+  button:last-of-type:hover {
+    background-color: #d9363e;
+  }
+  
+  /* Khi không có sản phẩm */
+  .product-liked-container p {
+    text-align: center;
+    font-size: 16px;
+    color: #888;
+  }

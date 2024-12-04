@@ -16,6 +16,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { MenuItem } from 'primeng/api';
 import { ReviewComponent } from '../../review/review.component';
 import { DividerModule } from 'primeng/divider';
+import { UserProductService } from '../../../_services/user_product.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -41,6 +42,7 @@ export class ProductDetailComponent implements OnInit {
   private cartService = inject(CartService);
   private toastrService = inject(ToastrService);
   private route = inject(ActivatedRoute);
+  private userProductService = inject(UserProductService);
   productDetail!: ProductDto;
   listImage: string[] = [];
 
@@ -49,9 +51,15 @@ export class ProductDetailComponent implements OnInit {
 
   // breadcrumb
   items: MenuItem[] | undefined;
+  userId:string="";
 
   ngOnInit(): void {
     // breadcrumb items
+    const value = localStorage.getItem('user');
+    if (value){
+      const user = JSON.parse(value);
+      this.userId=user.id
+    }
     this.productId = +this.route.snapshot.paramMap.get('productId')!;
     this.loadProduct();
   }
@@ -120,5 +128,23 @@ export class ProductDetailComponent implements OnInit {
           this.toastrService.error('Thêm sản phẩm vào giở hàng thất bại.');
         }
       });
+  }
+  LikeProduct(): void {
+    if (!this.userId) {
+      console.error("Người dùng chưa đăng nhập.");
+      return;
+    }
+    console.log(this.userId)
+    console.log("Thêm sản phẩm yêu thích:", this.productId);
+    this.userProductService.addLikedProduct(this.userId, this.productId).subscribe(
+      (response: any) => {
+        console.log("Thêm sản phẩm yêu thích thành công:", response);
+        alert("Sản phẩm đã được thêm vào danh sách yêu thích!");
+      },
+      (error) => {
+        console.error("Lỗi khi thêm sản phẩm vào danh sách yêu thích:", error);
+        alert("Không thể thêm sản phẩm vào danh sách yêu thích.");
+      }
+    );
   }
 }

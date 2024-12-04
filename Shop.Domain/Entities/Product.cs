@@ -18,5 +18,6 @@ namespace Shop.Domain.Entities
         public ICollection<ProductCategory> ProductCategories { get; set; } = new List<ProductCategory>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<OrderItems> OrderItems { get; set; } = new List<OrderItems>();
+        public ICollection<ProductUserLike> ProductUserLikes { get; set; } = new List<ProductUserLike>();
     }
 }

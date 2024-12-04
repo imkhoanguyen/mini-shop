@@ -18,6 +18,7 @@ namespace Shop.Application.Repositories
         IOrderItemsRepository OrderItemsRepository { get; }
         IBlogRepository BlogRepository { get; }
         IDiscountRepository DiscountRepository{get;}
+        IProductUserLikeRepository ProductUserLikeRepository{get;}
         Task<bool> CompleteAsync();
     }
 }

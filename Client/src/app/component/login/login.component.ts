@@ -77,9 +77,9 @@ export class LoginComponent implements OnInit {
       callback: (response: any) => this.handleGoogleLogin(response),
     });
     google.accounts.id.renderButton(document.getElementById('google-btn'), {
+      type: 'icon',
       theme: 'filled_blue',
       size: 'large',
-      shape: 'rectangular',
     });
   }
   private isFbSdkLoaded(): boolean {

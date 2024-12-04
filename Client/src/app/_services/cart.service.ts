@@ -101,6 +101,7 @@ export class CartService {
   setCart(cart: Cart) {
     return this.http.post<Cart>(this.baseUrl + '/cart', cart).pipe(
       tap((cart) => {
+        console.log('Cart saved successfully:', cart);
         this.cart.set(cart);
       })
     );

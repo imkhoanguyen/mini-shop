@@ -36,6 +36,8 @@ namespace Shop.Infrastructure.Repositories
         public IBlogRepository BlogRepository { get; private set; }
         public IDiscountRepository DiscountRepository{get;private set;}
 
+        public IProductUserLikeRepository ProductUserLikeRepository{get;private set;}
+
         public UnitOfWork(StoreContext context)
         {
             _context = context;
@@ -53,6 +55,7 @@ namespace Shop.Infrastructure.Repositories
             ImageRepository = new ImageRepository(_context);
             BlogRepository = new BlogRepository(_context);
             DiscountRepository =new DiscountRepository(_context);
+            ProductUserLikeRepository=new ProductUserLikeRepository(_context);
         }
 
         public async Task<bool> CompleteAsync()
