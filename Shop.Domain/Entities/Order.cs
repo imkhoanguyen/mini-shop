@@ -40,8 +40,13 @@ namespace Shop.Domain.Entities
 
         public decimal GetTotal()
         {
-            // giá tất cả sản phẩm + phí ship - giả giảm
-            return SubTotal + ShippingFee - DiscountPrice ?? 0;
+            if(DiscountPrice == null && DiscountId == null)
+            {
+                return SubTotal + ShippingFee;
+            }
+            var total = SubTotal + ShippingFee - DiscountPrice ?? 0;
+            if (total < 0) total = 0;
+            return total;
         }
     }
 }
