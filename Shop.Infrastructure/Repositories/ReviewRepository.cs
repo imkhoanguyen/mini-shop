@@ -56,6 +56,17 @@ namespace Shop.Infrastructure.Repositories
             return await query.ApplyPaginationAsync(prm.PageNumber, prm.PageSize);
         }
 
+        public async Task<List<Review>> GetAllAsync(int productId, bool tracked)
+        {
+            var query = tracked ? _context.Reviews.AsQueryable() : _context.Reviews.AsNoTracking().AsQueryable();
+
+            query = query.Include(r => r.AppUser).Include(r => r.ParentReview).Include(r => r.Images).Include(r => r.Replies)
+            .ThenInclude(reply => reply.AppUser);
+
+            query = query.Where(r => r.ProductId == productId && r.ParentReview == null);
+            return await query.ToListAsync();
+        }
+
         public override async Task<Review?> GetAsync(Expression<Func<Review, bool>> expression, bool tracked = false)
         {
             if(tracked) 

@@ -197,6 +197,25 @@ namespace Shop.Application.Services.Implementations
             throw new BadRequestException("Problem add video review");
         }
 
+        public async Task<decimal> CalTotalRating(int productId)
+        {
+            var reviews = await _unit.ReviewRepository.GetAllAsync(productId, false);
+
+            // Lọc chỉ các review chính (không có ParentReviewId) và có Rating
+            var validRatings = reviews
+                .Where(r => r.ParentReviewId == null && r.Rating.HasValue)
+                .Select(r => r.Rating.Value);
+
+            
+            if (!validRatings.Any())
+                return 0;
+
+            var totalRating = validRatings.Average();
+
+            return Math.Round((decimal)totalRating, 2);
+        }
+
+
         public async Task<PagedList<ReviewDto>> GetAllAsync(int productId, ReviewParams prm, bool tracked = false)
         {
             var pagedList = await _unit.ReviewRepository.GetAllAsync(productId, prm, tracked);

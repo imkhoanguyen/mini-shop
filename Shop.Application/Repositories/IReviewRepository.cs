@@ -11,5 +11,6 @@ namespace API.Interfaces
         Task<PagedList<Review>> GetAllAsync(int productId, ReviewParams prm, bool tracked = false);
 
         Task UpdateAsync(Review dto);
+        Task<List<Review>> GetAllAsync(int productId, bool tracked);
     }
 }

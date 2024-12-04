@@ -20,6 +20,6 @@ namespace Shop.Application.Services.Abstracts
         Task RemoveReview(int reviewId);
         Task<ReviewDto> GetAsync(Expression<Func<Review, bool>> expression);
         Task<bool> AccceptReviewAsync(int productId, string userId);
-
+        Task<decimal> CalTotalRating(int productId);
     }
 }

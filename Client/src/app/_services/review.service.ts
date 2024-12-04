@@ -103,6 +103,14 @@ export class ReviewService {
   }
 
   canReview(productId: number) {
-    return this.http.get<boolean>(`${this.apiUrl}/review/check-permission/${productId}`);
+    return this.http.get<boolean>(
+      `${this.apiUrl}/review/check-permission/${productId}`
+    );
+  }
+
+  getTotal(productId: number) {
+    return this.http.get<number>(
+      `${this.apiUrl}/review/total-rating/${productId}`
+    );
   }
 }

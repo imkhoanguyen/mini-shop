@@ -154,6 +154,11 @@ namespace API.Controllers
             return NoContent();
         }
 
+        [HttpGet("total-rating/{productId}")]
+        public async Task<IActionResult> GetTotalRating(int productId)
+        {
+            return Ok(await _reviewService.CalTotalRating(productId));
+        }
 
     }
 }

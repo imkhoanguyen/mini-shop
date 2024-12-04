@@ -70,7 +70,7 @@ export class ReviewComponent implements OnInit, OnDestroy {
   private accountServices = inject(AccountService);
   currentUser = this.accountServices.getCurrentUser();
   authService = inject(AuthService);
-  utilService = inject(UtilityService)
+  utilService = inject(UtilityService);
   private fb = inject(FormBuilder);
 
   private reviewServices = inject(ReviewService);
@@ -103,10 +103,9 @@ export class ReviewComponent implements OnInit, OnDestroy {
     const index = this.reviews.findIndex((r) =>
       r.replies.some((rep) => rep.userReview.id === this.currentUser?.id)
     );
-    if(index !== -1) return true;
+    if (index !== -1) return true;
     return false;
   }
-  
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
@@ -202,16 +201,12 @@ export class ReviewComponent implements OnInit, OnDestroy {
   }
 
   calculateTotalRating() {
-    const totalReviews = this.reviews.length;
-    if (totalReviews > 0) {
-      const sumRatings = this.reviews.reduce(
-        (sum, review) => sum + review.rating!,
-        0
-      );
-      this.totalRating = sumRatings / totalReviews;
-    } else {
-      this.totalRating = 0;
-    }
+    this.reviewServices.getTotal(this.productId).subscribe({
+      next: (res) => {
+        this.totalRating = res;
+      },
+      error: (er) => console.log(er),
+    });
   }
 
   filterReviews(rating: number) {
