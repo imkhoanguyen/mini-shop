@@ -1,24 +1,19 @@
 import { Routes } from '@angular/router';
-import { HeaderComponent } from './layout/header/header.component';
-import { ChatComponent } from './component/admin/chat/chat.component';
 import { RoleComponent } from './component/admin/role/role.component';
 import { AdminComponent } from './component/admin/admin.component';
 import { DashboardComponent } from './component/admin/dashboard/dashboard.component';
 import { ProductComponent } from './component/admin/product/product.component';
-import { LoginComponent } from './component/login/login.component';
-import { RegisterComponent } from './component/register/register.component';
+import { RegisterComponent } from './component/shared/register/register.component';
 import { RolePermissionComponent } from './component/admin/role-permission/role-permission.component';
-import { ForgotpasswordComponent } from './component/forgotpassword/forgotpassword.component';
-import { ResetPasswordComponent } from './component/reset-password/reset-password.component';
+import { ForgotpasswordComponent } from './component/shared/forgotpassword/forgotpassword.component';
+import { ResetPasswordComponent } from './component/shared/reset-password/reset-password.component';
 
-import { HomeComponent } from './component/home/home.component';
-// import { NotFoundComponent } from './component/errors/not-found/not-found.component';
+import { HomeComponent } from './component/client/home/home.component';
 import { ServerErrorComponent } from './component/errors/server-error/server-error.component';
 import { CategoryComponent } from './component/admin/category/category.component';
 import { ProductFormComponent } from './component/admin/product/product-form/product-form.component';
 import { BlogComponent } from './component/admin/blog/blog.component';
 // import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.component';
-import { BlogUserComponent } from './component/blog-user/blog-user.component';
 import { authGuard } from './_guards/auth.guard';
 import { ShopComponent } from './component/client/shop/shop.component';
 import { UserComponent } from './component/admin/user/user.component';
@@ -37,8 +32,13 @@ import { AddBlogComponent } from './component/admin/blog/add-blog/add-blog.compo
 import { OrderClientComponent } from './component/client/order-client/order-client.component';
 import { OrderDetailClientComponent } from './component/client/order-detail-client/order-detail-client.component';
 import { FooterClientComponent } from './layout/footerClient/footerClient.component';
-import { BlogListComponent } from './component/blog-list/blog-list.component';
-import { ProductUserLikedComponent } from './component/product-user-liked/product-user-liked.component';
+import { BlogListComponent } from './component/client/blog-list/blog-list.component';
+import { ProductUserLikedComponent } from './component/client/product-user-liked/product-user-liked.component';
+import { LoginComponent } from './component/shared/login/login.component';
+import { BlogUserComponent } from './component/client/blog-user/blog-user.component';
+import { NotFoundComponent } from './component/errors/not-found/not-found.component';
+import { ChatComponent } from './component/admin/chat/chat.component';
+
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   {
@@ -46,7 +46,7 @@ export const routes: Routes = [
     component: AdminComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', component: DashboardComponent },
+      { path: '', component: StatisticComponent },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'category', component: CategoryComponent },
       { path: 'product', component: ProductComponent },
@@ -94,4 +94,5 @@ export const routes: Routes = [
   { path: 'order', component: OrderClientComponent },
   { path: 'order/:id', component: OrderDetailClientComponent },
   { path: 'like-product', component: ProductUserLikedComponent },
+  { path: '**', component: NotFoundComponent },
 ];

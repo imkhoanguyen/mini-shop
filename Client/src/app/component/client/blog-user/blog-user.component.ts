@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { Blog } from '../../_models/types';
 import { ActivatedRoute } from '@angular/router';
-import { BlogService } from '../../_services/blog.service';
 import { DatePipe } from '@angular/common';
 import { SafeHtmlPipe } from './safe-html.pipe';
+import { BlogService } from '../../../_services/blog.service';
+import { Blog } from '../../../_models/types';
 
 @Component({
   selector: 'app-blog-user',

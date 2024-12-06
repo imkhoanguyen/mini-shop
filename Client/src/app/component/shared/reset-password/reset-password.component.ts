@@ -2,8 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { AccountService } from '../../_services/account.service';
-import { ResetPassword } from '../../_models/resetPassword';
+import { AccountService } from '../../../_services/account.service';
+import { ResetPassword } from '../../../_models/resetPassword';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -27,8 +27,8 @@ export class ResetPasswordComponent implements OnInit {
     password: '',
     token: '',
   };
-  showPassword: boolean = false; 
-  showConfirmPassword: boolean = false; 
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
@@ -44,7 +44,6 @@ export class ResetPasswordComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
-  
   toggleConfirmPasswordVisibility() {
     this.showConfirmPassword = !this.showConfirmPassword;
   }

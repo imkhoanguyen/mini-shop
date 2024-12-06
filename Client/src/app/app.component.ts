@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
       Promise.resolve().then(() => {
         this.isLoading = loading;
       });
+      
     });
     this.setCurrentCart();
   }

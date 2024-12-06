@@ -12,8 +12,8 @@ import {
   ReviewEditDto,
   ReviewImage,
   ReviewParams,
-} from '../../_models/review';
-import { ReviewService } from '../../_services/review.service';
+} from '../../../_models/review';
+import { ReviewService } from '../../../_services/review.service';
 import { CommonModule } from '@angular/common';
 import { RatingModule } from 'primeng/rating';
 import { FileUpload, FileUploadModule } from 'primeng/fileupload';
@@ -26,17 +26,17 @@ import {
   Validators,
 } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { AccountService } from '../../_services/account.service';
+import { AccountService } from '../../../_services/account.service';
 import { TabViewModule } from 'primeng/tabview';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
-import { SignalrService } from '../../_services/signalr.service';
+import { SignalrService } from '../../../_services/signalr.service';
 import { Subscription } from 'rxjs';
-import { Pagination } from '../../_models/pagination';
+import { Pagination } from '../../../_models/pagination';
 import { PaginatorModule } from 'primeng/paginator';
-import { ToastrService } from '../../_services/toastr.service';
-import { AuthService } from '../../_services/auth.service';
-import { UtilityService } from '../../_services/utility.service';
+import { ToastrService } from '../../../_services/toastr.service';
+import { AuthService } from '../../../_services/auth.service';
+import { UtilityService } from '../../../_services/utility.service';
 @Component({
   selector: 'app-review',
   standalone: true,

@@ -23,9 +23,9 @@ export class SidebarComponent {
   @Output() changeIsSidebarCollapsed = new EventEmitter<boolean>();
   items = [
     {
-      routerLink: 'dashboard',
-      icon: 'pi pi-home',
-      label: 'Dashboard',
+      routerLink: 'statistic',
+      icon: 'pi pi-chart-line',
+      label: 'Thống kê',
     },
     {
       routerLink: 'category',
@@ -60,22 +60,18 @@ export class SidebarComponent {
 
     {
       routerLink: 'blog',
-      icon: 'pi pi-book',
-      label: 'Quản lý Blog',
+      icon: 'pi pi-receipt',
+      label: 'Quản lý bài viết',
     },
-    {
-      routerLink: 'statistic',
-      icon: 'pi pi-chart-line',
-      label: 'Thống kê',
-    },
+
     {
       routerLink: 'shippingmethod',
-      icon: 'pi pi-check-square',
+      icon: 'pi pi-truck',
       label: 'Quản lý phương thức Ship',
     },
     {
       routerLink: 'discount',
-      icon: 'pi pi-check-square',
+      icon: 'pi pi-tag',
       label: 'Quản lý Mã giảm giá',
     },
   ];

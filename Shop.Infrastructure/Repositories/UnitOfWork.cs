@@ -31,8 +31,6 @@ namespace Shop.Infrastructure.Repositories
 
         public IOrderItemsRepository OrderItemsRepository { get; private set; }
 
-        public IImageRepository ImageRepository { get; private set; }
-
         public IBlogRepository BlogRepository { get; private set; }
         public IDiscountRepository DiscountRepository{get;private set;}
 
@@ -52,7 +50,6 @@ namespace Shop.Infrastructure.Repositories
             ShippingMethodRepository = new ShippingMethodRepository(_context);
             OrderRepository = new OrderRepository(_context);
             OrderItemsRepository = new OrderItemsRepository(_context);
-            ImageRepository = new ImageRepository(_context);
             BlogRepository = new BlogRepository(_context);
             DiscountRepository =new DiscountRepository(_context);
             ProductUserLikeRepository=new ProductUserLikeRepository(_context);

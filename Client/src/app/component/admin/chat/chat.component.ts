@@ -40,13 +40,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   user!: User;
   content: string = '';
   lastMessage: string = '';
-  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+  pagination: Pagination = {
+    currentPage: 1,
+    itemPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
   selectedFiles: { src: string; file: File; type: string }[] = [];
   recipientId: string = '';
   params = {
     pageNumber: 1,
     pageSize: 10,
-    search: ''
+    search: '',
   };
 
   addPageSize: number = 5;
@@ -68,11 +73,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.getCustomers();
     this.setupMessageReceived();
     this.setupTypingStatus();
-    this.renderer.listen('document', 'visibilitychange', this.onVisibilityChange.bind(this));
+    this.renderer.listen(
+      'document',
+      'visibilitychange',
+      this.onVisibilityChange.bind(this)
+    );
   }
   ngOnDestroy(): void {
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
-
   }
 
   onVisibilityChange(): void {
@@ -85,13 +93,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.messageSubscription) {
       this.messageSubscription.unsubscribe();
     }
-      console.log('setupMessageCustomerReceived called');
-      this.chatService.messageReceived$
+    console.log('setupMessageCustomerReceived called');
+    this.chatService.messageReceived$
       .pipe(distinctUntilChanged((prev, curr) => prev?.id === curr?.id))
       .subscribe({
         next: (message: MessageDto | null) => {
-
-          if (message && message.senderId !== this.user.id) { // Kiểm tra senderId
+          if (message && message.senderId !== this.user.id) {
+            // Kiểm tra senderId
             console.log('Message received from ...:', message);
             this.messages.push(message);
             this.scrollToBottom();
@@ -102,7 +110,11 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.chatService.typingStatus$.subscribe({
       next: (status) => {
-        if (status && this.content !== null && status.customerId === this.selectedUser.id) {
+        if (
+          status &&
+          this.content !== null &&
+          status.customerId === this.selectedUser.id
+        ) {
           this.typingAdminId = status.isTyping ? status.adminId : null;
         } else {
           this.typingAdminId = null;
@@ -132,11 +144,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
   getCustomers() {
     this.messageService.getCustomers().subscribe({
-      next: (response : string[]) => {
-
+      next: (response: string[]) => {
         for (let customer of response) {
           this.accountService.getUserId(customer).subscribe({
-            next: (user : User) => {
+            next: (user: User) => {
               this.customers.push(user);
               this.filteredCustomers.push(user);
               this.getLastMessage(user.id);
@@ -154,27 +165,28 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   onSearch(): void {
-    if(this.searchText) {
-      console.log("searchText", this.searchText);
+    if (this.searchText) {
+      console.log('searchText', this.searchText);
       this.filteredCustomers = this.customers.filter((customer) => {
-        return customer.fullName.toLowerCase().includes(this.searchText.toLowerCase());
+        return customer.fullName
+          .toLowerCase()
+          .includes(this.searchText.toLowerCase());
       });
-    }
-    else {
+    } else {
       this.filteredCustomers = this.customers;
     }
-    console.log("a",this.filteredCustomers);
+    console.log('a', this.filteredCustomers);
   }
 
   selectUser(customer: any) {
     this.selectedUser = customer;
     this.messages = [];
-    this.params ={
+    this.params = {
       pageNumber: 1,
       pageSize: 10,
-      search: ''
-    }
-    console.log("selectedUser", this.selectedUser);
+      search: '',
+    };
+    console.log('selectedUser', this.selectedUser);
     this.loadMessages(this.selectedUser.id);
     this.scrollToBottom();
 
@@ -202,7 +214,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   getLastMessage(customerId: string) {
     this.messageService.getLastMessage(customerId).subscribe(
       (message: MessageDto) => {
-        const user = this.customers.find(c => c.id === customerId);
+        const user = this.customers.find((c) => c.id === customerId);
         if (user) {
           user.lastMessage = message?.content ?? '';
         }
@@ -217,16 +229,22 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.loading) return;
     this.loading = true;
 
-    this.messageService.getMessageThread(this.params, customerId).subscribe(result => {
-      if (result.items) {
-        this.messages = [...result.items.reverse(), ...this.messages];
-      }
-      console.log("messages", this.messages);
-      this.pagination = result.pagination || { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
-      this.loading = false;
-    });
+    this.messageService
+      .getMessageThread(this.params, customerId)
+      .subscribe((result) => {
+        if (result.items) {
+          this.messages = [...result.items.reverse(), ...this.messages];
+        }
+        console.log('messages', this.messages);
+        this.pagination = result.pagination || {
+          currentPage: 1,
+          itemPerPage: 10,
+          totalItems: 0,
+          totalPages: 1,
+        };
+        this.loading = false;
+      });
   }
-
 
   onSearchText(searchTerm: string) {
     this.params.search = searchTerm;
@@ -330,7 +348,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     });
     this.messageService.addMessage(formData).subscribe({
       next: (response: MessageDto) => {
-        console.log("response", response);
+        console.log('response', response);
         this.messages.push(response);
         this.chatService.sendMessage(response);
         this.selectedUser!.lastMessage = response.content;

@@ -3,7 +3,6 @@
   height: 80vh;
 }
 
-
 .sidebar {
   background-color: #e9ecef;
   height: 90vh;
@@ -38,7 +37,6 @@
   padding-right: 10px;
 }
 
-
 .chat-item {
   display: flex;
   align-items: center;
@@ -48,7 +46,7 @@
   cursor: pointer;
   transition: background 0.3s;
 }
-.chat-item img{
+.chat-item img {
   border-radius: 50%;
   width: 35px;
   height: 35px;
@@ -179,9 +177,8 @@
   margin-bottom: 10px;
 }
 
-
 .text:after {
-  content: '';
+  content: "";
   top: 0;
   left: 0;
   right: 0;
@@ -314,4 +311,3 @@ label {
   justify-content: center;
   align-items: center;
 }
-

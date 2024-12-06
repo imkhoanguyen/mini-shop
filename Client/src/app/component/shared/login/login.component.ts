@@ -10,12 +10,12 @@ import {
 } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { Login } from '../../_models/login.module';
-import { AccountService } from '../../_services/account.service';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
-import { User } from '../../_models/user.module';
+import { AccountService } from '../../../_services/account.service';
+import { User } from '../../../_models/user.module';
+import { Login } from '../../../_models/login.module';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -40,7 +40,8 @@ export class LoginComponent implements OnInit {
     const authConfig: AuthConfig = {
       issuer: 'https://accounts.google.com',
       redirectUri: window.location.origin,
-      clientId: '306838179156-gha4u6q5u2pfvti0e1b25fm9bf0067js.apps.googleusercontent.com',
+      clientId:
+        '306838179156-gha4u6q5u2pfvti0e1b25fm9bf0067js.apps.googleusercontent.com',
       responseType: 'code',
       scope: 'openid profile email',
       showDebugInformation: true,
@@ -116,7 +117,12 @@ export class LoginComponent implements OnInit {
     if (severity === 'error') {
       this.messageService.add({ severity, summary: 'Thất Bại', detail, life });
     } else if (severity === 'success') {
-      this.messageService.add({severity,summary: 'Thành Công',detail, life});
+      this.messageService.add({
+        severity,
+        summary: 'Thành Công',
+        detail,
+        life,
+      });
     } else {
       this.messageService.add({ severity, summary: 'Cảnh báo', detail, life });
     }
@@ -145,7 +151,7 @@ export class LoginComponent implements OnInit {
   handleLogin(response: any) {
     if (response) {
       const token = response.credential;
-      console.log("token", token);
+      console.log('token', token);
       this.authenticateWithServer(token);
     } else {
       this.showMessage('error', 'Đăng nhập băng Google không thành công.');
@@ -193,7 +199,7 @@ export class LoginComponent implements OnInit {
   }
 
   private handleFacebookResponse(token: string) {
-    this.accountService.facebookLogin({token: token}).subscribe(
+    this.accountService.facebookLogin({ token: token }).subscribe(
       (user: User) => {
         localStorage.setItem('userInfo', JSON.stringify(user));
         window.location.href = '/';

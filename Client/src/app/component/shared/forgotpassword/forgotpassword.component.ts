@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AccountService } from '../../_services/account.service';
+import { AccountService } from '../../../_services/account.service';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 

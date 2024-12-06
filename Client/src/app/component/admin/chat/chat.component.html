@@ -1,84 +1,168 @@
 <div class="d-flex container">
   <div class="sidebar">
-   <input class="search-bar" placeholder="Search..." type="text" [(ngModel)]="searchText" (input)="onSearch()"/>
-   <h5>
-    Chats
-   </h5>
-   <div class="chat-list">
-    <div class="chat-item" *ngFor="let customer of filteredCustomers" (click)="selectUser(customer)" >
-      <img class="avatar"
-            [src]="customer.avatar !== 'user.jpg' ? customer.avatar : 'http://localhost:5000/avatar/user.jpg' "
-            alt="Avatar"
-            height="40"
-            width="40" />
-      <div class="chat-info">
+    <input
+      class="search-bar"
+      placeholder="Search..."
+      type="text"
+      [(ngModel)]="searchText"
+      (input)="onSearch()"
+    />
+    <h5>Chats</h5>
+    <div class="chat-list">
+      <div
+        class="chat-item"
+        *ngFor="let customer of filteredCustomers"
+        (click)="selectUser(customer)"
+      >
+        <img
+          class="avatar"
+          [src]="
+            customer.avatar !== 'user.jpg'
+              ? customer.avatar
+              : 'http://localhost:5000/avatar/user.jpg'
+          "
+          alt="Avatar"
+          height="40"
+          width="40"
+        />
+        <div class="chat-info">
           <div class="chat-name">
-              {{ customer.fullName }}
+            {{ customer.fullName }}
           </div>
-          <div class="chat-message" >
-            {{customer.lastMessage ? customer.lastMessage || 'Đã gửi một File' : ''}}
+          <div class="chat-message">
+            {{
+              customer.lastMessage
+                ? customer.lastMessage || "Đã gửi một File"
+                : ""
+            }}
           </div>
+        </div>
       </div>
     </div>
-  </div>
-
   </div>
   <div class="chat-window">
     <div class="chat-header">
       <div class="d-flex align-items-center">
-        <img class="avatar"
-        [src]="selectedUser ? (selectedUser.avatar === 'user.jpg' ? 'http://localhost:5000/avatar/user.jpg' : selectedUser.avatar) : 'http://localhost:5000/avatar/user.jpg'"
-        alt="Avatar"
-        height="40"
-        width="40" />
+        <img
+          class="avatar"
+          [src]="
+            selectedUser
+              ? selectedUser.avatar === 'user.jpg'
+                ? 'http://localhost:5000/avatar/user.jpg'
+                : selectedUser.avatar
+              : 'http://localhost:5000/avatar/user.jpg'
+          "
+          alt="Avatar"
+          height="40"
+          width="40"
+        />
 
         <div class="chat-header-info">
           <div class="chat-header-name">
-            {{ selectedUser?.fullName || 'Select a chat' }}
+            {{ selectedUser?.fullName || "Select a chat" }}
           </div>
         </div>
       </div>
     </div>
     <div class="chat-body" #messagesContainer (scroll)="onScroll()">
       <div *ngIf="loading">Đang tải...</div>
-      <div class="messages" *ngFor="let message of messages; track by message">
+      <div
+        class="messages"
+        *ngFor="let message of messages; track: by; message"
+      >
         <!-- Tin nhắn bên trái (recipient) -->
-        <div *ngIf="message.senderId === selectedUser.id" class="message left-message">
-          <img class="avatar"
-            [src]="selectedUser.avatar === 'user.jpg' ? 'http://localhost:5000/avatar/user.jpg' : selectedUser.avatar"
+        <div
+          *ngIf="message.senderId === selectedUser.id"
+          class="message left-message"
+        >
+          <img
+            class="avatar"
+            [src]="
+              selectedUser.avatar === 'user.jpg'
+                ? 'http://localhost:5000/avatar/user.jpg'
+                : selectedUser.avatar
+            "
             alt="Avatar"
             height="40"
-            width="40" />
+            width="40"
+          />
           <div class="message-content">
-            <div class="text" *ngIf="message.content !== null">{{ message.content.trim() }}</div>
+            <div class="text" *ngIf="message.content !== null">
+              {{ message.content.trim() }}
+            </div>
             <div class="file-content" *ngFor="let file of message.files">
-              <img *ngIf="isImage(file.fileType)" [src]="file.fileUrl" class="message-media" />
-              <video *ngIf="isVideo(file.fileType)" [src]="file.fileUrl" controls class="message-media"></video>
+              <img
+                *ngIf="isImage(file.fileType)"
+                [src]="file.fileUrl"
+                class="message-media"
+              />
+              <video
+                *ngIf="isVideo(file.fileType)"
+                [src]="file.fileUrl"
+                controls
+                class="message-media"
+              ></video>
             </div>
           </div>
         </div>
         <!-- Tin nhắn bên phải (sender) -->
-        <div *ngIf="message.senderId !== selectedUser.id" class="message right-message">
+        <div
+          *ngIf="message.senderId !== selectedUser.id"
+          class="message right-message"
+        >
           <div class="message-content">
-            <div class="text" *ngIf="message.content !== null">{{ message.content.trim() }}</div>
+            <div class="text" *ngIf="message.content !== null">
+              {{ message.content.trim() }}
+            </div>
             <div class="file-content" *ngFor="let file of message.files">
-              <img *ngIf="isImage(file.fileType)" [src]="file.fileUrl" class="message-media" />
-              <video *ngIf="isVideo(file.fileType)" [src]="file.fileUrl" controls class="message-media"></video>
+              <img
+                *ngIf="isImage(file.fileType)"
+                [src]="file.fileUrl"
+                class="message-media"
+              />
+              <video
+                *ngIf="isVideo(file.fileType)"
+                [src]="file.fileUrl"
+                controls
+                class="message-media"
+              ></video>
             </div>
           </div>
         </div>
       </div>
-
     </div>
-    <div class="image-container" *ngIf="selectedFiles.length >0">
-      <div *ngFor="let image of selectedFiles; let i = index" class="image-preview">
-        <img [src]="image.src" alt="Image Preview" style="max-width: 100px; margin-bottom: 10px;">
+    <div class="image-container" *ngIf="selectedFiles.length > 0">
+      <div
+        *ngFor="let image of selectedFiles; let i = index"
+        class="image-preview"
+      >
+        <img
+          [src]="image.src"
+          alt="Image Preview"
+          style="max-width: 100px; margin-bottom: 10px"
+        />
         <button class="close-button" (click)="removeImage(i)">X</button>
       </div>
       <div class="plus">
-        <label for="fileInputPlus" style="width: 100%; height: 100%; cursor: pointer; display: flex; justify-content: center; align-items: center;">
-          <i class="bi bi-plus" style="font-size: 24px;"></i>
-          <input type="file" id="fileInputPlus" (change)="onFileSelected($event)" multiple style="display: none;" />
+        <label
+          for="fileInputPlus"
+          style="
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <i class="bi bi-plus" style="font-size: 24px"></i>
+          <input
+            type="file"
+            id="fileInputPlus"
+            (change)="onFileSelected($event)"
+            multiple
+            style="display: none"
+          />
         </label>
       </div>
     </div>
@@ -88,27 +172,31 @@
     <div *ngIf="!typingAdminId" class="chat-input">
       <label for="fileInput">
         <i class="bi bi-image-fill"></i>
-        <input type="file" id="fileInput" (change)="onFileSelected($event)" multiple style="display: none;" />
+        <input
+          type="file"
+          id="fileInput"
+          (change)="onFileSelected($event)"
+          multiple
+          style="display: none"
+        />
       </label>
 
-      <input [(ngModel)]="content" placeholder="Nhập tin nhắn..." type="text"
-             (keyup)="notifyTyping()"
-             (blur)="stopTyping()"
-             (keyup.enter)="sendMessage()"
-             (focus)="notifyTyping()"
-             />
+      <input
+        [(ngModel)]="content"
+        placeholder="Nhập tin nhắn..."
+        type="text"
+        (keyup)="notifyTyping()"
+        (blur)="stopTyping()"
+        (keyup.enter)="sendMessage()"
+        (focus)="notifyTyping()"
+      />
       <button (click)="sendMessage()">
         <i class="fas fa-paper-plane"></i>
         Send
       </button>
     </div>
     <div *ngIf="typingAdminId && typingAdminId !== user.id">
-      <p>
-        Hiện tại không thể gửi tin nhắn vì admin khác đang nhập tin nhắn...
-      </p>
+      <p>Hiện tại không thể gửi tin nhắn vì admin khác đang nhập tin nhắn...</p>
     </div>
   </div>
-
- </div>
-
-
+</div>

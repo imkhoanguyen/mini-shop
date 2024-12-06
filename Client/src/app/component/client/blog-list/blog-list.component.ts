@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { TruncatePipe } from '../../layout/footerClient/truncate.pipe';
+import { TruncatePipe } from '../../../layout/footerClient/truncate.pipe';
 import { SafeHtmlPipe } from '../blog-user/safe-html.pipe';
-import { BlogService } from '../../_services/blog.service';
+import { BlogService } from '../../../_services/blog.service';
 import { Router } from '@angular/router';
-import { Blog } from '../../_models/types';
+import { Blog } from '../../../_models/types';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -1,13 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
-import { User } from '../../_models/user.module';
-import { AccountService } from '../../_services/account.service';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { User } from '../../../_models/user.module';
+import { AccountService } from '../../../_services/account.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MessageService } from '../../_services/message.service';
-import { ChatService } from '../../_services/chat.service';
-import { MessageDto } from '../../_models/message.module';
-import { ToastrService } from '../../_services/toastr.service';
-import { PaginatedResult, Pagination } from '../../_models/pagination';
+import { MessageService } from '../../../_services/message.service';
+import { ChatService } from '../../../_services/chat.service';
+import { MessageDto } from '../../../_models/message.module';
+import { ToastrService } from '../../../_services/toastr.service';
+import { PaginatedResult, Pagination } from '../../../_models/pagination';
 @Component({
   selector: 'app-chat',
   standalone: true,
@@ -21,16 +27,20 @@ export class ChatComponent implements OnInit {
   recipientUser!: User;
   user!: User;
   content: string = '';
-  pagination: Pagination = { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
+  pagination: Pagination = {
+    currentPage: 1,
+    itemPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
 
   params = {
     pageNumber: 1,
     pageSize: 10,
-    search: ''
+    search: '',
   };
   addPageSize: number = 5;
   loading = false;
-
 
   selectedFiles: { src: string; file: File; type: string }[] = [];
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
@@ -50,7 +60,7 @@ export class ChatComponent implements OnInit {
     setTimeout(() => {
       this.scrollToBottom();
     }, 100);
-      this.loadMessages();
+    this.loadMessages();
   }
 
   toggleChatWindow() {
@@ -61,7 +71,6 @@ export class ChatComponent implements OnInit {
       }, 10);
     }
     this.chatService.joinGroup('', this.user.id);
-
   }
   onScroll() {
     const element = this.messagesContainer.nativeElement;
@@ -82,8 +91,8 @@ export class ChatComponent implements OnInit {
     console.log('setupMessageCustomerReceived called');
     this.chatService.messageReceived$.subscribe({
       next: (message: MessageDto | null) => {
-
-        if (message && message.senderId !== this.user.id) { // Kiểm tra senderId
+        if (message && message.senderId !== this.user.id) {
+          // Kiểm tra senderId
           console.log('Message received from admin:', message);
           this.messages.push(message);
           this.scrollToBottom();
@@ -93,21 +102,26 @@ export class ChatComponent implements OnInit {
     });
   }
 
-
   loadMessages() {
     if (this.loading) return;
     this.loading = true;
 
-    this.messageService.getMessageThread(this.params, this.user.id).subscribe(result => {
-      if (result.items) {
-        this.messages = [...result.items.reverse(), ...this.messages];
-      }
-      console.log("messages", this.messages);
-      this.pagination = result.pagination || { currentPage: 1, itemPerPage: 10, totalItems: 0, totalPages: 1 };
-      this.loading = false;
-    });
+    this.messageService
+      .getMessageThread(this.params, this.user.id)
+      .subscribe((result) => {
+        if (result.items) {
+          this.messages = [...result.items.reverse(), ...this.messages];
+        }
+        console.log('messages', this.messages);
+        this.pagination = result.pagination || {
+          currentPage: 1,
+          itemPerPage: 10,
+          totalItems: 0,
+          totalPages: 1,
+        };
+        this.loading = false;
+      });
   }
-
 
   onFileSelected(event: any) {
     const files: FileList = event.target.files;
@@ -205,7 +219,4 @@ export class ChatComponent implements OnInit {
     this.content = '';
     this.selectedFiles = [];
   }
-
-
-
 }

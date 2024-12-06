@@ -10,7 +10,6 @@ namespace Shop.Application.Repositories
         ISizeRepository SizeRepository { get; }
         IColorRepository ColorRepository { get; }
         IVariantRepository VariantRepository { get; }
-        IImageRepository ImageRepository { get; }
         IMessageRepository MessageRepository { get; }
         IReviewRepository ReviewRepository { get; }
         IShippingMethodRepository ShippingMethodRepository { get; }

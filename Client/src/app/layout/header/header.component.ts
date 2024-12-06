@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 import { AccountService } from '../../_services/account.service';
 import { Router } from '@angular/router';
 import { User } from '../../_models/user.module';
-import { ChatComponent } from '../../component/chat/chat.component';
+import { ChatComponent } from '../../component/client/chat/chat.component';
 import { CartService } from '../../_services/cart.service';
 import { AuthService } from '../../_services/auth.service';
 

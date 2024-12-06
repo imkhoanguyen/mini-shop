@@ -181,7 +181,7 @@ export class DiscountComponent implements OnInit, OnDestroy {
       ...this.discountForm.value,
       id: this.discountForm.value.id || 0,
     };
-    discountData.promotionCode = this.generateCode(discountData.name);
+    if (discountData.id===0) discountData.promotionCode="00";
     const subscription =
       discountData.id === 0
         ? this.discountService

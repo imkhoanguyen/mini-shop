@@ -1,22 +1,24 @@
 <h2>Thống kê</h2>
 <div class="statistics-container">
   <div class="timepick">
-    <p-calendar 
-        [(ngModel)]="selectedDate" 
-        [showIcon]="true" 
-        dateFormat="dd/mm/yy" 
-        placeholder="Chọn ngày">
+    <p-calendar
+      [(ngModel)]="selectedDate"
+      [showIcon]="true"
+      dateFormat="dd/mm/yy"
+      placeholder="Chọn ngày"
+    >
     </p-calendar>
-    <p-dropdown 
-        [options]="dropdownOptions" 
-        [(ngModel)]="selectedOption" 
-        (ngModelChange)="onDropdownChange($event)" 
-        placeholder="Hiện tại">
+    <p-dropdown
+      [options]="dropdownOptions"
+      [(ngModel)]="selectedOption"
+      (ngModelChange)="onDropdownChange($event)"
+      placeholder="Hiện tại"
+    >
     </p-dropdown>
   </div>
   <div class="revenue">
     <h5>Doanh thu của các đơn hàng:</h5>
-    <h5>{{ revenueOrder | currency: 'VND' }}</h5>
+    <h5>{{ revenueOrder | currency : "USD" }}</h5>
   </div>
   <div class="count">
     <h5>Số lượng đơn hàng:</h5>
@@ -24,48 +26,74 @@
   </div>
   <div class="highestUser">
     <h5>Mua nhiều nhất:</h5>
-    <h5>{{ hightestUser }} <br> {{total | currency: 'VND'}}</h5>
+    <h5>
+      {{ hightestUser }} <br />
+      {{ total | currency : "USD" }}
+    </h5>
   </div>
 </div>
-<button pButton icon="pi pi-table" label="Xem bảng dữ liệu" (click)="showTable()"></button>
+<button
+  pButton
+  icon="pi pi-table"
+  label="Xem bảng dữ liệu"
+  (click)="showTable()"
+></button>
 <div class="chart-container">
   <p-chart type="bar" [data]="chartData" [options]="chartOptions"></p-chart>
 </div>
 
-<p-dialog 
-  [(visible)]="dialogVisible" 
-  [header]="'Danh sách đơn hàng'" 
-  [modal]="true" 
-  [style]="{ width: '900px' }" 
-  [closable]="true">
-  <p-table [value]="orders" [paginator]="true" [rows]="10" [responsiveLayout]="'scroll'">
+<p-dialog
+  [(visible)]="dialogVisible"
+  [header]="'Danh sách đơn hàng'"
+  [modal]="true"
+  [style]="{ width: '900px' }"
+  [closable]="true"
+>
+  <p-table
+    [value]="orders"
+    [paginator]="true"
+    [rows]="10"
+    [responsiveLayout]="'scroll'"
+  >
     <ng-template pTemplate="header">
       <tr>
-        <th pSortableColumn="id">Mã đơn hàng<p-sortIcon field="id"></p-sortIcon></th>
+        <th pSortableColumn="id">
+          Mã đơn hàng<p-sortIcon field="id"></p-sortIcon>
+        </th>
         <th>Thông tin người đặt</th>
-        <th pSortableColumn="created">Ngày tạo đơn <p-sortIcon field="created"></p-sortIcon></th>
+        <th pSortableColumn="created">
+          Ngày tạo đơn <p-sortIcon field="created"></p-sortIcon>
+        </th>
         <th>Phương thức vận chuyển</th>
         <th>Thanh toán</th>
-        <th pSortableColumn="total">Tổng tiền <p-sortIcon field="total"></p-sortIcon></th>
+        <th pSortableColumn="total">
+          Tổng tiền <p-sortIcon field="total"></p-sortIcon>
+        </th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-order>
       <tr>
         <td>{{ order.id }}</td>
         <td>
-          <b>Họ tên: </b>{{order.fullName}} <br>
-          <b>Số điện thoại:</b>  {{order.phone}} <br>
-          <b>Địa chỉ: </b> {{order.address}} <br>
+          <b>Họ tên: </b>{{ order.fullName }} <br />
+          <b>Số điện thoại:</b> {{ order.phone }} <br />
+          <b>Địa chỉ: </b> {{ order.address }} <br />
         </td>
-        <td>{{ order.created | date: 'dd/MM/yyyy' }}</td>
-        <td>{{order.shippingName}}</td>
+        <td>{{ order.created | date : "dd/MM/yyyy" }}</td>
+        <td>{{ order.shippingName }}</td>
         <td>
-          <b>Phương thức thanh toán: </b>{{order.paymentMethod}} <br>
-          <b>Trạng thái thanh toán: </b>{{order.paymentStatus}}
+          <b>Phương thức thanh toán: </b>{{ order.paymentMethod }} <br />
+          <b>Trạng thái thanh toán: </b>{{ order.paymentStatus }}
         </td>
-        <td>{{ order.subTotal + order.shippingFee - order.discountPrice | currency: 'VND' }}</td>
+        <td>
+          {{
+            order.subTotal + order.shippingFee - order.discountPrice < 0
+              ? 0
+              : (order.subTotal + order.shippingFee - order.discountPrice
+                | currency : "USD")
+          }}
+        </td>
       </tr>
     </ng-template>
   </p-table>
 </p-dialog>
-
